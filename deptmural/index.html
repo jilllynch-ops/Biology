@@ -136,6 +136,11 @@ nav.tabs button[aria-selected="true"] { background: var(--accent); color: var(--
 .sprog .sub { white-space: nowrap; }
 .srail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - env(safe-area-inset-top, 0px) - 24px); overflow-y: auto; overscroll-behavior: contain; }
 @media (max-width: 900px) { .srail { position: static; max-height: none; overflow: visible; } }
+.list.mine { max-height: none; }
+.list.mine li { flex-wrap: wrap; }
+.list.mine .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.list.mine .acts button { color: var(--accent); border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px; font-weight: 700; }
+.list.mine .acts button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .done-card { text-align: center; padding: 22px; border: 2px solid var(--good); background: var(--good-soft); border-radius: 14px; margin-top: 16px; }
 .done-card h3 { font: 800 1.4rem var(--display); margin: 0 0 6px; color: var(--ink); }
 .code-big { font: 700 clamp(2rem, 6vw, 3.2rem)/1.1 var(--mono); letter-spacing: .08em; margin: 8px 0; color: var(--ink); }
@@ -233,7 +238,12 @@ table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
     <div class="start-box" id="startBox">
       <h2>Get your square</h2>
       <p class="lede">Every Biology student colors one square of a giant mystery mural. You'll get a square nobody else has. Decode its codons, then show your completion code to your teacher.</p>
+      <div class="panel" id="mineBox" hidden style="margin-bottom:14px">
+        <h3>Squares on this computer</h3>
+        <ul class="list mine" id="mineList"></ul>
+      </div>
       <div class="panel">
+        <h3 id="newTitle" hidden>Start a new square</h3>
         <form id="startForm" class="stack" autocomplete="off">
           <div class="row3">
             <label class="field">Your initials<input id="sInit" class="mono" maxlength="4" required placeholder="JS"></label>
@@ -260,7 +270,7 @@ table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
             <div class="sq-num" id="sqNum">Square</div>
             <div class="tools">
               <button class="btn quiet small" type="button" id="restartBtn">Start this square over</button>
-              <button class="btn quiet small" type="button" id="switchBtn">Not your square?</button>
+              <button class="btn quiet small" type="button" id="switchBtn">Switch squares</button>
             </div>
           </div>
           <div class="sprog"><div class="bar"><i id="sBar" style="width:0"></i></div><span class="sub" id="sCount">0 of 100 codons decoded</span></div>
@@ -280,6 +290,7 @@ table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
             <p class="sub">Show this code and your initials to your teacher.</p>
             <div class="code-big" id="codeBig"></div>
             <p class="sub" id="doneWho"></p>
+            <button class="btn quiet" type="button" id="anotherBtn" style="margin-top:12px">Get another square</button>
           </div>
         </div>
         <aside class="rail srail">
@@ -444,14 +455,17 @@ function previewPost(b) {
   const d = previewDb(), id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), now = new Date().toISOString();
   const save = () => { store.set("dm-preview", d); return previewState(); };
   if (b.action === "claim") {
-    const mine = d.claims.find(c => c.device === b.device);
-    if (mine) return { ok: true, square: mine.square, existing: true };
     const done = new Set(d.entries.map(x => x.square)), taken = new Set(d.claims.map(c => c.square));
+    const colored = new Set(b.colored || []);
+    const mine = d.claims.find(c => c.device === b.device && c.initials === b.initials && c.teacher === b.teacher && c.period === b.period && !done.has(c.square) && !colored.has(c.square));
+    if (mine && !b.fresh) return { ok: true, square: mine.square, existing: true };
+    const giveBack = b.fresh ? d.claims.filter(c => c.device === b.device && c.initials === b.initials && c.teacher === b.teacher && c.period === b.period && !done.has(c.square) && !colored.has(c.square)).map(c => c.square) : [];
     const all = Array.from({ length: N }, (_, i) => i + 1);
     let pool = all.filter(i => !taken.has(i) && !done.has(i)); if (!pool.length) pool = all.filter(i => !done.has(i)); if (!pool.length) pool = all;
     const square = pool[Math.floor(Math.random() * pool.length)];
+    d.claims = d.claims.filter(c => !(giveBack.includes(c.square) && c.device === b.device && c.initials === b.initials));
     d.claims.push({ id, time: now, square, device: b.device, initials: b.initials, teacher: b.teacher, period: b.period }); save();
-    return { ok: true, square, existing: false };
+    return { ok: true, square, existing: false, gaveBack: giveBack };
   }
   if (b.action === "add") {
     const code = normCode(b.code), m = code.match(/^(\d+)-/), sq = m ? +m[1] : 0;
@@ -512,6 +526,10 @@ fillSelect($("#sTeacher")); fillSelect($("#sPeriod"));
 let device = store.get("dm-device");
 if (!device) { device = "d" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store.set("dm-device", device); }
 let me = store.get("dm-me");   // { square, initials, teacher, period }
+const mineList = () => (store.get("dm-mine") || []).filter(x => x && x.square >= 1 && x.square <= N);
+function rememberMine(m) { const l = mineList().filter(x => x.square !== m.square); l.unshift(m); store.set("dm-mine", l.slice(0, 20)); }
+function forgetMine(sq) { store.set("dm-mine", mineList().filter(x => x.square !== sq)); }
+if (me && me.square) rememberMine(me);
 let brush = null;
 
 function cellKey(s, r, c) { return ROWS[Math.floor(s / TC) * TS + r][(s % TC) * TS + c]; }
@@ -526,7 +544,7 @@ function getProg(s) { const p = store.get(progKey(s)); return typeof p === "stri
 function renderStudent() {
   const has = me && me.square >= 1 && me.square <= N;
   $("#startBox").hidden = has; $("#colorBox").hidden = !has;
-  if (!has) { const p = store.get("dm-last") || {}; if (p.teacher && CONFIG.TEACHERS.includes(p.teacher)) $("#sTeacher").value = p.teacher; if (p.period) $("#sPeriod").value = p.period; return; }
+  if (!has) { const p = store.get("dm-last") || {}; if (p.teacher && CONFIG.TEACHERS.includes(p.teacher)) $("#sTeacher").value = p.teacher; if (p.period) $("#sPeriod").value = p.period; if (p.initials && !$("#sInit").value) $("#sInit").value = p.initials; renderMine(); return; }
   const s = me.square - 1, pos = sqPos(s), prog = getProg(s);
   $("#sqNum").innerHTML = `Square ${me.square}<small>row ${pos.row}, column ${pos.col}. Write this number down!</small>`;
   const board = $("#board"); board.innerHTML = "";
@@ -538,6 +556,25 @@ function renderStudent() {
     board.appendChild(b);
   }
   updateStudentProgress();
+}
+function renderMine() {
+  const list = mineList(), ul = $("#mineList"); ul.innerHTML = "";
+  $("#mineBox").hidden = !list.length; $("#newTitle").hidden = !list.length;
+  list.forEach(m => {
+    const n = (getProg(m.square - 1).match(/1/g) || []).length, done = n === 100;
+    const li = document.createElement("li"), sp = document.createElement("span"), acts = document.createElement("span");
+    sp.textContent = `Square ${m.square}: ${m.initials}, ${m.teacher}, period ${m.period}. ${done ? "Finished!" : n + " of 100 done"}`;
+    acts.className = "acts";
+    const go = document.createElement("button"); go.type = "button"; go.className = "primary"; go.textContent = done ? "See my code" : "Keep working";
+    go.addEventListener("click", () => { me = m; store.set("dm-me", me); renderStudent(); window.scrollTo(0, 0); });
+    acts.appendChild(go);
+    if (!done) {
+      const nw = document.createElement("button"); nw.type = "button"; nw.textContent = "Try a different square";
+      nw.addEventListener("click", () => getSquare(m.initials, m.teacher, m.period, m));
+      acts.appendChild(nw);
+    }
+    li.append(sp, acts); ul.appendChild(li);
+  });
 }
 function paintCell(b, k) {
   b.classList.add("done"); b.setAttribute("aria-disabled", "true");
@@ -611,28 +648,35 @@ $("#startForm").addEventListener("submit", async e => {
   e.preventDefault();
   const initials = normInit($("#sInit").value), msg = $("#startMsg"), btn = $("#startBtn");
   if (!initials || initials.length > 4) { msg.className = "fb bad"; msg.textContent = "Type your initials (1 to 4 letters)."; $("#sInit").focus(); return; }
-  const teacher = $("#sTeacher").value, period = $("#sPeriod").value;
-  store.set("dm-last", { teacher, period });
+  getSquare(initials, $("#sTeacher").value, $("#sPeriod").value, null);
+});
+async function getSquare(initials, teacher, period, replacing) {
+  const msg = $("#startMsg"), btn = $("#startBtn");
+  if (replacing && !confirm(`Give square ${replacing.square} back and get a different one? The colors you've done on square ${replacing.square} will be erased.`)) return;
+  store.set("dm-last", { teacher, period, initials });
   btn.disabled = true; msg.className = "fb"; msg.textContent = "Finding a square nobody has…";
   try {
-    const d = await api.post({ action: "claim", device, initials, teacher, period });
+    const colored = []; for (let s = 1; s <= N; s++) if (getProg(s - 1).indexOf("0") < 0) colored.push(s);
+    const d = await api.post({ action: "claim", device, initials, teacher, period, colored, fresh: !!replacing });
     if (!d.ok) throw new Error(d.error);
-    me = { square: +d.square, initials, teacher, period }; store.set("dm-me", me);
+    (d.gaveBack || (replacing ? [replacing.square] : [])).forEach(sq => { if (+sq !== +d.square) { forgetMine(+sq); store.del(progKey(+sq - 1)); } });
+    me = { square: +d.square, initials, teacher, period }; store.set("dm-me", me); rememberMine(me);
     msg.textContent = ""; renderStudent(); refresh(); window.scrollTo(0, 0);
   } catch (err) { msg.className = "fb bad"; msg.textContent = "Couldn't get a square right now. Check your internet connection and try again."; }
   finally { btn.disabled = false; }
-});
+}
 $("#haveBtn").addEventListener("click", () => { $("#haveForm").hidden = !$("#haveForm").hidden; if (!$("#haveForm").hidden) $("#haveNum").focus(); });
 $("#haveForm").addEventListener("submit", e => {
   e.preventDefault();
   const n = parseInt($("#haveNum").value, 10), initials = normInit($("#sInit").value), msg = $("#haveMsg");
   if (!(n >= 1 && n <= N)) { msg.className = "fb bad"; msg.textContent = `Square numbers go from 1 to ${N}.`; return; }
   if (!initials) { msg.className = "fb bad"; msg.textContent = "Type your initials above first."; $("#sInit").focus(); return; }
-  me = { square: n, initials, teacher: $("#sTeacher").value, period: $("#sPeriod").value }; store.set("dm-me", me);
+  me = { square: n, initials, teacher: $("#sTeacher").value, period: $("#sPeriod").value }; store.set("dm-me", me); rememberMine(me);
   msg.textContent = ""; renderStudent(); window.scrollTo(0, 0);
 });
 $("#restartBtn").addEventListener("click", () => { if (!me || !confirm("Clear all your colors on this square and start over?")) return; store.del(progKey(me.square - 1)); renderStudent(); $("#status").className = "status"; $("#status").textContent = "Starting fresh. Choose an amino acid, then click its codons."; });
-$("#switchBtn").addEventListener("click", () => { if (!confirm("Leave this square? Your colors stay saved on this computer.")) return; me = null; store.del("dm-me"); renderStudent(); });
+$("#anotherBtn").addEventListener("click", () => { me = null; store.del("dm-me"); renderStudent(); window.scrollTo(0, 0); $("#startMsg").className = "fb"; $("#startMsg").textContent = "Check your initials, teacher, and period, then click the button for a new square."; $("#sInit").focus(); });
+$("#switchBtn").addEventListener("click", () => { me = null; store.del("dm-me"); renderStudent(); window.scrollTo(0, 0); });
 
 /* ================= MURAL ================= */
 const cv = $("#cv"); let cell = 4, peek = false, selected = -1, search = "";
