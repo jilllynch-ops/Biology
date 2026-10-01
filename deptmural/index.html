@@ -14,9 +14,9 @@
    ===================================================================== */
 const CONFIG = {
   // Paste your Apps Script web app URL here (ends in /exec). Leave "" to try the site in preview mode.
-  SCRIPT_URL: "",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzsIhzBFl677SKbYjtE-XoVkQT18dhDh49CcsC3CxyAY_UL5eGk1iuoylIl1cvNUTYY7g/exec",
   // The Biology teachers, as students should see their names.
-  TEACHERS: ["Teacher A", "Teacher B", "Teacher C"],
+  TEACHERS: ["Ms. Lynch", "Mrs. Tragis", "Mr. Roman"],
   // How many class periods are in your school day.
   PERIODS: 8,
 };
@@ -816,7 +816,19 @@ function renderTeacher() {
   });
   lookupCode();
 }
-$("#peek").addEventListener("click", e => { peek = !peek; e.target.setAttribute("aria-pressed", peek); e.target.textContent = peek ? "Hide the finished picture" : "Preview the finished picture on this screen"; show("mural"); window.scrollTo(0, 0); });
+$("#peek").addEventListener("click", async e => {
+  const btn = e.currentTarget, msg = $("#dlMsg");
+  const setPeek = on => { peek = on; btn.setAttribute("aria-pressed", on); btn.textContent = on ? "Hide the finished picture" : "Preview the finished picture on this screen"; };
+  if (peek) { setPeek(false); renderMural(); return; }
+  if (!$("#pass").value) { msg.className = "fb bad"; msg.textContent = "Type the department passcode in the form above first."; $("#pass").focus(); return; }
+  btn.disabled = true; msg.className = "fb"; msg.textContent = "Checking the passcode…";
+  try {
+    const d = await api.post({ action: "check", passcode: passVal() });
+    if (!d.ok) { msg.className = "fb bad"; msg.textContent = ERR[d.error] || "That passcode isn't right."; return; }
+    msg.textContent = ""; setPeek(true); show("mural"); window.scrollTo(0, 0);
+  } catch (err) { msg.className = "fb bad"; msg.textContent = "Couldn't reach the Google Sheet to check the passcode. Try again."; }
+  finally { btn.disabled = false; }
+});
 
 function download(k, name) {
   const msg = $("#dlMsg"); msg.className = "fb"; msg.textContent = "Making the image… this can take a few seconds.";
