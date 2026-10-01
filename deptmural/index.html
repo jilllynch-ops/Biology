@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biology Department Mural</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<script>
+/* =====================================================================
+   SETTINGS: edit these four lines, then upload this file to GitHub.
+   ===================================================================== */
+const CONFIG = {
+  // Paste your Apps Script web app URL here (ends in /exec). Leave "" to try the site in preview mode.
+  SCRIPT_URL: "",
+  // The Biology teachers, as students should see their names.
+  TEACHERS: ["Teacher A", "Teacher B", "Teacher C"],
+  // How many class periods are in your school day.
+  PERIODS: 8,
+  // Which Einstein students color in the Codon Color Lab: "masterpiece" (20 colors) or "mystery" (12 colors).
+  VERSION: "masterpiece",
+};
+</script>
+<style>
+:root {
+  --bg: #eef3f2; --surface: #ffffff; --ink: #17282b; --muted: #5a6d70; --line: #c9d6d4;
+  --accent: #0f6e6a; --accent-ink: #ffffff; --accent-soft: #d6ecea;
+  --good: #1f7a3a; --good-soft: #dff2e4; --bad: #b3261e; --bad-soft: #fbe3e1;
+  --mat: #17282b; --mat-ink: #cfdcdb; --hl: #ffd84d;
+  --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1a1b; --surface: #172526; --ink: #e3eeec; --muted: #9db1b0; --line: #2d4142;
+  --accent: #4fc2ba; --accent-ink: #062322; --accent-soft: #1d3b3a;
+  --good: #6fd38c; --good-soft: #193a24; --bad: #ff8a80; --bad-soft: #3d1c1a;
+  --mat: #070d0e; --mat-ink: #9db1b0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1a1b; --surface: #172526; --ink: #e3eeec; --muted: #9db1b0; --line: #2d4142;
+  --accent: #4fc2ba; --accent-ink: #062322; --accent-soft: #1d3b3a;
+  --good: #6fd38c; --good-soft: #193a24; --bad: #ff8a80; --bad-soft: #3d1c1a;
+  --mat: #070d0e; --mat-ink: #9db1b0; color-scheme: dark }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 20px 20px 48px; }
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin-bottom: 18px; }
+header.top h1 { font: 800 clamp(1.7rem, 3.4vw, 2.6rem)/1.05 var(--display); margin: 0; letter-spacing: -0.015em; }
+header.top p { margin: 4px 0 0; color: var(--muted); }
+.sync { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--good); flex: none; }
+.dot.off { background: var(--bad); } .dot.wait { background: var(--muted); }
+
+.notice { background: var(--accent-soft); border-radius: 10px; padding: 10px 14px; margin: 0 0 16px; font-size: .95rem; }
+.notice.bad { background: var(--bad-soft); color: var(--bad); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.layout > * { min-width: 0; }
+
+/* the mural, framed */
+.frame { background: var(--mat); border-radius: 16px; padding: clamp(12px, 2.4vw, 28px); color: var(--mat-ink); }
+.frame:fullscreen { display: flex; flex-direction: column; justify-content: center; border-radius: 0; }
+.fit { display: flex; justify-content: center; }
+canvas { display: block; touch-action: manipulation; cursor: pointer; border-radius: 3px; }
+.frame-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-top: 12px; font-size: .9rem; }
+.frame-foot button { background: transparent; border: 1px solid #3a5254; color: var(--mat-ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
+.frame-foot button:hover { border-color: var(--mat-ink); }
+
+.tile-info { margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.tile-info h3 { margin: 0 0 6px; font: 700 1.05rem var(--body); }
+.tile-info p { margin: 0; color: var(--muted); }
+
+/* rail */
+.rail { display: grid; gap: 14px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.panel h2 { font: 700 1.25rem/1.2 var(--display); margin: 0 0 10px; }
+.big { font: 800 2.6rem/1 var(--display); letter-spacing: -0.02em; }
+.big small { font: 400 1rem var(--body); color: var(--muted); letter-spacing: 0; margin-left: 4px; }
+.bar { height: 10px; background: var(--accent-soft); border-radius: 5px; overflow: hidden; margin: 10px 0 6px; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 5px; transition: width .6s ease; }
+.sub { color: var(--muted); font-size: .92rem; margin: 0; }
+
+.tally { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tally li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .95rem; }
+.tally b { font-weight: 700; }
+.tally span { color: var(--muted); text-align: right; }
+.tally .bar { grid-column: 1 / -1; margin: 2px 0 0; height: 7px; }
+
+.field { display: grid; gap: 4px; font-size: .9rem; font-weight: 700; }
+.field input, .field select { font-weight: 400; font-size: 1rem; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); width: 100%; }
+.mono { font-family: var(--mono) !important; letter-spacing: .06em; text-transform: uppercase; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stack { display: grid; gap: 10px; }
+.btn { border: 0; border-radius: 9px; padding: 10px 14px; font-weight: 700; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn.quiet { background: transparent; color: var(--accent); border: 1px solid var(--line); font-weight: 700; padding: 7px 11px; }
+.btn:disabled { opacity: .55; cursor: wait; }
+.fb { font-size: .92rem; margin: 0; min-height: 1.4em; }
+.fb.good { color: var(--good); } .fb.bad { color: var(--bad); }
+
+.matches { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+.matches button { width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; cursor: pointer; }
+.matches button:hover { border-color: var(--accent); }
+
+details.teacher > summary { cursor: pointer; font: 700 1.25rem/1.2 var(--display); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+details.teacher > summary::-webkit-details-marker { display: none; }
+details.teacher > summary::after { content: "+"; font: 400 1.5rem var(--body); color: var(--muted); }
+details.teacher[open] > summary::after { content: "–"; }
+details.teacher[open] > summary { margin-bottom: 12px; }
+.recent { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; font-size: .92rem; }
+.recent li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line); }
+.recent li button { background: none; border: 0; color: var(--bad); cursor: pointer; font-size: .85rem; padding: 2px 4px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: .9rem; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.chart-panel { margin-top: 14px; }
+.chart-panel p { margin: 0 0 12px; color: var(--muted); }
+.sq-wrap { overflow-x: auto; }
+table.sq { border-collapse: collapse; margin: 0 auto; font-variant-numeric: tabular-nums; }
+table.sq th { font: 800 1.1rem var(--mono); color: var(--accent); padding: 4px 8px; }
+table.sq th.lab { font: 700 .8rem var(--body); color: var(--muted); white-space: nowrap; }
+table.sq td.box { border: 2px solid var(--ink); padding: 4px 5px; vertical-align: top; }
+table.sq td.third { padding: 4px 6px; }
+table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
+.cod { display: flex; align-items: center; gap: 7px; padding: 0 5px; border-radius: 5px; font-size: .92rem; line-height: 1.65; white-space: nowrap; }
+.cod b { font-family: var(--mono); font-weight: 700; }
+.cod span { margin-left: auto; }
+.cod i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.4); flex: none; }
+.cod.stop span { color: var(--bad); font-weight: 700; }
+.cod.start span { color: var(--good); font-weight: 700; }
+@media (max-width: 560px) {
+  table.sq th { font-size: .85rem; padding: 2px 3px; }
+  table.sq th.lab:first-child { font-size: 0; padding: 0; }
+  table.sq th.lab:last-child, table.sq td.third { display: none; }
+  table.sq td.box { padding: 2px 1px; border-width: 1.5px; }
+  .cod { font-size: .66rem; gap: 2px; padding: 0 2px; line-height: 1.6; }
+  .cod i { width: 7px; height: 7px; border-radius: 2px; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 id="title">Biology Department Mural</h1>
+      <p id="subtitle">Every finished sheet from every Biology class fills in one more square.</p>
+    </div>
+    <div class="sync" aria-live="polite"><span class="dot wait" id="dot"></span><span id="syncText">Loading the mural…</span>
+      <button class="btn quiet" type="button" id="refresh">Refresh</button></div>
+  </header>
+
+  <p class="notice" id="previewNote" hidden>Preview mode: sheets you add are saved only in this browser. To share one mural across the department, connect the Google Sheet (see SETUP.md).</p>
+  <p class="notice bad" id="errNote" hidden></p>
+
+  <div class="layout">
+    <main>
+      <section class="frame" id="frame" aria-label="Mural">
+        <div class="fit" id="fit"><canvas id="cv" tabindex="0" aria-label="Mural"></canvas></div>
+        <div class="frame-foot">
+          <span id="hint">Tap a square to see who colored it.</span>
+          <span class="tools">
+            <button type="button" id="dl" hidden>Download image</button>
+            <button type="button" id="fs">Full screen</button>
+          </span>
+        </div>
+      </section>
+      <section class="tile-info" id="tileInfo" hidden aria-live="polite">
+        <h3 id="tileTitle"></h3>
+        <p id="tileWho"></p>
+      </section>
+      <section class="panel chart-panel" aria-labelledby="chartTitle">
+        <h2 id="chartTitle">Codon chart</h2>
+        <p>Find the 1st letter on the left, the 2nd across the top, and the 3rd inside the box. The swatch shows the color that amino acid paints in this mural.</p>
+        <div class="sq-wrap" id="chart"></div>
+      </section>
+    </main>
+
+    <aside class="rail">
+      <section class="panel">
+        <h2>Progress</h2>
+        <div class="big" id="sheetsDone">0<small>of 25 squares</small></div>
+        <div class="bar"><i id="mainBar" style="width:0"></i></div>
+        <p class="sub" id="studentCount">No sheets added yet.</p>
+      </section>
+
+      <section class="panel">
+        <h2>By teacher</h2>
+        <ul class="tally" id="tally"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Find my square</h2>
+        <form id="findForm" class="stack" autocomplete="off">
+          <label class="field">Your initials
+            <input id="findIn" class="mono" maxlength="4" inputmode="text" placeholder="JS">
+          </label>
+        </form>
+        <p class="fb" id="findMsg"></p>
+        <ul class="matches" id="matches"></ul>
+      </section>
+
+      <section class="panel">
+        <details class="teacher" id="teacherBox">
+          <summary>Add a sheet (teachers)</summary>
+          <form id="addForm" class="stack" autocomplete="off">
+            <div class="row2">
+              <label class="field">Teacher<select id="teacher"></select></label>
+              <label class="field">Period<select id="period"></select></label>
+            </div>
+            <div class="row2">
+              <label class="field">Student initials<input id="initials" class="mono" maxlength="4" required placeholder="JS"></label>
+              <label class="field">Completion code<input id="code" class="mono" maxlength="8" required placeholder="7-N3G"></label>
+            </div>
+            <label class="field" id="passWrap">Department passcode<input id="pass" type="password" autocomplete="current-password"></label>
+            <label class="check"><input type="checkbox" id="remember" checked> Remember passcode on this computer</label>
+            <button class="btn" type="submit" id="addBtn">Add to mural</button>
+            <p class="fb" id="addMsg" aria-live="polite"></p>
+          </form>
+          <h3 style="font:700 1rem var(--body);margin:14px 0 2px">Recently added</h3>
+          <ul class="recent" id="recent"></ul>
+          <div class="tools" style="margin-top:12px">
+            <button class="btn quiet" type="button" id="peek" aria-pressed="false">Preview the finished picture</button>
+          </div>
+        </details>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+const PICTURES = {"mystery":{"name":"Albert Einstein","rows":["KKKKKBKKKKKKCKC..CVCC.BVC..BC.....CCK.BBKKKKKKOOKK","KKLKKBBKKKKBC.C..CCBC.C...BC....CCCCB.CCCCKKKKOKKK","KKLKKKKKKBKKC..C..CB...C.CCCB......CCBKKKCBBKKOKKK","KKKKKKKKBBBBB...C..CC..C.BCC..C..C...CCVKKVCVKKKKK","KRKKKKCCC..CCCC....CC...BC....CCCCCC..CCVVKV.KKKKB","KRRKKKCKKKK..C..CCC.CC..B..C.BBC..CCCC.CCVVKVKBKKK","KKRKBVKKKVV...CCBBYYYY.YYYYYNOBBCC...C..CCVKKKKKKK","KKKKBVKKVB...CCKOOYYYYYYYYYYYYOOBCCC..C..CCVKKKLKK","CCKKKKKV..CCCBKOYYOOOOYYYYYYYYYOOKCCC..C..CKVKKLLK","KKKKKKK.CCCCVKOONOOOYYOOOOYYYOYYOOBCC..CC..KKKKKKK","KKKVK..CCC.BVNNYYYYYYYYOOYYYYYYOYOOBCC..CB...KKKKK","KKKKVKKK..CVKNOOOOOOOOOYYOOOOYYYOOOOCCC..CC..VKKRK","KYYKKKC..VVKKOYYYYYYYYYYYYYYYOOYOOYVV..C...C.CVKKK","KYKKKC.VV.VBNYYYYOOYYYYOOYYYYYYOYOOYCC.CC..CK.CCKK","KKKKVBVV.VVKOKKKYYYYYYOOCBKKKYYYOYOOCCC.CC..CKKCCK","LLKKV...VVCKKKOOYYYYYYYYCNKOKKYYOOOOOCC..CC..CKKCK","LKKC...VBBKKKYYYYYYYYYYYYYYYYYKYYOOOO.CC...C..BKCK","KKV..VVVB.KKYYYOOYYYYYYYYYYYYYYKYOOOC..CC..CCCVKKK","KKB.BV..B.KKYNNNOOYYYYYYYONNNYYOOOOYYC...C..CCVKKK","KVVKV..CB.KNYNKKOOKYYYYOONKKONYYNOOOBB......CC.BKK","KVKK..CBB.KOKK..KOOYYYOOOK.KKBOYOOOOOC..CC..CC..BV","V.K..C.CBKKOK..KKKKYYYOOY.BK.KOYYOYYOC...CC..BB.BV","VKK.KB.CBVKNOKCKKYKYYYOYY.CKKOOYYOYYYCC...CCCCVKKK","KKK.KCC.BKOOOYYOOOYYYYYYNYYOOOOYYYYOC..CKK..CCCCKK","OKK.K...VKNKOOOYOKYYOOYYYNYYYOOYYYOOBC.CBKK..CC..K","OKKKKC.CBKNYYYYOKKYYOOYYYYYNYYOOYYOOBBCCCNOKB.CC.K","KKKKC..CKKNYYOOYKYYYYNOYYYYYYYYYYOOOBBCKOOOKB.CC..","BBKCC.CBKKNYOOYYKYYYYYYNYYYYYYOYYOOYNBKOYYOKBC.CK.","BBCC.C.BVKOYOYYKKYYYYYYNYYYYYYYYOOOONBNOOYOKBCC.KK","KKC.C..BCKOOYYYOKOOOKYKNYYNYYYYOYONNNNNYOYOKCCC.CK","KKCKCCBBBKONYYOOCKKNYAYYYYYYYYYYYYNNONOOYOKK.BCC.K","KCCKCKCBVKONYCCCAAA.AAAAAOYNYYYOYYNOONOYYKKC.B.CKC","KBKKKKBCKKONYC......A.A..AACOYOOYYOOONYYOKK.CC.CK.","KBKKKKKCKKOOOBAAA.AAAA.A...ACOOOYYOOONYOKKC.C.BCBB","KKKKKKKKBKOOOKBBKKKKKK.CCAAAAOYOYOOONNOOKC.BB.BVCK","KKOKKKCKKBKOOOOKKKKKKKKKKKKKAYOOYOONNKKKKCBB.VVKCK","KKOKKKCKKKKOOYYOKRPPRRPPRKKOAYOYYOONOKKBBKBKKVKKKK","OOKKKKKKKKKKOYYYKPPPRPPPRKOYOYOYYONOOKKKKKKKKKKKKL","KKKKBKKKKKKKOOYYKPPPRPPRKOYYOYOYOONOOKKBBKKKLKKKKK","KKKKKKCCKKKKOOYYKPPPRPPRKOYYYYOYOOOKKKKBBKKBKLLKKK","KKLKKKCKKKKKKOOYKPPPPPPRKOYYYOYYOOOKKBBBKKKKKKKKKK","LLLKKKKKKPKKKKOYKPPPPPRKYYYYYOYNOKKKKBKKKKKKBKKKRK","LKKKKKKKPKKKKKOOYKPRPPRKYYYYOYYNKKKKBKKKKBKKBBKKRK","KKKLKKKPPKKKKKKOYKPPPPKKOYYYOYNKKKKBKKKKBBKKBBBKKK","KKKKKKKKKKBBKKKOYKRPPRKOYYYOYOKKKKKBKKBBKKKBBKBBKK","KCKKKKKKKKKKKKKKYYKRRKOYYYOOOKKKKKBKKKBKKKBBBKKBBK","KKKKKCCKKKKKKLKKKOOKKOYYYYOVKKKKKBKKKKBKKKBBBKKKBB","KKKCCKKKKKKKLKKKKKOYYOYYYOKKKKKKBBKKKKKBBBBBKKKKBB","KCCCKKKKKKKBKKKKKKKOYKOOKKKKKKKKBKKKKKBBBBKKKKBBBB","CCCKKKKKKLYKKKKBBKKKKKKKK.KKKKBKKKKKKBBBKKKKKBBBBB"],"pal":{"R":{"hex":"#db1f1f","ab":"Leu","cname":"Red"},"O":{"hex":"#ff8c0d","ab":"Ser","cname":"Orange"},"Y":{"hex":"#ffe01a","ab":"Ala","cname":"Yellow"},"L":{"hex":"#8cd94c","ab":"Val","cname":"Light Green"},"G":{"hex":"#1a8026","ab":"Gly","cname":"Dark Green"},"C":{"hex":"#8cccff","ab":"Thr","cname":"Light Blue"},"B":{"hex":"#1a33b2","ab":"Arg","cname":"Dark Blue"},"V":{"hex":"#8c40b2","ab":"His","cname":"Purple"},"P":{"hex":"#ff8cbf","ab":"Pro","cname":"Pink"},"N":{"hex":"#8c5426","ab":"Lys","cname":"Brown"},"K":{"hex":"#141414","ab":"Tyr","cname":"Black"},"A":{"hex":"#999999","ab":"Phe","cname":"Gray"},".":{"hex":"#ffffff","ab":"Stop","cname":"Leave White"}}},"masterpiece":{"name":"Albert Einstein \u2013 Masterpiece","rows":["PPPPPSPPPPMPIPK.KIWLK.SYK..MK.....KFT.MMPPPPPPNNPP","PHGPPTSPPPMSK.KL.KIFI.M...FI...IKKKKMLKIIIPPPPNPPP","PPGPPPPPTMPPK..K..IS...K.KIKFLLL...LKMPPPIKFPPNPPP","PPPPPPPPKMMMFK..K..IL..KISKM..K.IK...KKWPWKLYPPPPP","PAPPPTKKL..IIKI....KK...SK...LKKKKK...IMWPPW.PPPFM","PAAPPMIWPPF.LK..KIK.II..S..K.SSK..IKKI.KMWWPWPMPFP","PPRPMWPPWWW..KKKTAEEEE.EEEQENNFFKI...K..IKWWPPPPPP","PPPPMWPPWM..LIKPNEEEEEEEEEEEEDNAPIIL..K..KWWPPPGPP","KKPPWWPWMLKKKSPNNEDDDNDDDDDDEEENNTKIL.KK..KFFPHGGP","PPPPPPK.KKLLWPNNANNDEEEEEEEEEDNENNMMLI.IKL.TPPPPPP","PPPWPL.KK..MWAAEEEEEEEENNEEEEEENENNMII..KML.LPPPPP","PPPFMKPP..KWPANNNDDDDDNEENNNNEEENENFIIK..KK..WPPAP","PEEPPPK.KWWTRADEEEEEEEEEEEEEDNDENNNAMK.K..LK.IWPAA","PQPPFKLWWLWTANEEEDDEEEENDEEEEEENENNQKK.KK..IP.KKPP","PPPYWFWW.WWNDPPPMEEEEENEIFPPPEEENENCIII.KI..KPPIKP","GGPWFM..WWMNPPNNMEEEEEEEIANNFPEENNNN.IK..IK..KPKIP","HPPM..KWWSPFREEEEEEEEEEEEEEEEEPEENNNL.KK...K..FPKP","PPW.SWWLF.TAEENNANEEEEEEEENNEEEPENNEII.KKK.LKKKPPP","PPW.SW..S.PDENAADAAEEEEEEAAAAEENENNEQI..LL..KKWPPP","PWWPW..KF.PEEPPPNNAEEEENNDPPNAEEANNNFM.LLL..KI.PPP","PYPML.KMF.PDAP.FTNNEEENNEP.LPRNENNENKK.KKK..KK.MFY","Y.PI.K.KSIPNP.LPPMNEEENEF.MP.PNEDNEDNK...KK..MS.SY","YPP.LM.KMWPNNRLPHEPEEENEN.MPFNNEENEEDIK...KKKKWPIP","PPP.PIK.STAPNEENDPNEDEEEAEENNDNEEEDNK..MPP...KKWWP","NPPQT...WTANNNNENPEENEEEEAEEENNEEENNML.IMPPI.KK..P","NPPPLK.KWTAEDEENRAEENNEEEEEAEENNDEDNWKKIKAAPM.KK.P","PPPPK..KTPADENNEPEEEENNEEEEEDNEEEENNFKKRNNNPM.KSKQ","PSPPI.IMPPAENNEENEEEENENEEEEEENEEDNDAMPAEENPSK.SP.","SFTL.I.SWPAENEERREEEEEEAEDEEEEEEDNNNAFNNAENPSKI.PK","PPK.K.KWSPNNEEDNPRNNPEPAEEAEEEEDENNNATENANRPISK.IP","PPLPM.SWMPNAEENDKPPQELEEEENEEEEEENAANRANENPP.FIP.P","PMTPIPKFWPNNENIILLL.LLLLLNEAEEENENANNAEEEPTI.F.PMK","PMPTTPMIPPNDEKLL....L.L.LLLLNENNEENNNREENMT.KL.MP.","PMPPPPPMPPNNDSLLL.LLLL.L...LIDNNEENNNRENRIM.K.LKSM","PPPPPPPPMPNANPIFPLKPLP.IL.LLLDENENNNAANNPI.LM.MKMP","PPNPPPKPPMPNNNRTPRRRRRRPHTTPLENNENNAAAPPTIKTQWWPKP","PNNPPPFPPPPEAEENPVVVAVVVAPPNLENEENNANAPMMPMPPWPPPG","NNPPFSPPPPPDNNEEPVVVAVVVAPNENENEDNANNPPPPPPPPPPPPG","PPPPSPPKPPPPNAEEPVVVAVVAPNDENDNENNADPPPMMPPPGHPPPP","PPPPPPKKPPPPNNEEPVVVVVVARNEEEDNEAANRPPSMMPMMPGGPPP","PPGPPPPPPPPPPNDEPVVVVVVAREEEENEEANPPPTSPPPPPPPPPPP","GGGPPPPPPAPPPRNEAVVVVVVPNEEEENEANDPPFSPPPPPPSPPAAP","GGPPPTPPAPPPPPNNEAVAVVAPEEEENEEANPPPSPPPTFMPSSPPAP","PPPGPPPAAPPFMPPNEPVVVVPNNEEENEARPPPFPPPPMMPPTSSPPP","PPPPPPTPPPMMPPPAEPAVVAPNEEENENPPPPTTPPMMPPPMMPSSPP","PKPPPPPPPSPPPPPPENPAAPNEEENANPPPPPMPPPMPPPMMFPPMMP","PPPPPKPPPPPPHGPPPNNPPNEEEDNTPPPPPMPPPPPPPMMMFPPFMM","PPPKKPPPPPPMHPPPPPNEDEEEENRPPPPPMMPPPPPFMMMMPPPPMM","PPKKPPPPPPHMPPPPPPPRDNNNPPPPPPPPMPPPPPMMMFPPPPMMMM","KKKTPPPPPEEPPPPMTPPPPPPPQ.PPPTSSPPPPMMMMPPPPPMMMMM"],"pal":{"A":{"hex":"#eb2914","ab":"Ala","cname":"Red"},"R":{"hex":"#74250e","ab":"Arg","cname":"Maroon"},"N":{"hex":"#f97003","ab":"Asn","cname":"Orange"},"D":{"hex":"#fab003","ab":"Asp","cname":"Amber"},"C":{"hex":"#f3e290","ab":"Cys","cname":"Cream"},"Q":{"hex":"#78b244","ab":"Gln","cname":"Olive green"},"E":{"hex":"#fbe705","ab":"Glu","cname":"Lemon yellow"},"G":{"hex":"#1ccb22","ab":"Gly","cname":"Bright green"},"H":{"hex":"#096126","ab":"His","cname":"Forest green"},"I":{"hex":"#07d2f1","ab":"Ile","cname":"Cyan"},"L":{"hex":"#8dd2ef","ab":"Leu","cname":"Sky blue"},"K":{"hex":"#029ae8","ab":"Lys","cname":"Azure"},"M":{"hex":"#034cf2","ab":"Met","cname":"Royal blue"},"F":{"hex":"#0f1bb0","ab":"Phe","cname":"Navy"},"P":{"hex":"#020204","ab":"Pro","cname":"Black"},"S":{"hex":"#030ded","ab":"Ser","cname":"Electric blue"},"T":{"hex":"#0e0c60","ab":"Thr","cname":"Midnight blue"},"W":{"hex":"#4c0de2","ab":"Trp","cname":"Indigo"},"Y":{"hex":"#9011e5","ab":"Tyr","cname":"Violet"},"V":{"hex":"#ee0c9e","ab":"Val","cname":"Magenta"},".":{"hex":"#fdfdfb","ab":"Stop","cname":"Leave White"}}}};
+const PIC = PICTURES[CONFIG.VERSION] || PICTURES.masterpiece;
+const TS = 10, R = PIC.rows.length, C = PIC.rows[0].length, TC = C / TS, TR = R / TS, N = TC * TR;
+const $ = s => document.querySelector(s);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+const PREVIEW = !CONFIG.SCRIPT_URL;
+
+/* ---------- completion codes (same as the Codon Color Lab) ---------- */
+const CA = "ACDEFGHJKMNPQRTUVWXY3479";
+function sheetCode(name, s) {
+  let h = 2166136261; const str = "codon-lab|" + name + "|" + s;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  let out = ""; for (let i = 0; i < 3; i++) { out += CA[h % CA.length]; h = Math.floor(h / CA.length); }
+  return (s + 1) + "-" + out;
+}
+const normCode = v => v.toUpperCase().replace(/\s+/g, "").replace(/^(\d+)([A-Z0-9]{3})$/, "$1-$2");
+const normInit = v => v.toUpperCase().replace(/[^A-Z]/g, "");
+
+/* ---------- data: Google Sheet, or this browser in preview mode ---------- */
+const api = {
+  async list() {
+    if (PREVIEW) return store.get("mural-preview") || [];
+    const r = await fetch(CONFIG.SCRIPT_URL, { cache: "no-store" });
+    const d = await r.json(); if (!d.ok) throw new Error(d.error || "error"); return d.entries;
+  },
+  async post(body) {
+    if (PREVIEW) return previewPost(body);
+    const r = await fetch(CONFIG.SCRIPT_URL, { method: "POST", body: JSON.stringify(body) });
+    return r.json();
+  },
+};
+function previewPost(b) {
+  const list = store.get("mural-preview") || [];
+  if (b.action === "remove") { const l = list.filter(x => x.id !== b.id); store.set("mural-preview", l); return { ok: true, entries: l }; }
+  const code = normCode(b.code), m = code.match(/^(\d+)-/), sheet = m ? +m[1] : 0;
+  if (!m || sheet < 1 || sheet > N || ![PICTURES.mystery.name, PICTURES.masterpiece.name].some(n => sheetCode(n, sheet - 1) === code)) return { ok: false, error: "bad_code" };
+  if (list.some(x => x.sheet === sheet && x.initials === b.initials && x.teacher === b.teacher && x.period === b.period)) return { ok: false, error: "duplicate", entries: list };
+  const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), time: new Date().toISOString(), sheet, code, initials: b.initials, teacher: b.teacher, period: b.period };
+  list.push(entry); store.set("mural-preview", list); return { ok: true, entry, entries: list };
+}
+
+/* ---------- state ---------- */
+let entries = [], loaded = false, lastSync = 0, peek = false, selected = -1, search = "";
+let anim = { sheets: new Set(), t0: 0, raf: null };
+const bySheet = () => { const m = Array.from({ length: N }, () => []); entries.forEach(e => { if (e.sheet >= 1 && e.sheet <= N) m[e.sheet - 1].push(e); }); return m; };
+const doneSheets = () => new Set(entries.map(e => e.sheet - 1).filter(s => s >= 0 && s < N));
+const matchSet = () => new Set(search ? entries.filter(e => e.initials === search).map(e => e.sheet - 1) : []);
+
+function setEntries(list) {
+  const before = doneSheets();
+  entries = Array.isArray(list) ? list.map(e => ({ ...e, sheet: +e.sheet, initials: String(e.initials).toUpperCase(), teacher: String(e.teacher), period: String(e.period) })) : [];
+  const after = doneSheets(), fresh = [...after].filter(s => !before.has(s));
+  if (loaded && fresh.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) startAnim(fresh);
+  loaded = true; lastSync = Date.now();
+  render();
+}
+
+/* ---------- drawing ---------- */
+const cv = $("#cv"); let cell = 8;
+function draw(now) {
+  const fit = $("#fit"), full = document.fullscreenElement === $("#frame");
+  const maxH = full ? window.innerHeight - 90 : Math.max(320, window.innerHeight - 200);
+  cell = Math.max(4, Math.floor(Math.min(fit.clientWidth, maxH * C / R) / C));
+  const dpr = window.devicePixelRatio || 1;
+  if (cv.width !== C * cell * dpr || cv.height !== R * cell * dpr) { cv.width = C * cell * dpr; cv.height = R * cell * dpr; cv.style.width = C * cell + "px"; cv.style.height = R * cell + "px"; }
+  const x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const done = doneSheets(), hits = matchSet(), tile = TS * cell;
+  const font = getComputedStyle(document.body).fontFamily;
+  for (let s = 0; s < N; s++) {
+    const sr = Math.floor(s / TC), sc = s % TC, x0 = sc * tile, y0 = sr * tile, blank = (sr + sc) % 2 ? "#1d2b2d" : "#233537";
+    const on = peek || done.has(s);
+    const prog = anim.sheets.has(s) ? Math.min(1, (now - anim.t0) / 1100) : 1;
+    if (!on) {
+      x.fillStyle = blank; x.fillRect(x0, y0, tile, tile);
+      x.fillStyle = "#7f9799"; x.font = `700 ${Math.round(cell * 3.2)}px ${font}`; x.textAlign = "center"; x.textBaseline = "middle";
+      x.fillText(String(s + 1), x0 + tile / 2, y0 + tile / 2);
+    } else {
+      for (let r = 0; r < TS; r++) for (let c = 0; c < TS; c++) {
+        if ((r + c) / (2 * TS - 1) > prog) x.fillStyle = blank;
+        else { const k = PIC.rows[sr * TS + r][sc * TS + c]; x.fillStyle = k === "." ? "#fdfdfb" : PIC.pal[k].hex; }
+        x.fillRect(x0 + c * cell, y0 + r * cell, cell, cell);
+      }
+    }
+    if (search && !hits.has(s)) { x.fillStyle = "rgba(8,14,15,.62)"; x.fillRect(x0, y0, tile, tile); }
+  }
+  x.strokeStyle = "rgba(0,0,0,.55)"; x.lineWidth = 1;
+  for (let i = 1; i < TC; i++) { x.beginPath(); x.moveTo(i * tile + .5, 0); x.lineTo(i * tile + .5, R * cell); x.stroke(); }
+  for (let i = 1; i < TR; i++) { x.beginPath(); x.moveTo(0, i * tile + .5); x.lineTo(C * cell, i * tile + .5); x.stroke(); }
+  const ring = (s, color, w) => { const sr = Math.floor(s / TC), sc = s % TC; x.strokeStyle = color; x.lineWidth = w; x.strokeRect(sc * tile + w / 2, sr * tile + w / 2, tile - w, tile - w); };
+  hits.forEach(s => ring(s, "#ffd84d", Math.max(3, cell * .5)));
+  if (selected >= 0) ring(selected, "#ffffff", Math.max(2, cell * .3));
+}
+function startAnim(list) {
+  list.forEach(s => anim.sheets.add(s)); anim.t0 = performance.now();
+  cancelAnimationFrame(anim.raf);
+  const step = now => { draw(now); if (now - anim.t0 < 1150) anim.raf = requestAnimationFrame(step); else { anim.sheets.clear(); draw(now); } };
+  anim.raf = requestAnimationFrame(step);
+}
+
+/* ---------- text around the mural ---------- */
+function render() {
+  draw(performance.now());
+  const done = doneSheets(), complete = done.size === N, students = entries.length;
+  $("#title").textContent = complete ? PIC.name.replace(/\s*\u2013.*$/, "") : "Biology Department Mural";
+  $("#subtitle").textContent = complete ? "Finished by the Biology department, one codon at a time." : "A mystery picture. Every finished sheet from every Biology class fills in one more square.";
+  $("#sheetsDone").innerHTML = `${done.size}<small>of ${N} squares</small>`;
+  $("#mainBar").style.width = (done.size / N * 100) + "%";
+  $("#studentCount").textContent = students ? `${students} ${students === 1 ? "student has" : "students have"} contributed${complete ? ". The mural is complete!" : "."}` : "No sheets added yet.";
+  $("#dl").hidden = !complete;
+  cv.setAttribute("aria-label", `Mural, ${done.size} of ${N} squares colored`);
+
+  const names = [...CONFIG.TEACHERS]; entries.forEach(e => { if (!names.includes(e.teacher)) names.push(e.teacher); });
+  const max = Math.max(1, ...names.map(t => entries.filter(e => e.teacher === t).length));
+  const tally = $("#tally"); tally.innerHTML = "";
+  names.forEach(t => {
+    const mine = entries.filter(e => e.teacher === t), sq = new Set(mine.map(e => e.sheet)).size;
+    const li = document.createElement("li");
+    const b = document.createElement("b"); b.textContent = t;
+    const sp = document.createElement("span"); sp.textContent = `${mine.length} ${mine.length === 1 ? "student" : "students"}, ${sq} ${sq === 1 ? "square" : "squares"}`;
+    const bar = document.createElement("div"); bar.className = "bar"; const i = document.createElement("i"); i.style.width = (mine.length / max * 100) + "%"; bar.appendChild(i);
+    li.append(b, sp, bar); tally.appendChild(li);
+  });
+
+  renderSearch(); renderTile(); renderRecent(); renderSync();
+}
+function who(e) { return `${e.initials}, ${e.teacher}, period ${e.period}`; }
+function renderTile() {
+  const box = $("#tileInfo");
+  if (selected < 0) { box.hidden = true; return; }
+  const list = bySheet()[selected], sr = Math.floor(selected / TC) + 1, sc = selected % TC + 1;
+  box.hidden = false;
+  $("#tileTitle").textContent = `Square ${selected + 1} (row ${sr}, column ${sc})`;
+  $("#tileWho").textContent = list.length ? `Colored by ${list.length === 1 ? "" : list.length + " students: "}${list.map(who).join("; ")}.` : "Nobody has turned in this sheet yet. It's still up for grabs.";
+}
+function renderSearch() {
+  const ul = $("#matches"), msg = $("#findMsg"); ul.innerHTML = "";
+  if (!search) { msg.textContent = ""; return; }
+  const found = entries.filter(e => e.initials === search).sort((a, b) => a.sheet - b.sheet);
+  msg.className = "fb"; msg.textContent = found.length ? `Found ${found.length} ${found.length === 1 ? "square" : "squares"} for ${search}. They're outlined in yellow.` : `No squares for ${search} yet. Check with your teacher that your code was added.`;
+  found.forEach(e => {
+    const li = document.createElement("li"), b = document.createElement("button"); b.type = "button";
+    b.textContent = `Square ${e.sheet}: ${e.teacher}, period ${e.period}`;
+    b.addEventListener("click", () => { selected = e.sheet - 1; render(); });
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+function renderRecent() {
+  const ul = $("#recent"); ul.innerHTML = "";
+  const list = [...entries].sort((a, b) => String(b.time).localeCompare(String(a.time))).slice(0, 8);
+  if (!list.length) { const li = document.createElement("li"); li.textContent = "Nothing yet."; ul.appendChild(li); return; }
+  list.forEach(e => {
+    const li = document.createElement("li"), span = document.createElement("span"), rm = document.createElement("button");
+    span.textContent = `Square ${e.sheet}: ${who(e)}`;
+    rm.type = "button"; rm.textContent = "Remove"; rm.setAttribute("aria-label", `Remove square ${e.sheet} for ${e.initials}`);
+    rm.addEventListener("click", () => removeEntry(e, rm));
+    li.append(span, rm); ul.appendChild(li);
+  });
+}
+function renderSync() {
+  const dot = $("#dot"), t = $("#syncText");
+  if (PREVIEW) { dot.className = "dot wait"; t.textContent = "Preview mode"; return; }
+  if (!lastSync) return;
+  const sec = Math.round((Date.now() - lastSync) / 1000);
+  dot.className = "dot"; t.textContent = sec < 10 ? "Up to date" : sec < 90 ? `Updated ${sec} seconds ago` : `Updated ${Math.round(sec / 60)} minutes ago`;
+}
+
+/* ---------- loading ---------- */
+let busy = false;
+async function refresh() {
+  if (busy) return; busy = true;
+  try { setEntries(await api.list()); $("#errNote").hidden = true; }
+  catch (err) {
+    $("#dot").className = "dot off"; $("#syncText").textContent = "Can't reach the mural";
+    const n = $("#errNote"); n.hidden = false;
+    n.textContent = "The mural couldn't load from the Google Sheet. Check the internet connection, then press Refresh. If this keeps happening, check the web app URL and its access setting in SETUP.md.";
+    if (!loaded) render();
+  } finally { busy = false; }
+}
+$("#refresh").addEventListener("click", refresh);
+setInterval(() => { if (!document.hidden && !PREVIEW) refresh(); }, 20000);
+setInterval(renderSync, 5000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+
+/* ---------- interactions ---------- */
+function sheetAt(ev) { const r = cv.getBoundingClientRect(); const c = Math.floor((ev.clientX - r.left) / (TS * cell)), rr = Math.floor((ev.clientY - r.top) / (TS * cell)); return c >= 0 && c < TC && rr >= 0 && rr < TR ? rr * TC + c : -1; }
+cv.addEventListener("click", ev => { const s = sheetAt(ev); selected = s === selected ? -1 : s; render(); });
+cv.addEventListener("keydown", ev => {
+  const mv = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -TC, ArrowDown: TC }[ev.key];
+  if (ev.key === "Escape") { selected = -1; render(); return; }
+  if (mv === undefined) return; ev.preventDefault();
+  if (selected < 0) selected = 0;
+  else { const n = selected + mv; if ((mv === 1 && n % TC === 0) || (mv === -1 && selected % TC === 0) || n < 0 || n >= N) return; selected = n; }
+  render();
+});
+$("#findIn").addEventListener("input", e => { search = normInit(e.target.value); render(); });
+$("#findForm").addEventListener("submit", e => e.preventDefault());
+
+$("#fs").addEventListener("click", () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if ($("#frame").requestFullscreen) $("#frame").requestFullscreen().catch(() => {});
+});
+document.addEventListener("fullscreenchange", () => { $("#fs").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen"; draw(performance.now()); });
+window.addEventListener("resize", () => draw(performance.now()));
+
+$("#peek").addEventListener("click", e => { peek = !peek; e.target.setAttribute("aria-pressed", peek); e.target.textContent = peek ? "Hide the finished picture" : "Preview the finished picture"; render(); });
+
+$("#dl").addEventListener("click", () => {
+  const k = 12, c = document.createElement("canvas"); c.width = C * k; c.height = R * k; const x = c.getContext("2d");
+  for (let r = 0; r < R; r++) for (let cc = 0; cc < C; cc++) { const ch = PIC.rows[r][cc]; x.fillStyle = ch === "." ? "#fdfdfb" : PIC.pal[ch].hex; x.fillRect(cc * k, r * k, k, k); }
+  const a = document.createElement("a"); a.download = "biology-department-mural.png"; a.href = c.toDataURL("image/png"); a.click();
+});
+
+/* ---------- teacher form ---------- */
+CONFIG.TEACHERS.forEach(t => $("#teacher").add(new Option(t, t)));
+for (let i = 1; i <= CONFIG.PERIODS; i++) $("#period").add(new Option("Period " + i, String(i)));
+const prefs = store.get("mural-teacher") || {};
+if (prefs.teacher && CONFIG.TEACHERS.includes(prefs.teacher)) $("#teacher").value = prefs.teacher;
+if (prefs.period) $("#period").value = prefs.period;
+const savedPass = store.get("mural-pass"); if (savedPass) $("#pass").value = savedPass;
+if (PREVIEW) $("#passWrap").querySelector("input").placeholder = "Any passcode works in preview";
+["#teacher", "#period"].forEach(id => $(id).addEventListener("change", () => store.set("mural-teacher", { teacher: $("#teacher").value, period: $("#period").value })));
+
+const ERR = {
+  bad_code: "That code doesn't match the Einstein mural. Check it with the student and try again.",
+  bad_initials: "Type 1 to 4 letters for the student's initials.",
+  wrong_passcode: "That passcode isn't right. Ask the teacher who set up the Google Sheet.",
+  duplicate: "This student is already on that square for this class.",
+};
+function passOk() { const p = $("#pass").value; if ($("#remember").checked) store.set("mural-pass", p); else store.del("mural-pass"); return p; }
+
+$("#addForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#addMsg"), btn = $("#addBtn");
+  const initials = normInit($("#initials").value), code = normCode($("#code").value);
+  if (!initials || initials.length > 4) { msg.className = "fb bad"; msg.textContent = ERR.bad_initials; $("#initials").focus(); return; }
+  const m = code.match(/^(\d+)-[A-Z0-9]{3}$/), s = m ? +m[1] - 1 : -1;
+  if (!m || s < 0 || s >= N || sheetCode(PIC.name, s) !== code) { msg.className = "fb bad"; msg.textContent = ERR.bad_code; $("#code").focus(); return; }
+  btn.disabled = true; msg.className = "fb"; msg.textContent = "Adding…";
+  try {
+    const d = await api.post({ action: "add", passcode: passOk(), code, initials, teacher: $("#teacher").value, period: $("#period").value });
+    if (d.entries) setEntries(d.entries);
+    if (!d.ok) { msg.className = "fb bad"; msg.textContent = ERR[d.error] || "The mural didn't accept that entry. Try again."; return; }
+    msg.className = "fb good"; msg.textContent = `Added ${initials} to square ${s + 1}.`;
+    $("#initials").value = ""; $("#code").value = ""; $("#initials").focus();
+  } catch (err) {
+    msg.className = "fb bad"; msg.textContent = "Couldn't reach the Google Sheet, so nothing was added. Check the connection and try again.";
+  } finally { btn.disabled = false; }
+});
+
+async function removeEntry(e, btn) {
+  if (!confirm(`Remove ${e.initials} (${e.teacher}, period ${e.period}) from square ${e.sheet}?`)) return;
+  btn.disabled = true;
+  try {
+    const d = await api.post({ action: "remove", passcode: passOk(), id: e.id });
+    if (!d.ok) { $("#addMsg").className = "fb bad"; $("#addMsg").textContent = ERR[d.error] || "Couldn't remove that entry."; btn.disabled = false; return; }
+    setEntries(d.entries); $("#addMsg").className = "fb good"; $("#addMsg").textContent = `Removed ${e.initials} from square ${e.sheet}.`;
+  } catch (err) { $("#addMsg").className = "fb bad"; $("#addMsg").textContent = "Couldn't reach the Google Sheet. Try again."; btn.disabled = false; }
+}
+
+/* ---------- codon chart ---------- */
+const TABLE = {"UUU":"Phe","UUC":"Phe","UUA":"Leu","UUG":"Leu","UCU":"Ser","UCC":"Ser","UCA":"Ser","UCG":"Ser","UAU":"Tyr","UAC":"Tyr","UAA":"Stop","UAG":"Stop","UGU":"Cys","UGC":"Cys","UGA":"Stop","UGG":"Trp","CUU":"Leu","CUC":"Leu","CUA":"Leu","CUG":"Leu","CCU":"Pro","CCC":"Pro","CCA":"Pro","CCG":"Pro","CAU":"His","CAC":"His","CAA":"Gln","CAG":"Gln","CGU":"Arg","CGC":"Arg","CGA":"Arg","CGG":"Arg","AUU":"Ile","AUC":"Ile","AUA":"Ile","AUG":"Met","ACU":"Thr","ACC":"Thr","ACA":"Thr","ACG":"Thr","AAU":"Asn","AAC":"Asn","AAA":"Lys","AAG":"Lys","AGU":"Ser","AGC":"Ser","AGA":"Arg","AGG":"Arg","GUU":"Val","GUC":"Val","GUA":"Val","GUG":"Val","GCU":"Ala","GCC":"Ala","GCA":"Ala","GCG":"Ala","GAU":"Asp","GAC":"Asp","GAA":"Glu","GAG":"Glu","GGU":"Gly","GGC":"Gly","GGA":"Gly","GGG":"Gly"};
+(function buildChart() {
+  const B = "UCAG", paint = {};
+  Object.values(PIC.pal).forEach(p => { paint[p.ab] = p; });
+  let h = `<table class="sq"><thead><tr><th class="lab">1st / 2nd</th>${B.split("").map(b => `<th scope="col">${b}</th>`).join("")}<th class="lab">3rd</th></tr></thead><tbody>`;
+  for (const b1 of B) {
+    h += `<tr><th scope="row">${b1}</th>`;
+    for (const b2 of B) {
+      h += `<td class="box">`;
+      for (const b3 of B) {
+        const c = b1 + b2 + b3, a = TABLE[c], p = paint[a];
+        const sw = p ? `<i style="background:${p.hex}" title="${p.cname}"></i>` : `<i style="visibility:hidden"></i>`;
+        h += `<div class="cod${a === "Stop" ? " stop" : ""}${a === "Met" ? " start" : ""}">${sw}<b>${c}</b><span>${a === "Stop" ? "STOP" : a}</span></div>`;
+      }
+      h += `</td>`;
+    }
+    h += `<td class="third">${B.split("").map(b => `<div>${b}</div>`).join("")}</td></tr>`;
+  }
+  $("#chart").innerHTML = h + "</tbody></table>";
+})();
+
+/* ---------- start ---------- */
+$("#previewNote").hidden = !PREVIEW;
+if (PREVIEW) $("#refresh").hidden = true;
+render();
+refresh();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw(performance.now()));
+</script>
+</body>
+</html>
