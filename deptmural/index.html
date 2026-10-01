@@ -105,7 +105,7 @@ nav.tabs button[aria-selected="true"] { background: var(--accent); color: var(--
 .cell { width: var(--cs); height: var(--cs); border: 1px solid var(--paper-line); background: var(--paper); color: #17282b; font: 700 clamp(9px, 1.15vw, 13px) var(--mono); display: grid; place-items: center; cursor: pointer; padding: 0; transition: background-color .25s; }
 .cell:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
 .cell.done { cursor: default; }
-.cell.done.stop { color: #a9b5b3; font-weight: 500; }
+.cell.done.stop { color: transparent; }
 .cell.wrong { animation: shake .35s; background: #ffd9d4; }
 @keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
 .status { text-align: center; margin: 12px 0 0; min-height: 1.5em; }
@@ -118,7 +118,19 @@ nav.tabs button[aria-selected="true"] { background: var(--accent); color: var(--
 .chip.stopchip { grid-column: 1 / -1; }
 .work { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; justify-content: center; }
 .work .board-wrap { flex: 0 1 auto; min-width: 0; }
-.side-chart { flex: 0 0 280px; }
+.side-chart { flex: 0 0 290px; }
+.chart-switch { display: inline-flex; gap: 2px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 2px; margin: 0 0 8px; }
+.chart-switch button { border: 0; background: transparent; border-radius: 6px; padding: 4px 10px; font: 700 .8rem var(--body); color: var(--muted); cursor: pointer; }
+.chart-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.side-chart .wheel { width: 100%; }
+#colorBox.wheel-mode .side-chart { flex-basis: 350px; }
+#colorBox.wheel-mode .board { --cs: max(28px, min(4.4vw, 44px, calc((100vh - 300px) / 10))); }
+.wheel-wrap { display: flex; justify-content: center; }
+.wheel { width: min(100%, 560px); height: auto; display: block; }
+.wheel text { font-family: var(--body); fill: #1b1b1b; pointer-events: none; font-weight: 700; }
+.wheel path { stroke: #2b2b2b; stroke-width: .8; cursor: pointer; }
+.wheel path.dim { opacity: .3; }
+.wheel path.on { fill: var(--hl) !important; }
 .sprog { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; }
 .sprog .bar { flex: 1; margin: 0; }
 .sprog .sub { white-space: nowrap; }
@@ -256,8 +268,10 @@ table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
             <div class="board-wrap"><div class="board" id="board" role="grid" aria-label="Your square: 100 codons"></div></div>
             <details class="mini-chart side-chart" open>
               <summary>Codon chart</summary>
+              <div class="chart-switch" role="group" aria-label="Chart style"><button type="button" data-w="0" aria-pressed="true">Square</button><button type="button" data-w="1" aria-pressed="false">Circle</button></div>
               <div id="miniChart"></div>
-              <p class="sub" style="font-size:.78rem;margin-top:6px">1st letter on the left, 2nd across the top, 3rd inside the box. Tap a codon to mark your place.</p>
+              <div id="miniWheel" class="wheel-wrap" hidden></div>
+              <p class="sub" style="font-size:.78rem;margin-top:6px" id="miniHelp"></p>
             </details>
           </div>
           <p class="status" id="status" aria-live="polite">Choose an amino acid from the paint list, then click every codon that codes for it.</p>
@@ -303,8 +317,10 @@ table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
         </section>
         <section class="panel chart-panel" aria-labelledby="chartTitle">
           <h2 id="chartTitle">Codon chart</h2>
-          <p>Find the 1st letter on the left, the 2nd across the top, and the 3rd inside the box. The swatch shows the color each amino acid paints in this mural. Stop codons stay white.</p>
+          <div class="chart-switch" role="group" aria-label="Chart style"><button type="button" data-w="0" aria-pressed="true">Square</button><button type="button" data-w="1" aria-pressed="false">Circle</button></div>
+          <p id="bigHelp"></p>
           <div class="sq-wrap" id="chart"></div>
+          <div id="bigWheel" class="wheel-wrap" hidden></div>
         </section>
       </main>
       <aside class="rail">
@@ -525,7 +541,7 @@ function renderStudent() {
 }
 function paintCell(b, k) {
   b.classList.add("done"); b.setAttribute("aria-disabled", "true");
-  if (k === ".") { b.classList.add("stop"); b.style.background = "#fdfdfb"; return; }
+  if (k === ".") { b.classList.add("stop"); b.style.background = "#ffffff"; b.style.color = "transparent"; return; }
   b.style.background = PAL[k].hex; b.style.color = "transparent";
 }
 function updateStudentProgress() {
@@ -549,7 +565,7 @@ $("#board").addEventListener("click", e => {
   if (brush === k) {
     paintCell(b, k);
     const p = getProg(s).split(""); p[i] = "1"; store.set(progKey(s), p.join(""));
-    st.className = "status"; st.textContent = k === "." ? `${b.textContent} is a stop codon. Leave it white.` : `${b.textContent} codes for ${PAL[k].full}.`;
+    st.className = "status"; st.textContent = k === "." ? `${b.textContent} is a stop codon, so it's painted white.` : `${b.textContent} codes for ${PAL[k].full}.`;
     updateStudentProgress();
   } else {
     b.classList.remove("wrong"); void b.offsetWidth; b.classList.add("wrong");
@@ -563,7 +579,7 @@ $("#board").addEventListener("click", e => {
     const p = PAL[k], b = document.createElement("button"); b.type = "button"; b.className = "chip" + (k === "." ? " stopchip" : "");
     b.setAttribute("aria-pressed", "false"); b.dataset.k = k;
     b.innerHTML = k === "."
-      ? `<span class="sw" style="background:#fdfdfb"></span><span>Stop codon<small>Leave it white</small></span>`
+      ? `<span class="sw" style="background:#fdfdfb"></span><span>Stop codon<small>Paints it white</small></span>`
       : `<span class="sw" style="background:${p.hex}"></span><span>${esc(p.full)} (${p.ab})<small>${esc(p.cname)}</small></span>`;
     b.addEventListener("click", () => { brush = k; box.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === b)); });
     box.appendChild(b);
@@ -735,6 +751,69 @@ window.addEventListener("resize", () => { drawMural(performance.now()); drawMini
   }
   $("#chart").innerHTML = h + "</tbody></table>";
 })();
+
+/* ---------- codon wheel (same layout as the Codon Color Lab) ---------- */
+const QF = { U: "#ffedcc", C: "#d9edff", A: "#e1f7dc", G: "#f5e0fa" };
+function arc(cx, cy, r0, r1, a0, a1) {
+  const p = (r, a) => [cx + r * Math.sin(a * Math.PI / 180), cy - r * Math.cos(a * Math.PI / 180)];
+  const large = a1 - a0 > 180 ? 1 : 0, [x0, y0] = p(r1, a0), [x1, y1] = p(r1, a1), [x2, y2] = p(r0, a1), [x3, y3] = p(r0, a0);
+  return `M${x0},${y0} A${r1},${r1} 0 ${large} 1 ${x1},${y1} L${x2},${y2} A${r0},${r0} 0 ${large} 0 ${x3},${y3} Z`;
+}
+function wtxt(cx, cy, r, a, s, size, radial) {
+  const x = cx + r * Math.sin(a * Math.PI / 180), y = cy - r * Math.cos(a * Math.PI / 180);
+  let rot = radial ? a - 90 : a; if (radial && a > 180) rot += 180; if (!radial && a > 90 && a < 270) rot += 180;
+  return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${size}" text-anchor="middle" dominant-baseline="central" transform="rotate(${rot.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})">${s}</text>`;
+}
+function makeWheel(compact) {
+  const cx = 300, cy = 300, R = compact ? [26, 88, 158, 224, 292] : [26, 82, 150, 200, 292], st = 360 / 64;
+  const F = compact ? { aa2: 21, aa1: 16, b3: 18, b2: 28, b1: 36 } : { aa2: 16, aa1: 13, b3: 13, b2: 22, b1: 30 };
+  const cod = i => BASES[i >> 4] + BASES[(i >> 2) & 3] + BASES[i & 3];
+  let g = "", tx = "", i = 0;
+  while (i < 64) {
+    const a = TABLE[cod(i)]; let n = 1;
+    while (i + n < 64 && TABLE[cod(i + n)] === a && ((i + n) >> 4) === (i >> 4)) n++;
+    const fill = a === "Stop" ? "#ffcfcf" : a === "Met" ? "#cff5cf" : "#f6f6f4", cods = [];
+    for (let k = i; k < i + n; k++) cods.push(cod(k));
+    g += `<path d="${arc(cx, cy, R[3], R[4], i * st, (i + n) * st)}" fill="${fill}" data-aa="${cods.join(" ")}" data-c="${cods[0]}"/>`;
+    tx += wtxt(cx, cy, (R[3] + R[4]) / 2, (i + n / 2) * st, a === "Stop" ? "STOP" : a, n > 1 ? F.aa2 : F.aa1, true); i += n;
+  }
+  for (let k = 0; k < 64; k++) { g += `<path d="${arc(cx, cy, R[2], R[3], k * st, (k + 1) * st)}" fill="#ffffff" data-c="${cod(k)}"/>`; tx += wtxt(cx, cy, (R[2] + R[3]) / 2, (k + .5) * st, BASES[k & 3], F.b3); }
+  for (let k = 0; k < 16; k++) { g += `<path d="${arc(cx, cy, R[1], R[2], k * 4 * st, (k + 1) * 4 * st)}" fill="${QF[BASES[k >> 2]]}" data-c="${BASES[k >> 2] + BASES[k & 3]}"/>`; tx += wtxt(cx, cy, (R[1] + R[2]) / 2, (k * 4 + 2) * st, BASES[k & 3], F.b2); }
+  for (let k = 0; k < 4; k++) { g += `<path d="${arc(cx, cy, R[0], R[1], k * 90, (k + 1) * 90)}" fill="${QF[BASES[k]]}" data-c="${BASES[k]}"/>`; tx += wtxt(cx, cy, (R[0] + R[1]) / 2, k * 90 + 45, BASES[k], F.b1); }
+  let lines = ""; for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; lines += `<line x1="${cx + R[0] * Math.sin(a)}" y1="${cy - R[0] * Math.cos(a)}" x2="${cx + R[4] * Math.sin(a)}" y2="${cy - R[4] * Math.cos(a)}" stroke="#222" stroke-width="2.5"/>`; }
+  return `<svg class="wheel" viewBox="0 0 600 600" role="img" aria-label="Codon wheel. Read from the center outward: 1st letter, 2nd letter, 3rd letter, then the amino acid.">${g}${lines}<circle cx="${cx}" cy="${cy}" r="${R[0]}" fill="#fff" stroke="#222"/>${tx}</svg>`;
+}
+function wireWheel(box) {
+  box.innerHTML = makeWheel(box.id === "miniWheel");
+  let codon = "";
+  box.addEventListener("click", e => {
+    const p = e.target.closest("path"); if (!p) return;
+    const c = p.dataset.aa ? p.dataset.c : p.dataset.c;
+    codon = codon === c ? "" : c;
+    box.querySelectorAll("path").forEach(q => {
+      let on = false, dim = false;
+      if (codon) {
+        if (q.dataset.aa) { const list = q.dataset.aa.split(" "); on = codon.length === 3 && list.includes(codon); dim = !list.some(x => x.startsWith(codon)); }
+        else { const qc = q.dataset.c; on = qc.length <= codon.length && codon.slice(0, qc.length) === qc; dim = !on && !qc.startsWith(codon); }
+      }
+      q.classList.toggle("on", on); q.classList.toggle("dim", dim);
+    });
+  });
+}
+wireWheel($("#miniWheel")); wireWheel($("#bigWheel"));
+const HELP = {
+  mini: ["1st letter on the left, 2nd across the top, 3rd inside the box. Tap a codon to mark your place.", "Start in the center with the 1st letter, then move out to the 2nd and 3rd letters. The outside ring is the amino acid. Tap a 3rd letter to light up its path."],
+  big: ["Find the 1st letter on the left, the 2nd across the top, and the 3rd inside the box. The swatch shows the color each amino acid paints in this mural. Stop codons stay white.", "Start in the center with the 1st letter, then move out to the 2nd and 3rd letters. The outside ring is the amino acid. Tap a 3rd letter to light up its path."],
+};
+function setChartStyle(wheel) {
+  store.set("dm-wheel", wheel); $("#colorBox").classList.toggle("wheel-mode", wheel);
+  $("#miniChart").hidden = wheel; $("#miniWheel").hidden = !wheel;
+  $("#chart").hidden = wheel; $("#bigWheel").hidden = !wheel;
+  $("#miniHelp").textContent = HELP.mini[wheel ? 1 : 0]; $("#bigHelp").textContent = HELP.big[wheel ? 1 : 0];
+  document.querySelectorAll(".chart-switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.w === (wheel ? "1" : "0"))));
+}
+document.querySelectorAll(".chart-switch button").forEach(b => b.addEventListener("click", () => setChartStyle(b.dataset.w === "1")));
+setChartStyle(!!store.get("dm-wheel"));
 
 /* ================= TEACHERS ================= */
 fillSelect($("#teacher")); fillSelect($("#period"));
