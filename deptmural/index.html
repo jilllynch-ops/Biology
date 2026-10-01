@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <script>
 /* =====================================================================
-   SETTINGS: edit these four lines, then upload this file to GitHub.
+   SETTINGS: edit these three lines, then upload this file to GitHub.
    ===================================================================== */
 const CONFIG = {
   // Paste your Apps Script web app URL here (ends in /exec). Leave "" to try the site in preview mode.
@@ -19,8 +19,6 @@ const CONFIG = {
   TEACHERS: ["Teacher A", "Teacher B", "Teacher C"],
   // How many class periods are in your school day.
   PERIODS: 8,
-  // Which Einstein students color in the Codon Color Lab: "masterpiece" (20 colors) or "mystery" (12 colors).
-  VERSION: "masterpiece",
 };
 </script>
 <style>
@@ -28,7 +26,7 @@ const CONFIG = {
   --bg: #eef3f2; --surface: #ffffff; --ink: #17282b; --muted: #5a6d70; --line: #c9d6d4;
   --accent: #0f6e6a; --accent-ink: #ffffff; --accent-soft: #d6ecea;
   --good: #1f7a3a; --good-soft: #dff2e4; --bad: #b3261e; --bad-soft: #fbe3e1;
-  --mat: #17282b; --mat-ink: #cfdcdb; --hl: #ffd84d;
+  --mat: #17282b; --mat-ink: #cfdcdb; --hl: #ffd84d; --paper: #fdfdfb; --paper-line: #cfd8d6;
   --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -41,87 +39,135 @@ const CONFIG = {
   --bg: #0f1a1b; --surface: #172526; --ink: #e3eeec; --muted: #9db1b0; --line: #2d4142;
   --accent: #4fc2ba; --accent-ink: #062322; --accent-soft: #1d3b3a;
   --good: #6fd38c; --good-soft: #193a24; --bad: #ff8a80; --bad-soft: #3d1c1a;
-  --mat: #070d0e; --mat-ink: #9db1b0; color-scheme: dark } }
+  --mat: #070d0e; --mat-ink: #9db1b0; --paper: #f4f6f5; --paper-line: #b9c6c4; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #0f1a1b; --surface: #172526; --ink: #e3eeec; --muted: #9db1b0; --line: #2d4142;
   --accent: #4fc2ba; --accent-ink: #062322; --accent-soft: #1d3b3a;
   --good: #6fd38c; --good-soft: #193a24; --bad: #ff8a80; --bad-soft: #3d1c1a;
-  --mat: #070d0e; --mat-ink: #9db1b0; color-scheme: dark }
+  --mat: #070d0e; --mat-ink: #9db1b0; --paper: #f4f6f5; --paper-line: #b9c6c4; color-scheme: dark }
 html { scroll-padding-top: env(safe-area-inset-top, 0px); }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
 button, input, select { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
 
-.wrap { max-width: 1240px; margin: 0 auto; padding: 20px 20px 48px; }
-header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin-bottom: 18px; }
-header.top h1 { font: 800 clamp(1.7rem, 3.4vw, 2.6rem)/1.05 var(--display); margin: 0; letter-spacing: -0.015em; }
-header.top p { margin: 4px 0 0; color: var(--muted); }
-.sync { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--good); flex: none; }
-.dot.off { background: var(--bad); } .dot.wait { background: var(--muted); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 18px 20px 48px; }
+header.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-bottom: 16px; }
+header.top h1 { font: 800 clamp(1.5rem, 3vw, 2.2rem)/1.05 var(--display); margin: 0; letter-spacing: -0.015em; }
+nav.tabs { display: flex; flex-wrap: wrap; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+nav.tabs button { border: 0; background: transparent; padding: 8px 14px; border-radius: 9px; font-weight: 700; color: var(--muted); cursor: pointer; }
+nav.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
 
 .notice { background: var(--accent-soft); border-radius: 10px; padding: 10px 14px; margin: 0 0 16px; font-size: .95rem; }
 .notice.bad { background: var(--bad-soft); color: var(--bad); }
 
-.layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; align-items: start; }
-@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.panel h2 { font: 700 1.25rem/1.2 var(--display); margin: 0 0 10px; }
+.panel h3 { font: 700 1.05rem/1.25 var(--display); margin: 0 0 8px; }
+.sub { color: var(--muted); font-size: .92rem; margin: 0; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
 .layout > * { min-width: 0; }
+.rail { display: grid; gap: 14px; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 
-/* the mural, framed */
-.frame { background: var(--mat); border-radius: 16px; padding: clamp(12px, 2.4vw, 28px); color: var(--mat-ink); }
+.field { display: grid; gap: 4px; font-size: .9rem; font-weight: 700; }
+.field input, .field select { font-weight: 400; font-size: 1rem; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); width: 100%; min-width: 0; }
+.mono { font-family: var(--mono) !important; letter-spacing: .06em; text-transform: uppercase; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row3 { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 10px; }
+@media (max-width: 520px) { .row3 { grid-template-columns: 1fr 1fr; } .row3 > :first-child { grid-column: 1 / -1; } }
+.stack { display: grid; gap: 12px; }
+.btn { border: 0; border-radius: 9px; padding: 11px 16px; font-weight: 700; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn.quiet { background: transparent; color: var(--accent); border: 1px solid var(--line); padding: 7px 11px; }
+.btn.small { padding: 6px 10px; font-size: .88rem; }
+.btn:disabled { opacity: .55; cursor: wait; }
+.linkish { background: none; border: 0; color: var(--accent); font-weight: 700; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+.fb { font-size: .92rem; margin: 0; min-height: 1.4em; }
+.fb.good { color: var(--good); } .fb.bad { color: var(--bad); }
+.check { display: flex; gap: 8px; align-items: center; font-size: .9rem; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.bar { height: 10px; background: var(--accent-soft); border-radius: 5px; overflow: hidden; margin: 10px 0 6px; }
+.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 5px; transition: width .6s ease; }
+
+/* ---------- student: start ---------- */
+.start-box { max-width: 620px; margin: 4vh auto 0; }
+.start-box h2 { font: 800 clamp(1.6rem, 3vw, 2.1rem)/1.1 var(--display); margin: 0 0 6px; }
+.start-box .lede { color: var(--muted); margin: 0 0 18px; }
+.start-box .panel { padding: 22px; }
+
+/* ---------- student: coloring ---------- */
+.sq-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+.sq-num { font: 800 clamp(1.6rem, 3.4vw, 2.3rem)/1 var(--display); letter-spacing: -0.02em; }
+.sq-num small { font: 400 1rem var(--body); color: var(--muted); letter-spacing: 0; margin-left: 6px; }
+.board-wrap { overflow-x: auto; padding: 4px 0; }
+.board { display: grid; grid-template-columns: repeat(10, var(--cs)); background: var(--paper); border: 3px solid #17282b; width: max-content; margin: 0 auto; --cs: max(30px, min(5.6vw, 56px, calc((100vh - 300px) / 10))); }
+.cell { width: var(--cs); height: var(--cs); border: 1px solid var(--paper-line); background: var(--paper); color: #17282b; font: 700 clamp(9px, 1.15vw, 13px) var(--mono); display: grid; place-items: center; cursor: pointer; padding: 0; transition: background-color .25s; }
+.cell:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+.cell.done { cursor: default; }
+.cell.done.stop { color: #a9b5b3; font-weight: 500; }
+.cell.wrong { animation: shake .35s; background: #ffd9d4; }
+@keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.status { text-align: center; margin: 12px 0 0; min-height: 1.5em; }
+.status.bad { color: var(--bad); } .status.good { color: var(--good); }
+.brushes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.chip { display: flex; align-items: center; gap: 7px; border: 1.5px solid var(--line); background: var(--surface); border-radius: 8px; padding: 4px 6px; font: 700 .8rem/1.12 var(--body); cursor: pointer; text-align: left; }
+.chip .sw { width: 20px; height: 20px; border-radius: 5px; border: 1px solid rgba(0,0,0,.35); flex: none; }
+.chip small { display: block; font-weight: 400; color: var(--muted); font-size: .7rem; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.chip.stopchip { grid-column: 1 / -1; }
+.work { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; justify-content: center; }
+.work .board-wrap { flex: 0 1 auto; min-width: 0; }
+.side-chart { flex: 0 0 280px; }
+.sprog { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; }
+.sprog .bar { flex: 1; margin: 0; }
+.sprog .sub { white-space: nowrap; }
+.srail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - env(safe-area-inset-top, 0px) - 24px); overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 900px) { .srail { position: static; max-height: none; overflow: visible; } }
+.done-card { text-align: center; padding: 22px; border: 2px solid var(--good); background: var(--good-soft); border-radius: 14px; margin-top: 16px; }
+.done-card h3 { font: 800 1.4rem var(--display); margin: 0 0 6px; color: var(--ink); }
+.code-big { font: 700 clamp(2rem, 6vw, 3.2rem)/1.1 var(--mono); letter-spacing: .08em; margin: 8px 0; color: var(--ink); }
+.minimap { display: block; margin: 0 auto; border-radius: 4px; image-rendering: pixelated; }
+
+/* compact codon chart */
+details.mini-chart > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: baseline; font: 700 1.05rem/1.3 var(--display); }
+details.mini-chart > summary::-webkit-details-marker { display: none; }
+details.mini-chart > summary::after { content: "Hide"; font: 700 .8rem var(--body); color: var(--accent); }
+details.mini-chart:not([open]) > summary::after { content: "Show"; }
+details.mini-chart[open] > summary { margin-bottom: 8px; }
+table.mini { border-collapse: collapse; width: 100%; table-layout: fixed; font-variant-numeric: tabular-nums; }
+table.mini th { font: 800 .8rem var(--mono); color: var(--accent); padding: 2px 0; text-align: center; }
+table.mini th.lab { width: 16px; }
+table.mini td { border: 1.5px solid var(--ink); padding: 2px 1px; vertical-align: top; }
+.mini-line { display: flex; justify-content: space-between; gap: 2px; font: 500 .68rem/1.4 var(--mono); padding: 0 2px; border-radius: 3px; cursor: pointer; white-space: nowrap; }
+.mini-line:hover { background: var(--accent-soft); }
+.mini-line.on { background: var(--hl); color: #1b1b1b; }
+.mini-line.stop span { color: var(--bad); font-weight: 700; }
+.mini-line.start span { color: var(--good); font-weight: 700; }
+.mini-line.on span { color: #1b1b1b; }
+
+/* ---------- mural ---------- */
+.frame { background: var(--mat); border-radius: 16px; padding: clamp(10px, 2vw, 24px); color: var(--mat-ink); }
 .frame:fullscreen { display: flex; flex-direction: column; justify-content: center; border-radius: 0; }
 .fit { display: flex; justify-content: center; }
-canvas { display: block; touch-action: manipulation; cursor: pointer; border-radius: 3px; }
+#cv { display: block; touch-action: manipulation; cursor: pointer; border-radius: 3px; }
 .frame-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-top: 12px; font-size: .9rem; }
 .frame-foot button { background: transparent; border: 1px solid #3a5254; color: var(--mat-ink); border-radius: 8px; padding: 5px 11px; cursor: pointer; }
 .frame-foot button:hover { border-color: var(--mat-ink); }
-
-.tile-info { margin-top: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-.tile-info h3 { margin: 0 0 6px; font: 700 1.05rem var(--body); }
+.sync { display: inline-flex; align-items: center; gap: 8px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--good); flex: none; }
+.dot.off { background: var(--bad); } .dot.wait { background: var(--muted); }
+.tile-info { margin-top: 14px; }
 .tile-info p { margin: 0; color: var(--muted); }
-
-/* rail */
-.rail { display: grid; gap: 14px; }
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
-.panel h2 { font: 700 1.25rem/1.2 var(--display); margin: 0 0 10px; }
 .big { font: 800 2.6rem/1 var(--display); letter-spacing: -0.02em; }
 .big small { font: 400 1rem var(--body); color: var(--muted); letter-spacing: 0; margin-left: 4px; }
-.bar { height: 10px; background: var(--accent-soft); border-radius: 5px; overflow: hidden; margin: 10px 0 6px; }
-.bar > i { display: block; height: 100%; background: var(--accent); border-radius: 5px; transition: width .6s ease; }
-.sub { color: var(--muted); font-size: .92rem; margin: 0; }
-
 .tally { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .tally li { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .95rem; }
-.tally b { font-weight: 700; }
 .tally span { color: var(--muted); text-align: right; }
 .tally .bar { grid-column: 1 / -1; margin: 2px 0 0; height: 7px; }
-
-.field { display: grid; gap: 4px; font-size: .9rem; font-weight: 700; }
-.field input, .field select { font-weight: 400; font-size: 1rem; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); width: 100%; }
-.mono { font-family: var(--mono) !important; letter-spacing: .06em; text-transform: uppercase; }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stack { display: grid; gap: 10px; }
-.btn { border: 0; border-radius: 9px; padding: 10px 14px; font-weight: 700; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
-.btn.quiet { background: transparent; color: var(--accent); border: 1px solid var(--line); font-weight: 700; padding: 7px 11px; }
-.btn:disabled { opacity: .55; cursor: wait; }
-.fb { font-size: .92rem; margin: 0; min-height: 1.4em; }
-.fb.good { color: var(--good); } .fb.bad { color: var(--bad); }
-
 .matches { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
 .matches button { width: 100%; text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; cursor: pointer; }
 .matches button:hover { border-color: var(--accent); }
-
-details.teacher > summary { cursor: pointer; font: 700 1.25rem/1.2 var(--display); list-style: none; display: flex; justify-content: space-between; align-items: center; }
-details.teacher > summary::-webkit-details-marker { display: none; }
-details.teacher > summary::after { content: "+"; font: 400 1.5rem var(--body); color: var(--muted); }
-details.teacher[open] > summary::after { content: "–"; }
-details.teacher[open] > summary { margin-bottom: 12px; }
-.recent { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; font-size: .92rem; }
-.recent li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line); }
-.recent li button { background: none; border: 0; color: var(--bad); cursor: pointer; font-size: .85rem; padding: 2px 4px; }
-.check { display: flex; gap: 8px; align-items: center; font-size: .9rem; }
-.tools { display: flex; flex-wrap: wrap; gap: 8px; }
 .chart-panel { margin-top: 14px; }
 .chart-panel p { margin: 0 0 12px; color: var(--muted); }
 .sq-wrap { overflow-x: auto; }
@@ -145,103 +191,200 @@ table.sq td.third div { font: 700 .9rem/1.65 var(--mono); color: var(--muted); }
   .cod { font-size: .66rem; gap: 2px; padding: 0 2px; line-height: 1.6; }
   .cod i { width: 7px; height: 7px; border-radius: 2px; }
 }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+
+/* ---------- teacher ---------- */
+.tgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; align-items: start; }
+.list { list-style: none; margin: 4px 0 0; padding: 0; display: grid; font-size: .92rem; max-height: 340px; overflow-y: auto; }
+.list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.list li button { background: none; border: 0; color: var(--bad); cursor: pointer; font-size: .85rem; padding: 2px 4px; flex: none; }
+.lookup { font-size: .9rem; margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--bg); color: var(--muted); }
+.lookup.good { color: var(--good); background: var(--good-soft); }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } .cell.wrong { animation: none; } .cell { transition: none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <div>
-      <h1 id="title">Biology Department Mural</h1>
-      <p id="subtitle">Every finished sheet from every Biology class fills in one more square.</p>
-    </div>
-    <div class="sync" aria-live="polite"><span class="dot wait" id="dot"></span><span id="syncText">Loading the mural…</span>
-      <button class="btn quiet" type="button" id="refresh">Refresh</button></div>
+    <h1 id="title">Biology Department Mural</h1>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-color" aria-controls="view-color" aria-selected="true">Color my square</button>
+      <button role="tab" id="tab-mural" aria-controls="view-mural" aria-selected="false">Mural</button>
+      <button role="tab" id="tab-teach" aria-controls="view-teach" aria-selected="false">Teachers</button>
+    </nav>
   </header>
 
-  <p class="notice" id="previewNote" hidden>Preview mode: sheets you add are saved only in this browser. To share one mural across the department, connect the Google Sheet (see SETUP.md).</p>
+  <p class="notice" id="previewNote" hidden>Preview mode: everything is saved only in this browser. To share one mural across the department, connect the Google Sheet (see SETUP.md).</p>
   <p class="notice bad" id="errNote" hidden></p>
 
-  <div class="layout">
-    <main>
-      <section class="frame" id="frame" aria-label="Mural">
-        <div class="fit" id="fit"><canvas id="cv" tabindex="0" aria-label="Mural"></canvas></div>
-        <div class="frame-foot">
-          <span id="hint">Tap a square to see who colored it.</span>
-          <span class="tools">
-            <button type="button" id="dl" hidden>Download image</button>
-            <button type="button" id="fs">Full screen</button>
-          </span>
+  <!-- ================= STUDENT ================= -->
+  <section id="view-color" role="tabpanel" aria-labelledby="tab-color">
+    <div class="start-box" id="startBox">
+      <h2>Get your square</h2>
+      <p class="lede">Every Biology student colors one square of a giant mystery mural. You'll get a square nobody else has. Decode its codons, then show your completion code to your teacher.</p>
+      <div class="panel">
+        <form id="startForm" class="stack" autocomplete="off">
+          <div class="row3">
+            <label class="field">Your initials<input id="sInit" class="mono" maxlength="4" required placeholder="JS"></label>
+            <label class="field">Teacher<select id="sTeacher"></select></label>
+            <label class="field">Period<select id="sPeriod"></select></label>
+          </div>
+          <button class="btn" type="submit" id="startBtn">Give me my square</button>
+          <p class="fb" id="startMsg" aria-live="polite"></p>
+        </form>
+        <p class="sub" style="margin-top:6px">Already have a square on another computer?
+          <button class="linkish" type="button" id="haveBtn">Enter your square number</button></p>
+        <form id="haveForm" class="stack" hidden style="margin-top:12px" autocomplete="off">
+          <label class="field">Square number<input id="haveNum" inputmode="numeric" maxlength="3" placeholder="143"></label>
+          <button class="btn quiet" type="submit">Open my square</button>
+          <p class="fb" id="haveMsg"></p>
+        </form>
+      </div>
+    </div>
+
+    <div id="colorBox" hidden>
+      <div class="layout">
+        <div class="panel">
+          <div class="sq-head">
+            <div class="sq-num" id="sqNum">Square</div>
+            <div class="tools">
+              <button class="btn quiet small" type="button" id="restartBtn">Start this square over</button>
+              <button class="btn quiet small" type="button" id="switchBtn">Not your square?</button>
+            </div>
+          </div>
+          <div class="sprog"><div class="bar"><i id="sBar" style="width:0"></i></div><span class="sub" id="sCount">0 of 100 codons decoded</span></div>
+          <div class="work">
+            <div class="board-wrap"><div class="board" id="board" role="grid" aria-label="Your square: 100 codons"></div></div>
+            <details class="mini-chart side-chart" open>
+              <summary>Codon chart</summary>
+              <div id="miniChart"></div>
+              <p class="sub" style="font-size:.78rem;margin-top:6px">1st letter on the left, 2nd across the top, 3rd inside the box. Tap a codon to mark your place.</p>
+            </details>
+          </div>
+          <p class="status" id="status" aria-live="polite">Choose an amino acid from the paint list, then click every codon that codes for it.</p>
+          <div class="done-card" id="doneCard" hidden>
+            <h3>You finished your square!</h3>
+            <p class="sub">Show this code and your initials to your teacher.</p>
+            <div class="code-big" id="codeBig"></div>
+            <p class="sub" id="doneWho"></p>
+          </div>
+        </div>
+        <aside class="rail srail">
+          <div class="panel">
+            <h3>Amino acid paint</h3>
+            <div class="brushes" id="brushes"></div>
+          </div>
+          <div class="panel">
+            <h3>Where it goes</h3>
+            <canvas class="minimap" id="minimap" width="170" height="210" aria-label="Your square's place in the mural"></canvas>
+            <p class="sub" id="whereText" style="margin-top:8px;text-align:center"></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MURAL ================= -->
+  <section id="view-mural" role="tabpanel" aria-labelledby="tab-mural" hidden>
+    <div class="layout">
+      <main>
+        <section class="frame" id="frame" aria-label="Mural">
+          <div class="fit" id="fit"><canvas id="cv" tabindex="0" aria-label="Mural"></canvas></div>
+          <div class="frame-foot">
+            <span class="sync" aria-live="polite"><span class="dot wait" id="dot"></span><span id="syncText">Loading…</span></span>
+            <span class="tools">
+              <button type="button" id="refresh">Refresh</button>
+              <button type="button" id="fs">Full screen</button>
+            </span>
+          </div>
+        </section>
+        <section class="panel tile-info" id="tileInfo" hidden aria-live="polite">
+          <h3 id="tileTitle"></h3>
+          <p id="tileWho"></p>
+        </section>
+        <section class="panel chart-panel" aria-labelledby="chartTitle">
+          <h2 id="chartTitle">Codon chart</h2>
+          <p>Find the 1st letter on the left, the 2nd across the top, and the 3rd inside the box. The swatch shows the color each amino acid paints in this mural. Stop codons stay white.</p>
+          <div class="sq-wrap" id="chart"></div>
+        </section>
+      </main>
+      <aside class="rail">
+        <section class="panel">
+          <h2>Progress</h2>
+          <div class="big" id="sheetsDone">0<small>of 357 squares</small></div>
+          <div class="bar"><i id="mainBar" style="width:0"></i></div>
+          <p class="sub" id="progressText">No squares finished yet.</p>
+        </section>
+        <section class="panel">
+          <h2>By teacher</h2>
+          <ul class="tally" id="tally"></ul>
+        </section>
+        <section class="panel">
+          <h2>Find my square</h2>
+          <label class="field">Your initials<input id="findIn" class="mono" maxlength="4" placeholder="JS" autocomplete="off"></label>
+          <p class="fb" id="findMsg" style="margin-top:8px"></p>
+          <ul class="matches" id="matches"></ul>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= TEACHERS ================= -->
+  <section id="view-teach" role="tabpanel" aria-labelledby="tab-teach" hidden>
+    <div class="tgrid">
+      <section class="panel">
+        <h2>Add a finished square</h2>
+        <form id="addForm" class="stack" autocomplete="off">
+          <label class="field">Completion code<input id="code" class="mono" maxlength="8" required placeholder="143-XYZ"></label>
+          <p class="lookup" id="lookup">Type a code to see who was given that square.</p>
+          <div class="row2">
+            <label class="field">Initials<input id="initials" class="mono" maxlength="4" required placeholder="JS"></label>
+            <label class="field">Period<select id="period"></select></label>
+          </div>
+          <label class="field">Teacher<select id="teacher"></select></label>
+          <label class="field">Department passcode<input id="pass" type="password" autocomplete="current-password"></label>
+          <label class="check"><input type="checkbox" id="remember" checked> Remember passcode on this computer</label>
+          <button class="btn" type="submit" id="addBtn">Add to mural</button>
+          <p class="fb" id="addMsg" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Recently finished</h2>
+        <ul class="list" id="recent"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Still coloring</h2>
+        <p class="sub">Squares handed out but not turned in yet. Release one if a student left or needs a new square, so someone else can get it.</p>
+        <div class="row2" style="margin-top:10px">
+          <label class="field">Teacher<select id="cTeacher"></select></label>
+          <label class="field">Period<select id="cPeriod"></select></label>
+        </div>
+        <ul class="list" id="claimList"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Download and print</h2>
+        <p class="sub">Makes a print-quality image (300 dpi) of the mural as it is right now. Unfinished squares print white.</p>
+        <div class="stack" style="margin-top:12px">
+          <label class="check"><input type="checkbox" id="dlGrid"> Show square outlines and numbers</label>
+          <div class="tools">
+            <button class="btn" type="button" id="dlLetter">Letter (8.5 × 11 in)</button>
+            <button class="btn" type="button" id="dlPoster">Poster (24 × 30 in)</button>
+          </div>
+          <p class="fb" id="dlMsg"></p>
+          <button class="btn quiet" type="button" id="peek" aria-pressed="false">Preview the finished picture on this screen</button>
         </div>
       </section>
-      <section class="tile-info" id="tileInfo" hidden aria-live="polite">
-        <h3 id="tileTitle"></h3>
-        <p id="tileWho"></p>
-      </section>
-      <section class="panel chart-panel" aria-labelledby="chartTitle">
-        <h2 id="chartTitle">Codon chart</h2>
-        <p>Find the 1st letter on the left, the 2nd across the top, and the 3rd inside the box. The swatch shows the color that amino acid paints in this mural.</p>
-        <div class="sq-wrap" id="chart"></div>
-      </section>
-    </main>
-
-    <aside class="rail">
-      <section class="panel">
-        <h2>Progress</h2>
-        <div class="big" id="sheetsDone">0<small>of 25 squares</small></div>
-        <div class="bar"><i id="mainBar" style="width:0"></i></div>
-        <p class="sub" id="studentCount">No sheets added yet.</p>
-      </section>
-
-      <section class="panel">
-        <h2>By teacher</h2>
-        <ul class="tally" id="tally"></ul>
-      </section>
-
-      <section class="panel">
-        <h2>Find my square</h2>
-        <form id="findForm" class="stack" autocomplete="off">
-          <label class="field">Your initials
-            <input id="findIn" class="mono" maxlength="4" inputmode="text" placeholder="JS">
-          </label>
-        </form>
-        <p class="fb" id="findMsg"></p>
-        <ul class="matches" id="matches"></ul>
-      </section>
-
-      <section class="panel">
-        <details class="teacher" id="teacherBox">
-          <summary>Add a sheet (teachers)</summary>
-          <form id="addForm" class="stack" autocomplete="off">
-            <div class="row2">
-              <label class="field">Teacher<select id="teacher"></select></label>
-              <label class="field">Period<select id="period"></select></label>
-            </div>
-            <div class="row2">
-              <label class="field">Student initials<input id="initials" class="mono" maxlength="4" required placeholder="JS"></label>
-              <label class="field">Completion code<input id="code" class="mono" maxlength="8" required placeholder="7-N3G"></label>
-            </div>
-            <label class="field" id="passWrap">Department passcode<input id="pass" type="password" autocomplete="current-password"></label>
-            <label class="check"><input type="checkbox" id="remember" checked> Remember passcode on this computer</label>
-            <button class="btn" type="submit" id="addBtn">Add to mural</button>
-            <p class="fb" id="addMsg" aria-live="polite"></p>
-          </form>
-          <h3 style="font:700 1rem var(--body);margin:14px 0 2px">Recently added</h3>
-          <ul class="recent" id="recent"></ul>
-          <div class="tools" style="margin-top:12px">
-            <button class="btn quiet" type="button" id="peek" aria-pressed="false">Preview the finished picture</button>
-          </div>
-        </details>
-      </section>
-    </aside>
-  </div>
+    </div>
+  </section>
 </div>
 
 <script>
-const PICTURES = {"mystery":{"name":"Albert Einstein","rows":["KKKKKBKKKKKKCKC..CVCC.BVC..BC.....CCK.BBKKKKKKOOKK","KKLKKBBKKKKBC.C..CCBC.C...BC....CCCCB.CCCCKKKKOKKK","KKLKKKKKKBKKC..C..CB...C.CCCB......CCBKKKCBBKKOKKK","KKKKKKKKBBBBB...C..CC..C.BCC..C..C...CCVKKVCVKKKKK","KRKKKKCCC..CCCC....CC...BC....CCCCCC..CCVVKV.KKKKB","KRRKKKCKKKK..C..CCC.CC..B..C.BBC..CCCC.CCVVKVKBKKK","KKRKBVKKKVV...CCBBYYYY.YYYYYNOBBCC...C..CCVKKKKKKK","KKKKBVKKVB...CCKOOYYYYYYYYYYYYOOBCCC..C..CCVKKKLKK","CCKKKKKV..CCCBKOYYOOOOYYYYYYYYYOOKCCC..C..CKVKKLLK","KKKKKKK.CCCCVKOONOOOYYOOOOYYYOYYOOBCC..CC..KKKKKKK","KKKVK..CCC.BVNNYYYYYYYYOOYYYYYYOYOOBCC..CB...KKKKK","KKKKVKKK..CVKNOOOOOOOOOYYOOOOYYYOOOOCCC..CC..VKKRK","KYYKKKC..VVKKOYYYYYYYYYYYYYYYOOYOOYVV..C...C.CVKKK","KYKKKC.VV.VBNYYYYOOYYYYOOYYYYYYOYOOYCC.CC..CK.CCKK","KKKKVBVV.VVKOKKKYYYYYYOOCBKKKYYYOYOOCCC.CC..CKKCCK","LLKKV...VVCKKKOOYYYYYYYYCNKOKKYYOOOOOCC..CC..CKKCK","LKKC...VBBKKKYYYYYYYYYYYYYYYYYKYYOOOO.CC...C..BKCK","KKV..VVVB.KKYYYOOYYYYYYYYYYYYYYKYOOOC..CC..CCCVKKK","KKB.BV..B.KKYNNNOOYYYYYYYONNNYYOOOOYYC...C..CCVKKK","KVVKV..CB.KNYNKKOOKYYYYOONKKONYYNOOOBB......CC.BKK","KVKK..CBB.KOKK..KOOYYYOOOK.KKBOYOOOOOC..CC..CC..BV","V.K..C.CBKKOK..KKKKYYYOOY.BK.KOYYOYYOC...CC..BB.BV","VKK.KB.CBVKNOKCKKYKYYYOYY.CKKOOYYOYYYCC...CCCCVKKK","KKK.KCC.BKOOOYYOOOYYYYYYNYYOOOOYYYYOC..CKK..CCCCKK","OKK.K...VKNKOOOYOKYYOOYYYNYYYOOYYYOOBC.CBKK..CC..K","OKKKKC.CBKNYYYYOKKYYOOYYYYYNYYOOYYOOBBCCCNOKB.CC.K","KKKKC..CKKNYYOOYKYYYYNOYYYYYYYYYYOOOBBCKOOOKB.CC..","BBKCC.CBKKNYOOYYKYYYYYYNYYYYYYOYYOOYNBKOYYOKBC.CK.","BBCC.C.BVKOYOYYKKYYYYYYNYYYYYYYYOOOONBNOOYOKBCC.KK","KKC.C..BCKOOYYYOKOOOKYKNYYNYYYYOYONNNNNYOYOKCCC.CK","KKCKCCBBBKONYYOOCKKNYAYYYYYYYYYYYYNNONOOYOKK.BCC.K","KCCKCKCBVKONYCCCAAA.AAAAAOYNYYYOYYNOONOYYKKC.B.CKC","KBKKKKBCKKONYC......A.A..AACOYOOYYOOONYYOKK.CC.CK.","KBKKKKKCKKOOOBAAA.AAAA.A...ACOOOYYOOONYOKKC.C.BCBB","KKKKKKKKBKOOOKBBKKKKKK.CCAAAAOYOYOOONNOOKC.BB.BVCK","KKOKKKCKKBKOOOOKKKKKKKKKKKKKAYOOYOONNKKKKCBB.VVKCK","KKOKKKCKKKKOOYYOKRPPRRPPRKKOAYOYYOONOKKBBKBKKVKKKK","OOKKKKKKKKKKOYYYKPPPRPPPRKOYOYOYYONOOKKKKKKKKKKKKL","KKKKBKKKKKKKOOYYKPPPRPPRKOYYOYOYOONOOKKBBKKKLKKKKK","KKKKKKCCKKKKOOYYKPPPRPPRKOYYYYOYOOOKKKKBBKKBKLLKKK","KKLKKKCKKKKKKOOYKPPPPPPRKOYYYOYYOOOKKBBBKKKKKKKKKK","LLLKKKKKKPKKKKOYKPPPPPRKYYYYYOYNOKKKKBKKKKKKBKKKRK","LKKKKKKKPKKKKKOOYKPRPPRKYYYYOYYNKKKKBKKKKBKKBBKKRK","KKKLKKKPPKKKKKKOYKPPPPKKOYYYOYNKKKKBKKKKBBKKBBBKKK","KKKKKKKKKKBBKKKOYKRPPRKOYYYOYOKKKKKBKKBBKKKBBKBBKK","KCKKKKKKKKKKKKKKYYKRRKOYYYOOOKKKKKBKKKBKKKBBBKKBBK","KKKKKCCKKKKKKLKKKOOKKOYYYYOVKKKKKBKKKKBKKKBBBKKKBB","KKKCCKKKKKKKLKKKKKOYYOYYYOKKKKKKBBKKKKKBBBBBKKKKBB","KCCCKKKKKKKBKKKKKKKOYKOOKKKKKKKKBKKKKKBBBBKKKKBBBB","CCCKKKKKKLYKKKKBBKKKKKKKK.KKKKBKKKKKKBBBKKKKKBBBBB"],"pal":{"R":{"hex":"#db1f1f","ab":"Leu","cname":"Red"},"O":{"hex":"#ff8c0d","ab":"Ser","cname":"Orange"},"Y":{"hex":"#ffe01a","ab":"Ala","cname":"Yellow"},"L":{"hex":"#8cd94c","ab":"Val","cname":"Light Green"},"G":{"hex":"#1a8026","ab":"Gly","cname":"Dark Green"},"C":{"hex":"#8cccff","ab":"Thr","cname":"Light Blue"},"B":{"hex":"#1a33b2","ab":"Arg","cname":"Dark Blue"},"V":{"hex":"#8c40b2","ab":"His","cname":"Purple"},"P":{"hex":"#ff8cbf","ab":"Pro","cname":"Pink"},"N":{"hex":"#8c5426","ab":"Lys","cname":"Brown"},"K":{"hex":"#141414","ab":"Tyr","cname":"Black"},"A":{"hex":"#999999","ab":"Phe","cname":"Gray"},".":{"hex":"#ffffff","ab":"Stop","cname":"Leave White"}}},"masterpiece":{"name":"Albert Einstein \u2013 Masterpiece","rows":["PPPPPSPPPPMPIPK.KIWLK.SYK..MK.....KFT.MMPPPPPPNNPP","PHGPPTSPPPMSK.KL.KIFI.M...FI...IKKKKMLKIIIPPPPNPPP","PPGPPPPPTMPPK..K..IS...K.KIKFLLL...LKMPPPIKFPPNPPP","PPPPPPPPKMMMFK..K..IL..KISKM..K.IK...KKWPWKLYPPPPP","PAPPPTKKL..IIKI....KK...SK...LKKKKK...IMWPPW.PPPFM","PAAPPMIWPPF.LK..KIK.II..S..K.SSK..IKKI.KMWWPWPMPFP","PPRPMWPPWWW..KKKTAEEEE.EEEQENNFFKI...K..IKWWPPPPPP","PPPPMWPPWM..LIKPNEEEEEEEEEEEEDNAPIIL..K..KWWPPPGPP","KKPPWWPWMLKKKSPNNEDDDNDDDDDDEEENNTKIL.KK..KFFPHGGP","PPPPPPK.KKLLWPNNANNDEEEEEEEEEDNENNMMLI.IKL.TPPPPPP","PPPWPL.KK..MWAAEEEEEEEENNEEEEEENENNMII..KML.LPPPPP","PPPFMKPP..KWPANNNDDDDDNEENNNNEEENENFIIK..KK..WPPAP","PEEPPPK.KWWTRADEEEEEEEEEEEEEDNDENNNAMK.K..LK.IWPAA","PQPPFKLWWLWTANEEEDDEEEENDEEEEEENENNQKK.KK..IP.KKPP","PPPYWFWW.WWNDPPPMEEEEENEIFPPPEEENENCIII.KI..KPPIKP","GGPWFM..WWMNPPNNMEEEEEEEIANNFPEENNNN.IK..IK..KPKIP","HPPM..KWWSPFREEEEEEEEEEEEEEEEEPEENNNL.KK...K..FPKP","PPW.SWWLF.TAEENNANEEEEEEEENNEEEPENNEII.KKK.LKKKPPP","PPW.SW..S.PDENAADAAEEEEEEAAAAEENENNEQI..LL..KKWPPP","PWWPW..KF.PEEPPPNNAEEEENNDPPNAEEANNNFM.LLL..KI.PPP","PYPML.KMF.PDAP.FTNNEEENNEP.LPRNENNENKK.KKK..KK.MFY","Y.PI.K.KSIPNP.LPPMNEEENEF.MP.PNEDNEDNK...KK..MS.SY","YPP.LM.KMWPNNRLPHEPEEENEN.MPFNNEENEEDIK...KKKKWPIP","PPP.PIK.STAPNEENDPNEDEEEAEENNDNEEEDNK..MPP...KKWWP","NPPQT...WTANNNNENPEENEEEEAEEENNEEENNML.IMPPI.KK..P","NPPPLK.KWTAEDEENRAEENNEEEEEAEENNDEDNWKKIKAAPM.KK.P","PPPPK..KTPADENNEPEEEENNEEEEEDNEEEENNFKKRNNNPM.KSKQ","PSPPI.IMPPAENNEENEEEENENEEEEEENEEDNDAMPAEENPSK.SP.","SFTL.I.SWPAENEERREEEEEEAEDEEEEEEDNNNAFNNAENPSKI.PK","PPK.K.KWSPNNEEDNPRNNPEPAEEAEEEEDENNNATENANRPISK.IP","PPLPM.SWMPNAEENDKPPQELEEEENEEEEEENAANRANENPP.FIP.P","PMTPIPKFWPNNENIILLL.LLLLLNEAEEENENANNAEEEPTI.F.PMK","PMPTTPMIPPNDEKLL....L.L.LLLLNENNEENNNREENMT.KL.MP.","PMPPPPPMPPNNDSLLL.LLLL.L...LIDNNEENNNRENRIM.K.LKSM","PPPPPPPPMPNANPIFPLKPLP.IL.LLLDENENNNAANNPI.LM.MKMP","PPNPPPKPPMPNNNRTPRRRRRRPHTTPLENNENNAAAPPTIKTQWWPKP","PNNPPPFPPPPEAEENPVVVAVVVAPPNLENEENNANAPMMPMPPWPPPG","NNPPFSPPPPPDNNEEPVVVAVVVAPNENENEDNANNPPPPPPPPPPPPG","PPPPSPPKPPPPNAEEPVVVAVVAPNDENDNENNADPPPMMPPPGHPPPP","PPPPPPKKPPPPNNEEPVVVVVVARNEEEDNEAANRPPSMMPMMPGGPPP","PPGPPPPPPPPPPNDEPVVVVVVAREEEENEEANPPPTSPPPPPPPPPPP","GGGPPPPPPAPPPRNEAVVVVVVPNEEEENEANDPPFSPPPPPPSPPAAP","GGPPPTPPAPPPPPNNEAVAVVAPEEEENEEANPPPSPPPTFMPSSPPAP","PPPGPPPAAPPFMPPNEPVVVVPNNEEENEARPPPFPPPPMMPPTSSPPP","PPPPPPTPPPMMPPPAEPAVVAPNEEENENPPPPTTPPMMPPPMMPSSPP","PKPPPPPPPSPPPPPPENPAAPNEEENANPPPPPMPPPMPPPMMFPPMMP","PPPPPKPPPPPPHGPPPNNPPNEEEDNTPPPPPMPPPPPPPMMMFPPFMM","PPPKKPPPPPPMHPPPPPNEDEEEENRPPPPPMMPPPPPFMMMMPPPPMM","PPKKPPPPPPHMPPPPPPPRDNNNPPPPPPPPMPPPPPMMMFPPPPMMMM","KKKTPPPPPEEPPPPMTPPPPPPPQ.PPPTSSPPPPMMMMPPPPPMMMMM"],"pal":{"A":{"hex":"#eb2914","ab":"Ala","cname":"Red"},"R":{"hex":"#74250e","ab":"Arg","cname":"Maroon"},"N":{"hex":"#f97003","ab":"Asn","cname":"Orange"},"D":{"hex":"#fab003","ab":"Asp","cname":"Amber"},"C":{"hex":"#f3e290","ab":"Cys","cname":"Cream"},"Q":{"hex":"#78b244","ab":"Gln","cname":"Olive green"},"E":{"hex":"#fbe705","ab":"Glu","cname":"Lemon yellow"},"G":{"hex":"#1ccb22","ab":"Gly","cname":"Bright green"},"H":{"hex":"#096126","ab":"His","cname":"Forest green"},"I":{"hex":"#07d2f1","ab":"Ile","cname":"Cyan"},"L":{"hex":"#8dd2ef","ab":"Leu","cname":"Sky blue"},"K":{"hex":"#029ae8","ab":"Lys","cname":"Azure"},"M":{"hex":"#034cf2","ab":"Met","cname":"Royal blue"},"F":{"hex":"#0f1bb0","ab":"Phe","cname":"Navy"},"P":{"hex":"#020204","ab":"Pro","cname":"Black"},"S":{"hex":"#030ded","ab":"Ser","cname":"Electric blue"},"T":{"hex":"#0e0c60","ab":"Thr","cname":"Midnight blue"},"W":{"hex":"#4c0de2","ab":"Trp","cname":"Indigo"},"Y":{"hex":"#9011e5","ab":"Tyr","cname":"Violet"},"V":{"hex":"#ee0c9e","ab":"Val","cname":"Magenta"},".":{"hex":"#fdfdfb","ab":"Stop","cname":"Leave White"}}}};
-const PIC = PICTURES[CONFIG.VERSION] || PICTURES.masterpiece;
-const TS = 10, R = PIC.rows.length, C = PIC.rows[0].length, TC = C / TS, TR = R / TS, N = TC * TR;
+const DATA = {"name":"Einstein Department Mural","rows":["PPPTTTPPPAVVVVPPPPPPPPPPPPPPPTTTTTTTTTTTPPTTTTTTTTPPPPPPPPPTTPWWWWPPPPPPPPTTTTPPIIIIKKKKPPPPPPPPPPPPPPPPFMMMFPPPPPPTTTTTTTTTTPPPPPPPPPPPPSSSSPTTTTTTTTTPPPPPPGQQQPPPPPPPPP","PPPTTTPPPAVVVVPPPPPTPPPPPPPPPPPPTTTTTTTTPPPTTTTTTTPPPPPPPPPPPPWWWWPPPPPPPTTTPPPIIIIIKKKKPPPPPPPPPYYFPPPPFMMMFPPPPPPTTTTTTTTTTPPPPPPPPPPPPSSSSPTTTTTTTTPPPPPGGGQQQPPPPPPPPP","PPPPPTPPPPVVVVPPTTTTPQQQPPPPPPPPPPPPPPPPPPPPPTTTPPPPPPPPKKKYYYPPWPPPMMPPPTPPPSSIIIIIKKKKPPPPPPPPFYMMWPPPFMMMFPPPPPPPPPTTTTTTTPPLLKKPPPPPPSSSSPTTTTTTPPPPPPGGGGQQQPPPPPPFFF","PPPPPPPTTPPPPPPTTTTTPQQQQQQPPPPPPPPEEEEEPPPPPPPPPPPPPPPKKKKPPPPPYYWWWWPPTTPKKSSIILLIIPPPPPPPWWWWWMMMMFFFSSSSSFLLMMMMMPTTTTTTPPPLLKKPPPPPPPPPPPTTTTTPPPPPPPGGGQQPPPPPPPPSSS","VVVPPPPTTTTTTTTTTTTTPQQQQQQPPPPPPPPEEEEEEPPPPPPPPPPPPPKKKKIPTTHPYYYYWWPPTTPKKSSILLL..PHTTTPFWYMMMMMMMMMS...SSSSLISSMMPTTTTTTPPPLKKKPPPPPPPPTTTTTTPPPPPPPPPGQQQQPTTTPTPYSSS","VVVPPPPTTTTTTTTTTTTTPQQQQQQPPPPPPPPEEEEEEPPPPPPPPPPPPPKKIIIPTPPPYYYYYYPPPPPKKSSIILL..PTPPPPYYYMMMMMMMMSS...SSSSIISSSMPPPPPPPPPPLKKKPPPPPPPPPPPPPPPPPPPPPPPQQQQQPTTTTTPYMMM","VVVVVAPTTTHHHTTTTTTTPPQQQQQQPPPPPPPEEEEEEPPPPPPPPPPPKKKIIPPPTPMMYYYYPPPPKKKK.......PPPTPYYYYMM.......KKL...SSSSPPPPSSL...IIIPTPPPPPPPTPAAPPPPPPPPPPEEEEPPPPPPPPPTTPPPPMMPP","VVVVVAPTTTTHHHHTTTPPTPPPQQQQPPPPPPPEEEEEEPTTTPPPPPPKKKKIIPTTTPMYYYMYPTTPKKKK.......PTTTPYYYYMM.......LLL...SSSSPTTPPPL...IIIPTTPPPPPPPPANAPPPPPPPPPEEEEPPPPPPTTTTPPPPPMMPP","VVVVVAPPTTTHHHHTTPPPTTTPQQQQPPTPPPPEEEEEEPTTTTPPPPPKKKKIPPPPPPMYYYMPPPPPKKKL.......PPPPPYYYWMM.......LLL...SSSSPTTPPPP...IIIPPPPPPPPPPANNAPPPPPPPPPEEEEPPPPPPPTPPPPPPPMMPP","AVVAAAAPTTTHPPPPPPPPTTTPQQQQQPPTTTPPPPEEPPTTTTTPPPKKKKKKPPPLLMWWMMPPPPKKKKLL...PPPPPPYMMMYW..........WSSSSSSSSSPPPPPPP...IIIIIKKPPPPPPANAPPPPPPEEEEEEEEPPPPPPPPPPPPPPAPPPP","PPPAVVAPTTTTPMMPPPPPTTTPPPQQQQPTTTTTTPPPPFTTTTTPPLKKKKKPPPPLLLWWMMPTPKKKKK.....PTTPMYYMMMMM......MMMMMMSSSSSSSSSSSSPPPPPP...IIKKKPPPPPAAAPTPPPPEEEEEEEPPPPPPPPPPPPAAAAPPPP","PPPAVAAPTTTTPMMPTPPPPTTTTPQQQQPPTTTTTFFFFFFPPPTPPLKKKKKPPPPLLLWW..PTPKKKKK.....PTTPFYYMMMM.......MMMMMMSSSSSSSSSSSSSFPPPP...IIKKKFPPPPPPPPTPPPPEEEEEEEPPPPPPPPPPPPANNAPPPP","PPPAAAAPTTTTPMMPPPPPPPTTTPQQQQPPPTTTTFFFFPPPMPTPPLKKKKKPTPPLLLWW..PPPKKKKI.....PPPPFMYMMM........MMMMMMSSSSSSSSSSSSKKKPPP....LLLKFPPPPPPTTTTPPPEEEEEEEPTPPPPPPPPPPNNNNPPPP","PPPPPPPPTTTTPPPMMFFFFPPPPPPPPPPPPTTTTTFFFPIIIPTPPLKK...PPTPLLLWYYYKKMLLK....KKFPPYYKKMMM......MMMWWLLMMMIIII..IIKKKKKKKLLPPP...KKKLFSSPPPTTTPPEEEEEPPPPPPPPPPPPPAANNRPPPPP","PPPPPPPTTTTTTTPMMMMMFPPPPPPPPPPPPPTTTTTTTPIIIPTPPLLK...KPPPLLLWYYYKKMLLK....KKFPPYYKKMMM......MMMMIILMMMIII........KKKKMMPPP....KKLSSSPPPPTTPPEEEEEPPPPPPPPPPPPPANNNNPPPPP","PPPPPPPTTTTTTTPMMMMMFPPPPPPTTTTPPPPPPPPTTPIIIPTTPLLK....PPIILLWYYYIIKLLK....KMFPPWWKK..M.....MMMMIIKKMMIIII........KKKKKLPPP....KKLSSSPPPPPPTPPEEEEPPPPPPPPPPPPPANNNAPPPPP","PPPPPPPPTTTTTTPPFMMMMFPPPPPTTTTPSSSSSSPTTPLIIPTTPLLK....IIIILLIYYYYIILLK....MMMWWWWKK......MMMIIIIK...................KKLMPPP......SSSFFFPPPTTPPPPPPPPPPPPPPPPRNNNNNAPPLPP","PPPPPPPPPPTTTTTPFFMMMFPPPPTTTTTPSSSSSSPPTPLIIPTTPKKK....IIIIILIYYYYIIIIK....MMMWWWWLK......MMSIIIKK...........LLLLKKKKKKKPPPP......SSSSSFPPPPPTTPPPPPPPPPPTPPPRNNNAAAPPPPP","PPPPPHHQQPTTTTTPPPFMMMMMPPTTTTTPPSPSSSSPPPLIIPPPPKKKI....IIIILLIMYMI.IIK....MMMWWMM......MMMSSIII...........KLLLLLKKKKKKKMMMMPPP...LKKKKKKKKKPPPPPPPPPPPPPTPRRNNRPPPPPPPPP","PPPPPHHHQPTTTTTPPPPFMMMMMPTTTTTTPPPSSSSSSMLII....KKII.....IIILLLLMM..IIK....MMK..LL.....MMMSSIIII..........KLLLLLKKKKKKKKMMMMPTP...IKKKKKKKKKKKMMPPPPPPPPPTPRNNNRPPPPPPPPP","PPPPPHHHQPPPPPPPPPPFMMMMMPTTTTTTTTPPPPSSSMLIK....KIII......IILLLLMM..IIK....MMM..LL.....MMSSSIIIK..........KLLLLLKKKKKKKKMMMMPPP...IKKKKKKKKKKKMMPTPPPPPPPTPRNNNRPTTPPPPPP","PPPPPHHHHHPPPPPPPPPFFFFMSPTTPPPPPPPPTPPSSMKKI....IIII......IIILLLMMLII......KMI..LL.....KMSSSIIKK..........KKK.......KKKKKMMIIIP...LKKKKKKKKKKKMMPPPPPPPPPPPNNNNNPTTTPPPPP","PPPPPPHHHHHHPPPPPPPPPPPPPPTTPFFFFFFPTTPPPPKKL.......ILLI......LL.LMMI.........III....KKKKKKIIIKKSSMKK...KKKK.............KKIIIIIMMMPPPPPPPPLLLLIISSSSPPPPPPPNNNNPPHTTPPPPP","PPPPPPPPPHHHPPPPPPPPPPPTTTTTPFSSSSFPTTTTTPKLL.......LLLI......II..SII.........III....IKKKKKIIKSSSSMKK...KKKK.............KKKIIIIMMMPTPPPPPPPLLLLISSSSPPPPPPPRNNNPHTTPPPPPP","TTTPPPPPPHHHPPPPPPPPPPPPTPPPPFSSSSFPPPPTTPKLL.......LLLI......II..SSL.........III....IIILLIKKKSSSSM.....KKK..............KKKIIIIMMMPPPPPPPPPLLLLLSSSSPPPPPPPPPPPPHTTPPPPPP","TTPPPPPPPPPPPPPPPPPPPPPPTPFFFSSSSSMFFFPPPPPSSL.........IIII.....IIIILL........III....SSSSLLISSKKK.....KKK...................KIIIIIIIKKWWWPPPPWWMMIIIKWWWWPPPPPTTTTTTPPPPPP","PPPPPPPPPPPPPPPPPPPPPPPPTPFKKKKKSMMMMMMMMMMSSL.........IIII.....IIIILL........III..IISSSSLLISSKKK.....KKK......KKKLLLL........IIIIIKKKWWWPPPPWWMMIIIKYYYWPPPPPPTTTTPPPPPPP","PPPPPPPPPPPPPPPPPPPPPPPPPPKKKKKKSMMMMMMIKKMSSL..........III.....IKKKLL........LII..IISSSSLLISSSK......KKK.....KKKKLLLL........KKKKKKKKYYYPPPPWWMMIIIKYYYYPPPPPPPTTPPPPPPPP","PPPAAAPPPPPPPPPPPPPPPLKKKKKKK.........IIIIILLLLLLL................KKLLLI......L.KKISSYYIIL...........KKKILLIKKKKKKKLLLLKK..........KKKKMMYYYWPPPPYYYYY...PPPPPPPPPPPPPPFFF","PPPAAAPPPPPPPPPPPPPFFLKIIIIKK..K......IIIIILLLLLLL................KKLLLI.........KKSSYYIII...........KKKLLLIKKKKKKKKLLKKK..........KKKKMMYYYWPPTPYYYYY...PPPPPPPPPPPPPPFMM","PPPAAAPPPPPPPPPPPPPLLLIIIIIIK.KK......IIIIILLLLLLI................KKLLII.........KKSSYYIII...........LLLLLIIKKKKKKKKKKKKK..........KKKKMMYWWWWPPPYYYYY...PPPPPPPPPPPPFFMFM","PPPAAAAAAPPPPPPPPPPLLLLLLLPPPPPPPPPMMM.....LLLL.......KKLLLLLLL.....LKIIIIII....LLKSSRR.....III....MMMMMMIIIKK.......KKKKKKKKLLL......KKKIMMMWWYYPPPPYYYWPPPMMMMMPPPPFMFPP","PPPAAAAAAPPPPPPPPPPLLLLLMMSPPPPPPPPMMM.....LLLL.......KKLLLLLLLL....KKIIIIII....LLLSSRR.....III....MMMMMMIIIK........KKKKIKKLLLL......KKILMMMWYYYPPPPYYYWPPPMMMMMPPPPFMFPP","PPPAAAAAAPPPTTTTPPPLLLLLWMPPTPPPPPPMMM.....ILLL.......KKKLLLLLLLL...KKIIIIIL.....LLSSRR.....SIK...SMMMMMMIIKKKKK.....KKIIIILLLLL......KIILLLLWYYYPPPPPYYWPPPMMMMMPPPPFFMPP","PTPPPPAAAAAPTTTTTPMWWWPPPPPTTTTPWWWWWYMMMII......KKKKKKKSSSLLLLLLL...KKKI........DDDDDD...SSS..KKSYRRPPPMMMMIIII.........IILLLLL.........LLLIMMYYWWPPPPPPPMMMMMMPPPPPPPPPP","TTPPPPAAAAAPTFPPPPWWWWPTTTFFPPPPWWWWWWSMMII......KKKKKKKSSSSYYCKKK...KKKK........DDEEDD...SSS.KKIRRRRPMMMMMMIIII............LLLL.........IIIIMMYYWWPPPTTPYMMMMMMMPPPPPPPPP","PPPPPPPPPAAPFFPMMMWWWPPTTTFFPYYWWWWWSS.......IKKKKKKKKSSPPSSNNNEEEEEEEEEEEE...EEEEEEEEECEEEEEEEEENNNNRNNYPPMIIIILLLLI.........LLLLL......IIIKKKMYWWWWPTTPPPPPPPPPPTTTTTPPP","PPPPPPPPPAAPFFPMMMMWWPTTTTPPPYYYWWWSSS.......KKKKKKFFFFSPPYANNNEEEEEEEEEEEE...EEEEEEEEEEEEEEEEEEENNNNNNNYPPMIIILLLL...........LLLLL......IIKKKKKKYWWYPTTFFFFTTTPPPPPPPTPPP","PPPPPPPTPPPPTTPMMMMMPPTTTPPYYYYYYSS..........KKKKKKPPPPPAANNEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEECEEEENNNNAANSSSSLLLIIIIII.......LLL..........KKKKYWWWPTTTFFFTTTPPPQQQPPPPP","PPPPTTTTTTTTTTPMMMMPPTTTTPYYYYYYSSS........KLLLLKKKPTTPPANNNEEEDDDDEEEEEEEEEEEEEEEEEEEEEEEEEEEEECCEEENNNNNNAPPPILLLIIIIII.......LLLLLL.......KKMMYYWWPPTTTTTTTPPPPQQQPPPPP","PPPPPPPTTTTTTTPMMMMPTTTPPPPWYYYYSSS........LLLLLLKKPPPPANNNDEEENNNNNNEEEEEEEEEEEEEEEEEEEEEEEEEECCCCCDNNNNNNAPPPIIIIIIIIII.......LLLLLL.......KKMMYYWWPPPPPPTTPPPPPQQQPPPPP","LLKKSSPTTTTTPPPMMMFPTTTPWWWWYM.....KKKKKKKLMMMMMMPPRRRRNNDDNNNNNNNNNNNNNEDDEEEEEEEEEEEEEEEEEEEECCCCCCDDDNDDNAAANSSSIIIIIILLL......LLLLK........KKKKMSWWWYYPPPPPQQQQQQQQQPP","LLKKKKPTTTTTTPPFMMFPTTTPWWWWYM.....KKKKKKKKMMMMMMPPRRNNNNDDNNNNNNNNNNNNNNNNDEEEEEEEEEEEEEEEEEDDCCCCCCCCDNDDDNNNAPPSIIIIIIILLL......LLKK........KKKKSSWWWWYPPPPPQQQQQQQQQPP","LKKKKKPTTTTTTTPFYSFPPTTPWWWWMM..KKKKKKKKKKKLLMFMPRPNNNNNNEEEEEEEEDDDDDDDNNNEEEEENNNNNENDDDDDDNNEEEEEDCCCDDDDDDDNYSSSSIIIIIIIL......LIKKKK......LLLLFFFWWWWPPPPPQQQQQQQHHPP","KKKKKIPTTTTTTTPFFFPPPPPPWW......KKKKKKKKK..LLFPPPRANNEEEEEEEEEEEEEEEEEEEENNNNANNNNNNNNNNNNNNNNNNNNNNNDCCCDEDDDDDNNDSSSSSS...IL........KKKKK........PPPPPPPPPPPPPPPQQQPPPPP","PPKKKIPTPTTTTTPPPPPPPPPPWW......KKLLLKKKK..WWWPPPANNNEEEEEEENNNNNEEEEEEDANNNNANNNNNNNNNNNNNNNNNNNNNNNDDDDCCDDDDDDDASSSSSI...IL........KKKKK........PPPPPPPPPPPPPPPQQHPPPPP","PPPPIIPTPPPPPTTTPPPPPPLL.W...IKKKLLLLLKKKSSYWWRRANDDNAEAAAANNNNNNNDDDEEEEEEEEEENNNNNNNNNEEEEEDDEENNNNNNNNDEDDDDDDDDSSSSIIIIIII.ILL....KKKKKK.......PPPPPPPPPPPPTTPQHPPPPPP","PPPPPPPPPWWMPTTTPPPPPLLL....IIIKLLL......YSSFPRRNDDDDAAAAAANNNNNNNNNNEEEEEEEECCEDDDDDDEEEEEEEEEEEEEEENNNNNDEDDDDDDDDASSSSSIII..IIIL....KKKKKSSS....LLPPPPPPPPTTTTPPPPPPPPP","PPPTTTTPPMWWPPPTPPPPPPL.....IIIILLL......YYFFPRNDDDDDAAAAAANNNNNNNNNNEEEEEEECCCDDDDDDEEEEEEEEEEEECCCENNNNNDDEEDDDDDDDSSSSSIII..IKLL....LKKKKSSS......PPPPPPPTTTTTPPPPPPPPP","PPPTTTTPPMMMMMPPPYY.....LKKIIIII.......KMYYPPRRRDDADDDDDEEEEDDDDDDEEEEEEEEEECCENNNNNNNEEEEEEEEEEECCCCEEEDDNNDEEDDDDDDDDSSSLIII..KLL......LLLSSSSS......IIPTTTTTTTPPPPPPPPP","PPPTTTTPPWWMMMPPFSK.....LKKKIIII.......MMYYPPRRRRDDDDEEEEEEEEEEEEEEEEEEEEEEEECENNNNNNNDEEEEEEEEEECCCCCEEEDNNDEEDNNNNNNSSSSLLIKK.KLL......LLLSSSSS.....KI.PTTTTTTPPPPPPPPPP","PPPTTTTTPWMMMMFFMKK.....LKKKKKKK.......MMYYPPRNAADDDDDDDDDDDDDDEEEEEEEEEEEEDDDENNNNNNNDDEEEDDDDDDDCCCCEEEDNNDDDDNNNNNNNSSSLLKKKKLLL......KLLSSSSS........PPPPPTPPPPPPPPPPP","PPPTTTTTPPPPYYYKKKKLPPPPPPLLL......KLMMMMPPRRRDDDDEEEDNNNNNNNNNEEDDDDDDDDDDNNNNEEEEEDDNNNNNNNNNNNNDCCCEEEEDDNNNNDEENNNNNNSSSLKKL...LLK......LLLLLLK......WYYYPPPPPPPPAAAPP","PPPTTPPPPPPPYYYKKKKLPPPTTPLLL......KLMMMMPPARRDDDDADDDDNNNNNNNNNNNNNNNNNNNNNNNNEEEECCDNNNNNNNNNNNNDDDCEEEEEDNNNNDEENNNAAASSSLLLL...LKK......KLLLLKK......WYYYPPPPPPPPAAAPP","PPPPTPEEEPPPYYYYYYPPPPPPPPLL.......KMMMWWPPRNNDDDDAAADDNNNNNNNNNNNNNNNNNNNNNNNDEEEECCDNNNNNNNNNNNNNNNDDDEEEDNNNNNNENNNNAASSSLLLK...KKK......ILLLLKK......WYYWPPPPPPPPAAAAA","PPPPPPEEEPPPPPPPPPPTTPLL.....LKKMMYYMWMPPPPANNAAADDDDEEEEEEEEEEEEENNNNNNNNNDDDEEEEEECCDDDDDDDDDDDNNNNNNNDEEEDDNNNNNEEENNNNWWMMMK....KKKK.........LKKK....KKKKMMMPPTTPAAAAA","PPPEEEEEEPPPPPPTTTTTTPII.....LKKMMYYMMMPTTPANNAAANDDECCCCCCCCCCEEENNNNNNNNDEEEEEEEEECCCCCEEEEEECDNNNNNNNDDEEEENNNNNEEENNNNWWMMMM....KKKK.........LKKKK...KKKKMMMPTTTPAAAAA","PPPEEEEEEPPPPPPPPPPPPPII.....LLKMMYYYMMPPPPANAADDDEEEEEEEEDDDDEEEEEDDDDDDDEEEEEEEEEEECEEEEEEEEEEEEEEENNNNNDEEENNNNNEEENNNNWWWMMM....KKII.........KKKKK.......MMMPPPTPPPPAA","PPPEEEEPPPPPPPPWWWKKKK..MMMMSSSSLKIYYMMPPRRAANDEEEEEEEEEENNNNNDEEEEEEEEEEEEEEEEEDDDEEEEEEEEEEEEEEEECCEDDNNNNEEEENNNNNNDDDMMMMKKM......IIII.........KKKMPP....IIIIIPTTTTPPP","PPPEEEEPTTTTPPPWWWKKKK..MYYMSSWSLLIYYSSPPRRNNNDEEEEEEEEEDNNNNNNDEEEEEEEEECCEEEEENNNNNEEEEEEEEEEEEEEEEEEDNNNNEEEENNNNNNDEEYYMMKKK......IIIIIK.......KKKMPP....IIIIIPTTTTPPP","PPPPPPEPTTTTTTPWWWKKKKMMYYYMSWWW...YYSSPPRRNNNDEEEEEEEEEEDNNNNNNEEEEEEEECCCCCEDDDDDDNEEEEEEEEEEEEEEEEEEEDENNEEEENNNNNNDDEYMMMKKKKK....LLLIIK.......KKKMPP....IIIIIPPPPPPPP","PPPPPPPPTTTTPPPLLLKKKKYYYYYMS.....IYYSSAANNNDDPPPPPPPEEEEEDDDDNNEEEEEEECCCCCEDDDDDDDDDLLLPPPPPPEEEEEEEEEEEEENNNEEENNNNNNDKKKKKKKKKI....LLIIK.......KKKKKIPPPP...IIKKPPPPPP","PPPPPPPTTTTPPMMLLLKKKKYYYYYM......SYYSSRANNNDEPTTTTTPEEEEEEEEDNNEEEEEEECCCCEEDDDDDDDDLLLLPTTTTPPEEEEEEEEEEEENNNEEENNNNNNDEKKKKKKKKI....LLIIK.......KKKKKIPFFP...IIKKKKPPPP","PPPPPPPTTTTPYYYMMMMMMMYYMMM.....WWWYSPPANNNAPPPTTTTTPPPPFEEEEEDEEEEEEEECCCEDDDDDDDEKKSSFPPTTTTTPPPPEEEEEEEEEEDDDDEENNNNNN...KKKKKIII.....IIIKKK......KKKKPTTPPPPIIKKKKPPPP","PPPPPPPTTTTPYYYMMMMMMMYYMMM.....WWWSSPPANNDDPTTTTTTTTTPPFEEEEEEEEEEEEEEECCDDDDDEEEEKKSSSFPTTTTTTTTPEEEEEEEEEEEDDDEENNNNNN...KKKKKIII.....IIIIIK......KKKKPTTTTPP..KKKKPPPP","GGGGGGPPPTTPYYYMMMMMMMYYMM.....WWWWSSPPANNADPTTTTTTTTTTPFEEEEEEEEEEEEEEEECDDDDDEEEEKKSSSFPFTTTTTTTPPPPPEEEEEEEDDDDEDNNNNNNN.KKKKKIIII....IIIIIIII.....KKKPPPPPPP..KKKKPPPP","GGGGGGPPPPPPYYYMMMM..........WWWWLLLSPPANAPPPTPPPPPPPPPPFEEEECCCCEEEEEEEEEDDDDDEEEEKKKSSPPPPPPPPPPPPPPPPEEEEEEDDDDDEENNNNNNN.KKKKIIIII......IILLIII......KKKKPPPPPKKKKPPPP","GGGGGGPPPPPPYMYMMMM..........WWWWLLLSPPANNPTPPPMMNNAAAAAMEEECCCCCCCEEEEEEEEDDDEEEEEKKRRRRPAAAAAAAMMMMPFPEEEEEDDDDDDEENNNNNNN.KKKIIIIII......ILLLIII......KKKKPPPPPKKKKPPPP","GGGGPPPPPPPWMMMK..........MYWWSSSKLLPPPKKKPTPRRNNNNNNEEEEEEECCCCCCCCEEEEEEEEEEEEEEEEEDDDDEDDDDDDDEEEEPFPPPEEEEDDDDDDNNNNNNNNN...LLIIIIII.......IIIIII....LLLKPPPTPPPKKKKPT","GGGGPPPPPPPFMMMK........MYYYYYSSSIILPTPKKKPTPRNNNNNNNEEEEEEECCCCCCCCCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEPPPFPEEEEEDDDDNNNNNNNNNNL..LLLIIIIII..........III.......FFPTPPPKKKKPT","GGGGPPPPPPPFSMM.......KKMYYYYYSSSIILPTPKKKPPPAEEEEEEEEEEDEECCCCCCCCCCCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDRRPPPEEEEEDDDDNNNNNNNNNNL..LLLIIIIII........IIIII.......SFPPPPPKKKKPT","PPPPPPPPFFFSKK.....KKMWWYYYMSSSSS..PPTPMRRNNNEEEEEEEENNNNDCCCCCCCCCCCCCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDDEPPPPEEEDDDNNDENNNNRLL.......IIIIKKKK.......IIIIKLS...SSFFPPPPPKKPP","PPPPPPPPWSSSKK.....MMWWWWYMSSSSSS..PFFPARRNNNEEEEEDDDNNNNDCCCCCCCCCCCCCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENNPPEEEDDNNNDDNNNNLLL.......IIIKKKKK.......IIILLKSK..SSSFPPPPPKKPP","PPPPPPPPFSSSK.....WMMWWWWWYSSSSSS..PFFPARRNNEEEEEDNNNNNNNDDDDDCCCCCCCCCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENRPPEEEDNNNNNNNNNNLLC.......IIIKKKKK.......IILLLISSSSSSSFPPPPPKKPP","PPPPPPFSSKKK...MMMWWWWMM...SSSS...SPFTPANNDDEEEEDNNNNARRRDDNNNDECCCCCCCEEEEEEEEEEEEEEEEEENNNNNNEEEEEEEEEEEPPEEEDNNNNNNDDDDLLKKII......IKKKKKKKK......LLLLKKKKYKLLFPPPPKKPP","PPPPPPSSSKKK...MMMWWWWKK...SSSS...PPTTPANEEEECEDDNNNNNRDDDDNNNDEEEECCCCEEEEEEEEEECEEEDDDENNNNNNEEEEDEEEEEEPPEEEDNNNNNNDEEEKKKIII......KKKKKKKKK......LLLLIKKKWSLLFPPPPKKPP","PPPPTPSSS....SSMMMWWW......SSS....PTTTPEEEEECDDANRRRRRRDDDAAAAADEEEECCEEEEEEEEECCCCCDDDDDNNNNNAEREDDDEEEEERRNNDDNNNNNNDEEEEECILL.........KKKKKK......LLLLIIKKSSSSWPPPPPPPT","PPPTTPSSS....SSMMMWWM......SSS....PTTTPEEEEEDNNRRRRRRRRDDDNAANNNEEEEEEEEEEEEEECCCCEDDDDDRRRNNARRRRRDDEEEEENNDNDDNNNNNNDDDECCCLLL..........KKKKK......LLLLIIKKSWWSFPPPPPPTT","PPPTPPSSS....FFMMMWMK....KKSSS....PPPPPEEEEDDNNRRRMYSNNNNNNAAAAAEEEEEEEEEEEEEECCEENDDDADDNNNNNNNRRDDDDDEEEDDDNDDNNNNNNNNNECCCILL.....................ILLIIIKKSSSSFPPPPPPPT","PPPPPWWWWKKKPPPFMM......KKKSS.....PPAAADEEDNNRRMFPYYWAAANDDNNAPPADEEEEEEEEEEEECDNNNDDDRANAAAAAANRNDDADDDEEEEDAANNNNNNNNNNECCCMMM...KKK...............KKIIIKK.KLLSSWWWPPPPP","PPPPPWWWSKKKPPPFMM......KLSSS.....PPAAADEEDNNRWMPPPPPPPPADDNNNRPANDEEEEEEEEEECCDNNNNDDNDDPPPPPPANNNRDDDDCCEEDAANNNNDDNNNNNEEEMMM....KK...............KKKKKKK....SFPWPPPPPP","PPPWSWWWWPPPPPPYMM......LLSSS.....PPAARDEEDRRPPPPPPPPPTPLEDNNNRRANDEEEEEEEEEECENNNNNDDDEEPFFFFPLLAANDREECCCCDDANNNNDDNNNNNNNNMMM......KKKKKKKKK......KKKKKKK....SFPPPPPPPP","TPPWWWWWPPTPMFF......LLLLLSSSS...PPPRNAEEEDSSPPPP....PPPPPDNNNRRPRDEEEEEEEEEEENNNNNNNAPPPPPPPPPPPPPFSRREECCCDAANNNNDDNNNNNNNNMMMKKK...KKIIIIIIK........KKKKK......FFFPWWWW","TPYWWWWPPTTPMMM......LLLSSSSSS...PTPNNNEEDASSPP........PPPLNNNNAPPEEEEEEEEEDENNNNNNDDPPFPI...LLPTTPFSDDDDDCCDDANNNNNNNNNNNNNNKMMKKK....KIILLIII........KKKKKK.....SSSPFWWW","PPPYWWWPTTPPSSS......LLLSSSSSS...PTPNNNEEEASSPP....FPPPPFPLAANNAPPEEEEEEEEDNNNNNNNNDEPPPP......PTTPFFNDDDDCCDNNNNNNNNNDNNNNNNKMMKKK....KILLLLIII.......KKKKKK.....SSSPMYYW","YYYY..PPTTPLLL....KKLLLKKKKSSS...PTPANNEEEMPPP....MPPTTP..PPPANAPPEEEEEEEEDNNNNNNNAPP.......PPPPPPPPPSNDDDCCEEENNNNNNNDDDNNNNNKMKKK......LLLLIIIIKL.....KKSSSS.......MMMYY","YYYY..PTTTPLLL....KKKLKKKKKSSSLLLPTPPANNNNPPP.....PPTPPP..PPPANAPPEEEEEEEEDNNNNNNAPPP....IKKPFFP...PPSSNNNDCEEENNNNEDDCCDNNNNNKMKKK.........LIIIILL......SSSSSSIII...MMMYY","YYYY..PTTTPL......KKKK..KKKSSSLLLPTPPANNNAPPR.....PFFP.PPP.SSAAAPPEEEEEEEEDNNNNEEDEIL....IKKPFFPP..PPPSNNNDEEEENNNNECCCCDNNNNNLKKKK.........IIIILLL......SSSSSSSSM...MMMMM","YYYY..PFFTPL......SKK...KKLSSSLLLPTTPANNNAPPR.....PTFPPPTP.LIPPPPPEEEEEEEEDNNNNNDEDAL.....KKPFFFP..PPPMCNNDEEEENNNNDECCCDNNNNNLLKKKK.........IILLLLLL....SSSSSSSMM...MMMYY","YYYYMMPFFFPI....IKSSS...KLLSSSSWWPTTPAANNNAAMM....PPPFFFPP.EEPFPEEEEEEEEEEDNNNNNDEDAA.....PPPFFFPLLFFPPRNNDEEEEDNNNDEEECCDNNNNLLKKKKKK.........LLLLLLLKKKKKKYWWWWWPPPKKKPP","YYYYPPPFFPPI....IISSS...LLLSSSWWWPTTPAANNNNAPP....IIPFFPPL.EEPFPEEEEEEEEEEDNNNNNDEDAA.....SSPFFFPFSNNRRNNNDEEEEDNNNDEEEECCDDNNLKKKKKKK.........LLLLLLLKKKKKKYWWWMMPTPKKKPP","YYYYPTFFPPII....IISSI...LLLSSSSWWPTPPAANNNNAPPP...IIPPPPLEEDDPFPEEEEEEEEEEDNNNNNDEEEEE....SSPPPPPSMNNNNNNNDDEEEENNNDEEEECEDDNNKKKKKKKK.........KKKKKKLLLKKKKSWWLMMPTPKKKPP","PPPPPTTFPIII..IPPPSII...LLLWWSSSSPTPAAARRRNNAARRRMLLL...DDDNAPFPEEEEECCEEEEDDNNNDEEEENNNNIIIIIIIINNNNNNNNNNNEEEENNNDEEEEENNNII.....KKKKPP..........KKKSSLLLLLLLLLLPTPPKKWP","TTTTTTTTPIII..IPPPSII...LLIWYSSSSPPPANNRPRNNDDRRRRLLL...DDNAAPPPEEEEECEEEEEEDNNNEENEEEEEEIIIIIIIINNNNEENNNNNEEEEDDDDDDDEENNNII.....KKKKPP..........KKKSSSLLLL.LLLIPPPPKKWP","HTTTTTTTP.....PPSSII.IIL...YYSSSSYWANNAPPPANDEDDDDNNNDDDDNAPPPADEEEECENNEEEEEDDDEEANNEEEEEEENNNNNNNEENNNNNDDEEEEEEDNNNNNNDIIII........KFFPPPPPP.........SSLLLLMLLIYYYYPWPP","HTTPPPTTP.....PSSSII.LLL...SSSSSSYWANAAPPPANDDDDDDNNDDDDDNAPFPAADEEECENNNEEEEEEEEEAAAAEEEEEDNNNNNNNEENNNNNDEEEEEEEDNNNDDDDIIII........KMFPPPPPP.........SSLLLLMLLKYYYFPPPP","PPPPPPPTP....PPPSSII.LLL...SSSSSMARAAPPPPNNAAAAAAANDDDDDDNAPTPADEEEECENNNEEEEEEEEEEAAANEDEEDNNNENNNNNNNNNNEEEEEEEEDNNDDDDDLIIIII......KMFPPPPPPP.........SLLLLMLKKYYYWPPPP","NAAAPPPTP...PPTPII..LL.....SSMMMMAARPPPAEEEAAANNNNDDDEEDNAPPTPDEEEECCENNNEEEEEEEEEEENNNNNDEEDDDEDDDNNNNNNNEEEEECCEENDDDDDDSSSLLI......LLKKFFFPPPPPPKK.....LLLLLL......PPPP","NNNAPPPPP...PTTPII..LL.....MMMMMMAAAPPPAEEEAAANNNDDDEEEDNAPTPPEEEEECEENNNEDEEEEEEEEEEANNNDDDEEEECCDNNNNNNNEEEECCCCEDDDDDDDSSSLLL......LLKKMMMPPPTTPKK.....LLLLLL......PPPP","NNNNAPPPP...PTPPI...LL.....MMMFFMAANAPPDEEEAANDDDDEEDDDNANPPPEEEEEEDNNNNNNNDEEEEEEEEEEEDDANNDDDDDCCDDNNNNNNNDDCCCCCEDDDDDDSSSLLL...L..LKKKMMMPPPPPPKL......LLLLL......PPPP","NNNNAPPPPLLLPTP...IKL...KMMMMFPPFANNNDEDNNNEEEEEEEDDDDNAPPPPREEEEEEDNNNNNNNEEEEEEEEEEEEEDNAANNAANECCCDDNNNNNNNDCCCCCDDDDDDYSSSSS...LKKKKKLLLIAAAAAPPPPSS.....LLLLL....FFPP","AAAAAPPPPLLLPTP...KKL...KKMMMFPPFANRDEEDNDDECCEEEEDDDDNAPPPPREEEEEEENNNNNNNEEEEEEEEECCCCCDDDNNAAAEEECCDNNNNNNNECCCCDCDDDDDSSSSSS...LKKKKLLLLLANAAPPPPPSS.....LLLLLL...MFPP","PPPPPPPPPPPPPTPIIKK.....KKLMMMPPPRRRDEDNDDDEEECCEDDDDDNAPPRREEEEEEEENNRRNNNNNECCCCCCCCCCCCCDDDDDENNNECCEEENNEECCCCDDDDDDDDSSSSSSLLLKKKKFPLNLNNNNNAAPPSSSSS....LLLLMM....PP","PPPPPPPPPPTTHTPIIKK.....KIIMMMPTPRRREEDDDEEEEEEEDDDDDDDDPPNNEEEEEEEEEERRRNNNDDECCCCCCCCCCCDNDCEEENNNNECCCCEECCEECCDDDDDDDDSSSSSSKKKKKKKFPPAAANNDDNAPPSSSSS....LLLLMMM...PP","PPPPPPPPPTTHHHPKKKK.....KIIMMMPTPRRREEENEEEEEDDDDDDDEEEEPPANDEEEEEEEEERRRNNDDDEECCCCCCCCCCDNDCCCENNNNEEECCCCCEEECCDDDDDDDDSSSSSSKKKKKKLRRRAAANNDDNAPPPSSSS....LLLLMMM...PP","PPPPPPPPTTHPPPPKKK......KIIPPPPTPRRRNNNEEEEDDDDDDDEEEEPPPPADEEECEEEEEEEEAAADDDDDDCCCCCCCCCCDNEEEEEEEENNNDDCCCEEEEEDDDDDNNNSSSSSSKKKPPPPANNEEENNNDNRPFPSSSS....LLLLMMMM....","PPPFFFFPTTTPKKKK.....KKKMMMPTTTTPRRRNNNEEEENNNNNDEEEEEPPAANDEECCEEEEEEEEADRDDDDDDCCCCCCCCCCCEENNNECCENNNNNDCEECENDDDNNDDDNRRRSSSSSFPPPPANNEEEEDNNNRPFPSSSSLLL...IIMMMPP...","PPPFSMFPPTTPKKKK.....KKKSSSPPFFFPRRRNNNEEEENNNNNDEEEEEPPANNDEECCEEEEEEEDADDDDDDDECCCCCCCCCCCCENNNECCENNNNNDEECCENNNNNNDCDNRRRSSSSSFPPPPANNDEEEENNNRPFPSSSSLLL...IIMMMPP...","PFPFSMFPPPPPKKKK.....KKKSSSSPPPFPRRRNNDEEENNNNNNEEEEEPPPANNDEECCEEEEEEEEDDDDDDDDRECCCCEEEEEECCENECCCCDDNNNDEECCENNNNNNDDDNRRRMSSFFFPPPPANNDEEEENNNRPFPSSSSLLL...IIMMMPP...","FSFSMMFPPKKKKK....KKK..SSSSSSSPFPRRRDDEEENNNNNEEEEEEEPTPNNNDECCEEEEEEEEEEEEEEEDDRRECCEEEEEEEECCECCCCCCEDDDEEECEENANNNNNNNARRRSSSPPPAAAAANAADEEENNARPFPSSSSLLLL....IIIPPPII","SSSSMMFPPKKLLL....KKK..SSSSSSSPFPRRRDEEEENNNNNEEEEEEEPTPNNNEEEEEEEEEEEEEEEEEEEEDRRECEEEEEEEEEECCCCCCCCEEEEEEEDNNNANNNNNNNNRRRSSSPTPANAANNAADEEENNRRPFPSSSSLLLLL....IIPFPII","SSMMFFFPPKKL......KKK..SSSSSSSPFPRRRDEEDENNNNNEEEEEADPTPNNNEEEEEEEDDEEDDEEEEEEEDRRECCEEDDEEEEECCCCCCCCEEEEEEEDNNNNANNNNNNNNRRSSSPPPANANNNAADEEDNNRRPTPSSSSIIIL.....IIPPPII","MMMFPPPKKKK....LLKK....SSSSKKIPFPANNDEDNNNNNEEEEEENAAPTPPAAEEEEEEDDDNNRRPPPPEEEDNRDCCDANADEEEEEECCCCCEEEEEEEDNNNNNNNNNNNNNNRRRSSARADDEENNAADEDNNAPPPTPPPSSIIIILL.....PSSSS","FFFFPTPKKKK....LLL.....SSSSKKIPFPANNDEDNNNNNDEEEEENAAPTTPAAEDDDDDDDNNNRRPTTPEEEDNRDCCDNNNDEEEEEEECCCEEEEEEEEENNNNNNNNNDEEARRRRSSARRDEEENNAADDNNNAPTTTTTPSSIIIIIL.....PSSSS","PPPPPTPIK.K..LLLLL....LSSSSKKSPFPNNNNDNNNNNDEEEEEENNAPPPPPPPANNNNDNAPPPPPPPPPEDDRRDCCCDDEEEEEEEEEEEEEEEEEENNNDDDNNNRANNNNNRRNRSSARRDEEENNAADDNNNAPTTTTPPIISSIIILLL...IIIPP","PPPTTTPII...KKLLLL...KLSSSSKKSPFPANNNNNNNNDCEEEEEENNNDEEPTTPANNNNNNNPFFPEEDAPPRRRRDCCCCCERREEEEEEEEEEEEEEENNNDEDNNNAANNNNNRNDRFPAAREEEENNAADDNNNAPTTTTPIIISSIIIILL...LIIPP","PPPTTPPII...PKKKKK....SSSSSKSSPPPANNNNANNNDCCEEDENNNNEEEPPTPAAAAAAAAPPPPEEDAPRRRDDCCCCCCERREDEEEEEEEEEEEEENNDEEEDNDAARDDRRDDDRSFAAAEEEEAAANDDNNAAPTTTPP..ISSSIIIII...LLLPP","PPPTTPII.IIPPPPKKK..KMMMMMMMMMMPPANNNAAADDCCCCDNNNNNNEEEEPPPPPPPPPCCCEEEEEEDEDDDEECCCCCCCENANDEEEEEEEEEEEEDDEEEEEDDDDRRRDDDDDDRREEEAAAANNDDEDNNPPPFFTP....SSSSIIKKPPP...PP","PPPTPPII.IIPTTPKKK..KMMMMMMMMMMPPANNNAAADEECCEDNNNNNNKKKKKKPPPPPPPCCCEEELLLEEEEEEECCCCCCCENANDEEEEEEEEEEEEEEEEEEEDDDDRRRADDDDDRREEEAAAANNDEDDNRPTTTFTP....SSSSKKKKPPP...PP","PPTPPIIIIPKPPTPKKKPPKKKKMMMMMMMPPPANNAAADEEEEDDDDDKKKKKKKKKKKKKKKKCCCKKKKLLEEEEEECCCCCCECCEARNDEEEEEEEEEEEDDDEEEEDDDDRRDDDDDDDRRRDDAAAEDDEDNNNRPPPPPPP....SSSSKKKKPPP...PP","TTTPMLLLLPPPPPPKKKPPPKKKMMMMMMMPPPANNAADEEEEDDLKKKKKKIIIIKKKKKKKKK...KKKKKKKLEEEEECCCCDNDCCERNNEEEEEEEEEEDNNNDEEEDDDDRDDDDDDDDRRDDNNEDCEEEDNAPPPMPPII.....SSSS.LLLPPPSL.LL","TTPPMLLLLPPPPPPKKKPTPKKIMMMMMMFPPPANNAADEEEEDDLKKKKIIIIIIIKKKKKKKK...KKKKKKKKLLLCCEKLLLRNDCENNNEEEEEEEEEEDNNNEEEEEDDDDDRDDDDDDRRDNNDCCCEEEDNNPTPMPPII.....SSSS.LLLPPPF..LL","TTPMSSLLLPPPPPPLKKPTPPIIIYMMMFPPPPANNAADEEEEDDLKKKIIIIII...KKKK.KKK...II...KKKKKKKKLLLLRNDCENRREEEEEEEEEDDNNNEEEEEDDDDDDDDDDDRRRNNNDCCCDDDNANPPPMPPP......SSSS.LLLPPPFL.LL","TTPSSSSLLPPPLLLLPPPTTPMMIIIPPPPPPPANNAADEEELLLLKKIII.III...KKK....KKI......KKKK...KLLLL..LIIIIIRRNNEEEEDNNNNNEEEEEDDDDDDDDDDDRRRNNNDCCDNNNAPPFFFFPP....KKKKKK..LLLFFFPPP..","TTPSSSFPPPPPKKLLPPPTTPMMLLIPTTTPPPANNAADEEELLLKKKK...ILL...LLL....K........KKKK...LLLLL...IIIIIRRNNEEEEDNNNNNDEEEEDDDDRRDDDDDNRRNNNDCCDNNNAPPFMMFPP....KKKKKK..LLKSSFPPP..","PPPSSSFPPPPPKKKLPPPPTPMMLLLPTTTPPPANNAADEEELLLKKKK...ILL........LI..III....LKKK......LL...IIIIIKKNNEEEEDNNNNNDEEEEDDDDDDDDDDNRRRREECEEDNNNAPPFMMFPP....KKKK....LLKSSFPTP..","PPPSSFPPPPPPKKKPPPPPTPPPLLLPPPTPPPANNAADDDDLLLKKK....II.........LL..III......KKKI.....LL..IIIKKKKNNDDEEDNNNDDDEEEEDDDDDDDDNNNRRRDEEEEEDNNNAPPPKKFPP....KKKK....LKKSSSPPP..","PPPSSFPPPPPPKKKPPPPPTTTPLSSMFPTTTPANNNANDDDSSSKK..KKK...LLL...LLLL...III.......ILL......LL...KKKKKKNNDCDNNDDDDEEEEDDDDDDDNNNNNRRDEEEEDNNNAPPPKKKKMM....LLLM....SSSKKKSMMMM","PPPLSFPPPPPPPPPPPPPPTTTPSSSSSPTTTPNNNNANDDDSSSKK..KKK...LLL...LLLLLI.IIKKLL....LLL......LL...KKKKKKNNDCDNDDDDEEEEEDDDDDNNNNNNNRRDEEEEDNNNAPTPKKKKMM....LLMM....SSSKKKMMMMM","PPPPLLPPPPPTTPPPPPPPTTTPIISSSPPTTPNNNNANDDDSSSKKK.KKK...ILL...LLLLLI.IIKKKK....LLL......LL...KKKKKLNNEEEDDDDDEEEEEDDDDNNNNNNNNRRREEEDDNNNAPTPKKKKMM....LLMM....MMMKKKMMMMM","PPPPPPPPPPPTTPPPPPPPTTTPPPPSSSPTTPANNNAANNDSSPFSKKSSSKKKPPPLLIIIIIMMMIIKPPP....LLLL.....LLLK...KKLLLKNNEEDDDDEEEEDDDDNNNNNNNNRRRNNNDNNNNAPPTPKKKK....KLMMLL..MMWWWKKKMMMPP","PPPPPPPPPPPPPPPPPPPPPTTTFFPSSSPPTPAANNAANNNSSPFSLLSFFKKIPTPLIIIIIIPPMIKKPTP...LLLLIII...LLLKKKKKKLLLKNNEEDDDDECEDDDDNNNNNNNNNRRRNNNNNNNAAPTTPKKKK....KKMMLL..MMWWWLKKMMFPP","PPPPPPPPPPPPPPPPPPPPPTTTTTPSSSSPPPPPANNNNNNNRPPFLLFPPKKIPTPPPPIIIIPPPPPPPTPP.PPLIIIIIII.KKKKKKKKLLLKKNECEDDDDECCDDDDNNNNNNNNNNRRRNNNNNAPPPTPPKKK....MKPMM....MMMMWKKKKKKPP","PPPPPPPPPPPPPPPPPPPPPTTTTTPPPSSSSPTPANNAANNNNNPPPFFPPMMMPTTFFPPPPPPTTTTTTTTPPPPPSSSIIIIKPKKKFFPKLLLNNECCEDDDDECCDDDDNNNNNNNNRRRRRRRNAAPPPPPPKKK..KKMMFPPP..WWWYMMFPPPKKKPP","PPPPPPPPPPPPPPPPPPPPPPPPPTTTPSSSSPPPANNAANNNNNPPPFFPPPPPPTPPPPPPPPPPPPPPPTTTTTTPSSSIIIKKPPKKPPPKKLLNNECENDDDDDCCDDDNNNNNNNNNNNRRPPPPPPPPPPPPKKK..KKMFFPTP..WWYYMMFPPPKKKPP","PPPPPPAAAAPPPPPPPPPKKKKKPTTTPPSSSSPPANNNANNNNNNPPFFPPPPTTTPAAAAAAAAAAAAAPPPPPPPPSSPPPPKKPPPPPTPKKLLNNECENDDDDDCCEDDNNNNNNRRNNNRRPTTTTPPPPPPPKKK..KKFPPPPPYWWWMYMFPPPPKKKPP","TPPPPPANNNPPPPPPPPPKKKKKPTTTTPSSSSPPANNNNAAEEENNNNNYYYPTPPPAAAAAAAAAAAAAAAAAAAAAPPPPFPPPPTTTTTPKKKLDDEENNNDEECCCEDNNNNNNRRNRNNNAPTTTTPPPPKKKKKKMMMFPPP...YYYYMMPPPPPPKKLPP","TTPPPPANNNPTPPPPPPPKKKKKPTTTTPPMSSPPANNNNAAEEENNNNNYYYPTPAAAAAAAAAAAAAAAAAAAAAAAAAAPPPFTTTTTTTPKKKLEEEDNNNNECCCCEDNNNNNRRRRNNNNAPTTTTPPFFKKKKKKMMMFPPP...YYYMMMPPPPPPKLLPP","TPPPPPAANNPTTPPPPPPKKKKKPTTTTTPPPPPPPANNNAAEEEEENNENNRPTPAAAAVVVVVVVAAAAAAAVVVVVAAAAAPPTTTPPPPPIKKLEEEDNNNNECCCCENNNNNNRRRRNNNNAPTPPPPFSSSKKKKKMMMFPPPPYYYYMMMWPPPPPPKLLPP","PPPAAAPPPPPTTTPPPPPPPPPPPPTTTTTTTTTTPPADEAAAEEEEEEENNRPTPAAVVVVVVVVVAAAAAVVVVVVVVVVAAAPTTPPNNNNIIINDEDNNNNNECCCCENNNNNRRNNNNNNNAPTPSFFSSSSFPPPPFMMFPPPPPPPMMPPPPPPPPPPPQQQ","PPPANAPPPPPTTTPPPPPPPPTPPPPPTTTTFFFTTPAEEAAAEEEEEEENNRPTPAAVVVVVVVVVAAAAAVVVVVVVVVVAAAPTTPANNNNIIINDEDNNNNNEECCCDNNNNNRRRNNNNNNAPPPPPPFSSSFPPPPFMMFPPPPPTPMYPPPPPPPPPPPQQQ","PPANNAPPPPPTTTPPPPPPPPPPPPPPPTTTTFFFTPPEENAAAEEECEENNRPTPAAVVVVVVVVVAAAAAVVVVVVVVVAAAPPPPPANNNNNLLNDEDNNNNNEECCDDNNNNNNRRNNNNNNNPPPPPPPFFFPPTTPMFFFPPPPPTPPPPPPPPPPPPPPPQQ","AANNNAPPPPPTTTPFFFFPPPPPPPPPPTTTTFFFFTPNNNNNNNEEEEEEEEPTPAVVVVVVVVVVAAAAVVVVVVVVVAAAPPPPAANNDDDNNNNDEDNNNNNDEEDNNNNNNNRNNNNNNNPPPPPPPPPPPPPTTTPPPPPPPPPTTTPPPPPPPPPPPPPPQQ","AAAAAAPPPPPPPPPFSSFPPPPPPPPPTTTTTFFFFFPANNNNNNEEEEEEEEPTPAVVVVVVVVVVAAAAVVVVVVVVAAAAPPPPANNNDEDNNNNDCDNNNNNDEEDNNNNNNRRNNNNNNRPPPPPPPPPPTTTTTTTTTPPPPPPPPPTTTTTTPPPPPPTPQQ","PPPPPPPPPPTPMMMSSSFPPPPPPPPPTTTTFFFFFFPRANNNANEEEEEEEEPTPAVVVVVVVVVVAAAVVVVVVVVVAAAPPPRRNNNNDEDNNNNDDNNNNDDEEEDNNNNNRRRNNNNNNNPPPPPPPPPPPPPPTTTTTPPPPHHGGPPTTTTTPPPPPTTPPP","PPPPPPPPTTTPMMMSFFFPPPPPPLLPTTTTFFFFFFPPPANNNAEEEEEEEEPTPAVVVVVVVVVVAAAVVVVVVVVAAAAPTPNNNNNDECDNNNNDDNNNNDEEEEDNNNNNRNNNNNNNPPPPPPPPPPPSSSSPPTTTTTPPPHGGGGPPPPPPPPPPPTTTTP","PPPPPPPTHHHPMMMSPPPPPPLLLLIPTTTTTTTFFFFFPANDNAAEEEEEEEPTPAVVVVVVVVVVAAVVVVVVVVAAAAAPTPRNNEEECCDNNDECDNNNNDEEEDNNNNNRRNNNNNNRPPPPPPPPPPSSSSSSPTTTTTPPPPGGGGGGGGGGPPPPPTTTTP","PPPPPPPTHHHPPMMSPPPPPPLLLLIPFFFTTTTTFFFFPANDDAADDEEEEEPTPAVVVVVVVVVVAAVVVVVVVVAAAPPPTPRNNEECCCDNNDCCDNNNNDEEEDNNNNNRNNNNNANPPPPPPPPPPPSSSSSSPTTTPPPPPPPPPGGGGGGGPPPPPPTTTP","PPPPPPPTTHTTPPPPPPPPLLLIIIIPFFFTTTTTFFFFPNNNDDDNNDEEEEPTPAVVVVVVVVVVAAVVVVVVVVAAAPTPPPRNNEECCECDDCCCDDDNNDEEEEDNNNRRRNNNAPPPPPPPPPPFSSSSSSSSPTTTPSFFFPPPPGGGGGGGPPPPPPPPPP","PPPPPPPPTTTTTTTTTPPKKKIIIIIPFFFTTTTTTFFFPRNANDDDNDEEEEPTPAVVVVVVVVVVAAVVVVVVVAAAAPTPRRNNNECEEEEECCCCDDDDDDEEEDDANNNNNNNAAPTPPPPPPPPFSSSSSSSSPTTTPSMMFPPPPPGGGGGGPPPPPPPPPP","PPPPPPPPPPPPPTTTTTPKKKIIIPPPFFTTTTTTTTTTPPPPANDDNDEEEEPTPAVVVVVVVVVVAAVVVVVVVAAAAPTPNNNNNEEEEEEECCCCDDDDDDEEDAAANNANNNAPPPPPPPPPPPPFSSSSSSSSPTTTPSMMMPPPTPPPPGGHPPPPPPPPPP","PPPPPPPGGGGGPTTTTTPKKKIIIPFFTTTTTTTTTTTTTTTPANDDNDDEEEPTPAVVVVVVVVVVAAVVVVVVVAAAAPTPNNNNNEEEEEEEECCDDDDDDDEDANAANNNNNNAPTTPPPPPPFFFSSSSSSPPPPTTTPSSMMPTTPPPPHHHHPPPPPPPPPP","PPPPPPPGGGGGPTTTTTPKLLPPPPTTTTTTTTTTTTTTTTTPNNDDNNNDEEPTPAVVVVVVVVVVAAVVVVVVVAAAAPTPNNNEEEEEEEEEECDDDDDDDCCDNNNANNNNNAPPTTTPPPPPFMMMSSSPPPTTTTTTPPPPPPTTPPPPPPPPPPPPPPPPPP","PPPPPPGGGGGPPTTTTTPKLLPTTTTTTPPPPPPPPPPPPPPPNNNNNNNDEEPTPAVVVVVVVVVVAAVVVVVVVAAAAPTPNNNEEEEEEEEEECDDDDDECCCEAAAANNNAAPPTTTTPPPFFMMMFFSPPFFTTTTTTTTTTPPPPPPPPPPPPPPPPPPPTPP","PGGGGGGGGPPPPTTTTTPMMMPPTTTTPPPAVVVPTPPPPPPPPPNNNNNDEEPPPAAVVVVVVVVVVVVVVVVVVAAPPPPPNNEEEEEEEEEECCEDDDDECCEDNANNNNAPPPTTTTTPPMMMMMFPPPPTTTTTTTTTTTTTPMMMFFPPPPPPPPAAAAPTPP","PGGQQQQQQPTPPPPPPPPFMMPTTTTTPPPAAAVPTTPPPPPPPPNNNNNDEEDPPPPVVVVVVVVVVVVVVVVVVAAPPPRNEDEEEEEEEECCCCEDDDDECCEAAANNNNAPTTTTTTTTPMMMMMFPPPTTTTTTTTTTTTTTPMMMMFPPPPPPPPAAAAPTPP","QQQQQQQQQPPPPPPPPPPFMPPTTTPPPPPVAAAPTTTTPPPPPPAANNNDDDNAAPPVVVVVVVVVVVVVVVVVVAAPPRNEEEEEEEEECCCCCDDDDDDDEEEAAANNAAAPTTTTTTTPPSMMMFFPPPPPTTTTTTPPPPPTPMMMMFPPPPPPPPAAAAPPPP","QQQQQQPPPPPPPPPPFFFPPPTTTTPAAAAAPPPPTTTTTPPPPPPPANNNNDDDDPPPVVVVVVVVVVVVVVVAAAAPPEEEEEEEEEECCCCCDDDDDDDEDAAADNNAPPPPPTTTTPPPSSMMPPPPPPPPPPTTTTPSSSPTPPMMMMMMMPPPPPAAAAAAPP","QQQQQQPTTPPPPPPPFMFPPTTTTTPAVVAAPTTTFFTTTPPPPPPPANNNNDEEEPPPVVVVVVAAVVVVVVVAAAAPPEEEEEEEEEECCCCCDDDDDDEEDAAADNAPPPPPPPPTTPSPSSMPPTTPPPPPPPPPPPPSSSPTTPMMMMMMMPPPPPPAAAAAPP","QQQQQQPTPPPPPPPPFFKPPTTPPPPAAAAAPTTTFFTPPPPPPPPPAAANNDEEEPPPVVVVVVAAVVVVVVVAAAAPPEEEDDDEEEECCCCDDDDDDDEDDAAANAAPPPPPPPPPPPSSSSPPTTTTPPPPPPFFFSSSSSPTTPMMMMMMMPPPPPPPPAAAPP","QQQQPPPPPPPPPPPPPPPPPPPPAAAAAAAPPTTTTTTPSFFPPPPPPPPANNDEEPPPAAVVVVAAVVVVVVVAAPPPPEEDNNNEEEECCCDNNDDDDEDDAADNAPPPPPPPPPPPPFSSPPPFTTTTPPPPPFSSSSSPPPPTTPPPMMMMMMMMPPPPPPPPPP","GQQQPPPPPPPPQGHPPPPPPPPPAAAAAAAPTTTTTTTPSSFPPPPPPTPNNNEEEPPPAAVVVVAAVVVVVVVAAPPPPDDDNNNEEEEECCENNDDDEEDAARNNAPPPPPPPPPPPPFSSPPTTTTTTPPPPFMMSSSSPTTTTPPPPMMMMMMMMPPPPPPPTPP","GGGPPPPPPPQQQGHPPPPPPPPPAAAAAAPPTTPPPPPPFFFPPPPPTTPRNNEEEPPPAAVVVVVVVVVVVVVAAPPPPANNNNNEEEEEEEENNNDDEDDDARAAAPPPPPPPPPPPPFSSFPPTTTPPPPPPFMFFFFFPTTPPPPPPMMMMMMMMPPPPPPTTTP","PPPPPPPPPQQQQQPPPPPPPPPPAAAAAPPTTTPSSSSFPPPPPPPTTTPRNNEEDAAPPPAVVVVVVVVVVVAPPPPAANNNNEEEEEEEENNNNDDEDDNSWWPPPPPPPPPPPPPFFSSFPPPPTTPFFFFFMFPPPPPPPPPPPPMMMMMMMMMMFFPPPPPTPP","PPPPPPPPPQQQQQPPPPPPPPPPAAAAAPTTTTPSSSSFPPPPPPPTTTPRNNEEDNAPTPAVVVVVVVVVVVAPTFPANDDNNEEEEEEEENNNNDEEDNNFWWPPPPPPPPPPPPPFSFFFPPPPPPPFMMMMMFPPPPPPPPPPPPFMMMMMMMMMMFPPPPPPPP","PPPPPPPPPQQQQHPPPPPPPPPPPPPPPPPPPPPSSSSFPPPPPPPTTTPNANDEDNAPTPAAAVVVVVVVVAAPFPPANDDDDEEEEEEEENNNNDEDDAAPPPPPPPPPPPPPPPPFFPPPPPPPPSSMMMMMFPPPPPPPPPPPPFMMMMFFFFMMSFPPPPPPPP","PPPPPPPPPPHHPPPPPPPFFFFFPPPPPPPPPPPFSSSFPPPPPPPTTTPPPANDEEEPTPPAAVVVVVVVAAAPFPNNDDDDEEEEEEEENNNAADDNAPPPTPPPPTTTTTTTPSFSFPPPPPPPFSSMMMMMFPPPPPPPPPPFFMMMMFPPPPFMSSFFFPPPPP","PPPKKKPPPPPPPPPPPPPFFFFFPPPPPPPPPPPFSSSFPPPPPPPTTTTTPAADEEEPTHPAAAVVVVVVAAAPTPNNDDECEEEEEEEEDNNAANDNAPTTPPPPTTTTTTTTPSSSFPPPPPPPSSSSMMMMFPPPPPPPPPPFMMMMFFPPPPFFSSSSFPPPPP","PPPKKKKPPPPPPPPPPPPPPPPPPPPPPPPPMMFFFFFPPTPPPPPTTTTTPPPEEEEPPPPPPAAAAAAAAPPPPPEDDEECEEEEEEEDDNNSNNNAAPPPPPPTTTTTTTPPPSSSPPPPTTTPSSSSMMMMMPPPPPPPPPPFMMMMPPPPPPPPFSSSSPPPPP","PPKKKKPPPPPPPPPPPPPPPPPPPPPPPPPPMMSPPPPPTTTTTTTTTTTPPPPEEEERRRPHPAAAAAAAPPPAAADEEECCEEEEEEDDNNVWNNAPPPPPPPPTTTTFFFPSSSSPPPTTTTTPSSSSMMPPPPPPPPPFFFMMMMMMPPPPPPPPFSSSSSSSPP","PPIKKKPPPPPPPPPPPPPPIKPPPPPPPPTPMMMPPPTTTTPPPPPPTPPPPPPEEEENNRPPPPAAAAAAPPPANNDEEECCEEEEEENNNNWWRWWPPPPPPPPTTTFFFFPSSSSPPTTTFFTPSSSMMMPTTTPPPPPFMMMMMMMMPPPPPPPPSSSSSSSSPP","PPPIKKPPPPPPPPPPPPLLIIPPPPPPPPTPPPPPPPTTTFPQQQQPPPPPPPPPDEDNNNRRPPPPPPPPPPPDDDEEEECCEEEDDNNNNNWWPPPPPPPPPPPTTTFFPPPSSSSPTTTFFFFPSMMMMMPTTTPPPPPFMMMMMMMMPPPPPPPPMSSSSSSSPP","PPPPPPPPPPPPPPPPPPLIIIPPPPPPPPPTTTTPPPTTFFPQQQQPPPPPPPPPRDDNNNNRPHHTTTTTPAADEEEEECCEEEDNNNNNYWPPPPPPPPPPPPPTTTFFPSSSSPPPTTTTTTTPMMMPPPPTTPPPPMMMMMMMMMMMPTTPPPPPPPMMSSSSSS","PPPPPPPPPPPPPPPPPPIIIIPPPPPPPPPPTTTPPPTTFFPQQQQPPPPPPPPPPEDNNNNRPPPPPTPPPANDEEEEEEEEEEDNNNNNWWPPPPPPPPPPPPPTTTFPPSSSSPTTTTTTTTTPMMMPTTPPPPPPPMMMMMMMMMMMPTTPPPPPPPMMMMSSSS","PPPPPPPPPPPPPPPKKKIIIIPTPPPPPPPPPTPPPPTTPPPQQQQPPPPPPTTPPPDAANNNEEEEPPPPANDDEEEEEEEEEDDNNNNAWPPPPPPPPPPPPPTTTTPPSSSSSPTTTTTPPPPPMMMPTTPPPPPPPMMMMMMMMMMMPTTPPPPPPPMMMMMSSS","PPPPPPPPPPPPKKKKKKPPPPPTTPPPPPPPPPPPPPPPPQQQQQPPPPPPTTTTTPPPPANNNNEEEDAANDDEEEEEEEEEDNNNNRRPPPPPPPPPPPPTTTTTPPPSSSSSSPTTTTPPPPPPPPPPTPPMMMMMMMMMMMMMMPPPPPPPPPPPPPPPPMMMSS","PPPPPPPPPPPPKKKKLLPPPTTTTTPPPPPPPPPPPPMMIQQPPPPTTPPTTTTTTTTTPAAANNEDEDNNNDDEEEEEDDEEDNNAAYWPPPPPPPPPPPPPTTTTPSSSSSSSSPTTTPPPPPPPPPPPPPPMMMMMMMMMMMMSSSPPPPPPPPPPPPPPPMMMSS","PPPPPPPLLKKKKKKLPPPPPPTTTTTPPPPPPPPPFFMMINAPTTTTTTTTTTTTTTTTPPPPANNNDDNNNNDEEEDDNNDPPNNPPPPPPPTTTTTTPPPPPTTTPFSSSSSPPPTTTPPPPPPPPPPMMMMMMMMMMMMPPPPPPPPPPPPPPPPFPPPPPFMMSS","PPPPPPLLLLKIIIKPPPPPPPTTTTTPPPPPPPPPFMMMMNAPTTTTTTTTTTTTTHHHTTTPANNNDEDDDNNNNNNNNNAPPPPPTTPPPTTTTTTTPPPPPTTTPFSSFPPPTTTTTPPPPPPPPPPFMMMMMMMMMMMPPPPPPPPPPPPPPPFMFFFFFMMMSS","PPPPPPLLLLLIIILPPPPPPPPTTTTTPPPPPPPPFMMMMAAPTTTTTTTTTTTTTTHHTTTPAAAADEEEDAAAAAAAAAAPPPPPPPPPPTTTTTTTPPPPPTTTPFSSFPPPPTTTPPPPPPPPPPPFMMMMMMMMMMSPPPPPPPPPPPPPPPFMMMMMMMMSSS","KKKLLLLLLLLLLLPPPPPPPPPPTTTTPPPPHHHHEEEEEPPPPPTTTTTTTPTTTTTTTTTPPPPPPPPPPPPPPPPPPPPPP...PPPPPPTTTTTTPPPPTTTTPFSSFPPPPPTTPPPPPPPPPFFMMMMMMMMMMPPPPPPPPPPPPPPMFFMMMMMMMSSSSS","KLLLLLLLLLLLLLPPPPPPPPPPPPPTPPPPHHHEEEEEEPPPPPPPTTTPPPPPPTTTTTTTPPPPTTTPPPPPPPPPPTTTP....PPPPPPTTTTTPPPPTPPPPFFFFPPPPPPPPPPPPPPPFMMMMMMMMMMMMPPPPPPPPPPPPPMMMMMMMMMMSSSSSS","LLLLLLLLILLLLPPPPPPPPPPPPPPPPPCCHEEEEEEEPPPPPPPPPTTPMMSFPPPTTTTPPPPTTTTTPPPPPPPTTTTPP....PPPPPPPPPTTPPPPPPMMFPPPPPPPPPPPPTTPPPPPMMMMMMMMMPMMPPPPPPPPPPPPPPMMMMMMMMSSSSSSSS","LLLLLLLLIILLPPTTTTTTPPPPPPPPPCCCEEEEEEPPPPPPPPPPPPPPMSSFPPPPPTTPIIPPPPPPPPPPPPPPPPPP.....PPPPPPPPPPTPMMMMMMMMPPPPPPPPPPPPTTPSMMMMMMMMMMMMPPPPPPPPPPPPPPPMMMMMMMMSSSSSSSSSS","LLLLLLPPPPPPPTTTTTTTTPPPPPPPPCCCEEEEEPPTTPPPPPPPPTPPMSSFPPPPPPPPII..II.....PPPPP.....PPPPPPPPPPPPPTPPMMMMMPPPPPPPPPPPPPPPPPPSSSMMMMMMMMMPPPPPPPPPPPPPPPPMMMMMMMSSSSSSSSSSS","LLLLLLPPPPPTTTTTTTTTTTTPPPPPPCCCEEEEPPTTTPPPPPPPTTPPMSSFPPPPPPPPII..II.....PPPPP.....PPPPPPPPPPPPTPPMMMMMMPPPPPPPPPPPPPPPPSSSSSSMMMMMMPPPPPPPPPPPPPPPPFMMMMMMMSSSSSSSSSSPP","LLLLLLPPPPPTTTTTTTTTTTTPPPPPPLCCEEEEPTTTTPPPPPPPPPPPMSFFPTPPPPII....IL....CPPPPP.....PPPPPPPPPPPPPPMMMMMMMPPPPPPPPPPPPPPPPSSSSSSMMMMMMPTPPPPPPPPPPPPPPMMMMMMMSSSSSSSSSSSPP","LLLIPPPPPPPPPTTTTTTTTTTPMFFFFFPPPPPPPTTTTPPPPPPPPMMMPPPPPTTPPP....IIPPPPPK.........LPPPPPPPPPPPTPMMMMMMMMMPPPPPPPPPPPPPPPPSSSSSSSMMPPPPTPPPPPPPPPPPPPPMMMMMMMSSSSSSSSPPPSS","LLLLPPPPPPPPPPPPPTTTTPPPFMMMMFPPPTTTTTTTTTPPPPPPPFMMPPPPTTPPPP....IIPPPPPK.........PPPPPPPPPPPPTPMMMMMMMPPPPPPPPPPPPPPPPPPSSSSSSSSMPTTTPPPPPPPPPPPPPPMMMMMMMSSSSSSSSSPPPSS","PPPPPPPPPPPPPPPPPTTTTPMMMMMMMFPPPPTTTTTTTTPPPPFFFMMMPTTTTTP.......LLPPPPPP.........PPPPPPPPPPPPTPMMMMMMMPTTPPPPPPPPPPPPPPPFSSSSSSSMPTPPPPPPPPPPPPPMMMMMMMMMMSSSSPPPPPPPPSM","PPPPPPPPPAAAPPPPPPTPPPMMMMMMMFPPPPPPPPTTTTPPPFMMMMMMPTTTTPP.......PPPPPPPPP......LLPPPPPPPPPPPTTPMMMMMMPPTTTPPPPPPPPPPPPFFSSSSSSSSSPTPPPPPPPPPPPPMMMMMMMMMMMSFFSPPPPPPSSMM","PPPPPPPPPAAAPPPPPPPPMMMMMMMMFPPPPPPPPPTTTTPPPFSSSSSMPTTTTTP.......PPPPPPPPPPP....PPPPPPPPPPPPPTPPMMMMPPPTTTTPPPPPPPPPPPFMMSSSSSSPPPPPPPPPPPPPPPFMMMMMMMMMMMSFPPPPPPPPSSMMM","PPPPPPPPPAAAPPPPPPPMMMMMMMFFFPPPPPPPPTTTTPPPPFSSSSFSPTTTTTP.......PPPPPPPPPPP....PPTTTPPPPPPPPPPSSSMMPTTTTTTPPPPPPPPPPPFMMMMFFSSPTTTPPPPPPPPPPPFMMMMMMMMMMFFFPPPPPPPPSMMMM","PPPPPPAAAPPPPPPPPPMMMMMMMMPPPPPPPPPPPTTTTPPPPSSSSFPPPPTTTTP.....PPPPPPPPFFFPP....PTTTTPPPPPPPPPSSSSSSPPPTTTTPPPPPPPPPMFMMMMFPPPPPPPPPPPPPPPPPPPFMMMMMMMMMMPPPPPPPSSSSMMMMM","PPPPPPAAAPPPPPPPPPMMMMMMMMPPPPPPPLLIPTTTPPPPPSSSSSPPPPPPPPP....PPTTPPPPPFMFPP....PTTTTPPPPPPPPPFSSSSSPPPPTTTPPPPPPPPPMMMMMFFPPPPPPPPPPPPPPPPPPPFMMMMMMMMMMPPPPPPPSSSSMMMMM","PPPPAAAAAPPPPPPPPPSSSMMMPPPPPPPPLLLIPTTTPPPSSSSPPPPPPPPP......PPTTTPPPMMMMMFPPPPPPTTTTTPPPPPPPPFSSSPPPPPPPPPPPPPPTPMMMMMMFPPPPPPPPPPPPPPPPPPPPPFMMMMMMMMMMPPPPPPSSSSSMMMMM","PPPPAAAAAPPPPPPPPSSSSSSSPPPPPPPPLLKKPTTPPSSSSSSPTPPPPPPP......PTTTTPPPMMMMMMPPPPPPTTTTTPPPPPPPFSSSSPTPPPPPPPPPPPTPPMMMMMMMPPPPPPPPPPPPPPPPPPPPPFMMMMMMMMMMPPPPPPSSSSMMMMMM","PPPPAAAAAPPPPPPFFSSSSSPPPPPPPPPPKKKKPPPPSSSSSSSPPPPPPTTP......PPPPPPPPMMMMMMPPPPPPTTTTTTTPPPPFSSSSSPTPPPPPPPPPPPTPSMMMMMMMPPPPPPPPPPPPPPPPPPPFFMMMMMPPPPPPPPPPSSSSSSMPPPMM","AAAAAAPPPPPPPPPFSSSSSSPPPPPPPPPPKKKKPPPPSSSSSSSPPPPPTTTP......PPPPPPPPMMMPPPPPPPPPTTTTTTTPPPPFSSSSSPTPPPPPPPPPPPTPSSMMMMMMPPPPPPPPPPPPPPPPPPPFSSSMMPPPPPPPPPPPSSSSSMMPPPMM","AAAAAAPPPPPPPPPFMMSPPPPPPTPPPKKKPPPPPPPPSSSSSSSPPPPPTTTP.....PPPPPPPMMMMPPPPPPPPPPTTTTTTTPMSSSSSSSSPPPPPPPPPPPPPTPSSPPPMMMPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPPPPMMMMSMMMMMPPPMM","AAAAAAPPPPPPPPPFMMFPPPPPPTTPPKKKPPPPPPPPSSSSSPPPPPPPPPPP...PPPPPPPPPFMMMPPPPPPPPPTTTTTTTTPMMMMMMMMMPPPPPPPPPPPPPPPSSPTPPPPPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPPPPMMMMMMMPPPPPPMM","AAAAPPPPPPPPPFFMMMFPPPPPPPTTPKKKPPPPPFSSSSSSSPPPPPPPP.....PPPPPPPPFFSFPPPPPPPPPPPTTTTTTTTPMMMMMMPPPPPPPPPPPPPPPPSSSPPTTTPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPPPPPPMMMMMMPPPPPPPMM","AAAAPPPPPPPPFMMMMMFPPPPPPPPTPKKKPPPPPFSSSSSMMPPPPPPPP.....PPPPPPPPFSFFPPTPPPPPPPPPTTTTTTTPMMMMMMPPPPPPPPPPPPPPPPSSSPTTTTPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPPPPPPMMMMFFPPPPPPPMM","AAAAPPPPPPPPFMMMMFPPPPPPPPPPPKKKPPPPPFSSSMMMMPPPPPPPP.....PPPPPPFFSFPPPPPPPPPPPPPPPPTTTTTPMMMMMPPPPPPPPPPPPPPFFPPPPPTTTPPPPPPPPPPPPPPPPPSSSSSPPPPPPPPPPFFFFMMMFPPPPPPPPPPP","AAAAPPPPPPPPFMMFFPPPPPPPPPPPIIKKPPPPPFSSMMMMMPPPPPPPP.....PTTTPPFSSFPPPPPPPPPPPPPPPPPTPPPPMMMMMPPPPPPPPPPPPPPFSFPPPPPPPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPPPPFSMMMMFFPPPPPPPPPPP","PPPPPPPPPPMMMMFPPPPPPPPPLLKIIIIKPPPPPFSMMMMMMPPPPPPPP...PPPTTTPPFSSFPPPPPPPPPPPPPPPPPPPMMMMMMPPPPPPPPPPPPPPPPFFFPPPPPPPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPFFFSSMMMFPPPPPPPPPPPPP","PPPPPPPPPMMMMFFPPPPPPPPPLLLKIIPPPPPPPFMMMMMMMPPPPPPPP...PPTTTPPPFSFFPPPPPPPPPPPPPPPPPPPFMMMMPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPSSSSSSPPPPPPPSSSSSSMMFPPPPPPPPPPPPP","PPPPPPPPPMMMMPPPPPPPPPPPLLLLIIPPPPPPPFMMMMMPPPPPP......PPPTTTPSSSFPPPPPPPPPPPPPPPPPPPPFMMMMMFPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPTTPPPPPPMMMSPPPPPPPPPPPPSSSSSSSMFPPPPPPPPPPPPP","PPPPPPPPPMMMMPPPPPPPPPPPLLLLKPPPPPPPPFMMFPPPPPPPP......PPPTTTPSSSSPPPPPPPPPPPPPPPPPPPPFMMMMFPPPPPPPPTTTPPPPPPPPPPPPPPPPPPPPPPPPPPPPPMMMMPPPPPPPPPPPPSSSSSFFFPPPPPPPPPPPPPP","PPPPPPPPPMMMMPPPPPPPPPPPLLLLKPPPPPPPPPFMFPPPPPPPP....LIPPPTTTPSSSSPPPPPPPPPPPPPPPPPPPPFMMMFPPPPPPPPPTTTPPPPPPPPPPPPPPPPPPPPPPPPPPPPPMMMMPPPPPPPPPPPPSSSSFPPPPPPPPPPPPPPPPP"],"pal":{"A":{"hex":"#eb2914","ab":"Ala","full":"Alanine","cname":"Red"},"R":{"hex":"#74250e","ab":"Arg","full":"Arginine","cname":"Maroon"},"N":{"hex":"#f97003","ab":"Asn","full":"Asparagine","cname":"Orange"},"D":{"hex":"#fab003","ab":"Asp","full":"Aspartic acid","cname":"Amber"},"C":{"hex":"#f3e290","ab":"Cys","full":"Cysteine","cname":"Cream"},"Q":{"hex":"#78b244","ab":"Gln","full":"Glutamine","cname":"Olive green"},"E":{"hex":"#fbe705","ab":"Glu","full":"Glutamic acid","cname":"Lemon yellow"},"G":{"hex":"#1ccb22","ab":"Gly","full":"Glycine","cname":"Bright green"},"H":{"hex":"#096126","ab":"His","full":"Histidine","cname":"Forest green"},"I":{"hex":"#07d2f1","ab":"Ile","full":"Isoleucine","cname":"Cyan"},"L":{"hex":"#8dd2ef","ab":"Leu","full":"Leucine","cname":"Sky blue"},"K":{"hex":"#029ae8","ab":"Lys","full":"Lysine","cname":"Azure"},"M":{"hex":"#034cf2","ab":"Met","full":"Methionine","cname":"Royal blue"},"F":{"hex":"#0f1bb0","ab":"Phe","full":"Phenylalanine","cname":"Navy"},"P":{"hex":"#020204","ab":"Pro","full":"Proline","cname":"Black"},"S":{"hex":"#030ded","ab":"Ser","full":"Serine","cname":"Electric blue"},"T":{"hex":"#0e0c60","ab":"Thr","full":"Threonine","cname":"Midnight blue"},"W":{"hex":"#4c0de2","ab":"Trp","full":"Tryptophan","cname":"Indigo"},"Y":{"hex":"#9011e5","ab":"Tyr","full":"Tyrosine","cname":"Violet"},"V":{"hex":"#ee0c9e","ab":"Val","full":"Valine","cname":"Magenta"},".":{"hex":"#fdfdfb","ab":"Stop","full":"Stop","cname":"Leave White"}},"table":{"UUU":"Phe","UUC":"Phe","UUA":"Leu","UUG":"Leu","UCU":"Ser","UCC":"Ser","UCA":"Ser","UCG":"Ser","UAU":"Tyr","UAC":"Tyr","UAA":"Stop","UAG":"Stop","UGU":"Cys","UGC":"Cys","UGA":"Stop","UGG":"Trp","CUU":"Leu","CUC":"Leu","CUA":"Leu","CUG":"Leu","CCU":"Pro","CCC":"Pro","CCA":"Pro","CCG":"Pro","CAU":"His","CAC":"His","CAA":"Gln","CAG":"Gln","CGU":"Arg","CGC":"Arg","CGA":"Arg","CGG":"Arg","AUU":"Ile","AUC":"Ile","AUA":"Ile","AUG":"Met","ACU":"Thr","ACC":"Thr","ACA":"Thr","ACG":"Thr","AAU":"Asn","AAC":"Asn","AAA":"Lys","AAG":"Lys","AGU":"Ser","AGC":"Ser","AGA":"Arg","AGG":"Arg","GUU":"Val","GUC":"Val","GUA":"Val","GUG":"Val","GCU":"Ala","GCC":"Ala","GCA":"Ala","GCG":"Ala","GAU":"Asp","GAC":"Asp","GAA":"Glu","GAG":"Glu","GGU":"Gly","GGC":"Gly","GGA":"Gly","GGG":"Gly"}};
+const ROWS = DATA.rows, PAL = DATA.pal, TABLE = DATA.table;
+const TS = 10, R = ROWS.length, C = ROWS[0].length, TC = C / TS, TR = R / TS, N = TC * TR;
+const BASES = "UCAG";
 const $ = s => document.querySelector(s);
 const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
@@ -249,24 +392,29 @@ const store = {
   del(k) { try { localStorage.removeItem(k); } catch (e) {} },
 };
 const PREVIEW = !CONFIG.SCRIPT_URL;
+const hexOf = k => k === "." ? "#fdfdfb" : PAL[k].hex;
+const keyOfAb = {}; Object.entries(PAL).forEach(([k, v]) => { keyOfAb[v.ab] = k; });
+const CODONS = {}; Object.entries(TABLE).forEach(([c, a]) => { (CODONS[a] = CODONS[a] || []).push(c); });
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
 
-/* ---------- completion codes (same as the Codon Color Lab) ---------- */
+/* ---------- completion codes ---------- */
 const CA = "ACDEFGHJKMNPQRTUVWXY3479";
-function sheetCode(name, s) {
-  let h = 2166136261; const str = "codon-lab|" + name + "|" + s;
+function sheetCode(s) {
+  let h = 2166136261; const str = "codon-lab|" + DATA.name + "|" + s;
   for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
   let out = ""; for (let i = 0; i < 3; i++) { out += CA[h % CA.length]; h = Math.floor(h / CA.length); }
   return (s + 1) + "-" + out;
 }
 const normCode = v => v.toUpperCase().replace(/\s+/g, "").replace(/^(\d+)([A-Z0-9]{3})$/, "$1-$2");
 const normInit = v => v.toUpperCase().replace(/[^A-Z]/g, "");
+const sqPos = s => ({ row: Math.floor(s / TC) + 1, col: s % TC + 1 });
 
 /* ---------- data: Google Sheet, or this browser in preview mode ---------- */
 const api = {
-  async list() {
-    if (PREVIEW) return store.get("mural-preview") || [];
+  async state() {
+    if (PREVIEW) return previewState();
     const r = await fetch(CONFIG.SCRIPT_URL, { cache: "no-store" });
-    const d = await r.json(); if (!d.ok) throw new Error(d.error || "error"); return d.entries;
+    return r.json();
   },
   async post(body) {
     if (PREVIEW) return previewPost(body);
@@ -274,262 +422,440 @@ const api = {
     return r.json();
   },
 };
+function previewDb() { return store.get("dm-preview") || { entries: [], claims: [] }; }
+function previewState() { const d = previewDb(); return { ok: true, entries: d.entries, claims: d.claims.map(({ device, ...c }) => c) }; }
 function previewPost(b) {
-  const list = store.get("mural-preview") || [];
-  if (b.action === "remove") { const l = list.filter(x => x.id !== b.id); store.set("mural-preview", l); return { ok: true, entries: l }; }
-  const code = normCode(b.code), m = code.match(/^(\d+)-/), sheet = m ? +m[1] : 0;
-  if (!m || sheet < 1 || sheet > N || ![PICTURES.mystery.name, PICTURES.masterpiece.name].some(n => sheetCode(n, sheet - 1) === code)) return { ok: false, error: "bad_code" };
-  if (list.some(x => x.sheet === sheet && x.initials === b.initials && x.teacher === b.teacher && x.period === b.period)) return { ok: false, error: "duplicate", entries: list };
-  const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), time: new Date().toISOString(), sheet, code, initials: b.initials, teacher: b.teacher, period: b.period };
-  list.push(entry); store.set("mural-preview", list); return { ok: true, entry, entries: list };
+  const d = previewDb(), id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), now = new Date().toISOString();
+  const save = () => { store.set("dm-preview", d); return previewState(); };
+  if (b.action === "claim") {
+    const mine = d.claims.find(c => c.device === b.device);
+    if (mine) return { ok: true, square: mine.square, existing: true };
+    const done = new Set(d.entries.map(x => x.square)), taken = new Set(d.claims.map(c => c.square));
+    const all = Array.from({ length: N }, (_, i) => i + 1);
+    let pool = all.filter(i => !taken.has(i) && !done.has(i)); if (!pool.length) pool = all.filter(i => !done.has(i)); if (!pool.length) pool = all;
+    const square = pool[Math.floor(Math.random() * pool.length)];
+    d.claims.push({ id, time: now, square, device: b.device, initials: b.initials, teacher: b.teacher, period: b.period }); save();
+    return { ok: true, square, existing: false };
+  }
+  if (b.action === "add") {
+    const code = normCode(b.code), m = code.match(/^(\d+)-/), sq = m ? +m[1] : 0;
+    if (!m || sq < 1 || sq > N || sheetCode(sq - 1) !== code) return { ok: false, error: "bad_code" };
+    if (d.entries.some(x => x.square === sq && x.initials === b.initials)) return { ok: false, error: "duplicate", ...previewState() };
+    d.entries.push({ id, time: now, square: sq, code, initials: b.initials, teacher: b.teacher, period: b.period });
+    return { ok: true, ...save() };
+  }
+  if (b.action === "remove") { d.entries = d.entries.filter(x => x.id !== b.id); return { ok: true, ...save() }; }
+  if (b.action === "release") { d.claims = d.claims.filter(c => c.square !== +b.square); return { ok: true, ...save() }; }
+  return { ok: true };
 }
 
-/* ---------- state ---------- */
-let entries = [], loaded = false, lastSync = 0, peek = false, selected = -1, search = "";
-let anim = { sheets: new Set(), t0: 0, raf: null };
-const bySheet = () => { const m = Array.from({ length: N }, () => []); entries.forEach(e => { if (e.sheet >= 1 && e.sheet <= N) m[e.sheet - 1].push(e); }); return m; };
-const doneSheets = () => new Set(entries.map(e => e.sheet - 1).filter(s => s >= 0 && s < N));
-const matchSet = () => new Set(search ? entries.filter(e => e.initials === search).map(e => e.sheet - 1) : []);
-
-function setEntries(list) {
-  const before = doneSheets();
-  entries = Array.isArray(list) ? list.map(e => ({ ...e, sheet: +e.sheet, initials: String(e.initials).toUpperCase(), teacher: String(e.teacher), period: String(e.period) })) : [];
-  const after = doneSheets(), fresh = [...after].filter(s => !before.has(s));
+/* ---------- shared state ---------- */
+let entries = [], claims = [], loaded = false, lastSync = 0;
+function setState(d) {
+  if (!d || !Array.isArray(d.entries)) return;
+  const before = doneSet();
+  entries = d.entries.map(e => ({ ...e, square: +e.square, initials: String(e.initials).toUpperCase(), teacher: String(e.teacher), period: String(e.period) }));
+  claims = (d.claims || []).map(c => ({ ...c, square: +c.square, initials: String(c.initials).toUpperCase(), teacher: String(c.teacher), period: String(c.period) }));
+  const fresh = [...doneSet()].filter(s => !before.has(s));
   if (loaded && fresh.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) startAnim(fresh);
   loaded = true; lastSync = Date.now();
-  render();
+  renderAll();
 }
-
-/* ---------- drawing ---------- */
-const cv = $("#cv"); let cell = 8;
-function draw(now) {
-  const fit = $("#fit"), full = document.fullscreenElement === $("#frame");
-  const maxH = full ? window.innerHeight - 90 : Math.max(320, window.innerHeight - 200);
-  cell = Math.max(4, Math.floor(Math.min(fit.clientWidth, maxH * C / R) / C));
-  const dpr = window.devicePixelRatio || 1;
-  if (cv.width !== C * cell * dpr || cv.height !== R * cell * dpr) { cv.width = C * cell * dpr; cv.height = R * cell * dpr; cv.style.width = C * cell + "px"; cv.style.height = R * cell + "px"; }
-  const x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const done = doneSheets(), hits = matchSet(), tile = TS * cell;
-  const font = getComputedStyle(document.body).fontFamily;
-  for (let s = 0; s < N; s++) {
-    const sr = Math.floor(s / TC), sc = s % TC, x0 = sc * tile, y0 = sr * tile, blank = (sr + sc) % 2 ? "#1d2b2d" : "#233537";
-    const on = peek || done.has(s);
-    const prog = anim.sheets.has(s) ? Math.min(1, (now - anim.t0) / 1100) : 1;
-    if (!on) {
-      x.fillStyle = blank; x.fillRect(x0, y0, tile, tile);
-      x.fillStyle = "#7f9799"; x.font = `700 ${Math.round(cell * 3.2)}px ${font}`; x.textAlign = "center"; x.textBaseline = "middle";
-      x.fillText(String(s + 1), x0 + tile / 2, y0 + tile / 2);
-    } else {
-      for (let r = 0; r < TS; r++) for (let c = 0; c < TS; c++) {
-        if ((r + c) / (2 * TS - 1) > prog) x.fillStyle = blank;
-        else { const k = PIC.rows[sr * TS + r][sc * TS + c]; x.fillStyle = k === "." ? "#fdfdfb" : PIC.pal[k].hex; }
-        x.fillRect(x0 + c * cell, y0 + r * cell, cell, cell);
-      }
-    }
-    if (search && !hits.has(s)) { x.fillStyle = "rgba(8,14,15,.62)"; x.fillRect(x0, y0, tile, tile); }
-  }
-  x.strokeStyle = "rgba(0,0,0,.55)"; x.lineWidth = 1;
-  for (let i = 1; i < TC; i++) { x.beginPath(); x.moveTo(i * tile + .5, 0); x.lineTo(i * tile + .5, R * cell); x.stroke(); }
-  for (let i = 1; i < TR; i++) { x.beginPath(); x.moveTo(0, i * tile + .5); x.lineTo(C * cell, i * tile + .5); x.stroke(); }
-  const ring = (s, color, w) => { const sr = Math.floor(s / TC), sc = s % TC; x.strokeStyle = color; x.lineWidth = w; x.strokeRect(sc * tile + w / 2, sr * tile + w / 2, tile - w, tile - w); };
-  hits.forEach(s => ring(s, "#ffd84d", Math.max(3, cell * .5)));
-  if (selected >= 0) ring(selected, "#ffffff", Math.max(2, cell * .3));
-}
-function startAnim(list) {
-  list.forEach(s => anim.sheets.add(s)); anim.t0 = performance.now();
-  cancelAnimationFrame(anim.raf);
-  const step = now => { draw(now); if (now - anim.t0 < 1150) anim.raf = requestAnimationFrame(step); else { anim.sheets.clear(); draw(now); } };
-  anim.raf = requestAnimationFrame(step);
-}
-
-/* ---------- text around the mural ---------- */
-function render() {
-  draw(performance.now());
-  const done = doneSheets(), complete = done.size === N, students = entries.length;
-  $("#title").textContent = complete ? PIC.name.replace(/\s*\u2013.*$/, "") : "Biology Department Mural";
-  $("#subtitle").textContent = complete ? "Finished by the Biology department, one codon at a time." : "A mystery picture. Every finished sheet from every Biology class fills in one more square.";
-  $("#sheetsDone").innerHTML = `${done.size}<small>of ${N} squares</small>`;
-  $("#mainBar").style.width = (done.size / N * 100) + "%";
-  $("#studentCount").textContent = students ? `${students} ${students === 1 ? "student has" : "students have"} contributed${complete ? ". The mural is complete!" : "."}` : "No sheets added yet.";
-  $("#dl").hidden = !complete;
-  cv.setAttribute("aria-label", `Mural, ${done.size} of ${N} squares colored`);
-
-  const names = [...CONFIG.TEACHERS]; entries.forEach(e => { if (!names.includes(e.teacher)) names.push(e.teacher); });
-  const max = Math.max(1, ...names.map(t => entries.filter(e => e.teacher === t).length));
-  const tally = $("#tally"); tally.innerHTML = "";
-  names.forEach(t => {
-    const mine = entries.filter(e => e.teacher === t), sq = new Set(mine.map(e => e.sheet)).size;
-    const li = document.createElement("li");
-    const b = document.createElement("b"); b.textContent = t;
-    const sp = document.createElement("span"); sp.textContent = `${mine.length} ${mine.length === 1 ? "student" : "students"}, ${sq} ${sq === 1 ? "square" : "squares"}`;
-    const bar = document.createElement("div"); bar.className = "bar"; const i = document.createElement("i"); i.style.width = (mine.length / max * 100) + "%"; bar.appendChild(i);
-    li.append(b, sp, bar); tally.appendChild(li);
-  });
-
-  renderSearch(); renderTile(); renderRecent(); renderSync();
-}
-function who(e) { return `${e.initials}, ${e.teacher}, period ${e.period}`; }
-function renderTile() {
-  const box = $("#tileInfo");
-  if (selected < 0) { box.hidden = true; return; }
-  const list = bySheet()[selected], sr = Math.floor(selected / TC) + 1, sc = selected % TC + 1;
-  box.hidden = false;
-  $("#tileTitle").textContent = `Square ${selected + 1} (row ${sr}, column ${sc})`;
-  $("#tileWho").textContent = list.length ? `Colored by ${list.length === 1 ? "" : list.length + " students: "}${list.map(who).join("; ")}.` : "Nobody has turned in this sheet yet. It's still up for grabs.";
-}
-function renderSearch() {
-  const ul = $("#matches"), msg = $("#findMsg"); ul.innerHTML = "";
-  if (!search) { msg.textContent = ""; return; }
-  const found = entries.filter(e => e.initials === search).sort((a, b) => a.sheet - b.sheet);
-  msg.className = "fb"; msg.textContent = found.length ? `Found ${found.length} ${found.length === 1 ? "square" : "squares"} for ${search}. They're outlined in yellow.` : `No squares for ${search} yet. Check with your teacher that your code was added.`;
-  found.forEach(e => {
-    const li = document.createElement("li"), b = document.createElement("button"); b.type = "button";
-    b.textContent = `Square ${e.sheet}: ${e.teacher}, period ${e.period}`;
-    b.addEventListener("click", () => { selected = e.sheet - 1; render(); });
-    li.appendChild(b); ul.appendChild(li);
-  });
-}
-function renderRecent() {
-  const ul = $("#recent"); ul.innerHTML = "";
-  const list = [...entries].sort((a, b) => String(b.time).localeCompare(String(a.time))).slice(0, 8);
-  if (!list.length) { const li = document.createElement("li"); li.textContent = "Nothing yet."; ul.appendChild(li); return; }
-  list.forEach(e => {
-    const li = document.createElement("li"), span = document.createElement("span"), rm = document.createElement("button");
-    span.textContent = `Square ${e.sheet}: ${who(e)}`;
-    rm.type = "button"; rm.textContent = "Remove"; rm.setAttribute("aria-label", `Remove square ${e.sheet} for ${e.initials}`);
-    rm.addEventListener("click", () => removeEntry(e, rm));
-    li.append(span, rm); ul.appendChild(li);
-  });
-}
-function renderSync() {
-  const dot = $("#dot"), t = $("#syncText");
-  if (PREVIEW) { dot.className = "dot wait"; t.textContent = "Preview mode"; return; }
-  if (!lastSync) return;
-  const sec = Math.round((Date.now() - lastSync) / 1000);
-  dot.className = "dot"; t.textContent = sec < 10 ? "Up to date" : sec < 90 ? `Updated ${sec} seconds ago` : `Updated ${Math.round(sec / 60)} minutes ago`;
-}
-
-/* ---------- loading ---------- */
+const doneSet = () => new Set(entries.map(e => e.square - 1).filter(s => s >= 0 && s < N));
+const claimSet = () => new Set(claims.map(c => c.square - 1));
 let busy = false;
 async function refresh() {
   if (busy) return; busy = true;
-  try { setEntries(await api.list()); $("#errNote").hidden = true; }
+  try { const d = await api.state(); if (!d.ok) throw new Error(d.error); setState(d); $("#errNote").hidden = true; }
   catch (err) {
     $("#dot").className = "dot off"; $("#syncText").textContent = "Can't reach the mural";
     const n = $("#errNote"); n.hidden = false;
-    n.textContent = "The mural couldn't load from the Google Sheet. Check the internet connection, then press Refresh. If this keeps happening, check the web app URL and its access setting in SETUP.md.";
-    if (!loaded) render();
+    n.textContent = "The mural couldn't load from the Google Sheet. Check the internet connection and try again. If this keeps happening, check the web app URL and its access setting (see SETUP.md).";
+    if (!loaded) renderAll();
   } finally { busy = false; }
 }
-$("#refresh").addEventListener("click", refresh);
-setInterval(() => { if (!document.hidden && !PREVIEW) refresh(); }, 20000);
-setInterval(renderSync, 5000);
-document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
 
-/* ---------- interactions ---------- */
+/* ---------- tabs ---------- */
+const TABS = { color: "#tab-color", mural: "#tab-mural", teach: "#tab-teach" };
+let view = "color";
+function show(v) {
+  view = v;
+  Object.entries(TABS).forEach(([k, id]) => { const on = k === v; $(id).setAttribute("aria-selected", on); $("#view-" + k).hidden = !on; });
+  if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
+  if (v !== "color") { refresh(); drawMural(performance.now()); }
+}
+Object.entries(TABS).forEach(([k, id]) => $(id).addEventListener("click", () => show(k)));
+
+/* ================= STUDENT ================= */
+const fillSelect = (sel, withAll) => {
+  if (withAll) sel.add(new Option(withAll, ""));
+  if (sel.id.toLowerCase().includes("teacher")) CONFIG.TEACHERS.forEach(t => sel.add(new Option(t, t)));
+  else for (let i = 1; i <= CONFIG.PERIODS; i++) sel.add(new Option("Period " + i, String(i)));
+};
+fillSelect($("#sTeacher")); fillSelect($("#sPeriod"));
+let device = store.get("dm-device");
+if (!device) { device = "d" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store.set("dm-device", device); }
+let me = store.get("dm-me");   // { square, initials, teacher, period }
+let brush = null;
+
+function cellKey(s, r, c) { return ROWS[Math.floor(s / TC) * TS + r][(s % TC) * TS + c]; }
+function cellCodon(s, r, c) {
+  const k = cellKey(s, r, c), ab = k === "." ? "Stop" : PAL[k].ab, list = CODONS[ab];
+  let h = Math.imul((s + 1) * 131 + r * 17 + c * 7 + 99, 2654435761) >>> 0;
+  return list[h % list.length];
+}
+const progKey = s => "dm-progress-" + s;
+function getProg(s) { const p = store.get(progKey(s)); return typeof p === "string" && p.length === 100 ? p : "0".repeat(100); }
+
+function renderStudent() {
+  const has = me && me.square >= 1 && me.square <= N;
+  $("#startBox").hidden = has; $("#colorBox").hidden = !has;
+  if (!has) { const p = store.get("dm-last") || {}; if (p.teacher && CONFIG.TEACHERS.includes(p.teacher)) $("#sTeacher").value = p.teacher; if (p.period) $("#sPeriod").value = p.period; return; }
+  const s = me.square - 1, pos = sqPos(s), prog = getProg(s);
+  $("#sqNum").innerHTML = `Square ${me.square}<small>row ${pos.row}, column ${pos.col}. Write this number down!</small>`;
+  const board = $("#board"); board.innerHTML = "";
+  for (let r = 0; r < TS; r++) for (let c = 0; c < TS; c++) {
+    const i = r * TS + c, k = cellKey(s, r, c), cod = cellCodon(s, r, c);
+    const b = document.createElement("button"); b.type = "button"; b.className = "cell"; b.textContent = cod; b.dataset.i = i;
+    b.setAttribute("aria-label", `Codon ${cod}, row ${r + 1}, column ${c + 1}`);
+    if (prog[i] === "1") paintCell(b, k);
+    board.appendChild(b);
+  }
+  updateStudentProgress();
+}
+function paintCell(b, k) {
+  b.classList.add("done"); b.setAttribute("aria-disabled", "true");
+  if (k === ".") { b.classList.add("stop"); b.style.background = "#fdfdfb"; return; }
+  b.style.background = PAL[k].hex; b.style.color = "transparent";
+}
+function updateStudentProgress() {
+  if (!me) return;
+  const s = me.square - 1, n = (getProg(s).match(/1/g) || []).length;
+  $("#sBar").style.width = n + "%"; $("#sCount").textContent = `${n} of 100 codons decoded`;
+  const done = n === 100;
+  $("#doneCard").hidden = !done;
+  if (done) {
+    $("#codeBig").textContent = sheetCode(s);
+    $("#doneWho").textContent = `${me.initials}, ${me.teacher}, period ${me.period}. Square ${me.square}`;
+    $("#status").className = "status good"; $("#status").textContent = "All 100 codons decoded.";
+  }
+  drawMinimap();
+}
+$("#board").addEventListener("click", e => {
+  const b = e.target.closest(".cell"); if (!b || b.classList.contains("done") || !me) return;
+  const s = me.square - 1, i = +b.dataset.i, r = Math.floor(i / TS), c = i % TS, k = cellKey(s, r, c);
+  const st = $("#status");
+  if (!brush) { st.className = "status bad"; st.textContent = "First choose an amino acid from the paint list."; return; }
+  if (brush === k) {
+    paintCell(b, k);
+    const p = getProg(s).split(""); p[i] = "1"; store.set(progKey(s), p.join(""));
+    st.className = "status"; st.textContent = k === "." ? `${b.textContent} is a stop codon. Leave it white.` : `${b.textContent} codes for ${PAL[k].full}.`;
+    updateStudentProgress();
+  } else {
+    b.classList.remove("wrong"); void b.offsetWidth; b.classList.add("wrong");
+    setTimeout(() => b.classList.remove("wrong"), 400);
+    st.className = "status bad"; st.textContent = `Not quite. Look up ${b.textContent} on the codon chart again.`;
+  }
+});
+(function buildBrushes() {
+  const box = $("#brushes"), order = Object.keys(PAL).filter(k => k !== ".").sort((a, b) => PAL[a].full.localeCompare(PAL[b].full));
+  [...order, "."].forEach(k => {
+    const p = PAL[k], b = document.createElement("button"); b.type = "button"; b.className = "chip" + (k === "." ? " stopchip" : "");
+    b.setAttribute("aria-pressed", "false"); b.dataset.k = k;
+    b.innerHTML = k === "."
+      ? `<span class="sw" style="background:#fdfdfb"></span><span>Stop codon<small>Leave it white</small></span>`
+      : `<span class="sw" style="background:${p.hex}"></span><span>${esc(p.full)} (${p.ab})<small>${esc(p.cname)}</small></span>`;
+    b.addEventListener("click", () => { brush = k; box.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+    box.appendChild(b);
+  });
+})();
+(function buildMiniChart() {
+  let h = `<table class="mini" aria-label="Codon chart"><thead><tr><th class="lab"></th>${BASES.split("").map(b => `<th scope="col">${b}</th>`).join("")}</tr></thead><tbody>`;
+  for (const b1 of BASES) {
+    h += `<tr><th scope="row" class="lab">${b1}</th>`;
+    for (const b2 of BASES) { h += "<td>"; for (const b3 of BASES) { const c = b1 + b2 + b3, a = TABLE[c]; h += `<div class="mini-line${a === "Stop" ? " stop" : ""}${a === "Met" ? " start" : ""}"><b>${c}</b><span>${a === "Stop" ? "STOP" : a}</span></div>`; } h += "</td>"; }
+    h += "</tr>";
+  }
+  const el = $("#miniChart"); el.innerHTML = h + "</tbody></table>";
+  el.addEventListener("click", e => { const l = e.target.closest(".mini-line"); if (!l) return; const was = l.classList.contains("on"); el.querySelectorAll(".mini-line.on").forEach(x => x.classList.remove("on")); if (!was) l.classList.add("on"); });
+})();
+function drawMinimap() {
+  if (!me) return;
+  const cv = $("#minimap"), x = cv.getContext("2d"), done = doneSet(), mine = me.square - 1, finishedMine = getProg(mine).indexOf("0") < 0;
+  const w = Math.min(cv.parentElement.clientWidth || 280, 300); cv.style.width = w + "px"; cv.style.height = Math.round(w * R / C) + "px";
+  x.fillStyle = "#1d2b2d"; x.fillRect(0, 0, C, R);
+  for (let s = 0; s < N; s++) if (done.has(s) || (s === mine && finishedMine)) drawTile(x, s, 1, 1);
+  const sr = Math.floor(mine / TC), sc = mine % TC;
+  x.strokeStyle = "#ffd84d"; x.lineWidth = 2; x.strokeRect(sc * TS + 1, sr * TS + 1, TS - 2, TS - 2);
+  const pos = sqPos(mine);
+  $("#whereText").textContent = `Your square is row ${pos.row} of ${TR}, column ${pos.col} of ${TC}.`;
+}
+
+$("#startForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const initials = normInit($("#sInit").value), msg = $("#startMsg"), btn = $("#startBtn");
+  if (!initials || initials.length > 4) { msg.className = "fb bad"; msg.textContent = "Type your initials (1 to 4 letters)."; $("#sInit").focus(); return; }
+  const teacher = $("#sTeacher").value, period = $("#sPeriod").value;
+  store.set("dm-last", { teacher, period });
+  btn.disabled = true; msg.className = "fb"; msg.textContent = "Finding a square nobody has…";
+  try {
+    const d = await api.post({ action: "claim", device, initials, teacher, period });
+    if (!d.ok) throw new Error(d.error);
+    me = { square: +d.square, initials, teacher, period }; store.set("dm-me", me);
+    msg.textContent = ""; renderStudent(); refresh(); window.scrollTo(0, 0);
+  } catch (err) { msg.className = "fb bad"; msg.textContent = "Couldn't get a square right now. Check your internet connection and try again."; }
+  finally { btn.disabled = false; }
+});
+$("#haveBtn").addEventListener("click", () => { $("#haveForm").hidden = !$("#haveForm").hidden; if (!$("#haveForm").hidden) $("#haveNum").focus(); });
+$("#haveForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const n = parseInt($("#haveNum").value, 10), initials = normInit($("#sInit").value), msg = $("#haveMsg");
+  if (!(n >= 1 && n <= N)) { msg.className = "fb bad"; msg.textContent = `Square numbers go from 1 to ${N}.`; return; }
+  if (!initials) { msg.className = "fb bad"; msg.textContent = "Type your initials above first."; $("#sInit").focus(); return; }
+  me = { square: n, initials, teacher: $("#sTeacher").value, period: $("#sPeriod").value }; store.set("dm-me", me);
+  msg.textContent = ""; renderStudent(); window.scrollTo(0, 0);
+});
+$("#restartBtn").addEventListener("click", () => { if (!me || !confirm("Clear all your colors on this square and start over?")) return; store.del(progKey(me.square - 1)); renderStudent(); $("#status").className = "status"; $("#status").textContent = "Starting fresh. Choose an amino acid, then click its codons."; });
+$("#switchBtn").addEventListener("click", () => { if (!confirm("Leave this square? Your colors stay saved on this computer.")) return; me = null; store.del("dm-me"); renderStudent(); });
+
+/* ================= MURAL ================= */
+const cv = $("#cv"); let cell = 4, peek = false, selected = -1, search = "";
+let anim = { sheets: new Set(), t0: 0, raf: null };
+function drawTile(x, s, k, prog) {
+  const sr = Math.floor(s / TC), sc = s % TC;
+  for (let r = 0; r < TS; r++) for (let c = 0; c < TS; c++) {
+    if ((r + c) / (2 * TS - 1) > prog) continue;
+    const gx = sc * TS + c, gy = sr * TS + r, x0 = Math.round(gx * k), y0 = Math.round(gy * k);
+    x.fillStyle = hexOf(ROWS[gy][gx]); x.fillRect(x0, y0, Math.round((gx + 1) * k) - x0, Math.round((gy + 1) * k) - y0);
+  }
+}
+function drawMural(now) {
+  if (view !== "mural") return;
+  const fit = $("#fit"), full = document.fullscreenElement === $("#frame");
+  const maxH = full ? window.innerHeight - 80 : Math.max(360, window.innerHeight - 250);
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = Math.max(170, Math.floor(Math.min(fit.clientWidth, maxH * C / R)));
+  cell = cssW / C;                                // CSS pixels per codon cell (may be fractional)
+  const pw = Math.round(cssW * dpr), ph = Math.round(cssW * R / C * dpr);
+  if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; cv.style.width = cssW + "px"; cv.style.height = (cssW * R / C) + "px"; }
+  const x = cv.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0);
+  const px = pw / C;                              // device pixels per cell
+  const done = doneSet(), held = claimSet(), tile = TS * px, hits = matchSet();
+  const font = getComputedStyle(document.body).fontFamily;
+  for (let s = 0; s < N; s++) {
+    const sr = Math.floor(s / TC), sc = s % TC, x0 = sc * tile, y0 = sr * tile;
+    const base = (sr + sc) % 2 ? "#1b2a2c" : "#213335";
+    x.fillStyle = held.has(s) && !done.has(s) ? "#2f4a4d" : base; x.fillRect(x0, y0, tile, tile);
+    if (peek || done.has(s)) drawTile(x, s, px, anim.sheets.has(s) ? Math.min(1, (now - anim.t0) / 1100) : 1);
+    else if (cell >= 4.5) { x.fillStyle = "#6f878a"; x.font = `700 ${Math.round(px * 3)}px ${font}`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(String(s + 1), x0 + tile / 2, y0 + tile / 2); }
+    if (search && !hits.has(s)) { x.fillStyle = "rgba(8,14,15,.62)"; x.fillRect(x0, y0, tile, tile); }
+  }
+  x.strokeStyle = "rgba(0,0,0,.5)"; x.lineWidth = 1;
+  for (let i = 1; i < TC; i++) { x.beginPath(); x.moveTo(i * tile + .5, 0); x.lineTo(i * tile + .5, R * px); x.stroke(); }
+  for (let i = 1; i < TR; i++) { x.beginPath(); x.moveTo(0, i * tile + .5); x.lineTo(C * px, i * tile + .5); x.stroke(); }
+  const ring = (s, color, w) => { const sr = Math.floor(s / TC), sc = s % TC; x.strokeStyle = color; x.lineWidth = w; x.strokeRect(sc * tile + w / 2, sr * tile + w / 2, tile - w, tile - w); };
+  hits.forEach(s => ring(s, "#ffd84d", Math.max(3 * dpr, px * .7)));
+  if (selected >= 0) ring(selected, "#ffffff", Math.max(2 * dpr, px * .4));
+}
+function startAnim(list) {
+  list.forEach(s => anim.sheets.add(s)); anim.t0 = performance.now(); cancelAnimationFrame(anim.raf);
+  const step = now => { drawMural(now); if (now - anim.t0 < 1150) anim.raf = requestAnimationFrame(step); else { anim.sheets.clear(); drawMural(now); } };
+  anim.raf = requestAnimationFrame(step);
+}
+const matchSet = () => new Set(search ? [...entries, ...claims].filter(e => e.initials === search).map(e => e.square - 1) : []);
+const who = e => `${e.initials}, ${e.teacher}, period ${e.period}`;
+
+function renderMural() {
+  drawMural(performance.now());
+  const done = doneSet(), complete = done.size === N;
+  $("#title").textContent = complete ? "Albert Einstein" : "Biology Department Mural";
+  $("#sheetsDone").innerHTML = `${done.size}<small>of ${N} squares</small>`;
+  $("#mainBar").style.width = (done.size / N * 100) + "%";
+  const coloring = [...claimSet()].filter(s => !done.has(s)).length;
+  $("#progressText").textContent = complete ? "The mural is complete!" : `${coloring} ${coloring === 1 ? "square is" : "squares are"} being colored right now. It's a mystery picture until every square is in.`;
+  cv.setAttribute("aria-label", `Mural, ${done.size} of ${N} squares finished`);
+
+  const names = [...CONFIG.TEACHERS]; [...entries, ...claims].forEach(e => { if (!names.includes(e.teacher)) names.push(e.teacher); });
+  const counts = names.map(t => ({ t, fin: entries.filter(e => e.teacher === t).length, col: claims.filter(c => c.teacher === t && !done.has(c.square - 1)).length }));
+  const max = Math.max(1, ...counts.map(c => c.fin));
+  const tally = $("#tally"); tally.innerHTML = "";
+  counts.forEach(({ t, fin, col }) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<b></b><span></span><div class="bar"><i style="width:${fin / max * 100}%"></i></div>`;
+    li.querySelector("b").textContent = t; li.querySelector("span").textContent = `${fin} finished, ${col} coloring`;
+    tally.appendChild(li);
+  });
+
+  const ul = $("#matches"), msg = $("#findMsg"); ul.innerHTML = "";
+  if (!search) msg.textContent = "";
+  else {
+    const found = [...entries.map(e => ({ ...e, st: "finished" })), ...claims.filter(c => !entries.some(e => e.square === c.square && e.initials === c.initials)).map(c => ({ ...c, st: "still coloring" }))]
+      .filter(e => e.initials === search).sort((a, b) => a.square - b.square);
+    msg.className = "fb"; msg.textContent = found.length ? `Found ${found.length} for ${search}, outlined in yellow.` : `Nothing for ${search} yet.`;
+    found.forEach(e => { const li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.textContent = `Square ${e.square}: ${e.teacher}, period ${e.period} (${e.st})`; b.addEventListener("click", () => { selected = e.square - 1; renderMural(); }); li.appendChild(b); ul.appendChild(li); });
+  }
+
+  const box = $("#tileInfo");
+  if (selected < 0) box.hidden = true;
+  else {
+    box.hidden = false; const pos = sqPos(selected), sq = selected + 1;
+    $("#tileTitle").textContent = `Square ${sq} (row ${pos.row}, column ${pos.col})`;
+    const fin = entries.filter(e => e.square === sq), col = claims.filter(c => c.square === sq);
+    $("#tileWho").textContent = fin.length ? `Colored by ${fin.map(who).join("; ")}.` : col.length ? `Being colored by ${col.map(who).join("; ")}.` : "Not handed out yet.";
+  }
+  if (PREVIEW) { $("#dot").className = "dot wait"; $("#syncText").textContent = "Preview mode"; }
+  else if (lastSync) { const sec = Math.round((Date.now() - lastSync) / 1000); $("#dot").className = "dot"; $("#syncText").textContent = sec < 10 ? "Up to date" : sec < 90 ? `Updated ${sec} seconds ago` : `Updated ${Math.round(sec / 60)} minutes ago`; }
+}
 function sheetAt(ev) { const r = cv.getBoundingClientRect(); const c = Math.floor((ev.clientX - r.left) / (TS * cell)), rr = Math.floor((ev.clientY - r.top) / (TS * cell)); return c >= 0 && c < TC && rr >= 0 && rr < TR ? rr * TC + c : -1; }
-cv.addEventListener("click", ev => { const s = sheetAt(ev); selected = s === selected ? -1 : s; render(); });
+cv.addEventListener("click", ev => { const s = sheetAt(ev); selected = s === selected ? -1 : s; renderMural(); });
 cv.addEventListener("keydown", ev => {
   const mv = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -TC, ArrowDown: TC }[ev.key];
-  if (ev.key === "Escape") { selected = -1; render(); return; }
+  if (ev.key === "Escape") { selected = -1; renderMural(); return; }
   if (mv === undefined) return; ev.preventDefault();
   if (selected < 0) selected = 0;
   else { const n = selected + mv; if ((mv === 1 && n % TC === 0) || (mv === -1 && selected % TC === 0) || n < 0 || n >= N) return; selected = n; }
-  render();
+  renderMural();
 });
-$("#findIn").addEventListener("input", e => { search = normInit(e.target.value); render(); });
-$("#findForm").addEventListener("submit", e => e.preventDefault());
-
-$("#fs").addEventListener("click", () => {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else if ($("#frame").requestFullscreen) $("#frame").requestFullscreen().catch(() => {});
-});
-document.addEventListener("fullscreenchange", () => { $("#fs").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen"; draw(performance.now()); });
-window.addEventListener("resize", () => draw(performance.now()));
-
-$("#peek").addEventListener("click", e => { peek = !peek; e.target.setAttribute("aria-pressed", peek); e.target.textContent = peek ? "Hide the finished picture" : "Preview the finished picture"; render(); });
-
-$("#dl").addEventListener("click", () => {
-  const k = 12, c = document.createElement("canvas"); c.width = C * k; c.height = R * k; const x = c.getContext("2d");
-  for (let r = 0; r < R; r++) for (let cc = 0; cc < C; cc++) { const ch = PIC.rows[r][cc]; x.fillStyle = ch === "." ? "#fdfdfb" : PIC.pal[ch].hex; x.fillRect(cc * k, r * k, k, k); }
-  const a = document.createElement("a"); a.download = "biology-department-mural.png"; a.href = c.toDataURL("image/png"); a.click();
-});
-
-/* ---------- teacher form ---------- */
-CONFIG.TEACHERS.forEach(t => $("#teacher").add(new Option(t, t)));
-for (let i = 1; i <= CONFIG.PERIODS; i++) $("#period").add(new Option("Period " + i, String(i)));
-const prefs = store.get("mural-teacher") || {};
-if (prefs.teacher && CONFIG.TEACHERS.includes(prefs.teacher)) $("#teacher").value = prefs.teacher;
-if (prefs.period) $("#period").value = prefs.period;
-const savedPass = store.get("mural-pass"); if (savedPass) $("#pass").value = savedPass;
-if (PREVIEW) $("#passWrap").querySelector("input").placeholder = "Any passcode works in preview";
-["#teacher", "#period"].forEach(id => $(id).addEventListener("change", () => store.set("mural-teacher", { teacher: $("#teacher").value, period: $("#period").value })));
-
-const ERR = {
-  bad_code: "That code doesn't match the Einstein mural. Check it with the student and try again.",
-  bad_initials: "Type 1 to 4 letters for the student's initials.",
-  wrong_passcode: "That passcode isn't right. Ask the teacher who set up the Google Sheet.",
-  duplicate: "This student is already on that square for this class.",
-};
-function passOk() { const p = $("#pass").value; if ($("#remember").checked) store.set("mural-pass", p); else store.del("mural-pass"); return p; }
-
-$("#addForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const msg = $("#addMsg"), btn = $("#addBtn");
-  const initials = normInit($("#initials").value), code = normCode($("#code").value);
-  if (!initials || initials.length > 4) { msg.className = "fb bad"; msg.textContent = ERR.bad_initials; $("#initials").focus(); return; }
-  const m = code.match(/^(\d+)-[A-Z0-9]{3}$/), s = m ? +m[1] - 1 : -1;
-  if (!m || s < 0 || s >= N || sheetCode(PIC.name, s) !== code) { msg.className = "fb bad"; msg.textContent = ERR.bad_code; $("#code").focus(); return; }
-  btn.disabled = true; msg.className = "fb"; msg.textContent = "Adding…";
-  try {
-    const d = await api.post({ action: "add", passcode: passOk(), code, initials, teacher: $("#teacher").value, period: $("#period").value });
-    if (d.entries) setEntries(d.entries);
-    if (!d.ok) { msg.className = "fb bad"; msg.textContent = ERR[d.error] || "The mural didn't accept that entry. Try again."; return; }
-    msg.className = "fb good"; msg.textContent = `Added ${initials} to square ${s + 1}.`;
-    $("#initials").value = ""; $("#code").value = ""; $("#initials").focus();
-  } catch (err) {
-    msg.className = "fb bad"; msg.textContent = "Couldn't reach the Google Sheet, so nothing was added. Check the connection and try again.";
-  } finally { btn.disabled = false; }
-});
-
-async function removeEntry(e, btn) {
-  if (!confirm(`Remove ${e.initials} (${e.teacher}, period ${e.period}) from square ${e.sheet}?`)) return;
-  btn.disabled = true;
-  try {
-    const d = await api.post({ action: "remove", passcode: passOk(), id: e.id });
-    if (!d.ok) { $("#addMsg").className = "fb bad"; $("#addMsg").textContent = ERR[d.error] || "Couldn't remove that entry."; btn.disabled = false; return; }
-    setEntries(d.entries); $("#addMsg").className = "fb good"; $("#addMsg").textContent = `Removed ${e.initials} from square ${e.sheet}.`;
-  } catch (err) { $("#addMsg").className = "fb bad"; $("#addMsg").textContent = "Couldn't reach the Google Sheet. Try again."; btn.disabled = false; }
-}
-
-/* ---------- codon chart ---------- */
-const TABLE = {"UUU":"Phe","UUC":"Phe","UUA":"Leu","UUG":"Leu","UCU":"Ser","UCC":"Ser","UCA":"Ser","UCG":"Ser","UAU":"Tyr","UAC":"Tyr","UAA":"Stop","UAG":"Stop","UGU":"Cys","UGC":"Cys","UGA":"Stop","UGG":"Trp","CUU":"Leu","CUC":"Leu","CUA":"Leu","CUG":"Leu","CCU":"Pro","CCC":"Pro","CCA":"Pro","CCG":"Pro","CAU":"His","CAC":"His","CAA":"Gln","CAG":"Gln","CGU":"Arg","CGC":"Arg","CGA":"Arg","CGG":"Arg","AUU":"Ile","AUC":"Ile","AUA":"Ile","AUG":"Met","ACU":"Thr","ACC":"Thr","ACA":"Thr","ACG":"Thr","AAU":"Asn","AAC":"Asn","AAA":"Lys","AAG":"Lys","AGU":"Ser","AGC":"Ser","AGA":"Arg","AGG":"Arg","GUU":"Val","GUC":"Val","GUA":"Val","GUG":"Val","GCU":"Ala","GCC":"Ala","GCA":"Ala","GCG":"Ala","GAU":"Asp","GAC":"Asp","GAA":"Glu","GAG":"Glu","GGU":"Gly","GGC":"Gly","GGA":"Gly","GGG":"Gly"};
+$("#findIn").addEventListener("input", e => { search = normInit(e.target.value); renderMural(); });
+$("#refresh").addEventListener("click", refresh);
+$("#fs").addEventListener("click", () => { if (document.fullscreenElement) document.exitFullscreen(); else if ($("#frame").requestFullscreen) $("#frame").requestFullscreen().catch(() => {}); });
+document.addEventListener("fullscreenchange", () => { $("#fs").textContent = document.fullscreenElement ? "Exit full screen" : "Full screen"; drawMural(performance.now()); });
+window.addEventListener("resize", () => { drawMural(performance.now()); drawMinimap(); });
 (function buildChart() {
-  const B = "UCAG", paint = {};
-  Object.values(PIC.pal).forEach(p => { paint[p.ab] = p; });
-  let h = `<table class="sq"><thead><tr><th class="lab">1st / 2nd</th>${B.split("").map(b => `<th scope="col">${b}</th>`).join("")}<th class="lab">3rd</th></tr></thead><tbody>`;
-  for (const b1 of B) {
+  let h = `<table class="sq"><thead><tr><th class="lab">1st / 2nd</th>${BASES.split("").map(b => `<th scope="col">${b}</th>`).join("")}<th class="lab">3rd</th></tr></thead><tbody>`;
+  for (const b1 of BASES) {
     h += `<tr><th scope="row">${b1}</th>`;
-    for (const b2 of B) {
+    for (const b2 of BASES) {
       h += `<td class="box">`;
-      for (const b3 of B) {
-        const c = b1 + b2 + b3, a = TABLE[c], p = paint[a];
-        const sw = p ? `<i style="background:${p.hex}" title="${p.cname}"></i>` : `<i style="visibility:hidden"></i>`;
-        h += `<div class="cod${a === "Stop" ? " stop" : ""}${a === "Met" ? " start" : ""}">${sw}<b>${c}</b><span>${a === "Stop" ? "STOP" : a}</span></div>`;
-      }
+      for (const b3 of BASES) { const c = b1 + b2 + b3, a = TABLE[c], k = keyOfAb[a], p = PAL[k];
+        h += `<div class="cod${a === "Stop" ? " stop" : ""}${a === "Met" ? " start" : ""}"><i style="background:${k === "." ? "#fdfdfb" : p.hex}" title="${esc(p.cname)}"></i><b>${c}</b><span>${a === "Stop" ? "STOP" : a}</span></div>`; }
       h += `</td>`;
     }
-    h += `<td class="third">${B.split("").map(b => `<div>${b}</div>`).join("")}</td></tr>`;
+    h += `<td class="third">${BASES.split("").map(b => `<div>${b}</div>`).join("")}</td></tr>`;
   }
   $("#chart").innerHTML = h + "</tbody></table>";
 })();
 
+/* ================= TEACHERS ================= */
+fillSelect($("#teacher")); fillSelect($("#period"));
+fillSelect($("#cTeacher"), "All teachers"); fillSelect($("#cPeriod"), "All periods");
+const tPrefs = store.get("dm-teacher") || {};
+if (tPrefs.teacher && CONFIG.TEACHERS.includes(tPrefs.teacher)) { $("#teacher").value = tPrefs.teacher; $("#cTeacher").value = tPrefs.teacher; }
+if (tPrefs.period) $("#period").value = tPrefs.period;
+const savedPass = store.get("dm-pass"); if (savedPass) $("#pass").value = savedPass;
+if (PREVIEW) $("#pass").placeholder = "Any passcode works in preview";
+["#teacher", "#period"].forEach(id => $(id).addEventListener("change", () => store.set("dm-teacher", { teacher: $("#teacher").value, period: $("#period").value })));
+["#cTeacher", "#cPeriod"].forEach(id => $(id).addEventListener("change", renderTeacher));
+const ERR = {
+  bad_code: "That code doesn't match any square. Check it with the student and try again.",
+  bad_initials: "Type 1 to 4 letters for the student's initials.",
+  wrong_passcode: "That passcode isn't right. Ask the teacher who set up the Google Sheet.",
+  duplicate: "This student is already credited on that square.",
+};
+const passVal = () => { const p = $("#pass").value; if ($("#remember").checked) store.set("dm-pass", p); else store.del("dm-pass"); return p; };
+const fmtDate = t => { const d = new Date(t); return isNaN(d) ? "" : d.toLocaleDateString(undefined, { month: "short", day: "numeric" }); };
+
+function lookupCode() {
+  const code = normCode($("#code").value), m = code.match(/^(\d+)-[A-Z0-9]{3}$/), el = $("#lookup");
+  el.className = "lookup";
+  if (!code) { el.textContent = "Type a code to see who was given that square."; return; }
+  if (!m) { el.textContent = "Codes look like 143-XYZ."; return; }
+  const sq = +m[1];
+  if (sq < 1 || sq > N || sheetCode(sq - 1) !== code) { el.textContent = "That code doesn't match any square yet. Check the letters."; return; }
+  const c = [...claims].reverse().find(x => x.square === sq), f = entries.filter(x => x.square === sq);
+  el.className = "lookup good";
+  el.textContent = `Valid code for square ${sq}.` + (c ? ` Given to ${who(c)}.` : " Nobody was given this square on the site.") + (f.length ? ` Already finished by ${f.map(x => x.initials).join(", ")}.` : "");
+  if (c && !$("#initials").dataset.touched) { $("#initials").value = c.initials; if (CONFIG.TEACHERS.includes(c.teacher)) $("#teacher").value = c.teacher; $("#period").value = c.period; }
+}
+$("#code").addEventListener("input", () => { $("#initials").dataset.touched = ""; lookupCode(); });
+$("#initials").addEventListener("input", () => { $("#initials").dataset.touched = "1"; });
+
+$("#addForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#addMsg"), btn = $("#addBtn"), initials = normInit($("#initials").value), code = normCode($("#code").value);
+  const m = code.match(/^(\d+)-[A-Z0-9]{3}$/), s = m ? +m[1] - 1 : -1;
+  if (!m || s < 0 || s >= N || sheetCode(s) !== code) { msg.className = "fb bad"; msg.textContent = ERR.bad_code; $("#code").focus(); return; }
+  if (!initials || initials.length > 4) { msg.className = "fb bad"; msg.textContent = ERR.bad_initials; $("#initials").focus(); return; }
+  btn.disabled = true; msg.className = "fb"; msg.textContent = "Adding…";
+  try {
+    const d = await api.post({ action: "add", passcode: passVal(), code, initials, teacher: $("#teacher").value, period: $("#period").value });
+    if (d.entries) setState(d);
+    if (!d.ok) { msg.className = "fb bad"; msg.textContent = ERR[d.error] || "The mural didn't accept that. Try again."; return; }
+    msg.className = "fb good"; msg.textContent = `Added ${initials} to square ${s + 1}.`;
+    $("#code").value = ""; $("#initials").value = ""; $("#initials").dataset.touched = ""; lookupCode(); $("#code").focus();
+  } catch (err) { msg.className = "fb bad"; msg.textContent = "Couldn't reach the Google Sheet, so nothing was added. Try again."; }
+  finally { btn.disabled = false; }
+});
+async function teacherPost(body, okMsg) {
+  const msg = $("#addMsg");
+  try {
+    const d = await api.post({ ...body, passcode: passVal() });
+    if (!d.ok) { msg.className = "fb bad"; msg.textContent = ERR[d.error] || "That didn't work. Try again."; return; }
+    setState(d); msg.className = "fb good"; msg.textContent = okMsg;
+  } catch (err) { msg.className = "fb bad"; msg.textContent = "Couldn't reach the Google Sheet. Try again."; }
+}
+function renderTeacher() {
+  const recent = $("#recent"); recent.innerHTML = "";
+  const list = [...entries].sort((a, b) => String(b.time).localeCompare(String(a.time))).slice(0, 30);
+  if (!list.length) recent.innerHTML = "<li>Nothing yet.</li>";
+  list.forEach(e => {
+    const li = document.createElement("li"), sp = document.createElement("span"), rm = document.createElement("button");
+    sp.textContent = `Square ${e.square}: ${who(e)}`; rm.type = "button"; rm.textContent = "Remove";
+    rm.addEventListener("click", () => { if (confirm(`Remove ${e.initials} from square ${e.square}?`)) teacherPost({ action: "remove", id: e.id }, `Removed ${e.initials} from square ${e.square}.`); });
+    li.append(sp, rm); recent.appendChild(li);
+  });
+  const ct = $("#cTeacher").value, cp = $("#cPeriod").value, done = doneSet();
+  const open = claims.filter(c => !done.has(c.square - 1) && (!ct || c.teacher === ct) && (!cp || c.period === cp)).sort((a, b) => a.square - b.square);
+  const cl = $("#claimList"); cl.innerHTML = "";
+  if (!open.length) cl.innerHTML = "<li>No squares waiting.</li>";
+  open.forEach(c => {
+    const li = document.createElement("li"), sp = document.createElement("span"), rb = document.createElement("button");
+    sp.textContent = `Square ${c.square}: ${who(c)}${fmtDate(c.time) ? ", given " + fmtDate(c.time) : ""}`; rb.type = "button"; rb.textContent = "Release";
+    rb.addEventListener("click", () => { if (confirm(`Release square ${c.square}? ${c.initials} will no longer have it, and another student can get it.`)) teacherPost({ action: "release", square: c.square }, `Released square ${c.square}.`); });
+    li.append(sp, rb); cl.appendChild(li);
+  });
+  lookupCode();
+}
+$("#peek").addEventListener("click", e => { peek = !peek; e.target.setAttribute("aria-pressed", peek); e.target.textContent = peek ? "Hide the finished picture" : "Preview the finished picture on this screen"; show("mural"); window.scrollTo(0, 0); });
+
+function download(k, name) {
+  const msg = $("#dlMsg"); msg.className = "fb"; msg.textContent = "Making the image… this can take a few seconds.";
+  setTimeout(() => {
+    try {
+      const c = document.createElement("canvas"); c.width = C * k; c.height = R * k; const x = c.getContext("2d");
+      x.fillStyle = "#ffffff"; x.fillRect(0, 0, c.width, c.height);
+      const done = doneSet(), grid = $("#dlGrid").checked, tile = TS * k;
+      for (let s = 0; s < N; s++) if (done.has(s) || peek) drawTile(x, s, k, 1);
+      if (grid) {
+        x.strokeStyle = "rgba(120,130,130,.85)"; x.lineWidth = Math.max(1, k / 8);
+        for (let i = 0; i <= TC; i++) { x.beginPath(); x.moveTo(i * tile, 0); x.lineTo(i * tile, c.height); x.stroke(); }
+        for (let i = 0; i <= TR; i++) { x.beginPath(); x.moveTo(0, i * tile); x.lineTo(c.width, i * tile); x.stroke(); }
+        x.font = `700 ${Math.round(k * 2.2)}px sans-serif`; x.textAlign = "left"; x.textBaseline = "top";
+        for (let s = 0; s < N; s++) { const sr = Math.floor(s / TC), sc = s % TC; x.lineWidth = Math.max(2, k / 4); x.strokeStyle = "rgba(255,255,255,.9)"; x.strokeText(String(s + 1), sc * tile + k * .6, sr * tile + k * .5); x.fillStyle = "#17282b"; x.fillText(String(s + 1), sc * tile + k * .6, sr * tile + k * .5); }
+      }
+      c.toBlob(blob => {
+        if (!blob) { msg.className = "fb bad"; msg.textContent = "This computer ran out of memory making the image. Try the letter size."; return; }
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        msg.className = "fb good"; msg.textContent = `Saved ${name} (${c.width} × ${c.height} pixels). Print it at ${(c.width / 300).toFixed(1)} × ${(c.height / 300).toFixed(1)} in.`;
+      }, "image/png");
+    } catch (err) { msg.className = "fb bad"; msg.textContent = "Couldn't make the image on this computer. Try the letter size."; }
+  }, 30);
+}
+$("#dlLetter").addEventListener("click", () => download(14, "biology-mural-letter.png"));
+$("#dlPoster").addEventListener("click", () => download(40, "biology-mural-poster-24x30.png"));
+
 /* ---------- start ---------- */
+function renderAll() { renderMural(); renderTeacher(); drawMinimap(); }
 $("#previewNote").hidden = !PREVIEW;
 if (PREVIEW) $("#refresh").hidden = true;
-render();
+renderStudent();
+show(({ "#mural": "mural", "#teach": "teach" })[location.hash] || "color");
 refresh();
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw(performance.now()));
+setInterval(() => { if (!document.hidden && !PREVIEW && view !== "color") refresh(); }, 20000);
+setInterval(() => { if (view === "mural") renderMural(); }, 10000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && view !== "color") refresh(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawMural(performance.now()));
 </script>
 </body>
 </html>
