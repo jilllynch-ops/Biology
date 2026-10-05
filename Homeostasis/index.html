@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Back in Balance: A Homeostasis Card Game</title>
+<meta name="description" content="Build feedback loops for thermoregulation, blood sugar regulation and osmoregulation. A 2–4 player biology game aligned to PA STEELS 3.1.9-12.C and Keystone Biology BIO.A.4.2.1.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #15323A;
+    --teal-2: #1D414A;
+    --teal-3: #285560;
+    --peach: #F0A877;
+    --cream: #F3EFE6;
+    --sage: #8FB3B0;
+    --good: #9FD3A8;
+    --bad: #E8897A;
+    --serif: "DM Serif Display", Georgia, "Times New Roman", serif;
+    --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--teal);
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  button, select, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--peach); outline-offset: 2px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 400; line-height: 1.1; margin: 0; }
+  h1 { font-size: clamp(2.6rem, 7vw, 4.5rem); }
+  h2 { font-size: 1.9rem; }
+  h3 { font-size: 1.25rem; }
+  p { margin: 0 0 .75rem; max-width: 68ch; }
+  .muted { color: var(--sage); }
+
+  /* The balance line: the one memorable element */
+  .wave { display: block; width: 100%; height: 90px; }
+  .wave .set { stroke: var(--sage); stroke-dasharray: 6 8; stroke-width: 1.5; opacity: .7; }
+  .wave .line { stroke: var(--peach); stroke-width: 4; fill: none; stroke-linecap: round; }
+  .wave-strip { height: 56px; }
+
+  /* Setup */
+  .hero { padding: 2rem 0 1rem; }
+  .hero p { font-size: 1.2rem; margin-top: .75rem; }
+  .setup { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 2rem; }
+  .panel { background: var(--teal-2); border-radius: 14px; padding: 1.25rem; }
+  .panel h3 { margin-bottom: .75rem; }
+  label { display: block; font-weight: 500; margin: .75rem 0 .3rem; }
+  input[type=text], select {
+    width: 100%; background: var(--teal); border: 1.5px solid var(--teal-3); border-radius: 8px; padding: .55rem .7rem;
+  }
+  .seg { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .seg button {
+    flex: 1; min-width: 3rem; background: var(--teal); border: 1.5px solid var(--teal-3); border-radius: 8px; padding: .5rem; cursor: pointer;
+  }
+  .seg button[aria-pressed=true] { background: var(--peach); color: var(--teal); border-color: var(--peach); font-weight: 700; }
+  .btn {
+    background: var(--peach); color: var(--teal); border: 0; border-radius: 999px; padding: .75rem 1.5rem; font-weight: 700; cursor: pointer;
+  }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn.ghost { background: transparent; color: var(--cream); border: 1.5px solid var(--teal-3); }
+  .rules ol { padding-left: 1.2rem; margin: 0; }
+  .rules li { margin-bottom: .4rem; }
+
+  /* Game header */
+  .topbar { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; }
+  .scores { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .chip { background: var(--teal-2); border-radius: 999px; padding: .35rem .85rem; font-size: .95rem; }
+  .chip.active { background: var(--cream); color: var(--teal); font-weight: 700; }
+  .turninfo { display: flex; align-items: center; gap: 1rem; }
+  .timer { width: 64px; height: 64px; position: relative; flex: none; }
+  .timer svg { transform: rotate(-90deg); }
+  .timer span { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; }
+  .timer .track { stroke: var(--teal-3); }
+  .timer .ring { stroke: var(--peach); transition: stroke-dashoffset 1s linear; }
+  .timer.low .ring { stroke: var(--bad); }
+
+  .game { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); margin-top: 1rem; }
+  @media (max-width: 860px) { .game { grid-template-columns: 1fr; } }
+
+  /* Loop mat */
+  .mat {
+    display: grid; grid-template-columns: 1fr 2rem 1fr; grid-template-rows: auto 2.4rem auto; gap: .25rem;
+    background: var(--teal-2); border-radius: 18px; padding: 1rem;
+  }
+  .slot {
+    border: 2px dashed var(--teal-3); border-radius: 12px; padding: .7rem; min-height: 120px; display: flex; flex-direction: column; gap: .35rem;
+  }
+  .slot.filled { border-style: solid; border-color: var(--sage); }
+  .slot.right { border-color: var(--good); background: rgba(159,211,168,.08); }
+  .slot.wrong { border-color: var(--bad); background: rgba(232,137,122,.08); }
+  .slot-name { font-weight: 700; font-size: .9rem; color: var(--peach); }
+  .slot-step { font-weight: 400; color: var(--sage); }
+  .slot .text { font-size: .98rem; }
+  .slot .empty { color: var(--sage); font-size: .92rem; }
+  .slot .fix { font-size: .88rem; color: var(--good); }
+  .slot.stim .text { font-family: var(--serif); font-size: 1.2rem; line-height: 1.25; }
+  .arrow { display: grid; place-items: center; color: var(--peach); font-size: 1.4rem; }
+  .center { display: grid; place-items: center; font-size: .82rem; color: var(--sage); text-align: center; }
+  .placed { display: flex; gap: .4rem; align-items: flex-start; }
+  .placed button { background: none; border: 0; color: var(--sage); cursor: pointer; padding: 0 .2rem; font-size: 1rem; line-height: 1.3; }
+
+  .explain { margin-top: 1rem; display: grid; gap: .75rem; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 520px) { .explain { grid-template-columns: 1fr; } }
+  .actions { margin-top: 1rem; display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
+
+  /* Bank */
+  .tabs { display: flex; gap: .4rem; margin-bottom: .75rem; flex-wrap: wrap; }
+  .tabs button {
+    background: var(--teal-2); border: 0; border-radius: 999px; padding: .45rem 1rem; cursor: pointer;
+  }
+  .tabs button[aria-selected=true] { background: var(--cream); color: var(--teal); font-weight: 700; }
+  .cards { display: grid; gap: .5rem; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  .card {
+    text-align: left; background: var(--cream); color: var(--teal); border: 2px solid transparent; border-radius: 10px;
+    padding: .65rem .75rem; cursor: pointer; font-size: .95rem; line-height: 1.35;
+  }
+  .card .id { display: block; font-size: .78rem; font-weight: 700; color: #7A5A3E; margin-bottom: .15rem; }
+  .card[aria-pressed=true] { border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach) inset; }
+  .card:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Results */
+  .result { margin-top: 1rem; background: var(--teal-2); border-radius: 14px; padding: 1rem 1.25rem; }
+  .result .pts { font-family: var(--serif); font-size: 2rem; }
+  .result ul { margin: .5rem 0; padding-left: 1.1rem; }
+
+  /* End */
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--teal-3); vertical-align: top; }
+  .tablewrap { overflow-x: auto; }
+  .hidden { display: none !important; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  footer { margin-top: 3rem; font-size: .85rem; color: var(--sage); }
+  @media (prefers-reduced-motion: reduce) { .timer .ring { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="hero">
+      <h1>Back in Balance</h1>
+      <p>Build the feedback loop that brings the body back to normal.</p>
+    </div>
+    <svg class="wave" id="waveHero" viewBox="0 0 1000 90" preserveAspectRatio="none" aria-hidden="true">
+      <line class="set" x1="0" y1="45" x2="1000" y2="45"/>
+      <path class="line" d=""/>
+    </svg>
+
+    <div class="setup">
+      <div class="panel">
+        <h3>Players</h3>
+        <label>How many players or teams?</label>
+        <p class="muted" id="soloNote" style="font-size:.92rem;margin:.2rem 0 .4rem" hidden>Solo mode: work through the scenarios on your own and try for a perfect score.</p>
+        <div class="seg" id="countSeg" role="group" aria-label="Number of players">
+          <button type="button" data-n="1" aria-pressed="false">1</button>
+          <button type="button" data-n="2" aria-pressed="true">2</button>
+          <button type="button" data-n="3" aria-pressed="false">3</button>
+          <button type="button" data-n="4" aria-pressed="false">4</button>
+        </div>
+        <div id="nameFields"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Game options</h3>
+        <label for="turnsSel" id="turnsLabel">Turns per player</label>
+        <select id="turnsSel">
+          <option value="2">2 turns (about 15 min)</option>
+          <option value="3" selected>3 turns (about 25 min)</option>
+          <option value="4">4 turns (about 35 min)</option>
+        </select>
+        <label for="twistSel">Twist cards (other living things and positive feedback)</label>
+        <select id="twistSel">
+          <option value="after" selected>Add them after round 1</option>
+          <option value="start">Include from the start</option>
+          <option value="off">Leave them out</option>
+        </select>
+        <label for="timerSel">Timer</label>
+        <select id="timerSel">
+          <option value="60" selected>60 seconds per turn</option>
+          <option value="90">90 seconds per turn</option>
+          <option value="0">No timer</option>
+        </select>
+        <div class="actions"><button class="btn" id="startBtn" type="button">Start game</button></div>
+      </div>
+
+      <div class="panel rules">
+        <h3>How a turn works</h3>
+        <ol>
+          <li>A scenario is drawn. That change is the stimulus.</li>
+          <li>Pick one receptor, one control center and one or two responses from the card bank.</li>
+          <li>Name the system and the feedback type.</li>
+          <li>Check your loop. You earn up to 5 points: 1 each for the receptor, control center, response, system and feedback type.</li>
+        </ol>
+        <p class="muted" style="margin-top:.75rem">Watch out for decoy cards. They are wrong on purpose.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+    <div class="topbar">
+      <div class="scores" id="scores" aria-label="Scores"></div>
+      <div class="turninfo">
+        <div>
+          <div id="roundLabel" class="muted"></div>
+          <h2 id="whoseTurn"></h2>
+        </div>
+        <div class="timer" id="timer" aria-hidden="true">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle class="track" cx="32" cy="32" r="27" fill="none" stroke-width="6"/>
+            <circle class="ring" id="ring" cx="32" cy="32" r="27" fill="none" stroke-width="6" stroke-dasharray="169.6" stroke-dashoffset="0"/>
+          </svg>
+          <span id="timeText"></span>
+        </div>
+      </div>
+    </div>
+    <div class="sr" aria-live="polite" id="live"></div>
+
+    <svg class="wave wave-strip" id="waveGame" viewBox="0 0 1000 56" preserveAspectRatio="none" aria-hidden="true">
+      <line class="set" x1="0" y1="28" x2="1000" y2="28"/>
+      <path class="line" d=""/>
+    </svg>
+
+    <div class="game">
+      <div>
+        <div class="mat" id="mat">
+          <div class="slot" id="slot-r"></div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="slot" id="slot-c"></div>
+          <div class="arrow" aria-hidden="true">↑</div>
+          <div class="center">Back to<br>normal</div>
+          <div class="arrow" aria-hidden="true">↓</div>
+          <div class="slot stim filled" id="slot-s"></div>
+          <div class="arrow" aria-hidden="true">←</div>
+          <div class="slot" id="slot-p"></div>
+        </div>
+
+        <div class="explain">
+          <div>
+            <label for="sysSel">Which system is this?</label>
+            <select id="sysSel"></select>
+          </div>
+          <div>
+            <label for="fbSel">Which kind of feedback?</label>
+            <select id="fbSel">
+              <option value="">Choose one</option>
+              <option value="Negative">Negative: reverses the change</option>
+              <option value="Positive">Positive: makes the change bigger</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="checkBtn" type="button">Check my loop</button>
+          <button class="btn ghost" id="clearBtn" type="button">Clear cards</button>
+          <button class="btn hidden" id="nextBtn" type="button">Next player</button>
+        </div>
+        <div id="result" class="result hidden" aria-live="polite"></div>
+      </div>
+
+      <div>
+        <div class="tabs" role="tablist" id="tabs">
+          <button role="tab" data-t="r" aria-selected="true">Receptors</button>
+          <button role="tab" data-t="c" aria-selected="false">Control centers</button>
+          <button role="tab" data-t="p" aria-selected="false">Responses</button>
+        </div>
+        <div class="cards" id="bank" role="tabpanel"></div>
+        <p class="muted" style="margin-top:.75rem" id="bankHint"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- END -->
+  <section id="end" class="hidden">
+    <div class="hero">
+      <h1 id="winner"></h1>
+      <p id="winnerSub"></p>
+    </div>
+    <svg class="wave" id="waveEnd" viewBox="0 0 1000 90" preserveAspectRatio="none" aria-hidden="true">
+      <line class="set" x1="0" y1="45" x2="1000" y2="45"/>
+      <path class="line" d=""/>
+    </svg>
+    <div class="panel" style="margin-top:1.5rem">
+      <h3>Loops to review</h3>
+      <p class="muted">Every turn that scored under 5, with the correct loop.</p>
+      <div class="tablewrap"><table id="review"></table></div>
+    </div>
+    <div class="panel" style="margin-top:1.5rem">
+      <h3 id="talkHead">Talk it over</h3>
+      <ol>
+        <li>Choose one loop. How does the response feed back and change the stimulus?</li>
+        <li>The paper cut works differently from the other scenarios. How?</li>
+        <li>Which decoy card almost fooled you? Why is it wrong?</li>
+      </ol>
+    </div>
+    <div class="actions"><button class="btn" id="againBtn" type="button">Play again</button></div>
+  </section>
+
+  <footer>Aligned to PA STEELS 3.1.9-12.C (HS-LS1-3) and Keystone Biology BIO.A.4.2.1. Crosscutting concept: stability and change.</footer>
+</div>
+
+<script>
+/* ---------- Card data ---------- */
+const CARDS = {
+  r: [
+    { id: "R1", text: "Temperature sensors in the skin and brain" },
+    { id: "R2", text: "Cells in the pancreas that sense sugar in the blood" },
+    { id: "R3", text: "Sensors in the brain that detect water and salt in the blood" },
+    { id: "R4", text: "Light sensors in the eye", twist: true },
+    { id: "R5", text: "Cells in the leaf that sense water loss", twist: true },
+    { id: "R6", text: "A damaged blood vessel wall", twist: true },
+    { id: "R7", text: "Taste buds on the tongue", decoy: true },
+    { id: "R8", text: "Sensors in the stomach that feel fullness", decoy: true }
+  ],
+  c: [
+    { id: "C1", text: "Hypothalamus (a small part of the brain)" },
+    { id: "C2", text: "Pancreas (an organ behind the stomach)" },
+    { id: "C3", text: "Reflex center in the brain", twist: true },
+    { id: "C4", text: "Guard cells around the stomata", twist: true },
+    { id: "C5", text: "Platelets release chemical signals", twist: true },
+    { id: "C6", text: "Kidneys", decoy: true },
+    { id: "C7", text: "Heart", decoy: true },
+    { id: "C8", text: "Skin", decoy: true }
+  ],
+  p: [
+    { id: "P1", text: "Sweat glands release sweat. It cools you as it dries." },
+    { id: "P2", text: "Blood vessels in the skin widen and let heat out." },
+    { id: "P3", text: "Muscles shiver. Shivering makes heat." },
+    { id: "P4", text: "Blood vessels in the skin narrow and keep heat in." },
+    { id: "P5", text: "Insulin is released. Cells take in sugar and the liver stores the extra." },
+    { id: "P6", text: "Glucagon is released. The liver lets stored sugar back into the blood." },
+    { id: "P7", text: "More ADH is released. Kidneys keep water; you feel thirsty; urine is small and dark." },
+    { id: "P8", text: "Less ADH is released. Kidneys let extra water out; urine is large and pale." },
+    { id: "P9", text: "The stomata close and the plant loses less water.", twist: true },
+    { id: "P10", text: "Blood vessels in the large ears widen; heat escapes into the air.", twist: true },
+    { id: "P11", text: "The pupils shrink and less light gets in.", twist: true },
+    { id: "P12", text: "More platelets stick, and the clot grows until the cut is sealed.", twist: true },
+    { id: "P13", text: "The heart beats slower to cool the body.", decoy: true },
+    { id: "P14", text: "The stomach makes more acid to use up sugar.", decoy: true },
+    { id: "P15", text: "The kidneys release insulin.", decoy: true },
+    { id: "P16", text: "The lungs breathe out extra salt.", decoy: true }
+  ]
+};
+
+const SYSTEMS = ["Thermoregulation", "Blood sugar regulation", "Osmoregulation", "Plant water balance", "Pupil response to light", "Blood clotting"];
+const HOT = { system: "Thermoregulation", r: "R1", c: "C1", p: ["P1", "P2"], fb: "Negative" };
+const COLD = { system: "Thermoregulation", r: "R1", c: "C1", p: ["P3", "P4"], fb: "Negative" };
+const SUGAR_HI = { system: "Blood sugar regulation", r: "R2", c: "C2", p: ["P5"], fb: "Negative" };
+const SUGAR_LO = { system: "Blood sugar regulation", r: "R2", c: "C2", p: ["P6"], fb: "Negative" };
+const WATER_LO = { system: "Osmoregulation", r: "R3", c: "C1", p: ["P7"], fb: "Negative" };
+const WATER_HI = { system: "Osmoregulation", r: "R3", c: "C1", p: ["P8"], fb: "Negative" };
+
+const SCENARIOS = [
+  { n: 1, text: "You run a mile on a hot day.", keys: [HOT], why: "Your temperature rises. The hypothalamus triggers sweating and wider skin blood vessels, so heat leaves and you cool back to about 37 °C." },
+  { n: 2, text: "You wait for the bus in the snow with no coat.", keys: [COLD], why: "Your temperature drops. The hypothalamus triggers shivering and narrower skin blood vessels, so heat is made and kept in." },
+  { n: 3, text: "You eat a big bowl of pasta and drink a soda.", keys: [SUGAR_HI], why: "Blood sugar rises. The pancreas releases insulin, cells take in sugar and the liver stores the extra, so blood sugar falls." },
+  { n: 4, text: "You skip breakfast. Lunch is an hour away.", keys: [SUGAR_LO], why: "Blood sugar falls. The pancreas releases glucagon and the liver lets stored sugar back into the blood." },
+  { n: 5, text: "You eat a bag of salty chips and drink nothing.", keys: [WATER_LO], why: "Your blood gets too salty. The hypothalamus sends more ADH, you feel thirsty, and the kidneys hold on to water." },
+  { n: 6, text: "You drink two big bottles of water fast.", keys: [WATER_HI], why: "There is too much water in your blood. Less ADH is sent, and the kidneys let the extra water out as pale urine." },
+  { n: 7, text: "You leave a hot car and walk into a cold store.", keys: [COLD], why: "Your temperature starts to drop. The hypothalamus triggers shivering and narrower skin blood vessels." },
+  { n: 8, text: "You play soccer for two hours with no snack and little water.", note: "Two systems could work. Pick one and defend it.", keys: [SUGAR_LO, WATER_LO], why: "Both blood sugar and water fall. Glucagon raises blood sugar; more ADH helps the kidneys keep water." },
+  { n: 9, text: "You sit in a hot tub for 20 minutes.", keys: [HOT], why: "Your temperature rises. Sweating and wider skin blood vessels let heat out." },
+  { n: 10, text: "You eat a large slice of birthday cake.", keys: [SUGAR_HI], why: "Blood sugar rises. Insulin helps cells take in sugar and the liver stores the extra." },
+  { n: 11, text: "Your blanket falls off on a freezing night.", keys: [COLD], why: "Your temperature drops. Shivering makes heat and narrower skin blood vessels keep it in." },
+  { n: 12, text: "You sweat through a long band practice in a hot gym and only sip water.", keys: [WATER_LO], why: "You lose water as sweat. More ADH is sent, you feel thirsty, and the kidneys keep water." },
+  { n: 13, text: "A plant sits in hot, dry wind all afternoon.", twist: true, keys: [{ system: "Plant water balance", r: "R5", c: "C4", p: ["P9"], fb: "Negative" }], why: "The leaf is losing water. Guard cells close the stomata so less water escapes." },
+  { n: 14, text: "A jackrabbit rests in the desert sun at noon.", twist: true, keys: [{ system: "Thermoregulation", r: "R1", c: "C1", p: ["P10"], fb: "Negative" }], why: "The rabbit heats up. Blood vessels in its large ears widen and extra heat escapes into the air." },
+  { n: 15, text: "You walk out of a dark movie theater into bright sunlight.", twist: true, keys: [{ system: "Pupil response to light", r: "R4", c: "C3", p: ["P11"], fb: "Negative" }], why: "Too much light enters. A brain reflex shrinks the pupils so less light gets in." },
+  { n: 16, text: "You cut your finger on a piece of paper.", twist: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "This is positive feedback. Each platelet that sticks calls in more, and the clot grows until the cut is sealed." }
+];
+
+const LABELS = { s: "Stimulus", r: "Receptor", c: "Control center", p: "Response" };
+const STEPS = { s: 1, r: 2, c: 3, p: 4 };
+
+/* ---------- State ---------- */
+let S = null;
+let setupCount = 2;
+let bankTab = "r";
+
+const $ = id => document.getElementById(id);
+const cardById = id => [...CARDS.r, ...CARDS.c, ...CARDS.p].find(c => c.id === id);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+
+/* ---------- Setup ---------- */
+function renderNameFields() {
+  const prev = [...document.querySelectorAll("#nameFields input")].map(i => i.value);
+  let html = "";
+  for (let i = 0; i < setupCount; i++) {
+    const lab = setupCount === 1 ? "Your name" : `Player ${i + 1} name`;
+    html += `<label for="pn${i}">${lab}</label><input type="text" id="pn${i}" maxlength="24" placeholder="${setupCount === 1 ? "You" : "Player " + (i + 1)}" value="${esc(prev[i] || "")}">`;
+  }
+  $("nameFields").innerHTML = html;
+}
+$("countSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  setupCount = +b.dataset.n;
+  [...$("countSeg").children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  renderNameFields();
+  renderTurnOptions();
+});
+function renderTurnOptions() {
+  const solo = setupCount === 1;
+  $("soloNote").hidden = !solo;
+  $("turnsLabel").textContent = solo ? "How many scenarios?" : "Turns per player";
+  $("turnsSel").innerHTML = solo
+    ? `<option value="6">6 scenarios (about 10 min)</option><option value="10" selected>10 scenarios (about 15 min)</option><option value="all">Every scenario</option>`
+    : `<option value="2">2 turns (about 15 min)</option><option value="3" selected>3 turns (about 25 min)</option><option value="4">4 turns (about 35 min)</option>`;
+}
+renderNameFields();
+renderTurnOptions();
+
+$("startBtn").addEventListener("click", () => {
+  const players = [];
+  for (let i = 0; i < setupCount; i++) {
+    const v = $("pn" + i).value.trim();
+    players.push({ name: v || (setupCount === 1 ? "You" : `Player ${i + 1}`), score: 0 });
+  }
+  const twist = $("twistSel").value;
+  S = {
+    players,
+    turnsEach: $("turnsSel").value === "all" ? SCENARIOS.filter(s => !s.twist || twist !== "off").length : +$("turnsSel").value,
+    twist,
+    timerLen: +$("timerSel").value,
+    turn: 0,
+    deck: shuffle(SCENARIOS.filter(s => !s.twist || twist === "start")),
+    twistAdded: twist === "start",
+    order: { r: shuffle(CARDS.r), c: shuffle(CARDS.c), p: shuffle(CARDS.p) },
+    log: []
+  };
+  S.solo = players.length === 1;
+  // Twist cards join after the first round, or halfway through a solo game.
+  S.twistAt = S.solo ? Math.ceil(S.turnsEach / 2) : players.length;
+  $("setup").classList.add("hidden");
+  $("end").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  startTurn();
+});
+
+/* ---------- Turn flow ---------- */
+function round() { return Math.floor(S.turn / S.players.length) + 1; }
+function twistActive() { return S.twistAdded; }
+
+function drawScenario() {
+  if (!S.twistAdded && S.twist === "after" && S.turn >= S.twistAt) {
+    S.deck = shuffle(S.deck.concat(SCENARIOS.filter(s => s.twist)));
+    S.twistAdded = true;
+  }
+  if (!S.deck.length) S.deck = shuffle(SCENARIOS.filter(s => !s.twist || S.twistAdded));
+  return S.deck.pop();
+}
+
+function startTurn() {
+  S.current = drawScenario();
+  S.sel = { r: null, c: null, p: [] };
+  S.phase = "build";
+  bankTab = "r";
+  const sysOpts = SYSTEMS.filter(s => twistActive() || ["Thermoregulation", "Blood sugar regulation", "Osmoregulation"].includes(s));
+  $("sysSel").innerHTML = `<option value="">Choose one</option>` + sysOpts.map(s => `<option>${s}</option>`).join("");
+  $("fbSel").value = "";
+  $("sysSel").disabled = $("fbSel").disabled = false;
+  $("result").classList.add("hidden");
+  $("nextBtn").classList.add("hidden");
+  $("checkBtn").classList.remove("hidden");
+  $("clearBtn").classList.remove("hidden");
+  imbalance = 1;
+  renderAll();
+  startTimer();
+  const p = S.players[S.turn % S.players.length];
+  say(S.solo ? `Scenario ${S.turn + 1}: ${S.current.text}` : `${p.name}'s turn. Scenario: ${S.current.text}`);
+}
+
+function renderAll() { renderTop(); renderMat(); renderBank(); }
+
+function renderTop() {
+  const active = S.turn % S.players.length;
+  $("scores").classList.toggle("hidden", S.solo);
+  $("scores").innerHTML = S.players.map((p, i) =>
+    `<span class="chip ${i === active ? "active" : ""}">${esc(p.name)}: ${p.score}</span>`).join("");
+  if (S.solo) {
+    $("whoseTurn").textContent = `Scenario ${S.turn + 1} of ${S.turnsEach}`;
+    $("roundLabel").textContent = `${S.players[0].name}: ${S.players[0].score} points so far`;
+  } else {
+    $("whoseTurn").textContent = `${S.players[active].name}'s turn`;
+    $("roundLabel").textContent = `Round ${round()} of ${S.turnsEach}`;
+  }
+}
+
+function slotHead(k) { return `<div class="slot-name">${LABELS[k]} <span class="slot-step">· step ${STEPS[k]}</span></div>`; }
+
+function renderMat(results) {
+  const sc = S.current;
+  $("slot-s").innerHTML = slotHead("s") +
+    `<div class="text">${esc(sc.text)}</div>` + (sc.note ? `<div class="muted" style="font-size:.88rem">${esc(sc.note)}</div>` : "");
+  ["r", "c", "p"].forEach(k => {
+    const el = $("slot-" + k);
+    const ids = k === "p" ? S.sel.p : (S.sel[k] ? [S.sel[k]] : []);
+    let body = ids.length
+      ? ids.map(id => `<div class="placed"><div class="text">${esc(cardById(id).text)}</div>${S.phase === "build" ? `<button type="button" data-remove="${k}:${id}" aria-label="Remove ${esc(cardById(id).text)}">×</button>` : ""}</div>`).join("")
+      : `<div class="empty">${k === "p" ? "Pick one or two response cards" : "Pick a " + LABELS[k].toLowerCase() + " card"}</div>`;
+    el.className = "slot" + (ids.length ? " filled" : "");
+    if (results) {
+      el.classList.add(results[k] ? "right" : "wrong");
+      if (!results[k]) {
+        const key = results.key;
+        const fix = k === "p" ? key.p.map(id => cardById(id).text).join(" or ") : cardById(key[k]).text;
+        body += `<div class="fix">Correct: ${esc(fix)}</div>`;
+      }
+    }
+    el.innerHTML = slotHead(k) + body;
+  });
+}
+
+function renderBank() {
+  [...$("tabs").children].forEach(b => b.setAttribute("aria-selected", b.dataset.t === bankTab));
+  const list = S.order[bankTab].filter(c => !c.twist || twistActive());
+  const locked = S.phase !== "build";
+  $("bank").innerHTML = list.map(c => {
+    const on = bankTab === "p" ? S.sel.p.includes(c.id) : S.sel[bankTab] === c.id;
+    return `<button type="button" class="card" data-id="${c.id}" aria-pressed="${on}" ${locked ? "disabled" : ""}><span class="id">${c.id}</span>${esc(c.text)}</button>`;
+  }).join("");
+  $("bankHint").textContent = bankTab === "p" ? "You may place up to two responses. Both must be correct to earn the point." : "Tap a card to place it on the loop. Tap again to take it back.";
+}
+
+$("tabs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  bankTab = b.dataset.t; renderBank();
+});
+
+$("bank").addEventListener("click", e => {
+  const b = e.target.closest(".card"); if (!b || S.phase !== "build") return;
+  const id = b.dataset.id;
+  if (bankTab === "p") {
+    if (S.sel.p.includes(id)) S.sel.p = S.sel.p.filter(x => x !== id);
+    else if (S.sel.p.length < 2) S.sel.p.push(id);
+    else { say("You already have two responses. Remove one first."); return; }
+  } else {
+    S.sel[bankTab] = S.sel[bankTab] === id ? null : id;
+    if (S.sel[bankTab]) { bankTab = bankTab === "r" ? "c" : "p"; }
+  }
+  renderMat(); renderBank();
+});
+
+$("mat").addEventListener("click", e => {
+  const b = e.target.closest("[data-remove]"); if (!b) return;
+  const [k, id] = b.dataset.remove.split(":");
+  if (k === "p") S.sel.p = S.sel.p.filter(x => x !== id); else S.sel[k] = null;
+  renderMat(); renderBank();
+});
+
+$("clearBtn").addEventListener("click", () => { S.sel = { r: null, c: null, p: [] }; renderMat(); renderBank(); });
+
+/* ---------- Checking ---------- */
+function score(key) {
+  const res = {
+    r: S.sel.r === key.r,
+    c: S.sel.c === key.c,
+    p: S.sel.p.length > 0 && S.sel.p.every(id => key.p.includes(id)),
+    sys: $("sysSel").value === key.system,
+    fb: $("fbSel").value === key.fb,
+    key
+  };
+  res.total = ["r", "c", "p", "sys", "fb"].filter(k => res[k]).length;
+  return res;
+}
+
+function check(timeUp) {
+  if (S.phase !== "build") return;
+  stopTimer();
+  S.phase = "checked";
+  // For scenarios with two valid loops, grade against whichever the player matched best.
+  const res = S.current.keys.map(score).sort((a, b) => b.total - a.total)[0];
+  const p = S.players[S.turn % S.players.length];
+  p.score += res.total;
+  S.log.push({ player: p.name, sc: S.current, res, pts: res.total });
+
+  $("sysSel").disabled = $("fbSel").disabled = true;
+  $("checkBtn").classList.add("hidden");
+  $("clearBtn").classList.add("hidden");
+  const last = S.turn + 1 >= S.players.length * S.turnsEach;
+  $("nextBtn").textContent = last ? (S.solo ? "See my results" : "See final scores") : (S.solo ? "Next scenario" : "Next player");
+  $("nextBtn").classList.remove("hidden");
+
+  renderMat(res); renderBank(); renderTop();
+  const tick = ok => ok ? "Correct" : "Not quite";
+  $("result").innerHTML = `
+    ${timeUp ? `<p><strong>Time's up.</strong> Here is how your loop scored.</p>` : ""}
+    <div class="pts">${res.total} of 5 points</div>
+    <ul>
+      <li>Receptor, control center, response: ${["r", "c", "p"].filter(k => res[k]).length} of 3 correct</li>
+      <li>System: ${tick(res.sys)}${res.sys ? "" : ` (it's ${esc(res.key.system.toLowerCase())})`}</li>
+      <li>Feedback: ${tick(res.fb)}${res.fb ? "" : ` (it's ${res.key.fb.toLowerCase()} feedback)`}</li>
+    </ul>
+    <p><strong>Back to balance:</strong> ${esc(S.current.why)}</p>`;
+  $("result").classList.remove("hidden");
+  imbalance = 1 - res.total / 5 * 0.92;
+  say(`${res.total} of 5 points.`);
+  $("nextBtn").focus();
+}
+
+$("checkBtn").addEventListener("click", () => check(false));
+$("nextBtn").addEventListener("click", () => {
+  S.turn++;
+  if (S.turn >= S.players.length * S.turnsEach) endGame(); else startTurn();
+});
+
+/* ---------- Timer ---------- */
+let tId = null, tLeft = 0;
+function startTimer() {
+  stopTimer();
+  const box = $("timer");
+  if (!S.timerLen) { box.classList.add("hidden"); return; }
+  box.classList.remove("hidden", "low");
+  tLeft = S.timerLen; drawTimer();
+  tId = setInterval(() => {
+    tLeft--; drawTimer();
+    if (tLeft === 10) say("10 seconds left.");
+    if (tLeft <= 0) { stopTimer(); check(true); }
+  }, 1000);
+}
+function stopTimer() { if (tId) clearInterval(tId); tId = null; }
+function drawTimer() {
+  $("timeText").textContent = tLeft;
+  $("ring").style.strokeDashoffset = 169.6 * (1 - tLeft / S.timerLen);
+  $("timer").classList.toggle("low", tLeft <= 10);
+}
+
+/* ---------- End ---------- */
+function endGame() {
+  stopTimer();
+  $("game").classList.add("hidden");
+  $("end").classList.remove("hidden");
+  const sorted = S.players.slice().sort((a, b) => b.score - a.score);
+  const top = sorted.filter(p => p.score === sorted[0].score);
+  const max = S.turnsEach * 5;
+  if (S.solo) {
+    const pct = Math.round(S.players[0].score / max * 100);
+    $("winner").textContent = `${S.players[0].score} of ${max} points`;
+    $("winnerSub").textContent = pct >= 90 ? `${pct}%. Your loops are in balance. Try again with twist cards from the start.`
+      : pct >= 70 ? `${pct}%. Solid work. Check the loops below, then play again to beat your score.`
+      : `${pct}%. Study the loops below, then play again. Focus on which organ is the control center.`;
+  } else {
+    $("winner").textContent = top.length > 1 ? "It's a tie" : `${top[0].name} wins`;
+    $("winnerSub").textContent = sorted.map(p => `${p.name}: ${p.score}`).join(", ") + ` (out of ${max} possible).`;
+  }
+  const miss = S.log.filter(l => l.pts < 5);
+  $("review").innerHTML = miss.length
+    ? `<tr>${S.solo ? "" : "<th>Player</th>"}<th>Scenario</th><th>Points</th><th>Correct loop</th></tr>` + miss.map(l => {
+        const k = l.res.key;
+        return `<tr>${S.solo ? "" : `<td>${esc(l.player)}</td>`}<td>${esc(l.sc.text)}</td><td>${l.pts}</td><td>${esc(cardById(k.r).text)} → ${esc(cardById(k.c).text)} → ${esc(k.p.map(id => cardById(id).text).join(" / "))}<br><span class="muted">${esc(k.system)}, ${k.fb.toLowerCase()} feedback</span></td></tr>`;
+      }).join("")
+    : `<tr><td>Every loop was perfect. Nothing to review.</td></tr>`;
+  $("talkHead").textContent = S.solo ? "Think it over" : "Talk it over";
+  imbalance = 0.05;
+  window.scrollTo(0, 0);
+}
+$("againBtn").addEventListener("click", () => {
+  $("end").classList.add("hidden");
+  $("setup").classList.remove("hidden");
+  imbalance = 1;
+});
+
+function say(t) { $("live").textContent = t; }
+
+/* ---------- The balance line ---------- */
+// Amplitude tracks how far the body is from its set point; it eases toward the target.
+let imbalance = 1, amp = 1;
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function wavePath(w, h, a, phase) {
+  const mid = h / 2, maxA = h * 0.42;
+  let d = "";
+  for (let x = 0; x <= w; x += 10) {
+    const t = x / w;
+    const env = 1 - t * 0.55; // waves settle toward the right, like the deck's title slide
+    const y = mid - Math.sin(t * Math.PI * 5.2 + phase) * maxA * a * env;
+    d += (x ? " L" : "M") + x + " " + y.toFixed(1);
+  }
+  return d;
+}
+function frame(ts) {
+  amp += (imbalance - amp) * 0.04;
+  const phase = reduce ? 0 : ts / 900;
+  [["waveHero", 90], ["waveGame", 56], ["waveEnd", 90]].forEach(([id, h]) => {
+    const svg = $(id);
+    if (svg.closest(".hidden")) return;
+    svg.querySelector(".line").setAttribute("d", wavePath(1000, h, amp, phase));
+  });
+  if (!reduce) requestAnimationFrame(frame);
+}
+if (reduce) { setInterval(() => frame(0), 250); } else { requestAnimationFrame(frame); }
+</script>
+</body>
+</html>
