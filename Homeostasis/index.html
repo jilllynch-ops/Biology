@@ -67,6 +67,13 @@
   }
   .btn:disabled { opacity: .45; cursor: not-allowed; }
   .btn.ghost { background: transparent; color: var(--cream); border: 1.5px solid var(--teal-3); }
+  .btn.small { padding: .45rem 1rem; font-size: .92rem; }
+  dialog {
+    background: var(--teal-2); color: var(--cream); border: 1.5px solid var(--teal-3); border-radius: 14px;
+    padding: 1.25rem 1.4rem; max-width: 420px; width: calc(100% - 2rem);
+  }
+  dialog::backdrop { background: rgba(10, 25, 29, .7); }
+  dialog h3 { margin-bottom: .5rem; }
   .rules ol { padding-left: 1.2rem; margin: 0; }
   .rules li { margin-bottom: .4rem; }
 
@@ -136,6 +143,39 @@
   table { border-collapse: collapse; width: 100%; }
   th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--teal-3); vertical-align: top; }
   .tablewrap { overflow-x: auto; }
+  textarea {
+    width: 100%; background: var(--teal); border: 1.5px solid var(--teal-3); border-radius: 8px; padding: .55rem .7rem; resize: vertical; line-height: 1.45;
+  }
+  .full { grid-column: 1 / -1; }
+  .frame { font-size: .92rem; color: var(--sage); margin: 0 0 .35rem; }
+  .need { font-size: .88rem; color: var(--peach); margin-top: .3rem; min-height: 1.2em; }
+  .error { color: var(--bad); font-weight: 500; margin-top: .6rem; min-height: 1.2em; }
+  input.invalid { border-color: var(--bad); }
+  .codes { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: .75rem; }
+  .code-card { background: var(--teal); border-radius: 10px; padding: .8rem 1rem; }
+  .code { font-family: var(--serif); font-size: 1.7rem; letter-spacing: .06em; color: var(--peach); }
+  .linkish { background: none; border: 0; color: var(--sage); text-decoration: underline; cursor: pointer; padding: 0; font-size: .85rem; }
+  .verify-grid { display: grid; gap: 0 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .match { font-weight: 700; margin-top: 1rem; font-size: 1.1rem; }
+  .match.ok { color: var(--good); } .match.no { color: var(--bad); }
+
+  /* Printable report: hidden on screen, the only thing that prints */
+  #report { display: none; }
+  @media print {
+    @page { margin: 14mm; }
+    body { background: #fff; color: #000; font-size: 10.5pt; }
+    .wrap { display: none !important; }
+    #report { display: block; font-family: var(--sans); }
+    #report h1 { font-size: 20pt; margin-bottom: 4pt; }
+    #report h2 { font-size: 13pt; margin: 14pt 0 6pt; }
+    #report .meta td { border: 0; padding: 1pt 10pt 1pt 0; }
+    #report table { width: 100%; border-collapse: collapse; }
+    #report th, #report td { border-bottom: .5pt solid #999; padding: 3pt 5pt; text-align: left; vertical-align: top; }
+    #report .turn { break-inside: avoid; border: .5pt solid #999; border-radius: 4pt; padding: 6pt 8pt; margin-bottom: 6pt; }
+    #report .turn p { margin: 2pt 0; max-width: none; }
+    #report .code { color: #000; font-size: 16pt; }
+    #report .x { font-weight: 700; }
+  }
   .hidden { display: none !important; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   footer { margin-top: 3rem; font-size: .85rem; color: var(--sage); }
@@ -167,6 +207,8 @@
           <button type="button" data-n="3" aria-pressed="false">3</button>
           <button type="button" data-n="4" aria-pressed="false">4</button>
         </div>
+        <label for="periodIn">Class period</label>
+        <input type="text" id="periodIn" maxlength="20" placeholder="For example, 3 or 3B" autocomplete="off">
         <div id="nameFields"></div>
       </div>
 
@@ -178,7 +220,7 @@
           <option value="3" selected>3 turns (about 25 min)</option>
           <option value="4">4 turns (about 35 min)</option>
         </select>
-        <label for="twistSel">Twist cards (other living things and positive feedback)</label>
+        <label for="twistSel">Twist cards (plants, jackrabbits and your eyes)</label>
         <select id="twistSel">
           <option value="after" selected>Add them after round 1</option>
           <option value="start">Include from the start</option>
@@ -186,11 +228,13 @@
         </select>
         <label for="timerSel">Timer</label>
         <select id="timerSel">
-          <option value="60" selected>60 seconds per turn</option>
-          <option value="90">90 seconds per turn</option>
+          <option value="60">60 seconds per turn</option>
+          <option value="90" selected>90 seconds per turn</option>
+          <option value="120">2 minutes per turn</option>
           <option value="0">No timer</option>
         </select>
         <div class="actions"><button class="btn" id="startBtn" type="button">Start game</button></div>
+        <div class="error" id="setupError" role="alert"></div>
       </div>
 
       <div class="panel rules">
@@ -198,10 +242,10 @@
         <ol>
           <li>A scenario is drawn. That change is the stimulus.</li>
           <li>Pick one receptor, one control center and one or two responses from the card bank.</li>
-          <li>Name the system and the feedback type.</li>
+          <li>Name the system and the feedback type, then explain the loop in your own words.</li>
           <li>Check your loop. You earn up to 5 points: 1 each for the receptor, control center, response, system and feedback type.</li>
         </ol>
-        <p class="muted" style="margin-top:.75rem">Watch out for decoy cards. They are wrong on purpose.</p>
+        <p class="muted" style="margin-top:.75rem">Blood clotting is the one positive feedback example: the response makes the change bigger until the job is done. Every game includes at least one. Watch out for decoy cards. They are wrong on purpose. At the end you'll get a results report and a completion code to turn in.</p>
       </div>
     </div>
   </section>
@@ -211,6 +255,7 @@
     <div class="topbar">
       <div class="scores" id="scores" aria-label="Scores"></div>
       <div class="turninfo">
+        <button class="btn ghost small" id="restartBtn" type="button">Restart</button>
         <div>
           <div id="roundLabel" class="muted"></div>
           <h2 id="whoseTurn"></h2>
@@ -258,6 +303,12 @@
               <option value="Positive">Positive: makes the change bigger</option>
             </select>
           </div>
+          <div class="full">
+            <label for="whyIn">Explain the loop in your own words</label>
+            <p class="frame">This brings ___ back to normal because ___.</p>
+            <textarea id="whyIn" rows="3" maxlength="400"></textarea>
+            <div class="need" id="whyNeed"></div>
+          </div>
         </div>
 
         <div class="actions">
@@ -291,6 +342,12 @@
       <path class="line" d=""/>
     </svg>
     <div class="panel" style="margin-top:1.5rem">
+      <h3>Turn this in</h3>
+      <p>Save your results report as a PDF and turn it in with your completion code. Your teacher can check the code.</p>
+      <div class="codes" id="codes"></div>
+      <div class="actions"><button class="btn" id="printBtn" type="button">Print or save as PDF</button></div>
+    </div>
+    <div class="panel" style="margin-top:1.5rem">
       <h3>Loops to review</h3>
       <p class="muted">Every turn that scored under 5, with the correct loop.</p>
       <div class="tablewrap"><table id="review"></table></div>
@@ -299,15 +356,50 @@
       <h3 id="talkHead">Talk it over</h3>
       <ol>
         <li>Choose one loop. How does the response feed back and change the stimulus?</li>
-        <li>The paper cut works differently from the other scenarios. How?</li>
+        <li>Blood clotting works differently from the other scenarios. How? Why is it positive feedback?</li>
         <li>Which decoy card almost fooled you? Why is it wrong?</li>
       </ol>
     </div>
     <div class="actions"><button class="btn" id="againBtn" type="button">Play again</button></div>
   </section>
 
-  <footer>Aligned to PA STEELS 3.1.9-12.C (HS-LS1-3) and Keystone Biology BIO.A.4.2.1. Crosscutting concept: stability and change.</footer>
+  <!-- TEACHER VERIFY -->
+  <section id="verify" class="hidden">
+    <div class="hero">
+      <h1>Check a code</h1>
+      <p>Type the details exactly as they appear on the student's report.</p>
+    </div>
+    <div class="panel">
+      <div class="verify-grid">
+        <div><label for="vName">Student name</label><input type="text" id="vName"></div>
+        <div><label for="vPeriod">Class period</label><input type="text" id="vPeriod"></div>
+        <div><label for="vScore">Score</label><input type="text" id="vScore" inputmode="numeric" placeholder="For example, 42"></div>
+        <div><label for="vMax">Out of</label><input type="text" id="vMax" inputmode="numeric" placeholder="For example, 50"></div>
+        <div><label for="vDate">Date played</label><input type="date" id="vDate"></div>
+        <div><label for="vCode">Completion code</label><input type="text" id="vCode" placeholder="BAL-XXXXXX" autocomplete="off"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="vBtn" type="button">Check code</button>
+        <button class="btn ghost" id="vBack" type="button">Back to the game</button>
+      </div>
+      <div class="match" id="vResult" aria-live="polite"></div>
+      <p class="muted" style="margin-top:1rem">Names and periods are matched without regard to capital letters or extra spaces. A code that doesn't match usually means the score, name or date on the report was changed.</p>
+    </div>
+  </section>
+
+  <footer>Aligned to PA STEELS 3.1.9-12.C (HS-LS1-3) and Keystone Biology BIO.A.4.2.1. Crosscutting concept: stability and change. <button class="linkish" id="verifyLink" type="button">Teacher: check a completion code</button></footer>
 </div>
+
+<dialog id="restartDlg" aria-labelledby="restartTitle">
+  <h3 id="restartTitle">Restart the game?</h3>
+  <p>This game's progress and scores will be lost. You'll go back to the start screen, and your names and class period will stay filled in.</p>
+  <div class="actions">
+    <button class="btn" id="restartYes" type="button">Yes, restart</button>
+    <button class="btn ghost" id="restartNo" type="button">Keep playing</button>
+  </div>
+</dialog>
+
+<div id="report"></div>
 
 <script>
 /* ---------- Card data ---------- */
@@ -318,7 +410,7 @@ const CARDS = {
     { id: "R3", text: "Sensors in the brain that detect water and salt in the blood" },
     { id: "R4", text: "Light sensors in the eye", twist: true },
     { id: "R5", text: "Cells in the leaf that sense water loss", twist: true },
-    { id: "R6", text: "A damaged blood vessel wall", twist: true },
+    { id: "R6", text: "A damaged blood vessel wall" },
     { id: "R7", text: "Taste buds on the tongue", decoy: true },
     { id: "R8", text: "Sensors in the stomach that feel fullness", decoy: true }
   ],
@@ -327,7 +419,7 @@ const CARDS = {
     { id: "C2", text: "Pancreas (an organ behind the stomach)" },
     { id: "C3", text: "Reflex center in the brain", twist: true },
     { id: "C4", text: "Guard cells around the stomata", twist: true },
-    { id: "C5", text: "Platelets release chemical signals", twist: true },
+    { id: "C5", text: "Platelets stick to the cut and release chemical signals" },
     { id: "C6", text: "Kidneys", decoy: true },
     { id: "C7", text: "Heart", decoy: true },
     { id: "C8", text: "Skin", decoy: true }
@@ -344,7 +436,7 @@ const CARDS = {
     { id: "P9", text: "The stomata close and the plant loses less water.", twist: true },
     { id: "P10", text: "Blood vessels in the large ears widen; heat escapes into the air.", twist: true },
     { id: "P11", text: "The pupils shrink and less light gets in.", twist: true },
-    { id: "P12", text: "More platelets stick, and the clot grows until the cut is sealed.", twist: true },
+    { id: "P12", text: "The signals call in more platelets, which send more signals. The clot grows until the cut is sealed." },
     { id: "P13", text: "The heart beats slower to cool the body.", decoy: true },
     { id: "P14", text: "The stomach makes more acid to use up sugar.", decoy: true },
     { id: "P15", text: "The kidneys release insulin.", decoy: true },
@@ -376,7 +468,8 @@ const SCENARIOS = [
   { n: 13, text: "A plant sits in hot, dry wind all afternoon.", twist: true, keys: [{ system: "Plant water balance", r: "R5", c: "C4", p: ["P9"], fb: "Negative" }], why: "The leaf is losing water. Guard cells close the stomata so less water escapes." },
   { n: 14, text: "A jackrabbit rests in the desert sun at noon.", twist: true, keys: [{ system: "Thermoregulation", r: "R1", c: "C1", p: ["P10"], fb: "Negative" }], why: "The rabbit heats up. Blood vessels in its large ears widen and extra heat escapes into the air." },
   { n: 15, text: "You walk out of a dark movie theater into bright sunlight.", twist: true, keys: [{ system: "Pupil response to light", r: "R4", c: "C3", p: ["P11"], fb: "Negative" }], why: "Too much light enters. A brain reflex shrinks the pupils so less light gets in." },
-  { n: 16, text: "You cut your finger on a piece of paper.", twist: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "This is positive feedback. Each platelet that sticks calls in more, and the clot grows until the cut is sealed." }
+  { n: 16, text: "You cut your finger on a piece of paper.", clot: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "This is positive feedback. Platelets stick to the cut and send signals that call in more platelets. The change gets bigger, not smaller, until the cut is sealed. Then the loop stops." },
+  { n: 17, text: "You scrape your knee when you fall off your bike.", clot: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "Positive feedback again. Each platelet that sticks calls in more, so the clot keeps growing until the scrape is sealed. Unlike negative feedback, the response does not reverse the change; it builds on it until the job is done." }
 ];
 
 const LABELS = { s: "Stimulus", r: "Receptor", c: "Control center", p: "Response" };
@@ -398,7 +491,7 @@ function renderNameFields() {
   let html = "";
   for (let i = 0; i < setupCount; i++) {
     const lab = setupCount === 1 ? "Your name" : `Player ${i + 1} name`;
-    html += `<label for="pn${i}">${lab}</label><input type="text" id="pn${i}" maxlength="24" placeholder="${setupCount === 1 ? "You" : "Player " + (i + 1)}" value="${esc(prev[i] || "")}">`;
+    html += `<label for="pn${i}">${lab}</label><input type="text" id="pn${i}" maxlength="40" placeholder="First and last name" autocomplete="off" value="${esc(prev[i] || "")}">`;
   }
   $("nameFields").innerHTML = html;
 }
@@ -422,10 +515,20 @@ renderTurnOptions();
 
 $("startBtn").addEventListener("click", () => {
   const players = [];
-  for (let i = 0; i < setupCount; i++) {
-    const v = $("pn" + i).value.trim();
-    players.push({ name: v || (setupCount === 1 ? "You" : `Player ${i + 1}`), score: 0 });
+  const fields = [$("periodIn"), ...[...Array(setupCount).keys()].map(i => $("pn" + i))];
+  const empty = fields.filter(f => !f.value.trim());
+  fields.forEach(f => f.classList.toggle("invalid", !f.value.trim()));
+  const names = [...Array(setupCount).keys()].map(i => $("pn" + i).value.trim().replace(/\s+/g, " "));
+  const dup = names.length !== new Set(names.map(n => n.toLowerCase())).size;
+  if (empty.length || dup) {
+    $("setupError").textContent = empty.length
+      ? (setupCount === 1 ? "Enter your full name and class period to start." : "Enter every player's full name and the class period to start.")
+      : "Each player needs a different name.";
+    (empty[0] || $("pn0")).focus();
+    return;
   }
+  $("setupError").textContent = "";
+  for (let i = 0; i < setupCount; i++) players.push({ name: names[i], score: 0 });
   const twist = $("twistSel").value;
   S = {
     players,
@@ -439,8 +542,14 @@ $("startBtn").addEventListener("click", () => {
     log: []
   };
   S.solo = players.length === 1;
+  S.period = $("periodIn").value.trim().replace(/\s+/g, " ");
+  S.started = new Date();
   // Twist cards join after the first round, or halfway through a solo game.
   S.twistAt = S.solo ? Math.ceil(S.turnsEach / 2) : players.length;
+  const total = players.length * S.turnsEach;
+  // Place the guaranteed clotting turn somewhere after the first turn.
+  S.clotTurn = total > 1 ? 1 + Math.floor(Math.random() * (total - 1)) : 0;
+  S.clotSeen = false;
   $("setup").classList.add("hidden");
   $("end").classList.add("hidden");
   $("game").classList.remove("hidden");
@@ -452,6 +561,18 @@ function round() { return Math.floor(S.turn / S.players.length) + 1; }
 function twistActive() { return S.twistAdded; }
 
 function drawScenario() {
+  // Every game includes at least one blood clotting (positive feedback) scenario.
+  if (!S.clotSeen && S.turn === S.clotTurn) {
+    const i = S.deck.findIndex(x => x.clot);
+    const pick = i >= 0 ? S.deck.splice(i, 1)[0] : SCENARIOS.find(x => x.clot);
+    S.clotSeen = true;
+    return pick;
+  }
+  const d = drawPlain();
+  if (d.clot) S.clotSeen = true;
+  return d;
+}
+function drawPlain() {
   if (!S.twistAdded && S.twist === "after" && S.turn >= S.twistAt) {
     S.deck = shuffle(S.deck.concat(SCENARIOS.filter(s => s.twist)));
     S.twistAdded = true;
@@ -465,10 +586,13 @@ function startTurn() {
   S.sel = { r: null, c: null, p: [] };
   S.phase = "build";
   bankTab = "r";
-  const sysOpts = SYSTEMS.filter(s => twistActive() || ["Thermoregulation", "Blood sugar regulation", "Osmoregulation"].includes(s));
+  const sysOpts = SYSTEMS.filter(s => twistActive() || ["Thermoregulation", "Blood sugar regulation", "Osmoregulation", "Blood clotting"].includes(s));
   $("sysSel").innerHTML = `<option value="">Choose one</option>` + sysOpts.map(s => `<option>${s}</option>`).join("");
   $("fbSel").value = "";
-  $("sysSel").disabled = $("fbSel").disabled = false;
+  $("whyIn").value = "";
+  $("sysSel").disabled = $("fbSel").disabled = $("whyIn").disabled = false;
+  S.turnStart = Date.now();
+  updateCheckState();
   $("result").classList.add("hidden");
   $("nextBtn").classList.add("hidden");
   $("checkBtn").classList.remove("hidden");
@@ -582,9 +706,15 @@ function check(timeUp) {
   const res = S.current.keys.map(score).sort((a, b) => b.total - a.total)[0];
   const p = S.players[S.turn % S.players.length];
   p.score += res.total;
-  S.log.push({ player: p.name, sc: S.current, res, pts: res.total });
+  S.log.push({
+    player: p.name, sc: S.current, res, pts: res.total, timeUp,
+    chose: { r: S.sel.r, c: S.sel.c, p: S.sel.p.slice(), sys: $("sysSel").value, fb: $("fbSel").value },
+    why: $("whyIn").value.trim(),
+    secs: Math.round((Date.now() - S.turnStart) / 1000)
+  });
 
-  $("sysSel").disabled = $("fbSel").disabled = true;
+  $("sysSel").disabled = $("fbSel").disabled = $("whyIn").disabled = true;
+  $("whyNeed").textContent = "";
   $("checkBtn").classList.add("hidden");
   $("clearBtn").classList.add("hidden");
   const last = S.turn + 1 >= S.players.length * S.turnsEach;
@@ -608,6 +738,18 @@ function check(timeUp) {
   $("nextBtn").focus();
 }
 
+const MIN_WHY = 25;
+function whyOk() {
+  const t = $("whyIn").value.trim();
+  const words = t.split(/\s+/).filter(w => w && w !== "___").length;
+  return t.length >= MIN_WHY && words >= 6 && !/^this brings _+ back to normal because _+\.?$/i.test(t);
+}
+function updateCheckState() {
+  const ok = whyOk();
+  $("checkBtn").disabled = !ok;
+  $("whyNeed").textContent = ok ? "" : "Write at least one full sentence to unlock Check my loop.";
+}
+$("whyIn").addEventListener("input", updateCheckState);
 $("checkBtn").addEventListener("click", () => check(false));
 $("nextBtn").addEventListener("click", () => {
   S.turn++;
@@ -625,6 +767,13 @@ function startTimer() {
   tId = setInterval(() => {
     tLeft--; drawTimer();
     if (tLeft === 10) say("10 seconds left.");
+    if (tLeft <= 0) { stopTimer(); check(true); }
+  }, 1000);
+}
+function resumeTimer() {
+  stopTimer();
+  tId = setInterval(() => {
+    tLeft--; drawTimer();
     if (tLeft <= 0) { stopTimer(); check(true); }
   }, 1000);
 }
@@ -660,6 +809,9 @@ function endGame() {
         return `<tr>${S.solo ? "" : `<td>${esc(l.player)}</td>`}<td>${esc(l.sc.text)}</td><td>${l.pts}</td><td>${esc(cardById(k.r).text)} → ${esc(cardById(k.c).text)} → ${esc(k.p.map(id => cardById(id).text).join(" / "))}<br><span class="muted">${esc(k.system)}, ${k.fb.toLowerCase()} feedback</span></td></tr>`;
       }).join("")
     : `<tr><td>Every loop was perfect. Nothing to review.</td></tr>`;
+  S.restartsBefore = restarts;
+  buildReport();
+  restarts = 0;
   $("talkHead").textContent = S.solo ? "Think it over" : "Talk it over";
   imbalance = 0.05;
   window.scrollTo(0, 0);
@@ -670,12 +822,132 @@ $("againBtn").addEventListener("click", () => {
   imbalance = 1;
 });
 
+/* ---------- Completion codes ---------- */
+// Deters casual editing of a report; it is not cryptographic security.
+const SALT = "back-in-balance:homeostasis:v1";
+const ALPHA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const norm = t => String(t).trim().replace(/\s+/g, " ").toLowerCase();
+function localDate(d) { const z = n => String(n).padStart(2, "0"); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; }
+function makeCode(name, period, score, max, date) {
+  const str = [norm(name), norm(period), +score, +max, date, SALT].join("|");
+  let h1 = 0x811c9dc5, h2 = 0x01000193 ^ 0x5bd1e995;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+    h2 = Math.imul(h2 ^ c, 0x5bd1e995) >>> 0;
+    h2 = (h2 ^ (h2 >>> 13)) >>> 0;
+  }
+  let n = (h1 ^ (h2 << 7)) >>> 0, m = h2 >>> 0, out = "";
+  for (let i = 0; i < 6; i++) { out += ALPHA[(n + m) % ALPHA.length]; n = Math.floor(n / ALPHA.length); m = Math.floor(m / 7) + h1 % 13; }
+  return "BAL-" + out;
+}
+
+/* ---------- Report ---------- */
+function fmtTime(d) { return d.toLocaleString([], { dateStyle: "medium", timeStyle: "short" }); }
+function cardText(id) { return id ? cardById(id).text : "(none chosen)"; }
+function mark(ok) { return ok ? "✓" : "<span class='x'>✗</span>"; }
+function buildReport() {
+  const ended = new Date();
+  const max = S.turnsEach * 5;
+  const mins = Math.max(1, Math.round((ended - S.started) / 60000));
+  const date = localDate(S.started);
+  const codeRows = S.players.map(p =>
+    `<tr><td>${esc(p.name)}</td><td>${p.score} / ${max}</td><td>${Math.round(p.score / max * 100)}%</td><td class="code">${makeCode(p.name, S.period, p.score, max, date)}</td></tr>`).join("");
+  const turns = S.log.map((l, i) => {
+    const r = l.res, c = l.chose;
+    return `<div class="turn">
+      <p><strong>${i + 1}. ${esc(l.sc.text)}</strong> &nbsp; ${S.solo ? "" : esc(l.player) + " · "}${l.pts}/5 points · ${l.secs} s${l.timeUp ? " · time ran out" : ""}</p>
+      <p>${mark(r.r)} Receptor: ${esc(cardText(c.r))}</p>
+      <p>${mark(r.c)} Control center: ${esc(cardText(c.c))}</p>
+      <p>${mark(r.p)} Response: ${esc(c.p.length ? c.p.map(cardText).join(" / ") : "(none chosen)")}</p>
+      <p>${mark(r.sys)} System: ${esc(c.sys || "(none chosen)")} &nbsp; ${mark(r.fb)} Feedback: ${esc(c.fb || "(none chosen)")}</p>
+      <p><em>Explanation:</em> ${esc(l.why || "(left blank)")}</p>
+    </div>`;
+  }).join("");
+  $("report").innerHTML = `
+    <h1>Back in Balance: results report</h1>
+    <table class="meta">
+      <tr><td><strong>${S.solo ? "Student" : "Players"}</strong></td><td>${esc(S.players.map(p => p.name).join(", "))}</td></tr>
+      <tr><td><strong>Class period</strong></td><td>${esc(S.period)}</td></tr>
+      <tr><td><strong>Date played</strong></td><td>${date}</td></tr>
+      <tr><td><strong>Time</strong></td><td>${fmtTime(S.started)} to ${ended.toLocaleTimeString([], { timeStyle: "short" })} (about ${mins} min)</td></tr>
+      <tr><td><strong>Restarts</strong></td><td>${S.restartsBefore === 0 ? "None (finished on the first try)" : S.restartsBefore + " restarted game" + (S.restartsBefore === 1 ? "" : "s") + " before this one"}</td></tr>
+      <tr><td><strong>Settings</strong></td><td>${S.turnsEach} ${S.solo ? "scenarios" : "turns each"}, ${S.timerLen ? S.timerLen + " s timer" : "no timer"}, twist cards ${{ after: "added partway", start: "from the start", off: "off" }[S.twist]}</td></tr>
+    </table>
+    <h2>Scores and completion codes</h2>
+    <table><tr><th>Name</th><th>Score</th><th>Percent</th><th>Code</th></tr>${codeRows}</table>
+    <h2>Every turn</h2>
+    ${turns}
+    <p style="margin-top:10pt;font-size:9pt">Teachers: check a code at this page's "Teacher: check a completion code" link using the name, period, score, total and date above.</p>`;
+  $("codes").innerHTML = S.players.map(p =>
+    `<div class="code-card"><div>${esc(p.name)}, period ${esc(S.period)}</div><div class="code">${makeCode(p.name, S.period, p.score, max, date)}</div><div class="muted">${p.score} of ${max} points · ${date}</div></div>`).join("");
+}
+$("printBtn").addEventListener("click", () => window.print());
+
+/* ---------- Teacher verify ---------- */
+let returnTo = "setup";
+function showVerify() {
+  returnTo = ["setup", "game", "end"].find(id => !$(id).classList.contains("hidden")) || "setup";
+  if (returnTo === "game") stopTimer();
+  ["setup", "game", "end"].forEach(id => $(id).classList.add("hidden"));
+  $("verify").classList.remove("hidden");
+  $("vDate").value = $("vDate").value || localDate(new Date());
+  $("vName").focus();
+}
+$("verifyLink").addEventListener("click", showVerify);
+$("vBack").addEventListener("click", () => {
+  $("verify").classList.add("hidden");
+  $(returnTo).classList.remove("hidden");
+  if (returnTo === "game" && S && S.phase === "build" && S.timerLen) resumeTimer();
+  if (location.hash === "#verify") history.replaceState(null, "", location.pathname);
+});
+$("vBtn").addEventListener("click", () => {
+  const f = ["vName", "vPeriod", "vScore", "vMax", "vDate", "vCode"].map(id => $(id).value.trim());
+  const out = $("vResult");
+  if (f.some(v => !v)) { out.className = "match no"; out.textContent = "Fill in every field to check the code."; return; }
+  const want = makeCode(f[0], f[1], f[2], f[3], f[4]);
+  const got = "BAL-" + f[5].toUpperCase().replace(/[^A-Z0-9]/g, "").slice(-6);
+  const ok = want === got;
+  out.className = "match " + (ok ? "ok" : "no");
+  out.textContent = ok ? "Match. This code belongs to these results." : "No match. Check the details against the report, or ask the student to replay.";
+});
+if (location.hash === "#verify") showVerify();
+
+/* ---------- Restart ---------- */
+// Counted since the last finished game; the count prints on the report.
+let restarts = 0, pausedForDialog = false;
+$("restartBtn").addEventListener("click", () => {
+  pausedForDialog = !!tId;
+  stopTimer();
+  const dlg = $("restartDlg");
+  if (dlg.showModal) dlg.showModal(); else if (confirm("Restart the game? Progress will be lost.")) doRestart();
+});
+$("restartNo").addEventListener("click", () => {
+  $("restartDlg").close();
+});
+$("restartDlg").addEventListener("close", () => {
+  if (pausedForDialog && S && S.phase === "build" && !$("game").classList.contains("hidden")) resumeTimer();
+  pausedForDialog = false;
+});
+$("restartYes").addEventListener("click", () => { pausedForDialog = false; $("restartDlg").close(); doRestart(); });
+function doRestart() {
+  stopTimer();
+  restarts++;
+  S = null;
+  $("game").classList.add("hidden");
+  $("end").classList.add("hidden");
+  $("setup").classList.remove("hidden");
+  imbalance = 1;
+  window.scrollTo(0, 0);
+  $("startBtn").focus();
+}
+
 function say(t) { $("live").textContent = t; }
 
 /* ---------- The balance line ---------- */
 // Amplitude tracks how far the body is from its set point; it eases toward the target.
 let imbalance = 1, amp = 1;
-const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 function wavePath(w, h, a, phase) {
   const mid = h / 2, maxA = h * 0.42;
   let d = "";
