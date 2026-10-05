@@ -312,7 +312,7 @@ table.cmp th { background: var(--accent-soft) }
       <div><div class="eyebrow">Your square</div><b id="pxWho"></b></div>
       <span class="pixel-tools">
         <button type="button" class="small-btn" id="pxReset">Start my square over</button>
-        <button type="button" class="small-btn" id="pxChange">Not you? Change</button>
+        <button type="button" class="small-btn" id="pxChange">Change mural or number</button>
       </span>
     </div>
     <div id="pixelWork"></div>
@@ -905,7 +905,11 @@ $("#pixelForm").addEventListener("submit", e => {
   PIX.a = { m: mi, num, initials: initials.slice(0, 4) }; store.set("ccl-pixel", PIX.a); store.set("ccl-pixel-mural", mi);
   enterPixel(); window.scrollTo(0, 0);
 });
-$("#pxChange").addEventListener("click", () => { PIX.a = null; store.set("ccl-pixel", null); $("#pxNum").value = ""; $("#pxInit").value = ""; enterPixel(); });
+$("#pxChange").addEventListener("click", () => {
+  if (PIX.a) { $("#pxMural").value = PIX.a.m; $("#pxNum").value = PIX.a.num; $("#pxInit").value = PIX.a.initials; pxHint(); }
+  PIX.a = null; store.set("ccl-pixel", null); enterPixel(); window.scrollTo(0, 0);
+  $("#pxMsg").className = "fb"; $("#pxMsg").textContent = "Choose a different mural or number, then click Open my square. Your colors on every square stay saved."; $("#pxMural").focus();
+});
 $("#pxReset").addEventListener("click", () => { if (confirm("Clear the colors on your square and start over?")) $("#resetBtn").click(); });
 showTab(store.get("ccl-tab") || "color");
 </script>
