@@ -420,7 +420,8 @@ const CARDS = {
     { id: "R5", text: "Cells in the leaf that sense water loss", twist: true },
     { id: "R6", text: "A damaged blood vessel wall" },
     { id: "R7", text: "Taste buds on the tongue", decoy: true },
-    { id: "R8", text: "Sensors in the stomach that feel fullness", decoy: true }
+    { id: "R8", text: "Sensors in the stomach that feel fullness", decoy: true },
+    { id: "R9", text: "CO\u2082 sensors in the brain and blood vessels" }
   ],
   c: [
     { id: "C1", text: "Hypothalamus (a small part of the brain)" },
@@ -430,7 +431,8 @@ const CARDS = {
     { id: "C5", text: "Platelets stick to the cut and release chemical signals" },
     { id: "C6", text: "Kidneys", decoy: true },
     { id: "C7", text: "Heart", decoy: true },
-    { id: "C8", text: "Skin", decoy: true }
+    { id: "C8", text: "Skin", decoy: true },
+    { id: "C9", text: "Brainstem (at the base of the brain)" }
   ],
   p: [
     { id: "P1", text: "Sweat glands release sweat. It cools you as it dries." },
@@ -448,11 +450,14 @@ const CARDS = {
     { id: "P13", text: "The heart beats slower to cool the body.", decoy: true },
     { id: "P14", text: "The stomach makes more acid to use up sugar.", decoy: true },
     { id: "P15", text: "The kidneys release insulin.", decoy: true },
-    { id: "P16", text: "The lungs breathe out extra salt.", decoy: true }
+    { id: "P16", text: "The lungs breathe out extra salt.", decoy: true },
+    { id: "P17", text: "You breathe faster and deeper, and your heart speeds up. Extra CO\u2082 goes out through the lungs." },
+    { id: "P18", text: "Breathing slows down, so CO\u2082 builds back up to normal." },
+    { id: "P19", text: "The stomach pumps oxygen into the blood.", decoy: true }
   ]
 };
 
-const SYSTEMS = ["Thermoregulation", "Blood sugar regulation", "Osmoregulation", "Plant water balance", "Pupil response to light", "Blood clotting"];
+const SYSTEMS = ["Thermoregulation", "Blood sugar regulation", "Osmoregulation", "Gas exchange", "Plant water balance", "Pupil response to light", "Blood clotting"];
 const HOT = { system: "Thermoregulation", r: "R1", c: "C1", p: ["P1", "P2"], fb: "Negative" };
 const COLD = { system: "Thermoregulation", r: "R1", c: "C1", p: ["P3", "P4"], fb: "Negative" };
 const SUGAR_HI = { system: "Blood sugar regulation", r: "R2", c: "C2", p: ["P5"], fb: "Negative" };
@@ -477,7 +482,10 @@ const SCENARIOS = [
   { n: 14, text: "A jackrabbit rests in the desert sun at noon.", twist: true, keys: [{ system: "Thermoregulation", r: "R1", c: "C1", p: ["P10"], fb: "Negative" }], why: "The rabbit heats up. Blood vessels in its large ears widen and extra heat escapes into the air." },
   { n: 15, text: "You walk out of a dark movie theater into bright sunlight.", twist: true, keys: [{ system: "Pupil response to light", r: "R4", c: "C3", p: ["P11"], fb: "Negative" }], why: "Too much light enters. A brain reflex shrinks the pupils so less light gets in." },
   { n: 16, text: "You cut your finger on a piece of paper.", clot: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "This is positive feedback. Platelets stick to the cut and send signals that call in more platelets. The change gets bigger, not smaller, until the cut is sealed. Then the loop stops." },
-  { n: 17, text: "You scrape your knee when you fall off your bike.", clot: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "Positive feedback again. Each platelet that sticks calls in more, so the clot keeps growing until the scrape is sealed. Unlike negative feedback, the response does not reverse the change; it builds on it until the job is done." }
+  { n: 17, text: "You scrape your knee when you fall off your bike.", clot: true, keys: [{ system: "Blood clotting", r: "R6", c: "C5", p: ["P12"], fb: "Positive" }], why: "Positive feedback again. Each platelet that sticks calls in more, so the clot keeps growing until the scrape is sealed. Unlike negative feedback, the response does not reverse the change; it builds on it until the job is done." },
+  { n: 18, text: "You sprint up three flights of stairs and are out of breath.", keys: [{ system: "Gas exchange", r: "R9", c: "C9", p: ["P17"], fb: "Negative" }], why: "Working muscles make extra CO\u2082. Sensors notice, and the brainstem makes you breathe faster and deeper while your heart speeds up. Extra CO\u2082 leaves through the lungs, so the level drops back to normal." },
+  { n: 19, text: "You swim underwater, holding your breath as long as you can.", keys: [{ system: "Gas exchange", r: "R9", c: "C9", p: ["P17"], fb: "Negative" }], why: "Holding your breath lets CO\u2082 build up in your blood. When you come up, the brainstem makes you breathe faster and deeper until the extra CO\u2082 is gone." },
+  { n: 20, text: "You breathe in and out very fast on purpose for 30 seconds.", keys: [{ system: "Gas exchange", r: "R9", c: "C9", p: ["P18"], fb: "Negative" }], why: "Fast breathing blows off too much CO\u2082. The brainstem slows your breathing, so CO\u2082 builds back up to normal." }
 ];
 
 /* ---------- Explanation choices ---------- */
@@ -492,12 +500,14 @@ const BRIEF = {
   plant: "Closing the stomata cuts water loss, so the plant's water level stays steady.",
   rabbit: "Wider blood vessels in the ears let extra heat escape, so body temperature falls back to normal.",
   eye: "Smaller pupils let in less light, so the amount of light reaching the eye returns to normal.",
-  clot: "Each platelet calls in more, so the clot keeps growing until the cut is sealed. Then the loop stops."
+  clot: "Each platelet calls in more, so the clot keeps growing until the cut is sealed. Then the loop stops.",
+  co2Hi: "Faster, deeper breathing and a faster heartbeat move extra CO\u2082 out of the body, so the level drops back to normal.",
+  co2Lo: "Slower breathing lets CO\u2082 build back up, so the level rises back to normal."
 };
-const OPPOSITE = { hot: "cold", cold: "hot", sugarHi: "sugarLo", sugarLo: "sugarHi", waterLo: "waterHi", waterHi: "waterLo", rabbit: "cold", both: "sugarHi" };
+const OPPOSITE = { hot: "cold", cold: "hot", sugarHi: "sugarLo", sugarLo: "sugarHi", waterLo: "waterHi", waterHi: "waterLo", rabbit: "cold", both: "sugarHi", co2Hi: "co2Lo", co2Lo: "co2Hi" };
 const BRIEF_FOR = { 1: "hot", 2: "cold", 3: "sugarHi", 4: "sugarLo", 5: "waterLo", 6: "waterHi", 7: "cold", 8: "both", 9: "hot",
-  10: "sugarHi", 11: "cold", 12: "waterLo", 13: "plant", 14: "rabbit", 15: "eye", 16: "clot", 17: "clot" };
-const SYSTEM_OF = { hot: "t", cold: "t", rabbit: "t", sugarHi: "s", sugarLo: "s", waterLo: "w", waterHi: "w", both: "sw", plant: "p", eye: "e", clot: "c" };
+  10: "sugarHi", 11: "cold", 12: "waterLo", 13: "plant", 14: "rabbit", 15: "eye", 16: "clot", 17: "clot", 18: "co2Hi", 19: "co2Hi", 20: "co2Lo" };
+const SYSTEM_OF = { hot: "t", cold: "t", rabbit: "t", sugarHi: "s", sugarLo: "s", waterLo: "w", waterHi: "w", both: "sw", plant: "p", eye: "e", clot: "c", co2Hi: "g", co2Lo: "g" };
 const POSITIVE_MYTH = "The response makes the change even bigger, and it keeps going until a job is finished.";
 const NEGATIVE_MYTH = "The response reverses the change right away, the same way sweating cools you when you're hot.";
 const NO_EFFECTOR = "The control center fixes the change by itself, so no organ or effector has to act.";
@@ -641,7 +651,7 @@ function startTurn() {
   S.sel = { r: null, c: null, p: [] };
   S.phase = "build";
   bankTab = "r";
-  const sysOpts = SYSTEMS.filter(s => twistActive() || ["Thermoregulation", "Blood sugar regulation", "Osmoregulation", "Blood clotting"].includes(s));
+  const sysOpts = SYSTEMS.filter(s => twistActive() || ["Thermoregulation", "Blood sugar regulation", "Osmoregulation", "Gas exchange", "Blood clotting"].includes(s));
   $("sysSel").innerHTML = `<option value="">Choose one</option>` + sysOpts.map(s => `<option>${s}</option>`).join("");
   $("fbSel").value = "";
   S.whyOpts = buildChoices(S.current);
