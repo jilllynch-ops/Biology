@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Earthling Field Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Chakra+Petch:wght@600;700&display=swap">
+<style>
+/* Layout: the 3D game fills the screen; menus and the question panel float over it. */
+:root {
+  color-scheme: dark;
+  --deep: #0b1d2a; --panel: #12303f; --panel-2: #1b4257; --ink: #f2f7f5; --dim: #a9c3cc;
+  --signal: #ffd166; --good: #7be0ad; --bad: #ffb09c; --line: #2f5d73;
+  --display: "Chakra Petch", "Trebuchet MS", sans-serif; --body: "Atkinson Hyperlegible", Arial, sans-serif;
+  --ts: 1;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--deep); color: var(--ink); font-family: var(--body); font-size: calc(16px * var(--ts)); line-height: 1.4; overflow: hidden; }
+#app { position: relative; height: 100%; overflow: hidden; }
+#stage { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h1 { font-size: calc(34px * var(--ts)); letter-spacing: .02em; line-height: 1.05; }
+h1 small { display: block; font-size: .42em; color: var(--signal); letter-spacing: .18em; text-transform: uppercase; margin-top: 6px; }
+h2 { font-size: calc(24px * var(--ts)); }
+h3 { font-size: calc(16px * var(--ts)); color: var(--signal); margin-top: 18px; }
+p { margin: 8px 0; }
+.dim { color: var(--dim); }
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; border: 2px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 8px 14px; }
+button:hover:not(:disabled) { border-color: var(--signal); }
+button:disabled { opacity: .45; cursor: default; }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+.primary { background: var(--signal); color: #1a1300; border-color: var(--signal); font-family: var(--display); font-weight: 700; font-size: 1.15em; padding: 12px 18px; }
+
+.screen { position: absolute; inset: 0; display: flex; padding-inline: 16px; padding-block: 16px; overflow: auto; }
+.card { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 2px solid var(--line); border-radius: 16px; padding: 20px; width: 100%; max-width: 440px; margin: auto; display: flex; flex-direction: column; gap: 12px; }
+.card.wide { max-width: 640px; }
+#menu { background: linear-gradient(90deg, transparent 30%, rgba(11, 29, 42, .7)); }
+#menu .card { margin-right: 4%; }
+#levels, #progress, #settings, #pause, #done { background: rgba(11, 29, 42, .82); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btns > * { flex: 1 1 auto; }
+.row { display: flex; gap: 10px; align-items: flex-start; }
+.rl { flex: 0 0 5.2em; color: var(--dim); padding-top: 6px; }
+.rb { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.chip { padding: 5px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { border-color: var(--signal); background: var(--deep); box-shadow: inset 0 0 0 1px var(--signal); }
+.sw { width: 14px; height: 14px; border-radius: 50%; background: var(--sw); border: 1px solid #fff; }
+.lvls { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-top: 8px; }
+.lvl { text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.lvl span { color: var(--signal); letter-spacing: .1em; }
+.bar { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(60px, 1fr) 6.5em; gap: 10px; align-items: center; margin-top: 8px; }
+.track { height: 10px; background: var(--deep); border-radius: 5px; overflow: hidden; border: 1px solid var(--line); }
+.fill { height: 100%; background: var(--good); }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.board { margin: 8px 0; padding-left: 1.4em; }
+.board li { margin: 4px 0; }
+.board li span { display: inline-block; min-width: 9em; }
+label.set { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+label.set input[type=checkbox] { width: 22px; height: 22px; }
+label.set input[type=range] { width: 9em; accent-color: var(--signal); }
+select, input[type=text] { background: var(--deep); border: 2px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 8px 0; }
+dt { color: var(--dim); } dd { margin: 0; }
+#guide { display: block; max-height: 34vh; overflow: auto; }
+#guide dt { color: var(--signal); margin-top: 8px; }
+#doneStars { font-size: 44px; color: var(--signal); letter-spacing: .12em; line-height: 1; }
+.unlock { color: var(--good); font-weight: 700; }
+
+#hud { position: absolute; top: env(safe-area-inset-top, 0px); left: 0; right: 0; display: flex; gap: 12px; align-items: center; padding: 8px 12px; pointer-events: none; font-family: var(--display); text-shadow: 0 1px 3px #000; }
+#hud > * { pointer-events: auto; }
+#hudHp { color: var(--bad); letter-spacing: .15em; font-size: 1.2em; }
+#hudScore { font-variant-numeric: tabular-nums; color: var(--signal); font-size: 1.2em; }
+#hudLevel { margin-left: auto; color: var(--ink); }
+#btnPause { padding: 4px 12px; }
+#qpanel { position: absolute; top: calc(46px * var(--ts)); left: 50%; transform: translateX(-50%); width: min(720px, calc(100% - 32px)); max-height: 56%; overflow: auto; background: color-mix(in srgb, var(--panel) 95%, transparent); border: 2px solid var(--signal); border-radius: 14px; padding: 10px 14px; }
+#qmeta { font-family: var(--display); color: var(--signal); font-size: .85em; letter-spacing: .08em; text-transform: uppercase; }
+#qprompt { font-weight: 700; margin: 4px 0 8px; }
+.stem { display: block; font-weight: 400; background: var(--deep); border-left: 4px solid var(--signal); padding: 6px 10px; margin-top: 6px; border-radius: 4px; }
+#qopts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px; }
+.opt { text-align: left; padding: 6px 10px; }
+.opt b { font-family: var(--display); color: var(--signal); margin-right: 4px; }
+.opt.no { text-decoration: line-through; }
+#qfb { color: var(--bad); font-weight: 700; margin-top: 6px; min-height: 1.3em; }
+#qhow { color: var(--dim); font-size: .85em; }
+#qpanel.compact { max-height: 30%; }
+#qpanel.short #qopts { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
+.crowd { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 2px 0 6px; }
+.crowd > span { min-width: 0; }
+.dots { color: var(--signal); letter-spacing: .05em; font-size: .8em; }
+.slots { margin: 4px 0 6px; padding-left: 1.4em; display: grid; gap: 2px; }
+.slots .blank { display: inline-block; min-width: 4em; border-bottom: 2px solid var(--signal); color: var(--signal); text-align: center; }
+ul.slots { list-style: none; padding-left: 0; }
+.debrief { margin: 4px 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.ftab { border-collapse: collapse; margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
+.ftab th, .ftab td { border: 1px solid var(--line); padding: 3px 10px; text-align: left; }
+.ftab th { background: var(--deep); color: var(--signal); }
+.fsvg { display: block; width: 100%; max-width: 330px; margin: 0 0 8px; color: var(--ink); }
+#toast { position: absolute; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); background: var(--deep); border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; }
+#cap { position: absolute; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .85em; }
+#touch { position: absolute; left: 0; right: 0; bottom: env(safe-area-inset-bottom, 0px); display: flex; justify-content: space-between; padding: 12px; pointer-events: none; }
+#touch div { display: flex; gap: 10px; pointer-events: auto; }
+#touch button { width: 64px; height: 64px; border-radius: 50%; font-family: var(--display); font-size: 18px; background: rgba(18, 48, 63, .75); touch-action: none; user-select: none; -webkit-user-select: none; }
+#err { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; background: var(--deep); }
+@media (max-width: 700px) {
+  #menu { align-items: flex-end; background: linear-gradient(180deg, transparent 20%, rgba(11, 29, 42, .8)); }
+  #menu .card { margin: auto auto 0; padding: 14px; gap: 8px; }
+  h1 { font-size: calc(26px * var(--ts)); }
+  #hudLevel { display: none; }
+  #qpanel { max-height: 46%; } #qhow { display: none; }
+  #btnPause { margin-left: auto; }
+  .bar { grid-template-columns: 1fr 5.5em; } .bar .track { grid-column: 1 / -1; order: 3; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="stage" aria-label="Earthling Field Guide game view"></canvas>
+
+  <div id="hud" hidden>
+    <span id="hudHp"></span><span id="hudScore">0</span><span id="hudStreak"></span>
+    <span id="hudLevel"></span><button type="button" id="btnPause" aria-label="Pause">Pause</button>
+  </div>
+  <div id="qpanel" hidden>
+    <div id="qmeta"></div><div id="qprompt"></div><div id="qfig"></div><div id="qopts"></div>
+    <div id="qfb" role="status" aria-live="polite"></div>
+    <div id="qhow">Jump onto the pad with your answer's letter and press E. You can also press 1 to 4.</div>
+  </div>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <div id="cap" hidden></div>
+  <div id="touch" hidden>
+    <div><button type="button" data-k="left" aria-label="Move left">◀</button><button type="button" data-k="right" aria-label="Move right">▶</button></div>
+    <div><button type="button" data-k="act" aria-label="Choose answer">E</button><button type="button" data-k="jump" aria-label="Jump">Jump</button></div>
+  </div>
+
+  <section id="menu" class="screen" hidden>
+    <div class="card">
+      <h1>Earthling Field Guide<small>A Keystone Biology mission</small></h1>
+      <p class="dim">You are a visitor studying life on Earth. Build your explorer, then start the mission.</p>
+      <div id="cust"></div>
+      <button type="button" id="btnPlay" class="primary">Start mission</button>
+      <div class="btns">
+        <button type="button" id="btnLevels">Levels</button><button type="button" id="btnProgress">Progress</button><button type="button" id="btnSettings">Settings</button>
+      </div>
+      <p id="menuStars" class="dim"></p>
+    </div>
+  </section>
+
+  <section id="levels" class="screen" hidden>
+    <div class="card wide"><h2>Levels</h2><div id="levelList"></div><button type="button" data-back>Back</button></div>
+  </section>
+
+  <section id="progress" class="screen" hidden>
+    <div class="card wide"><h2>Progress</h2><div id="progBody"></div>
+      <label class="set" for="nick"><span>Nickname for high scores<br><span class="dim">Use a made-up name, not your real one.</span></span><input type="text" id="nick" maxlength="12" autocomplete="off"></label>
+      <button type="button" data-back>Back</button></div>
+  </section>
+
+  <section id="settings" class="screen" hidden>
+    <div class="card"><h2>Settings</h2>
+      <label class="set" for="setText">Text size<select id="setText"><option value="0">Small</option><option value="1">Medium</option><option value="2">Large</option><option value="3">Extra large</option></select></label>
+      <label class="set" for="setLow">Low graphics (for slower computers)<input type="checkbox" id="setLow"></label>
+      <label class="set" for="setMusic">Music (press M to switch on or off)<input type="checkbox" id="setMusic"></label>
+      <label class="set" for="setVol">Music volume<input type="range" id="setVol" min="0" max="100" step="5"></label>
+      <label class="set" for="setSound">Sound effects<input type="checkbox" id="setSound"></label>
+      <label class="set" for="setCap">Captions for sounds<input type="checkbox" id="setCap"></label>
+      <label class="set" for="setUnlock" id="teacherRow" hidden>Teacher: unlock every level<input type="checkbox" id="setUnlock"></label>
+      <button type="button" id="btnReset">Erase progress on this device</button>
+      <button type="button" data-back>Back</button></div>
+  </section>
+
+  <section id="pause" class="screen" hidden>
+    <div class="card wide"><h2>Paused</h2>
+      <div class="btns"><button type="button" id="btnResume" class="primary">Resume</button><button type="button" id="btnRestart">Restart level</button><button type="button" id="btnPauseSet">Settings</button><button type="button" id="btnQuit">Main menu</button></div>
+      <h3>Field guide</h3><dl id="guide"></dl></div>
+  </section>
+
+  <section id="done" class="screen" hidden>
+    <div class="card"><h2 id="doneTitle"></h2><div id="doneStars"></div><div id="doneBody"></div>
+      <div class="btns"><button type="button" id="btnNext" class="primary">Next level</button><button type="button" id="btnReplay">Play again</button><button type="button" id="btnMenu">Main menu</button></div></div>
+  </section>
+
+  <div id="err" hidden><p>This browser could not start 3D graphics. Try a current version of Chrome, Edge, Firefox, or Safari.</p></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="engine.js"></script>
+<script>FieldGuide.loadWorlds(6);</script>
+</body>
+</html>
