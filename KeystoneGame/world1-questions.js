@@ -26,6 +26,20 @@ FieldGuide.registerQuestions(1, {
         { "text": "Makes its own food", "explain": "Only some organisms, such as plants, make their own food." },
         { "text": "Is made of many cells", "explain": "Many living things, such as bacteria, are a single cell." }
       ] },
+    { "id": "build-prok", "code": "BIO.A.1.2.1", "steels": "3.1.9-12.B", "trail": true,
+      "prompt": "Build a prokaryotic cell: grab only the parts a prokaryote has",
+      "good": ["DNA", "Ribosomes", "Cytoplasm", "Plasma membrane"],
+      "bad": [
+        { "text": "Nucleus", "explain": "Prokaryotes have no nucleus. Their DNA sits in the cytoplasm." },
+        { "text": "Mitochondria", "explain": "Mitochondria are membrane-bound organelles. Prokaryotes have none." },
+        { "text": "Golgi apparatus", "explain": "The Golgi apparatus is a membrane-bound organelle. Prokaryotes have none." } ] },
+    { "id": "build-euk", "code": "BIO.A.1.2.1", "steels": "3.1.9-12.B", "trail": true, "clearTrail": true,
+      "prompt": "Build an animal cell (a eukaryote): grab every part it has",
+      "good": ["Nucleus", "DNA", "Ribosomes", "Mitochondria", "Endoplasmic reticulum", "Golgi apparatus", "Plasma membrane"],
+      "bad": [
+        { "text": "Chloroplast", "explain": "Chloroplasts are found in plant cells, not animal cells." },
+        { "text": "Cell wall", "explain": "Animal cells have no cell wall. Plant cells do." },
+        { "text": "DNA loose in the cytoplasm", "explain": "In eukaryotes the DNA is kept inside the nucleus." } ] },
     { "id": "organelles", "code": "BIO.A.1.2.1", "steels": "3.1.9-12.B",
       "prompt": "Collect only the organelles wrapped in their own membrane",
       "good": [
@@ -379,12 +393,52 @@ FieldGuide.registerQuestions(1, {
                  { "kind": "pump", "label": "Pump (needs ATP)", "ok": false, "why": "No energy is needed here. You are moving from the crowded side to the less crowded side, so you can flow through a transport protein." },
                  { "kind": "lipid", "label": "Slip between the phospholipids", "ok": false, "why": "Ions carry an electric charge, so they cannot slip through the lipid layer." } ],
       "explain": "Sodium moved from the crowded side to the less crowded side through a transport protein. That is facilitated diffusion, with no ATP." },
+    { "id": "b-protein-er", "code": "BIO.B.2.2.2", "steels": "3.1.9-12.A", "you": "a new protein that will leave the cell", "short": "Protein", "color": "#ffd166",
+      "goal": "Which organelle has ribosomes on its surface and helps make proteins like you?",
+      "doors": [ { "kind": "organelle", "label": "Rough endoplasmic reticulum", "ok": true },
+                 { "kind": "organelle", "label": "Mitochondrion", "ok": false, "why": "Mitochondria release energy from food. They do not make proteins for export." },
+                 { "kind": "organelle", "label": "Nucleus", "ok": false, "why": "The nucleus holds the DNA. Proteins that will leave the cell are made on the rough ER." } ],
+      "explain": "The rough ER has ribosomes on its surface and helps make proteins that will mostly leave the cell. Vesicles then carry them to the Golgi apparatus." },
+    { "id": "b-protein-golgi", "code": "BIO.A.4.1.3", "steels": "3.1.9-12.A", "you": "a protein inside a vesicle", "short": "Protein", "color": "#ffd166",
+      "goal": "Which organelle does the final processing before you leave the cell?",
+      "doors": [ { "kind": "organelle", "label": "Golgi apparatus", "ok": true },
+                 { "kind": "organelle", "label": "Ribosome", "ok": false, "why": "Ribosomes build the amino acid chain. The final processing happens somewhere else." },
+                 { "kind": "organelle", "label": "Nucleus", "ok": false, "why": "The nucleus holds the DNA. It does not process proteins for release." } ],
+      "explain": "The Golgi apparatus does the final processing, then packs the protein into a vesicle that carries it to the plasma membrane." },
     { "id": "b-sodium-out", "code": "BIO.A.4.1.2", "steels": "3.1.9-12.C", "you": "a sodium ion (Na⁺)", "short": "Na⁺", "color": "#c59cff",
       "goal": "Get out of the nerve cell.", "here": "Inside the nerve cell", "there": "Outside the nerve cell", "what": "sodium", "hereCrowd": 4, "thereCrowd": 16, "atp": true,
       "doors": [ { "kind": "pump", "label": "Pump (needs ATP)", "ok": true },
                  { "kind": "protein", "label": "Transport protein", "ok": false, "why": "A transport protein only lets sodium flow from the crowded side to the less crowded side. You need to go the other way." },
                  { "kind": "lipid", "label": "Slip between the phospholipids", "ok": false, "why": "Ions carry an electric charge, so they cannot slip through the lipid layer." } ],
       "explain": "Active transport: the pump used energy from ATP to push sodium from the less crowded side to the more crowded side." }
+  ],
+
+  /* CATCH GAMES (Build It): answers float around an arena. Students jump into the answer that matches
+     the highlighted cue and dodge the rest. "steps" lists each cue and the answer it needs.
+     "wrong" gives a hint for a specific wrong catch. */
+  "catches": [
+    { "id": "c-transcribe", "code": "BIO.B.2.2.1", "steels": "3.1.9-12.A", "short": "Transcription",
+      "title": "In the nucleus: copy the gene's DNA into mRNA.", "cueLabel": "DNA template", "builtLabel": "mRNA", "cueWord": "DNA letter", "tokenWord": "RNA base",
+      "rule": "Pairing rule, DNA to RNA: A pairs with U, T pairs with A, G pairs with C, C pairs with G.",
+      "choices": ["A", "U", "G", "C", "T"],
+      "steps": [ { "cue": "T", "need": "A" }, { "cue": "A", "need": "U" }, { "cue": "C", "need": "G" },
+                 { "cue": "C", "need": "G" }, { "cue": "G", "need": "C" }, { "cue": "A", "need": "U" },
+                 { "cue": "A", "need": "U" }, { "cue": "A", "need": "U" }, { "cue": "A", "need": "U" } ],
+      "hint": "Check the pairing rule for the highlighted DNA letter.",
+      "wrong": { "T": "RNA has no T. It uses U (uracil) instead." },
+      "explain": "Transcription: you copied the DNA code TAC CGA AAA into the mRNA AUG GCU UUU." },
+    { "id": "c-translate", "code": "BIO.B.2.2.1", "steels": "3.1.9-12.A", "short": "Translation",
+      "title": "At the ribosome: grab the tRNA whose anticodon pairs with each codon. Each tRNA brings its amino acid.", "cueLabel": "mRNA codons", "builtLabel": "Protein", "cueWord": "codon", "tokenWord": "tRNA", "sep": " – ",
+      "rule": "Anticodon pairing rule: A pairs with U, and G pairs with C. Example: codon AUG pairs with anticodon UAC.",
+      "choices": ["UAC Met", "CGA Ala", "AAA Phe", "CCU Gly", "AGA Ser", "AUG Tyr", "UUU Lys", "Release (stop)"],
+      "steps": [ { "cue": "AUG", "need": "UAC Met", "bead": "Met" }, { "cue": "GCU", "need": "CGA Ala", "bead": "Ala" },
+                 { "cue": "UUU", "need": "AAA Phe", "bead": "Phe" }, { "cue": "UAA", "need": "Release (stop)", "bead": "" } ],
+      "clearTrail": true, "startMsg": "You delivered the mRNA to a ribosome. Now bring in the tRNAs to build the protein.",
+      "hint": "Pair each letter of the highlighted codon: A with U, G with C.",
+      "wrong": { "AUG Tyr": "That anticodon is a copy of the codon, not its partner. Pair each letter: A with U, G with C.",
+                 "UUU Lys": "That anticodon is a copy of the codon, not its partner. Pair each letter: A with U, G with C.",
+                 "Release (stop)": "Not yet. Release only happens at a stop codon." },
+      "explain": "Translation: tRNAs with anticodons UAC, CGA, and AAA brought Met, Ala, and Phe. The stop codon UAA released the finished chain." }
   ],
 
   /* READ THE DATA: a bar graph shown in the level. Students stand under the bar that answers. */

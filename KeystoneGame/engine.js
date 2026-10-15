@@ -450,6 +450,28 @@ function builder() {
     },
     sequence: function (id) { const sq = (D.sequences || []).find(function (e) { return e.id === id; }); if (sq) makeSequence(sq); return b; },
     wordbank: function (id) { const wb = (D.wordbanks || []).find(function (e) { return e.id === id; }); if (wb) makeWordbank(wb); return b; },
+    /* ACTION PIECES: free radicals to dodge or stomp, moving platforms, ATP boosts, catch games */
+    hazard: function (dx, dy, o) {
+      o = o || {}; const g = new T.Group(), core = new T.Mesh(G.ico, emat('#ff6b4a', '#7a1a0a')); core.scale.setScalar(0.55); g.add(core);
+      const sp = new T.Mesh(G.oct, emat('#ffb09c', '#7a2a1a')); sp.scale.set(0.95, 0.25, 0.25); g.add(sp); const sp2 = sp.clone(); sp2.rotation.z = Math.PI / 2; g.add(sp2);
+      g.add(glow('#ff6b4a', 2.8, 0.55)); g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g);
+      L.hazards.push({ m: g, bx: b.x + dx, by: b.y + dy, x: b.x + dx, y: b.y + dy, ax: o.ax || 0, ay: o.ay == null ? 0.6 : o.ay, sp: o.sp || 1.5, ph: Math.random() * 6, t: 0, alive: true }); return b;
+    },
+    bridge: function (len, o) {
+      o = o || {}; const w = o.w || 3.6, cx = b.x + len / 2, sl = addSolid(cx - w / 2, cx + w / 2, b.y - 0.5, b.y, { oneWay: true });
+      const m = new T.Group(), body = box(sl.x0, sl.x1, sl.y0, sl.y1, 3, L.th.top); body.material = emat(L.th.top, '#3a2a10'); m.add(body);
+      const rim = new T.Mesh(G.box, basic(L.th.rim)); rim.scale.set(w, 0.08, 0.1); rim.position.set(cx, b.y - 0.02, 1.55); m.add(rim);
+      const gl = glow(L.th.rim, 3.6, 0.35); gl.position.set(cx, b.y - 0.6, 0); m.add(gl); L.group.add(m);
+      L.movers.push({ s: sl, m: m, bx: sl.x0, by: sl.y1, ax: o.ay ? 0 : (len - w) / 2 - 0.3, ay: o.ay || 0, sp: o.sp || 1.1, t: o.ph || 0 });
+      b.x += len; return b;
+    },
+    boost: function (dx, dy) {
+      const g = new T.Group(), core = new T.Mesh(G.sph, emat('#c8ff7a', '#5a8a20')); core.scale.setScalar(0.38); g.add(core); g.add(glow('#c8ff7a', 2.8, 0.75));
+      const lb = label('ATP boost', 2); lb.position.y = 1; g.add(lb); g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g);
+      L.boosts.push({ x: b.x + dx, y: b.y + dy, m: g, got: false }); return b;
+    },
+    hunt: function (id) { const set = (D.tokens || []).find(function (e) { return e.id === id; }); if (set) makeHunt(set); return b; },
+    catchGame: function (id) { const c = (D.catches || []).find(function (e) { return e.id === id; }); if (c) makeCatch(c); return b; },
     lablock: function (id) {
       const lk = (D.lablocks || []).find(function (e) { return e.id === id; }); if (!lk) return b;
       makeStation(lk.clues.map(function (_, i) { return QMAP[lk.id + '.' + i]; }), { title: 'Lab Lock', labels: ['1', '2', '3', '4', '5'], flat: true, lock: lk }); return b;
@@ -531,7 +553,7 @@ function builder() {
     const op = [[0, 2.3], [2.7, 4.9], [5.3, 7.5]].map(function (o) { return [y + o[0], y + o[1]]; });
     [[y + 2.3, y + 2.7], [y + 4.9, y + 5.3], [y + 7.5, y + 18]].forEach(function (g) { addSolid(wx, wx + 1.4, g[0], g[1]); L.group.add(bilayer(wx, wx + 1.4, g[0], g[1])); });
     [[wx - 6.5, y + 2.7], [wx - 4, y + 5.3]].forEach(function (p) { const sl = addSolid(p[0], wx, p[1] - 0.4, p[1], { oneWay: true }); L.group.add(box(sl.x0, sl.x1, sl.y0, sl.y1, 3, L.th.top)); });
-    const KC = { lipid: '#f2c078', protein: '#c59cff', pump: '#ff9f6e', flow: '#7fd4ff' };
+    const KC = { lipid: '#f2c078', protein: '#c59cff', pump: '#ff9f6e', flow: '#7fd4ff', organelle: '#ffd166', vesicle: '#7be0ad' };
     const doors = shuffle(it.doors).map(function (d, i) {
       const o = op[i], sd = addSolid(wx, wx + 1.4, o[0], o[1]), g = new T.Group(), mid = (o[0] + o[1]) / 2;
       const plate = new T.Mesh(G.box, basic(KC[d.kind] || '#7fd4ff', 0.3, true)); plate.scale.set(1.4, o[1] - o[0], 4.6); plate.position.set(wx + 0.7, mid, 0); g.add(plate);
@@ -541,17 +563,53 @@ function builder() {
       L.group.add(g); return { d: d, s: sd, g: g, plate: plate, cool: 0, kc: KC[d.kind] || '#7fd4ff' };
     });
     for (let i = doors.length; i < 3; i++) { addSolid(wx, wx + 1.4, op[i][0], op[i][1]); L.group.add(bilayer(wx, wx + 1.4, op[i][0], op[i][1])); }
+    if (it.hereCrowd != null) {
     crowd(x0 + 1, wx - 0.4, y, it.hereCrowd * 3, it.dotColor || it.color);
     crowd(wx + 1.8, end - 1, y, it.thereCrowd * 3, it.dotColor || it.color);
     const more = it.hereCrowd > it.thereCrowd;
     const s1 = label(it.here + ': ' + (more ? 'more' : 'less') + ' ' + it.what, 6, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }); s1.position.set(x0 + 7, y + 7.3, -1.5); L.group.add(s1);
     const s2 = label(it.there + ': ' + (more ? 'less' : 'more') + ' ' + it.what, 6, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }); s2.position.set(wx + 7.5, y + 7.3, -1.5); L.group.add(s2);
+    }
     if (it.atp) {
       const orb = new T.Group(), core = new T.Mesh(G.sph, emat('#c8ff7a', '#5a8a20')); core.scale.setScalar(0.35); orb.add(core); orb.add(glow('#c8ff7a', 2.4, 0.7));
       const ol = label('ATP', 1.4); ol.position.y = 0.85; orb.add(ol); orb.position.set(wx - 5.6, y + 3.5, 0); L.group.add(orb); L.atps.push({ x: wx - 5.6, y: y + 3.5, m: orb, got: false });
     }
     const z = { kind: 'become', x0: x0 + 0.5, x1: wx + 1.4, done: false, errors: 0, doors: doors, it: it };
     L.zones.push(z); L.total++; b.x = end; L.cps.push({ x: wx + 3, y: y });
+  }
+  /* CATCH: answers float and drift around an arena. Jump into the one that matches the highlighted cue;
+     dodge the others. Each right catch joins the chain that trails behind the alien. */
+  function makeCatch(c) {
+    const x0 = b.x, y = b.y, wx = x0 + 32, end = wx + 6;
+    addGround(x0, end, y);
+    [[x0 + 7, 2.6, 4], [x0 + 15, 4.2, 4], [x0 + 23, 2.6, 4]].forEach(function (p) { const sl = addSolid(p[0], p[0] + p[2], y + p[1] - 0.4, y + p[1], { oneWay: true }); L.group.add(box(sl.x0, sl.x1, sl.y0, sl.y1, 3, L.th.top)); });
+    const z = { kind: 'catch', x0: x0 + 0.5, x1: wx, done: false, errors: 0, stepErr: false, c: c, si: 0, toks: [], xa: x0 + 3, xb: wx - 2, y: y };
+    for (let i = 0; i < 6; i++) z.toks.push(catchTok(z, i === 0 ? c.steps[0].need : null));
+    z.gate = addSolid(wx, wx + 1.2, y, y + 18); z.gateMesh = gate(wx, wx + 1.2, y, y + 18); L.group.add(z.gateMesh);
+    L.zones.push(z); L.total += c.steps.length; b.x = end; L.cps.push({ x: wx + 3, y: y });
+  }
+  function catchTok(z, text) {
+    const t = { g: new T.Group(), cool: 0 };
+    t.gem = new T.Mesh(G.ico, emat('#ffffff', '#333333')); t.gem.scale.setScalar(0.36); t.g.add(t.gem);
+    t.halo = glow('#ffffff', 3, 0.5); t.g.add(t.halo); t.lb = label('?', 1.5, { big: true }); t.lb.position.y = 0.75; t.lb.position.z = 0.4; t.g.add(t.lb);
+    L.group.add(t.g); placeTok(z, t, text); return t;
+  }
+  /* HUNT: find every real answer floating around a wide arena. Decoys drift too; touching one costs
+     a life and points, and explains why it is a decoy. */
+  function makeHunt(set) {
+    const x0 = b.x, y = b.y, wx = x0 + 44, end = wx + 6;
+    addGround(x0, end, y);
+    [[x0 + 6, 2.6, 4], [x0 + 13, 4.6, 4], [x0 + 20, 2.6, 4], [x0 + 27, 4.6, 4], [x0 + 34, 2.6, 4], [x0 + 16, 7, 5]].forEach(function (p) { const sl = addSolid(p[0], p[0] + p[2], y + p[1] - 0.4, y + p[1], { oneWay: true }); L.group.add(box(sl.x0, sl.x1, sl.y0, sl.y1, 3, L.th.top)); });
+    const z = { kind: 'hunt', x0: x0 + 0.5, x1: wx, done: false, set: set, found: 0, need: set.good.length, errors: 0, toks: [], xa: x0 + 3, xb: wx - 2, y: y };
+    set.good.forEach(function (t) { z.toks.push(huntTok(z, t, true, null)); });
+    set.bad.forEach(function (t) { z.toks.push(huntTok(z, t.text, false, t.explain)); });
+    z.gate = addSolid(wx, wx + 1.2, y, y + 18); z.gateMesh = gate(wx, wx + 1.2, y, y + 18); L.group.add(z.gateMesh);
+    L.zones.push(z); L.total += set.good.length; b.x = end; L.cps.push({ x: wx + 3, y: y });
+  }
+  function huntTok(z, text, good, why) {
+    const t = { g: new T.Group(), text: text, good: good, why: why, cool: 0, got: false };
+    t.gem = new T.Mesh(G.ico, emat('#bfe9ff', '#3a7090')); t.gem.scale.setScalar(0.34); t.g.add(t.gem); t.g.add(glow('#9fe0ff', 2.6, 0.45));
+    const lb = label(text, 3.3); lb.position.y = 1.1; t.g.add(lb); L.group.add(t.g); huntPlace(z, t); return t;
   }
   /* SEQUENCE: steps float in mixed-up order. Stand at a step and press E to pick it next. */
   function makeSequence(sq) {
@@ -630,10 +688,21 @@ function dotsTxt(n) { return '<span class="dots">' + '●'.repeat(Math.max(1, Ma
 function showZone(z) {
   if (z.kind === 'become') {
     const it = z.it, more = it.hereCrowd > it.thereCrowd;
-    zonePanel('Become It', 'You are ' + esc(it.you) + '. ' + esc(it.goal),
+    zonePanel('Become It', 'You are ' + esc(it.you) + '. ' + esc(it.goal), it.hereCrowd == null ? '' :
       '<div class="crowd"><span>' + esc(it.here) + ': <b>' + (more ? 'more' : 'less') + ' crowded</b> with ' + esc(it.what) + ' ' + dotsTxt(it.hereCrowd) + '</span><span>' + esc(it.there) + ': <b>' + (more ? 'less' : 'more') + ' crowded</b> ' + dotsTxt(it.thereCrowd) + '</span></div>',
-      'Pick an opening in the membrane and press E.' + (it.atp ? ' Glowing ATP powers a pump.' : ''));
+      (it.hereCrowd == null ? 'Walk up to a doorway and press E.' : 'Pick an opening in the membrane and press E.') + (it.atp ? ' Glowing ATP powers a pump.' : ''));
     setBadge(it.short, it.color);
+  } else if (z.kind === 'catch') {
+    const c = z.c, cue = c.steps.map(function (st, i) { return i === z.si ? '<b class="cur">' + esc(st.cue) + '</b>' : '<span class="' + (i < z.si ? 'done' : 'todo') + '">' + esc(st.cue) + '</span>'; }).join(' ');
+    const built = c.steps.filter(function (st) { return (st.bead != null ? st.bead : st.need) !== ''; }).map(function (st, i) { return i < z.si ? esc(st.bead != null ? st.bead : st.need) : '<span class="todo">_</span>'; }).join(c.sep || ' ');
+    zonePanel('Build It: ' + c.short, esc(c.title),
+      '<div class="strand"><span>' + esc(c.cueLabel) + ':</span> ' + cue + '</div><div class="strand"><span>' + esc(c.builtLabel) + ':</span> ' + built + '</div>' +
+      (c.table ? figHTML({ type: 'table', head: c.table.head, rows: c.table.rows }) : '<div class="rule">' + esc(c.rule) + '</div>'),
+      'Jump into the floating ' + c.tokenWord + ' that matches the highlighted ' + c.cueWord + '. Dodge the others.');
+  } else if (z.kind === 'hunt') {
+    zonePanel('Specimen Hunt', esc(z.set.prompt) + '.',
+      '<div class="strand"><span>Found:</span> <b>' + z.found + ' of ' + z.need + '</b> ' + '●'.repeat(z.found) + '○'.repeat(z.need - z.found) + '</div><div class="rule">Decoys drift around too. Touching one costs a life and 50 points.</div>',
+      'Jump to grab each one that belongs. The gate opens when you have them all.');
   } else if (z.kind === 'sequence') {
     zonePanel('Sequence', esc(z.sq.title), '<ol class="slots">' + z.sq.steps.map(function (st, i) { return '<li>' + (i < z.next ? '✓ ' + esc(st) : '<span class="blank">?</span>') + '</li>'; }).join('') + '</ol>',
       'Stand at the step that comes next and press E.');
@@ -653,6 +722,30 @@ function setATP(on) {
   if (on && !P.atpM) { P.atpM = glow('#c8ff7a', 1.1, 0.95); P.m.add(P.atpM); }
   if (!on && P.atpM) { P.m.remove(P.atpM); P.atpM = null; }
 }
+const TOKCOL = { A: '#7fd4ff', U: '#ffd166', G: '#7be0ad', C: '#ffb09c', T: '#c59cff', Stop: '#ff6b6b', 'Release (stop)': '#ff6b6b' };
+function placeTok(z, t, text) {
+  const c = z.c; t.text = text || c.choices[Math.floor(Math.random() * c.choices.length)];
+  const col = TOKCOL[t.text] || '#f2c078';
+  t.gem.material = emat(col, '#3a3a3a'); t.halo.material.color.set(col);
+  t.lb.material.map = labelTex(t.text, { big: t.text.length <= 3, bd: col }); t.lb.material.needsUpdate = true; t.lb.scale.set(t.text.length <= 3 ? 2.3 : 3.3, t.text.length <= 3 ? 1.15 : 1.65, 1);
+  t.x = rnd(z.xa, z.xb); t.by = z.y + rnd(2.2, 5.6); t.y = t.by; t.vx = (Math.random() < 0.5 ? -1 : 1) * rnd(0.7, 1.5); t.ph = rnd(0, 6); t.cool = 0.4;
+  t.g.position.set(t.x, t.y, 0);
+}
+function huntPlace(z, t) {
+  t.x = rnd(z.xa, z.xb); t.by = z.y + [2.3, 3.6, 5.6, 8.2][Math.floor(Math.random() * 4)]; t.y = t.by; t.ph = rnd(0, 6); t.cool = 0.6;
+  t.vx = (Math.random() < 0.5 ? -1 : 1) * (t.good ? rnd(0.3, 0.7) : rnd(0.9, 1.6)); t.g.position.set(t.x, t.y, 0);
+}
+function ensureNeed(z) {
+  if (z.si >= z.c.steps.length) return;
+  const need = z.c.steps[z.si].need;
+  if (z.toks.some(function (t) { return t.text === need; })) return;
+  const far = z.toks.slice().sort(function (a, c) { return Math.abs(c.x - P.x) - Math.abs(a.x - P.x); })[0]; placeTok(z, far, need);
+}
+function addBead(text, col) {
+  const g = new T.Group(), s = new T.Mesh(G.sph, emat(col, '#3a3a3a')); s.scale.setScalar(0.3); g.add(s); g.add(glow(col, 1.6, 0.5));
+  const lb = label(text, text.length <= 3 ? 1.5 : 2.4, { big: text.length <= 3, bd: col }); lb.position.y = 0.6; g.add(lb); L.group.add(g); P.trail.push(g);
+}
+function clearTrail() { P.trail.forEach(function (g) { L.group.remove(g); }); P.trail = []; }
 function near(t) { return Math.abs(P.x - t.x) < 0.9 && Math.abs(P.y + 0.7 - t.y) < 1.0; }
 function zoneTick(z, dt) {
   if (z.kind === 'become') {
@@ -661,6 +754,43 @@ function zoneTick(z, dt) {
       dr.at = !z.done && P.x + HW >= dr.s.x0 - 0.12 && P.x < dr.s.x0 && P.y + PH > dr.s.y0 + 0.15 && P.y < dr.s.y1 - 0.15;
       dr.plate.material = basic(dr.tried ? '#5a6470' : dr.kc, dr.at ? 0.6 : 0.3, true);
       if (dr.at && L.zone === z && !$('qfb').textContent) $('qfb').textContent = 'Press E to go through: ' + dr.d.label;
+    });
+  } else if (z.kind === 'hunt') {
+    if (z.done) return;
+    if (!z.started && L.zone === z) { z.started = true; if (z.set.clearTrail) clearTrail(); }
+    z.toks.forEach(function (t) {
+      if (t.got) return; t.cool -= dt; t.x += t.vx * dt; if (t.x < z.xa || t.x > z.xb) { t.vx = -t.vx; t.x = Math.max(z.xa, Math.min(z.xb, t.x)); }
+      t.y = t.by + Math.sin(P.t * 1.2 + t.ph) * 0.45; t.g.position.set(t.x, t.y, 0); t.gem.rotation.y += dt * 2;
+      if (L.zone !== z || t.cool > 0 || Math.abs(P.x - t.x) > 0.85 || Math.abs(P.y + 0.7 - t.y) > 0.95) return;
+      if (t.good) {
+        t.got = true; t.g.visible = false; z.found++; if (z.set.trail) addBead(t.text, '#9fe0ff'); L.first++; L.streak++; L.score += 80; record({ code: z.set.code }, true);
+        beep(700 + z.found * 60, 0.15, 'sine', 'chime, found one'); toast('✓ ' + t.text, 2.5);
+        if (z.found >= z.need) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; z.toks.forEach(function (k) { k.g.visible = false; }); toast('✓ You found them all. The gate is open.', 4); closeQ(); } else showZone(z);
+        hud();
+      } else {
+        z.errors++; L.score = Math.max(0, L.score - 50); record({ code: z.set.code }, false);
+        $('qfb').textContent = '✗ Decoy: "' + t.text + '". ' + t.why; huntPlace(z, t); hurt();
+      }
+    });
+  } else if (z.kind === 'catch') {
+    if (z.done) return;
+    if (!z.started && L.zone === z) { z.started = true; if (z.c.clearTrail) { clearTrail(); toast(z.c.startMsg || '', 4); } }
+    z.toks.forEach(function (t) {
+      if (z.done) return;
+      t.cool -= dt; t.x += t.vx * dt; if (t.x < z.xa || t.x > z.xb) { t.vx = -t.vx; t.x = Math.max(z.xa, Math.min(z.xb, t.x)); }
+      t.y = t.by + Math.sin(P.t * 1.4 + t.ph) * 0.5; t.g.position.set(t.x, t.y, 0); t.gem.rotation.y += dt * 2;
+      if (L.zone !== z || t.cool > 0 || Math.abs(P.x - t.x) > 0.85 || Math.abs(P.y + 0.7 - t.y) > 0.95) return;
+      const st = z.c.steps[z.si];
+      if (t.text === st.need) {
+        if (!z.stepErr) { L.first++; L.streak++; L.score += 80 + Math.min(L.streak, 5) * 10; } else L.score += 30;
+        record({ id: z.c.id + '.' + z.si, code: z.c.code }, !z.stepErr); z.stepErr = false;
+        const bead = st.bead != null ? st.bead : st.need; if (bead && bead !== 'Stop') addBead(bead, TOKCOL[bead] || '#f2c078');
+        beep(640 + z.si * 60, 0.15, 'sine', 'chime, matched'); z.si++; placeTok(z, t);
+        if (z.si >= z.c.steps.length) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; z.toks.forEach(function (k) { k.g.visible = false; }); toast('✓ ' + z.c.explain, 7); closeQ(); hud(); return; }
+        ensureNeed(z); showZone(z); hud();
+      } else {
+        z.stepErr = true; z.errors++; $('qfb').textContent = '✗ ' + (z.c.wrong && z.c.wrong[t.text] ? z.c.wrong[t.text] : z.c.hint); placeTok(z, t); ensureNeed(z); hurt();
+      }
     });
   } else {
     (z.toks || []).forEach(function (t) { if (t.got) return; t.gem.rotation.y += dt * 2; t.g.scale.setScalar(near(t) && L.zone === z ? 1.15 : 1); });
@@ -711,11 +841,11 @@ function startLevel(w, lv) {
   teardown();
   const th = THEMES[lv.theme] || THEMES.cell;
   L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {},
-    score: 0, streak: 0, hp: 5, time: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], debrief: null };
+    score: 0, streak: 0, hp: 5, time: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], debrief: null };
   scene.add(L.group);
   const b = builder(); lv.build(b); L.len = b.x;
   scenery(th, 0, L.len, L.group, L.anim);
-  P = { x: 2, y: 0, vx: 0, vy: 0, ground: null, face: 1, m: buildAlien(S.alien), t: 0, atp: false, atpM: null, badge: null };
+  P = { x: 2, y: 0, vx: 0, vy: 0, ground: null, face: 1, m: buildAlien(S.alien), t: 0, atp: false, atpM: null, badge: null, inv: 0, boost: 0, boostM: null, trail: [], hist: [] };
   L.group.add(P.m);
   const sh = new T.Mesh(G.plane, new T.MeshBasicMaterial({ map: FX.glow, color: th.rim, transparent: true, opacity: 0.5, blending: T.AdditiveBlending, depthWrite: false })); sh.rotation.x = -Math.PI / 2; sh.scale.set(3.2, 3.2, 1); L.group.add(sh); P.shadow = sh;
   cam.position.set(P.x + 4, 5, camZ);
@@ -734,8 +864,8 @@ function record(q, ok) {
   if (q.id) S.seen[q.id] = Date.now();
   if (q.id) { if (ok) { if (S.missed[q.id]) { S.missed[q.id]--; if (S.missed[q.id] <= 0) delete S.missed[q.id]; } } else S.missed[q.id] = (S.missed[q.id] || 0) + 1; }
 }
-function hurt() {
-  L.hp--; L.streak = 0; beep(160, 0.3, 'sawtooth', 'low buzz, not correct');
+function hurt(hazard) {
+  L.hp--; if (!hazard) L.streak = 0; beep(hazard ? 120 : 160, 0.3, 'sawtooth', hazard ? 'thud, hit by a free radical' : 'low buzz, not correct');
   if (L.hp <= 0) { L.hp = 5; L.score = Math.max(0, L.score - 100); respawn(); toast('Out of energy. Recharged at the last checkpoint.', 4); }
   hud();
 }
@@ -848,15 +978,40 @@ function step(dt) {
   L.time += dt; P.t += dt;
   const ax = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   if (ax) P.face = ax;
-  P.vx += (ax * SPEED - P.vx) * Math.min(1, dt * 14);
+  const bo = P.boost > 0; P.boost -= dt; if (!bo && P.boostM) { P.m.remove(P.boostM); P.boostM = null; }
+  P.inv -= dt;
+  L.movers.forEach(function (mv) {
+    mv.t += dt; const nx = mv.bx + Math.sin(mv.t * mv.sp) * mv.ax, ny = mv.by + Math.sin(mv.t * mv.sp) * mv.ay, dx = nx - mv.s.x0, dy = ny - mv.s.y1;
+    mv.s.x0 += dx; mv.s.x1 += dx; mv.s.y0 += dy; mv.s.y1 += dy; mv.m.position.x += dx; mv.m.position.y += dy;
+    if (P.ground === mv.s) { P.x += dx; P.y += dy; }
+  });
+  P.vx += (ax * SPEED * (bo ? 1.45 : 1) - P.vx) * Math.min(1, dt * 14);
   jumpBuf -= dt; coyote = P.ground ? 0.1 : coyote - dt;
-  if (jumpBuf > 0 && coyote > 0) { P.vy = JUMP; jumpBuf = 0; coyote = 0; beep(420, 0.08, 'triangle'); }
+  if (jumpBuf > 0 && coyote > 0) { P.vy = JUMP * (bo ? 1.15 : 1); jumpBuf = 0; coyote = 0; beep(420, 0.08, 'triangle'); }
   if (!keys.jump && P.vy > 0) P.vy -= 50 * dt;
   P.vy = Math.max(-30, P.vy - GRAV * dt);
   moveX(P.vx * dt); moveY(P.vy * dt);
   if (P.y < -16) { respawn(); L.score = Math.max(0, L.score - 25); toast('You fell. Back to the last checkpoint.', 3); hud(); }
   for (let i = L.cp + 1; i < L.cps.length; i++) if (P.x > L.cps[i].x) L.cp = i;
 
+  L.hazards.forEach(function (h) {
+    if (!h.alive) return; h.t += dt;
+    h.x = h.bx + Math.sin(h.t * h.sp + h.ph) * h.ax; h.y = h.by + Math.sin(h.t * h.sp * 1.3 + h.ph) * h.ay; h.m.position.set(h.x, h.y, 0); h.m.rotation.z += dt * 2.5;
+    const dx = P.x - h.x, dy = P.y + 0.7 - h.y;
+    if (Math.abs(dx) > 0.85 || Math.abs(dy) > 1.0) return;
+    if (P.vy < -1 && P.y > h.y - 0.25) { h.alive = false; h.m.visible = false; P.vy = 12; L.score += 50; beep(900, 0.12, 'square', 'pop, free radical stopped'); hud(); return; }
+    if (P.inv > 0) return;
+    P.inv = 1.3; P.vx = dx >= 0 ? 9 : -9; P.vy = 7; toast('Ouch! Free radicals damage cells. Jump on top of them instead.', 3); hurt(true);
+  });
+  L.boosts.forEach(function (bt) {
+    if (bt.got) return; bt.m.position.y = bt.y + Math.sin(P.t * 3) * 0.15;
+    if (Math.abs(P.x - bt.x) < 0.9 && Math.abs(P.y + 0.7 - bt.y) < 1.1) {
+      bt.got = true; bt.m.visible = false; P.boost = 6; if (!P.boostM) { P.boostM = glow('#c8ff7a', 3.2, 0.6); P.boostM.position.y = 0.7; P.m.add(P.boostM); }
+      L.score += 25; beep(1100, 0.2, 'triangle', 'whoosh, ATP boost'); toast('ATP boost: extra energy to run faster and jump higher for 6 seconds!', 3); hud();
+    }
+  });
+  P.hist.unshift({ x: P.x, y: P.y }); if (P.hist.length > 300) P.hist.pop();
+  P.trail.forEach(function (g, k) { const h = P.hist[Math.min(P.hist.length - 1, (k + 1) * 9)]; g.position.set(h.x, h.y + 0.6, -0.4); });
   L.sparks.forEach(function (s) { if (!s.got && Math.abs(P.x - s.x) < 0.7 && Math.abs(P.y + 0.7 - s.y) < 0.9) { s.got = 1; s.m.visible = false; L.score += 10; beep(1200, 0.06, 'square'); hud(); } s.m.rotation.y += dt * 3; });
   L.tokens.forEach(function (t) {
     if (t.got) return; t.gem.rotation.y += dt * 2;
@@ -888,6 +1043,7 @@ function step(dt) {
 
   P.m.position.set(P.x, P.y + (P.ground ? Math.abs(Math.sin(P.t * 11)) * 0.07 * Math.min(1, Math.abs(P.vx) / 3) : 0), 0);
   P.m.rotation.y += (P.face * 0.75 - P.m.rotation.y) * Math.min(1, dt * 10);
+  P.m.visible = !(P.inv > 0 && Math.floor(P.t * 12) % 2);
   const sq = P.ground ? 1 : 1 + Math.min(0.18, Math.abs(P.vy) * 0.012); P.m.scale.set(1 / sq, sq, 1 / sq);
   P.shadow.position.set(P.x, (P.ground ? P.y : P.y - 0.5) + 0.04, 0); P.shadow.visible = !!P.ground;
   cam.position.x += (P.x + P.face * 2.5 - cam.position.x) * Math.min(1, dt * 4);
