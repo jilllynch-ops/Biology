@@ -460,9 +460,38 @@ FieldGuide.registerQuestions(1, {
     { "id": "s-exo", "code": "BIO.A.4.1.2", "steels": "3.1.9-12.C", "title": "Exocytosis: ship a protein out of the cell",
       "steps": ["The Golgi apparatus packs the protein into a vesicle", "The vesicle travels to the plasma membrane", "The vesicle fuses with the plasma membrane", "The protein is released outside the cell"],
       "hint": "Follow the protein from inside the cell to the outside.", "explain": "Exocytosis: a vesicle fuses with the plasma membrane and releases its contents outside the cell." },
+    { "id": "seq-levels", "code": "BIO.A.1.2.2", "steels": "3.1.9-12.B", "title": "Zoom out: put the levels of organization in order, smallest first",
+      "steps": ["Organelle (a mitochondrion)", "Cell (a muscle cell)", "Tissue (heart muscle)", "Organ (the heart)", "Organ system (the circulatory system)", "Organism (a whole person)"],
+      "hint": "Start with the smallest part and build up: each level is made of the one before it.", "explain": "Organelles make up cells, cells form tissues, tissues form organs, organs form organ systems, and organ systems make an organism." },
+    { "id": "seq-loop", "code": "BIO.A.4.2.1", "steels": "3.1.9-12.C", "loop": true, "title": "Fix the feedback loop: connect the parts in order",
+      "steps": ["Stimulus: body temperature rises above normal", "Receptors in the skin sense the change", "Control center: the brain compares it to the set point", "Effectors: sweat glands release sweat", "Response: body temperature drops back to normal"],
+      "hint": "Follow the signal: something changes, it is sensed, a decision is made, and the body acts.", "explain": "Negative feedback: the response reverses the change and brings the body back to its set point. The loop is ready to run again." },
     { "id": "s-endo", "code": "BIO.A.4.1.2", "steels": "3.1.9-12.C", "title": "Endocytosis: bring a large particle into the cell",
       "steps": ["The plasma membrane folds inward around the particle", "The membrane pinches off, forming a vesicle", "The vesicle carries the particle into the cell"],
       "hint": "Follow the particle from outside the cell to the inside.", "explain": "Endocytosis: the membrane folds inward, wraps the particle, and pinches off into a vesicle." }
+  ],
+
+  /* BALANCE: keep a body measurement inside its normal range by using the body's responses.
+     "elevator": the platform height IS the measurement. "boss": the boss keeps pushing it away.
+     "controls" are switches the player presses (E). A positive "delta" raises the value. */
+  "balances": [
+    { "id": "bal-glucose", "kind": "elevator", "code": "BIO.A.4.2.1", "steels": "3.1.9-12.C",
+      "title": "Keep blood glucose in the normal range. The platform rises and falls with it.", "what": "Blood glucose", "unit": "mg/dL",
+      "start": 95, "min": 40, "max": 180, "band": [70, 110], "danger": [52, 150], "hold": 10, "drift": -2.5,
+      "event": { "every": 6, "delta": 35, "msg": "You ate a snack: blood glucose is rising!" },
+      "controls": [ { "label": "Pancreas: tell cells to take in glucose", "delta": -28 },
+                    { "label": "Liver: release stored glucose", "delta": 28 } ],
+      "tooHigh": "Too much glucose in the blood! Tell the cells to take some in.", "tooLow": "Blood glucose is too low! Release stored glucose.",
+      "explain": "Negative feedback: when glucose rose, the body lowered it, and when it fell, the body raised it, keeping it near the set point." },
+    { "id": "bal-temp", "kind": "boss", "name": "The Imbalance", "code": "BIO.A.4.2.1", "steels": "3.1.9-12.C",
+      "title": "The Imbalance keeps heating and chilling the body. Bring the temperature back to normal and hold it there.", "what": "Body temperature", "unit": "°C",
+      "start": 37, "min": 34, "max": 40, "band": [36.5, 37.5], "danger": [35.4, 38.6], "hold": 4, "push": 0.22, "hp": 4, "set": 37,
+      "controls": [ { "label": "Sweat", "delta": -0.7 }, { "label": "Widen blood vessels near the skin", "delta": -0.5 },
+                    { "label": "Shiver", "delta": 0.7 }, { "label": "Narrow blood vessels near the skin", "delta": 0.5 } ],
+      "wrongHot": "You are already too hot. That response makes more heat, so the temperature runs even higher.",
+      "wrongCold": "You are already too cold. That response gets rid of heat, so the temperature drops even lower.",
+      "tooHigh": "Overheating! Cool the body down.", "tooLow": "Too cold! Warm the body up.",
+      "explain": "Negative feedback: sweating and widening blood vessels cool the body; shivering and narrowing blood vessels warm it. Each response reverses the change." }
   ],
 
   /* WORD BANK: grab the word that completes each sentence. Extra words are there on purpose. */

@@ -99,6 +99,9 @@ ul.slots { list-style: none; padding-left: 0; }
 .strand .cur { color: #10202c; background: var(--signal); padding: 0 6px; border-radius: 4px; }
 .strand .done { color: var(--good); } .strand .todo { color: var(--dim); }
 .rule { color: var(--dim); font-size: .9em; }
+.gauge { position: relative; height: 16px; background: var(--deep); border: 1px solid var(--line); border-radius: 8px; margin: 6px 0; }
+.gauge .band { position: absolute; top: 0; bottom: 0; background: rgba(123, 224, 173, .4); }
+.gauge .mark { position: absolute; top: -5px; width: 5px; height: 26px; margin-left: -2px; background: var(--signal); border-radius: 2px; }
 .ftab { border-collapse: collapse; margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
 .ftab th, .ftab td { border: 1px solid var(--line); padding: 3px 10px; text-align: left; }
 .ftab th { background: var(--deep); color: var(--signal); }
@@ -132,7 +135,7 @@ ul.slots { list-style: none; padding-left: 0; }
   <div id="qpanel" hidden>
     <div id="qmeta"></div><div id="qprompt"></div><div id="qfig"></div><div id="qopts"></div>
     <div id="qfb" role="status" aria-live="polite"></div>
-    <div id="qhow">Jump onto the pad with your answer's letter and press E. You can also press 1 to 4.</div>
+    <div id="qhow">Press A, B, C, or D to answer (or click an answer).</div>
   </div>
   <div id="toast" role="status" aria-live="polite" hidden></div>
   <div id="cap" hidden></div>
