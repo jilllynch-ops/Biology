@@ -50,7 +50,7 @@ BQ.loadWorlds = function (max) {
 /* ---------- saving (on this device only) ---------- */
 const KEY = 'bioquest-save-v1';
 function fresh() {
-  return { alien: { shape: 0, color: 0, eyes: 2, ant: 2, gear: 0 }, levels: {}, missed: {}, codes: {}, seen: {}, rare: {},
+  return { alien: { shape: 0, color: 0, eyes: 2, ant: 2, gear: 0 }, levels: {}, missed: {}, codes: {}, seen: {}, rare: {}, words: {},
     set: { text: 1, low: false, sound: true, music: true, vol: 50, cap: true, unlock: false }, nick: '', board: [] };
 }
 let S = fresh();
@@ -367,9 +367,9 @@ function decor(th, x0, x1, grp, anim) {
 
 /* ---------- game state ---------- */
 let L = null, P = null, mode = 'menu', paused = false, last = 0, menuAlien = null, menuGrp = null, backTo = 'menu';
-const keys = { left: false, right: false, jump: false, act: false };
-let jumpBuf = 0, coyote = 0, actEdge = false, toastT = 0;
-const HW = 0.42, PH = 1.35, SPEED = 7.2, JUMP = 16, GRAV = 40;
+const keys = { left: false, right: false, jump: false, act: false, duck: false };
+let jumpBuf = 0, coyote = 0, actEdge = false, toastT = 0, noteT = 0;
+const HW = 0.42, STAND = 1.35, CROUCH = 0.78; let PH = STAND; const SPEED = 7.2, JUMP = 16, GRAV = 40;
 
 function addPickup(kind, x, y) {
   const g = new T.Group(), shield = kind === 'shield', life = kind === 'life', col = shield ? '#7fd4ff' : life ? '#ff8fb1' : '#c8ff7a';
@@ -377,6 +377,37 @@ function addPickup(kind, x, y) {
   const lb = label(shield ? 'Shield' : life ? 'Extra life' : 'ATP boost', 2); lb.position.y = 1; g.add(lb); g.position.set(x, y, 0); L.group.add(g);
   L.boosts.push({ x: x, y: y, m: g, got: false, kind: kind });
 }
+/* simple specimen models for scanning */
+function specimen(look, col) {
+  const g = new T.Group(), M = function (c, e) { return emat(c, e || '#1a2a3a'); }, sph = function (c, sx, sy, sz, x, y, z) { const m = new T.Mesh(G.sph, M(c)); m.scale.set(sx, sy, sz); m.position.set(x || 0, y || 0, z || 0); g.add(m); return m; };
+  if (look === 'rock') { const m = new T.Mesh(G.ico, M('#8a8f96', '#202428')); m.scale.set(0.9, 0.6, 0.7); m.position.y = 0.5; g.add(m); }
+  else if (look === 'crystal') { [[0, 0.8, 0], [-0.4, 0.55, 0.3], [0.4, 0.5, -0.2]].forEach(function (p, i) { const c = new T.Mesh(G.cone, M('#bfe9ff', '#3a6a8a')); c.scale.set(0.25, 0.9 - i * 0.2, 0.25); c.position.set(p[0], p[1], p[2]); g.add(c); }); }
+  else if (look === 'frog') { g.userData.hop = true; sph('#5fbf5a', 0.6, 0.42, 0.5, 0, 0.45); [-0.25, 0.25].forEach(function (ex) { sph('#5fbf5a', 0.16, 0.16, 0.16, ex, 0.8, 0.2); sph('#10202c', 0.08, 0.08, 0.08, ex, 0.82, 0.33); }); }
+  else if (look === 'sprout') { g.userData.grow = true; const st = new T.Mesh(G.cyl, M('#4f9a5a')); st.scale.set(0.06, 0.9, 0.06); st.position.y = 0.45; g.add(st); sph('#7be06a', 0.3, 0.1, 0.18, -0.25, 0.85); sph('#7be06a', 0.3, 0.1, 0.18, 0.25, 0.95); }
+  else if (look === 'lily') { const p = new T.Mesh(G.cyl, M('#3f9a4a')); p.scale.set(0.9, 0.06, 0.9); p.position.y = 0.1; g.add(p); sph('#ffb0d0', 0.22, 0.2, 0.22, 0.2, 0.3); }
+  else if (look === 'eggs') { for (let i = 0; i < 7; i++) sph('#e8f0d0', 0.16, 0.16, 0.16, Math.cos(i) * 0.35, 0.25 + (i % 3) * 0.12, Math.sin(i) * 0.25); }
+  else if (look === 'turtle') { sph('#6a8a3a', 0.7, 0.4, 0.55, 0, 0.4); sph('#8ab06a', 0.2, 0.18, 0.2, 0.75, 0.35); }
+  else if (look === 'rod') { g.userData.wiggle = true; sph(col, 0.7, 0.3, 0.3, 0, 0.8); const f = new T.Mesh(G.cyl, M(col)); f.scale.set(0.03, 0.5, 0.03); f.rotation.z = Math.PI / 2; f.position.set(-0.9, 0.8, 0); g.add(f); sph('#ffd166', 0.25, 0.08, 0.08, 0.1, 0.8, 0.22); }
+  else if (look === 'cell') { const m = new T.Mesh(G.sph, basic(col, 0.35, true)); m.scale.setScalar(0.85); m.position.y = 0.9; g.add(m); sph('#8a5ac8', 0.3, 0.3, 0.3, 0.1, 0.9, 0.2); sph('#ff9f6e', 0.15, 0.08, 0.08, -0.4, 0.7, 0.3); }
+  else if (look === 'helix') { g.userData.spin = true; for (let i = 0; i < 10; i++) { const a = i * 0.7; sph(i % 2 ? '#7fd4ff' : '#ffb09c', 0.1, 0.1, 0.1, Math.cos(a) * 0.3, 0.2 + i * 0.16, Math.sin(a) * 0.3); sph(i % 2 ? '#ffd166' : '#7be0ad', 0.1, 0.1, 0.1, -Math.cos(a) * 0.3, 0.2 + i * 0.16, -Math.sin(a) * 0.3); } }
+  else if (look === 'stack') { for (let i = 0; i < 4; i++) sph(col, 0.7 - i * 0.08, 0.08, 0.35, 0, 0.4 + i * 0.22); }
+  else sph(col, 0.6, 0.55, 0.5, 0, 0.6);
+  g.add(glow(col, 2.6, 0.25)); return g;
+}
+function nearScan() { return L.scans.find(function (k) { return Math.abs(P.x - k.x) < 1.6 && P.y > k.y - 1 && P.y < k.y + 2.4; }); }
+function showNote(sc) {
+  const n = $('note'); n.innerHTML = '<small>New word for your Field Guide</small><b>' + esc(sc.word) + '</b><span>' + esc(sc.note) + '</span>';
+  n.hidden = false; noteT = Math.max(8, sc.note.split(' ').length / 2.6);
+}
+function doScan(k) {
+  if (k.done) { showNote(k.sc); return; }
+  k.done = true; const fresh = !S.words[k.sc.word]; S.words[k.sc.word] = 1; save();
+  k.ring.material = basic('#7be0ad', 0.7, true); k.nm.material.map = labelTex('✓ ' + k.sc.name, { bd: '#7be0ad' }); k.nm.material.needsUpdate = true;
+  L.score += 20; popup(k.x, k.y + 2.2, fresh ? 'New word: ' + k.sc.word : k.sc.word, '#9fe0ff'); burst(k.x, k.y + 1, '#9fe0ff'); beep(1000, 0.18, 'sine', 'scanner chirp, new word'); showNote(k.sc); hud();
+}
+/* no getting stuck: after two wrong tries, the right choice glows gold */
+function helpGlow(g) { if (!g || g.userData.help) return; const h = glow('#ffd700', 3.4, 0.8); g.add(h); g.userData.help = h; L.helps.push(h); }
+function unhelp(g) { if (g && g.userData.help) { g.remove(g.userData.help); L.helps = L.helps.filter(function (h) { return h !== g.userData.help; }); g.userData.help = null; } }
 function bumpBlock(qb) {
   qb.used = true; qb.m.material = emat('#8a6a40', '#2a1a08'); qb.q.visible = false; qb.gl.visible = false; qb.m.position.y += 0.25; setTimeout(function () { qb.m.position.y -= 0.25; }, 120);
   if (qb.reward === 'sparks') { L.coins += 5; L.score += 50; popup(qb.x, qb.y, '+5 sparks', '#ffd166'); burst(qb.x, qb.y + 0.5, '#ffd166'); beep(1200, 0.12, 'square', 'ding, sparks'); hud(); }
@@ -459,6 +490,7 @@ function builder() {
       const g = (D.data || []).find(function (e) { return e.id === id; }); if (!g) return b;
       makeStation(g.questions.map(function (_, i) { return QMAP[g.id + '.' + i]; }), { title: 'Read the Data', labels: g.categories, flat: true, chart: g }); return b;
     },
+    maze: function (id) { const mz = (D.mazes || []).find(function (e) { return e.id === id; }); if (mz) makeMaze(mz); return b; },
     sequence: function (id) { const sq = (D.sequences || []).find(function (e) { return e.id === id; }); if (sq) makeSequence(sq); return b; },
     wordbank: function (id) { const wb = (D.wordbanks || []).find(function (e) { return e.id === id; }); if (wb) makeWordbank(wb); return b; },
     /* ACTION PIECES: free radicals to dodge or stomp, moving platforms, ATP boosts, catch games */
@@ -483,6 +515,44 @@ function builder() {
       [-0.17, 0.17].forEach(function (ex) { const e = mesh('sph', '#ffffff'); e.scale.setScalar(0.12); e.position.set(ex, 0.08, 0.45); g.add(e); const p = mesh('sph', '#10202c'); p.scale.setScalar(0.06); p.position.set(ex, 0.06, 0.55); g.add(p); });
       g.add(glow('#9be36b', 2.2, 0.35)); g.position.set(b.x + dx, b.y + 0.62, 0); L.group.add(g);
       L.hazards.push({ kind: 'virus', m: g, bx: b.x + dx, by: b.y + 0.62, x: b.x + dx, y: b.y + 0.62, range: range || 2.5, sp: sp || 1, ph: Math.random() * 6, t: 0, alive: true }); return b;
+    },
+    /* SNAPPER: a phagocyte (an amoeba in the pond, a white blood cell in the body) that pops out of a
+       pore on a steady beat to engulf whatever is nearby. It shakes just before it pops up.
+       Time your jump to get past; it cannot be stomped. */
+    snapper: function (dx, period, offset) {
+      const x = b.x + dx, g = new T.Group(), pore = new T.Mesh(G.tor, emat('#6a4a7a', '#200a2a')); pore.scale.set(0.8, 0.8, 0.8); pore.rotation.x = Math.PI / 2; pore.position.set(x, b.y + 0.05, 0); L.group.add(pore);
+      const head = new T.Group(), body = new T.Mesh(G.sph, emat('#e6f0ff', '#3a4a6a')); body.scale.set(0.85, 0.75, 0.7); head.add(body); head.add(glow('#cfe0ff', 2.6, 0.35));
+      const nuc = new T.Mesh(G.sph, emat('#8a5ac8', '#2a0a4a')); nuc.scale.set(0.32, 0.26, 0.2); nuc.position.set(0.15, -0.15, 0.55); head.add(nuc);
+      [-0.28, 0.12].forEach(function (ex) { const e = new T.Mesh(G.sph, emat('#ffffff', '#666666')); e.scale.setScalar(0.15); e.position.set(ex, 0.25, 0.62); head.add(e); const p = new T.Mesh(G.sph, emat('#10202c', '#000000')); p.scale.setScalar(0.07); p.position.set(ex, 0.25, 0.75); head.add(p); });
+      const arms = [-1, 1].map(function (side) { const a = new T.Group(), arm = new T.Mesh(G.sph, emat('#e6f0ff', '#3a4a6a')); arm.scale.set(0.22, 0.75, 0.22); arm.position.y = 0.6; a.add(arm); a.position.set(side * 0.65, 0.1, 0); head.add(a); return a; });
+      g.add(head); g.position.set(x, b.y, 0); L.group.add(g);
+      L.hazards.push({ kind: 'snapper', m: g, head: head, arms: arms, x: x, y: b.y, gy: b.y, period: period || 4, offset: offset || 0, t: 0, alive: true }); return b;
+    },
+    /* ANTIBODY: a Y-shaped antibody (your body's tag for invaders, and you are the invader) that flies
+       right to left at head height on a steady beat. Duck under it or jump over it. A glow at its
+       launch point blinks just before it flies. */
+    antibody: function (dx, span, period, offset) {
+      const x0 = b.x + dx, g = new T.Group(), M = emat('#ffe08a', '#6a5010');
+      const stem = new T.Mesh(G.cyl, M); stem.scale.set(0.09, 0.45, 0.09); stem.rotation.z = Math.PI / 2; stem.position.x = 0.35; g.add(stem);
+      [-1, 1].forEach(function (sd) { const a = new T.Mesh(G.cyl, M); a.scale.set(0.08, 0.42, 0.08); a.rotation.z = Math.PI / 2 + sd * 0.6; a.position.set(-0.12, sd * 0.17, 0); g.add(a); });
+      g.add(glow('#ffe08a', 1.8, 0.45)); g.scale.setScalar(1.5); L.group.add(g);
+      const warn = glow('#ffe08a', 2.2, 0.15); warn.position.set(x0 + 0.6, b.y + 1.15, 0); L.group.add(warn);
+      L.hazards.push({ kind: 'antibody', m: g, warn: warn, x0: x0, x: x0, gy: b.y, y: b.y + 1.15, span: span || 12, speed: 7, period: period || 3.2, offset: offset || 0, t: 0, alive: true }); return b;
+    },
+    /* SCAN: a specimen to look at. Walk up and press E: a short note teaches a new word,
+       and the word is saved in the Field Guide. Play keeps going while you read. */
+    scan: function (dx, id, dy) {
+      const sc = (D.scans || []).find(function (e) { return e.id === id; }); if (!sc) return b;
+      const x = b.x + dx, y = b.y + (dy || 0), g = specimen(sc.look || 'blob', sc.color || '#9fe0ff'); g.position.set(x, y, 0.6); L.group.add(g);
+      const ring = new T.Mesh(G.tor, basic('#9fe0ff', 0.7, true)); ring.scale.setScalar(0.45); ring.position.set(x, y + 2.7, 0.6); L.group.add(ring);
+      const nm = label('🔍 ' + sc.name, 3, { bd: '#9fe0ff' }); nm.position.set(x, y + 3.6, 0.6); L.group.add(nm);
+      L.scans.push({ sc: sc, x: x, y: y, g: g, ring: ring, nm: nm, done: false, t: Math.random() * 6 }); return b;
+    },
+    /* SQUEEZE: a low tunnel of fibers. Duck (down arrow or S) and crawl through. */
+    squeeze: function (dx, len) {
+      const x0 = b.x + dx, x1 = x0 + (len || 4); addSolid(x0, x1, b.y + 1.05, b.y + 7.2); L.group.add(box(x0, x1, b.y + 1.05, b.y + 7.2, 1.6, L.th.top));
+      for (let i = 0; i < 5; i++) { const f = new T.Mesh(G.cyl, emat('#c59cff', '#3a1a6a')); f.scale.set(0.07, (len || 4) / 2, 0.07); f.rotation.z = Math.PI / 2; f.position.set((x0 + x1) / 2, b.y + 1.12, -1.6 + i * 0.8); L.group.add(f); }
+      return b;
     },
     /* SPIKES: toxin crystals on the ground. Touching them costs energy. */
     spikes: function (dx, w) {
@@ -628,6 +698,8 @@ function builder() {
     const z = { kind: 'catch', x0: x0 + 0.5, x1: wx, done: false, errors: 0, stepErr: false, c: c, si: 0, toks: [], xa: x0 + 3, xb: wx - 2, y: y, time: 0,
       lanes: shuffle([orbit(x0 + 9, y + 4.4, 1.5, 5, 1), elev(x0 + 13, y + 2.2, y + 6.8, 6), ferry(y + 6.4, x0 + 12, x0 + 22, 7), orbit(x0 + 25, y + 4.4, 1.5, 5, -1), ferry(y + 2.4, x0 + 3, x0 + 30, 9), elev(x0 + 29.5, y + 2.2, y + 6.4, 5)]) };
     for (let i = 0; i < 6; i++) { const t = catchTok(z, i === 0 ? c.steps[0].need : null); t.lane = z.lanes[i]; z.toks.push(t); }
+    /* calm and readable: two rows, evenly spaced, all bobbing up and down together (like the hunt) */
+    z.toks.forEach(function (t, i) { t.hx = x0 + 4 + i * 5; t.hy = y + (i % 2 ? 5.2 : 2.4); });
     z.gate = addSolid(wx, wx + 1.2, y, y + 18); z.gateMesh = gate(wx, wx + 1.2, y, y + 18); L.group.add(z.gateMesh);
     L.zones.push(z); L.total += c.steps.length; b.x = end; L.cps.push({ x: wx + 3, y: y });
   }
@@ -680,14 +752,40 @@ function builder() {
         ferry(y + 3.6, x0 + 24, x0 + 42, 7), elev(x0 + 11, y + 2.2, y + 7.4, 6), elev(x0 + 32, y + 2.2, y + 7, 5)]) };
     set.good.forEach(function (t) { z.toks.push(huntTok(z, t, true, null)); });
     set.bad.forEach(function (t) { z.toks.push(huntTok(z, t.text, false, t.explain)); });
-    z.toks.forEach(function (t, i) { t.lane = z.lanes[i % z.lanes.length]; t.ph = i >= z.lanes.length ? 0.5 : 0; });
+    /* calm and readable: two rows, evenly spaced, all bobbing up and down together */
+    z.toks = shuffle(z.toks); const gap = (wx - x0 - 7) / Math.max(1, z.toks.length - 1);
+    z.toks.forEach(function (t, i) { t.hx = x0 + 3.5 + i * gap; t.hy = y + (i % 2 ? 5.2 : 2.4); });
     z.gate = addSolid(wx, wx + 1.2, y, y + 18); z.gateMesh = gate(wx, wx + 1.2, y, y + 18); L.group.add(z.gateMesh);
     L.zones.push(z); L.total += set.good.length; b.x = end; L.cps.push({ x: wx + 3, y: y });
   }
   function huntTok(z, text, good, why) {
     const t = { g: new T.Group(), text: text, good: good, why: why, cool: 0, got: false };
     t.gem = new T.Mesh(G.ico, emat('#bfe9ff', '#3a7090')); t.gem.scale.setScalar(0.34); t.g.add(t.gem); t.g.add(glow('#9fe0ff', 2.6, 0.45));
-    const lb = label(text, 3.3); lb.position.y = 1.1; t.g.add(lb); L.group.add(t.g); huntPlace(z, t); return t;
+    const lb = label(text, 3.3); lb.position.set(0, 1.1, 1.9); t.g.add(lb); L.group.add(t.g); huntPlace(z, t); return t;
+  }
+  /* MAZE: a row of walls, each with three doorways at three heights. Only the doorway with the
+     correct next step opens; the others are dead ends. */
+  function makeMaze(mz) {
+    const x0 = b.x, y = b.y, n = mz.steps.length, room = 12.4, first = x0 + 11, end = first + (n - 1) * room + 7;
+    addGround(x0, end, y);
+    const op = [[0, 2.3], [2.7, 4.9], [5.3, 7.5]].map(function (o) { return [y + o[0], y + o[1]]; });
+    const labels = mz.steps.map(function (st) { return st.label; }).concat(mz.extra || []);
+    const z = { kind: 'maze', x0: x0 + 0.5, x1: first + (n - 1) * room + 1.4, done: false, errors: 0, err: false, si: 0, mz: mz, walls: [] };
+    const st0 = label('Start: ' + mz.start, 4.4, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }); st0.position.set(x0 + 4, y + 3.4, -1.5); L.group.add(st0);
+    mz.steps.forEach(function (st, k) {
+      const wx = first + k * room;
+      [[y + 2.3, y + 2.7], [y + 4.9, y + 5.3], [y + 7.5, y + 18]].forEach(function (g) { addSolid(wx, wx + 1.4, g[0], g[1]); L.group.add(box(wx, wx + 1.4, g[0], g[1], 4.6, L.th.top)); });
+      [[wx - 6.5, y + 2.7], [wx - 4, y + 5.3]].forEach(function (p) { const sl = addSolid(p[0], wx, p[1] - 0.4, p[1], { oneWay: true }); L.group.add(box(sl.x0, sl.x1, sl.y0, sl.y1, 3, L.th.top)); });
+      const pool = shuffle(labels.filter(function (l) { return l !== st.label; })).slice(0, 2);
+      const doors = shuffle([{ label: st.label, ok: true }].concat(pool.map(function (l) { return { label: l, ok: false }; }))).map(function (d, i) {
+        const o = op[i], sd = addSolid(wx, wx + 1.4, o[0], o[1]), g = new T.Group(), mid = (o[0] + o[1]) / 2;
+        const plate = new T.Mesh(G.box, basic('#9fe0ff', 0.3, true)); plate.scale.set(1.4, o[1] - o[0], 4.6); plate.position.set(wx + 0.7, mid, 0); g.add(plate);
+        const lb = label(d.label, 3.2, { bd: '#9fe0ff' }); lb.position.set(wx - 1.9, mid + 0.2, -0.9); g.add(lb);
+        L.group.add(g); return { d: d, s: sd, g: g, plate: plate, cool: 0 };
+      });
+      z.walls.push(doors);
+    });
+    L.zones.push(z); L.total += n; b.x = end; L.cps.push({ x: end - 3, y: y });
   }
   /* SEQUENCE: steps float in mixed-up order. Stand at a step and press E to pick it next. */
   function makeSequence(sq) {
@@ -776,7 +874,7 @@ function showZone(z) {
     zonePanel('Build It: ' + c.short, esc(c.title),
       '<div class="strand"><span>' + esc(c.cueLabel) + ':</span> ' + cue + '</div><div class="strand"><span>' + esc(c.builtLabel) + ':</span> ' + built + '</div>' +
       (c.table ? figHTML({ type: 'table', head: c.table.head, rows: c.table.rows }) : '<div class="rule">' + esc(c.rule) + '</div>'),
-      'Jump into the floating ' + c.tokenWord + ' that matches the highlighted ' + c.cueWord + '. Dodge the others.');
+      'Jump up to the ' + c.tokenWord + ' that matches the highlighted ' + c.cueWord + ' and press E to grab it.');
   } else if (z.kind === 'balance') {
     const bl = z.bl, pct = function (v) { return (v - bl.min) / (bl.max - bl.min) * 100; };
     if (!z.done && z.left) { z.v = bl.start; z.hold = 0; z.push = []; } z.left = false;
@@ -787,8 +885,13 @@ function showZone(z) {
       'Walk to a switch and press E. Orange switches raise it; blue switches lower it.');
   } else if (z.kind === 'hunt') {
     zonePanel('Specimen Hunt', esc(z.set.prompt) + '.',
-      '<div class="strand"><span>Found:</span> <b>' + z.found + ' of ' + z.need + '</b> ' + '●'.repeat(z.found) + '○'.repeat(z.need - z.found) + '</div><div class="rule">Decoys drift around too. Touching one costs a life and 50 points.</div>',
-      'Jump to grab each one that belongs. The gate opens when you have them all.');
+      '<div class="strand"><span>Found:</span> <b>' + z.found + ' of ' + z.need + '</b> ' + '●'.repeat(z.found) + '○'.repeat(z.need - z.found) + '</div><div class="rule">Decoys are mixed in. Choosing one costs 25 points.</div>',
+      'Jump up to an item so it glows, then press E to grab it. The gate opens when you have them all.');
+  } else if (z.kind === 'maze') {
+    const mz = z.mz, path = [esc(mz.start)].concat(mz.steps.map(function (st, i) { return i < z.si ? esc(st.label) : '<span class="todo">?</span>'; })).join(' → ');
+    if (!z.started) { z.started = true; clearTrail(); addBead(mz.start, '#9fe0ff'); }
+    zonePanel('Maze', esc(mz.title), '<div class="strand"><span>Your path:</span> ' + path + '</div><div class="rule">Only the doorway with the next level opens. The others are dead ends (25 points).</div>',
+      'Walk or jump to a doorway and press E to go through.');
   } else if (z.kind === 'sequence') {
     zonePanel('Sequence', esc(z.sq.title), '<ol class="slots">' + z.sq.steps.map(function (st, i) { return '<li>' + (i < z.next ? '✓ ' + esc(st) : '<span class="blank">?</span>') + '</li>'; }).join('') + '</ol>',
       'Stand at the step that comes next and press E.');
@@ -853,6 +956,13 @@ function zoneTick(z, dt) {
       dr.plate.material = basic(dr.tried ? '#5a6470' : dr.kc, dr.at ? 0.6 : 0.3, true);
       if (dr.at && L.zone === z && !$('qfb').textContent) $('qfb').textContent = 'Press E to go through: ' + dr.d.label;
     });
+  } else if (z.kind === 'maze') {
+    z.walls.forEach(function (ds, k) { ds.forEach(function (dr) {
+      dr.cool -= dt; if (dr.open) return;
+      dr.at = !z.done && k === z.si && P.x + HW >= dr.s.x0 - 0.12 && P.x < dr.s.x0 && P.y + PH > dr.s.y0 + 0.15 && P.y < dr.s.y1 - 0.15;
+      dr.plate.material = basic(dr.tried ? '#5a6470' : '#9fe0ff', dr.at ? 0.6 : 0.3, true);
+      if (dr.at && L.zone === z && !$('qfb').textContent) $('qfb').textContent = 'Press E to go through: ' + dr.d.label;
+    }); });
   } else if (z.kind === 'balance') {
     z.levers.forEach(function (lv) { lv.cool -= dt; lv.knob.rotation.y += dt; });
     if (z.done) return;
@@ -887,40 +997,47 @@ function zoneTick(z, dt) {
     z.time += dt;
     if (!z.started && L.zone === z) { z.started = true; if (z.set.clearTrail) clearTrail(); }
     z.toks.forEach(function (t) {
-      if (t.got) return; t.cool -= dt; const p = lanePos(t.lane, z.time + (t.ph || 0) * t.lane.T); t.x = p.x; t.y = p.y; t.g.position.set(t.x, t.y, 0); t.gem.rotation.y += dt * 2;
-      if (L.zone !== z || t.cool > 0 || Math.abs(P.x - t.x) > 0.85 || Math.abs(P.y + 0.7 - t.y) > 0.95) return;
-      if (t.good) {
-        t.got = true; t.g.visible = false; z.found++; if (z.set.trail) addBead(t.text, '#9fe0ff'); L.first++; L.streak++; L.score += 80; record({ code: z.set.code }, true);
-        popup(t.x, t.y, '+80', '#7be0ad'); burst(t.x, t.y, '#9fe0ff'); beep(700 + z.found * 60, 0.15, 'sine', 'chime, found one'); toast('✓ ' + t.text, 2.5);
-        if (z.found >= z.need) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; z.toks.forEach(function (k) { k.g.visible = false; }); toast('✓ You found them all. The gate is open.', 4); closeQ(); } else showZone(z);
-        hud();
-      } else {
-        z.errors++; L.score = Math.max(0, L.score - 50); record({ code: z.set.code }, false);
-        $('qfb').textContent = '✗ Decoy: "' + t.text + '". ' + t.why; popup(t.x, t.y, '-50', '#ffb09c'); huntPlace(z, t); hurt();
-      }
+      if (t.got) return; t.cool -= dt; t.x = t.hx; t.y = t.hy + Math.sin(Math.PI * 2 * z.time / 4.5) * 0.9; t.g.position.set(t.x, t.y, 0); t.gem.rotation.y += dt;
+      t.hot = L.zone === z && t.cool <= 0 && Math.abs(P.x - t.x) < 0.95 && Math.abs(P.y + 0.7 - t.y) < 1.05; t.g.scale.setScalar(t.hot ? 1.25 : 1);
     });
   } else if (z.kind === 'catch') {
     if (z.done) return;
     z.time += dt;
     if (!z.started && L.zone === z) { z.started = true; if (z.c.clearTrail) { clearTrail(); toast(z.c.startMsg || '', 4); } }
     z.toks.forEach(function (t) {
-      if (z.done) return;
-      t.cool -= dt; const p = lanePos(t.lane, z.time); t.x = p.x; t.y = p.y; t.g.position.set(t.x, t.y, 0); t.gem.rotation.y += dt * 2;
-      if (L.zone !== z || t.cool > 0 || Math.abs(P.x - t.x) > 0.85 || Math.abs(P.y + 0.7 - t.y) > 0.95) return;
-      const st = z.c.steps[z.si];
-      if (t.text === st.need) {
-        if (!z.stepErr) { L.first++; L.streak++; L.score += 80 + Math.min(L.streak, 5) * 10; } else L.score += 30;
-        record({ id: z.c.id + '.' + z.si, code: z.c.code }, !z.stepErr); z.stepErr = false;
-        const bead = st.bead != null ? st.bead : st.need; if (bead && bead !== 'Stop') addBead(bead, TOKCOL[bead] || '#f2c078');
-        popup(t.x, t.y, '+' + (z.stepErr ? 30 : 80), '#7be0ad'); burst(t.x, t.y, TOKCOL[t.text] || '#f2c078'); beep(640 + z.si * 60, 0.15, 'sine', 'chime, matched'); z.si++; placeTok(z, t);
-        if (z.si >= z.c.steps.length) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; z.toks.forEach(function (k) { k.g.visible = false; }); toast('✓ ' + z.c.explain, 7); closeQ(); hud(); return; }
-        ensureNeed(z); showZone(z); hud();
-      } else {
-        z.stepErr = true; z.errors++; $('qfb').textContent = '✗ ' + (z.c.wrong && z.c.wrong[t.text] ? z.c.wrong[t.text] : z.c.hint); placeTok(z, t); ensureNeed(z); hurt();
-      }
+      t.cool -= dt; t.x = t.hx; t.y = t.hy + Math.sin(Math.PI * 2 * z.time / 4.5) * 0.9; t.g.position.set(t.x, t.y, 0); t.gem.rotation.y += dt;
+      t.hot = L.zone === z && t.cool <= 0 && Math.abs(P.x - t.x) < 0.95 && Math.abs(P.y + 0.7 - t.y) < 1.05; t.g.scale.setScalar(t.hot ? 1.25 : 1);
     });
   } else {
     (z.toks || []).forEach(function (t) { if (t.got) { t.gem.rotation.y += dt; return; } t.gem.rotation.y += dt * 2; t.g.scale.setScalar(near(t) && L.zone === z ? 1.15 : 1); });
+  }
+}
+/* wrong choices cost points and give a hint; only hazards cost energy */
+function miss() { L.streak = 0; L.score = Math.max(0, L.score - 25); L.shake = 0.15; popup(P.x, P.y + 1.2, '-25', '#ffb09c'); beep(160, 0.3, 'sawtooth', 'low buzz, not correct'); hud(); }
+function huntPick(z, t) {
+  if (t.good) {
+    t.got = true; t.g.visible = false; z.missRun = 0; z.found++; if (z.set.trail) addBead(t.text, '#9fe0ff'); L.first++; L.streak++; L.score += 80; record({ code: z.set.code }, true);
+    popup(t.x, t.y, '+80', '#7be0ad'); burst(t.x, t.y, '#9fe0ff'); beep(700 + z.found * 60, 0.15, 'sine', 'chime, found one'); toast('✓ ' + t.text, 2.5);
+    if (z.found >= z.need) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; z.toks.forEach(function (k) { k.g.visible = false; }); toast('✓ You found them all. The gate is open.', 4); closeQ(); } else showZone(z);
+    hud();
+  } else {
+    z.errors++; record({ code: z.set.code }, false); t.cool = 1.2;
+    $('qfb').textContent = '✗ Decoy: "' + t.text + '". ' + t.why; miss();
+    z.missRun = (z.missRun || 0) + 1; if (z.missRun >= 2) { const gd = z.toks.filter(function (k) { return k.good && !k.got; }).sort(function (a, c) { return Math.abs(a.x - P.x) - Math.abs(c.x - P.x); })[0]; if (gd) { helpGlow(gd.g); $('qfb').textContent += ' A real one is glowing gold.'; } }
+  }
+}
+function catchPick(z, t) {
+  const st = z.c.steps[z.si];
+  if (t.text === st.need) {
+    if (!z.stepErr) { L.first++; L.streak++; L.score += 80 + Math.min(L.streak, 5) * 10; } else L.score += 30;
+    record({ id: z.c.id + '.' + z.si, code: z.c.code }, !z.stepErr); z.missRun = 0; unhelp(t.g);
+    const bead = st.bead != null ? st.bead : st.need; if (bead && bead !== 'Stop') addBead(bead, TOKCOL[bead] || '#f2c078');
+    popup(t.x, t.y, '+' + (z.stepErr ? 30 : 80), '#7be0ad'); burst(t.x, t.y, TOKCOL[t.text] || '#f2c078'); beep(640 + z.si * 60, 0.15, 'sine', 'chime, matched'); z.stepErr = false; z.si++; placeTok(z, t);
+    if (z.si >= z.c.steps.length) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; z.toks.forEach(function (k) { k.g.visible = false; }); toast('✓ ' + z.c.explain, 7); closeQ(); hud(); return; }
+    ensureNeed(z); showZone(z); hud();
+  } else {
+    z.stepErr = true; z.errors++; t.cool = 1.2; $('qfb').textContent = '✗ ' + (z.c.wrong && z.c.wrong[t.text] ? z.c.wrong[t.text] : z.c.hint); miss();
+    z.missRun = (z.missRun || 0) + 1; if (z.missRun >= 2) { const nd = z.toks.find(function (k) { return k.text === st.need; }); if (nd) { helpGlow(nd.g); $('qfb').textContent += ' The right one is glowing gold.'; } }
   }
 }
 function zoneAct(z) {
@@ -930,13 +1047,31 @@ function zoneAct(z) {
     if (!dr) { $('qfb').textContent = 'Walk up to an opening in the membrane, then press E.'; return; }
     if (dr.cool > 0) return;
     const d = dr.d;
-    if (!d.ok) { dr.cool = 1; dr.tried = true; z.errors++; P.vx = -6; $('qfb').textContent = '✗ ' + d.why; hurt(); return; }
+    if (!d.ok) { dr.cool = 1; dr.tried = true; z.errors++; P.vx = -6; $('qfb').textContent = '✗ ' + d.why; miss(); if (z.errors >= 2) { const okd = z.doors.find(function (q) { return q.d.ok; }); helpGlow(okd.g); okd.g.userData.help.position.set(okd.s.x0 + 0.7, (okd.s.y0 + okd.s.y1) / 2, 1); $('qfb').textContent += ' The right opening is glowing gold.'; } return; }
     if (d.kind === 'pump' && !P.atp) { P.vx = -5; $('qfb').textContent = 'The pump needs energy. Grab the glowing ATP first.'; beep(300, 0.15, 'triangle', 'soft tone, needs energy'); return; }
     if (d.kind === 'pump') { setATP(false); toast('ATP used: energy pushed you to the more crowded side.', 3); }
     dr.open = true; dr.s.off = true; dr.g.visible = false; z.done = true; setBadge(null);
     if (!z.errors) { L.first++; L.streak++; L.score += 150; } else L.score += 50;
     record({ id: z.it.id, code: z.it.code }, !z.errors); beep(880, 0.25, 'sine', 'chime, correct'); toast('✓ ' + z.it.explain, 6); hud(); closeQ();
     return;
+  }
+  if (z.kind === 'maze') {
+    const dr = z.walls[z.si].find(function (d) { return d.at && !d.open; });
+    if (!dr) { $('qfb').textContent = 'Walk up to a doorway, then press E.'; return; }
+    if (dr.cool > 0) return;
+    const st = z.mz.steps[z.si];
+    if (!dr.d.ok) { dr.cool = 1; dr.tried = true; z.err = true; z.errors++; P.vx = -6; record({ id: z.mz.id + '.' + z.si, code: z.mz.code }, false); $('qfb').textContent = '✗ Dead end! "' + dr.d.label + '" does not come next. ' + st.hint; miss(); z.missRun = (z.missRun || 0) + 1; if (z.missRun >= 2) { const okd = z.walls[z.si].find(function (q) { return q.d.ok; }); helpGlow(okd.g); okd.g.userData.help.position.set(okd.s.x0 + 0.7, (okd.s.y0 + okd.s.y1) / 2, 1); $('qfb').textContent += ' The right doorway is glowing gold.'; } return; }
+    dr.open = true; dr.s.off = true; dr.g.visible = false;
+    if (!z.err) { L.first++; L.streak++; L.score += 100; } else L.score += 40;
+    record({ id: z.mz.id + '.' + z.si, code: z.mz.code }, !z.err); addBead(st.label, '#9fe0ff'); burst(dr.s.x0, (dr.s.y0 + dr.s.y1) / 2, '#9fe0ff');
+    beep(600 + z.si * 90, 0.18, 'sine', 'chime, path opens'); toast('✓ ' + st.why, 4); z.err = false; z.missRun = 0; z.si++;
+    if (z.si >= z.mz.steps.length) { z.done = true; toast('✓ ' + z.mz.explain, 7); closeQ(); } else showZone(z);
+    hud(); return;
+  }
+  if (z.kind === 'hunt' || z.kind === 'catch') {
+    const t = z.toks.filter(function (k) { return k.hot && !k.got; }).sort(function (a, c) { return Math.abs(a.x - P.x) - Math.abs(c.x - P.x); })[0];
+    if (!t) { $('qfb').textContent = 'Jump up to an item so it glows, then press E to grab it.'; return; }
+    return z.kind === 'hunt' ? huntPick(z, t) : catchPick(z, t);
   }
   if (z.kind === 'balance') {
     const lv = z.levers.find(function (l) { const wp = new T.Vector3(); l.g.getWorldPosition(wp); return Math.abs(P.x - wp.x) < 1.3 && Math.abs(P.y - wp.y) < 1.6; });
@@ -952,7 +1087,7 @@ function zoneAct(z) {
   if (!t) { $('qfb').textContent = 'Walk up to a glowing ' + (z.kind === 'sequence' ? 'step' : 'word') + ', then press E.'; return; }
   if (z.kind === 'sequence') {
     if (t.si === z.next) {
-      t.got = true; z.next++; beep(560 + z.next * 110, 0.15, 'sine', 'chime, step correct'); showZone(z);
+      t.got = true; z.missRun = 0; unhelp(t.g); z.next++; beep(560 + z.next * 110, 0.15, 'sine', 'chime, step correct'); showZone(z);
       if (z.sq.loop) { t.gem.material = emat('#7be0ad', '#2f7a50'); t.g.scale.setScalar(1); if (z.prevTok) linkLine(z.prevTok, t); z.prevTok = t; if (!z.firstTok) z.firstTok = t; if (z.next >= z.sq.steps.length) linkLine(t, z.firstTok); }
       else t.g.visible = false;
       if (z.next >= z.sq.steps.length) {
@@ -960,18 +1095,18 @@ function zoneAct(z) {
         if (!z.errors) { L.first++; L.streak++; L.score += 150; } else L.score += 50;
         record({ id: z.sq.id, code: z.sq.code }, !z.errors); toast('✓ ' + z.sq.explain, 6); hud(); closeQ();
       }
-    } else { z.errors++; $('qfb').textContent = '✗ Not yet. ' + z.sq.hint; hurt(); }
+    } else { z.errors++; z.missRun = (z.missRun || 0) + 1; $('qfb').textContent = '✗ Not yet. ' + z.sq.hint; miss(); if (z.missRun >= 2) { const nx = z.toks.find(function (k) { return k.si === z.next; }); if (nx) { helpGlow(nx.g); $('qfb').textContent += ' The next step is glowing gold.'; } } }
     return;
   }
   const sen = z.wb.sentences[z.si];
   if (t.word === sen.answer) {
-    t.got = true; t.g.visible = false;
+    t.got = true; t.g.visible = false; z.missRun = 0;
     if (!z.err) { L.first++; L.streak++; L.score += 100; } else L.score += 40;
     record({ id: z.wb.id + '.' + z.si, code: sen.code }, !z.err); beep(880, 0.2, 'sine', 'chime, correct'); toast('✓ ' + sen.explain, 4);
     z.si++; z.err = false;
     if (z.si >= z.wb.sentences.length) { z.done = true; z.gate.off = true; z.gateMesh.visible = false; closeQ(); } else showZone(z);
     hud();
-  } else { z.err = true; $('qfb').textContent = '✗ "' + t.word + '" does not fit this sentence. Read it again and try another word.'; hurt(); }
+  } else { z.err = true; z.missRun = (z.missRun || 0) + 1; $('qfb').textContent = '✗ "' + t.word + '" does not fit this sentence. Read it again and try another word.'; miss(); if (z.missRun >= 2) { const rw = z.toks.find(function (k) { return !k.got && k.word === sen.answer; }); if (rw) { helpGlow(rw.g); $('qfb').textContent += ' The word that fits is glowing gold.'; } } }
 }
 function doorText(d) {
   d.label.material.map = labelTex('Collected ' + d.got + ' of ' + d.need); d.label.material.needsUpdate = true;
@@ -979,7 +1114,7 @@ function doorText(d) {
 function startLevel(w, lv) {
   teardown();
   const th = THEMES[lv.theme] || THEMES.cell;
-  L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {},
+  L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [],
     score: 0, streak: 0, hp: 5, time: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
   scene.add(L.group);
   const b = builder(); lv.build(b); L.len = b.x;
@@ -994,7 +1129,7 @@ function startLevel(w, lv) {
   L.group.add(P.m);
   const sh = new T.Mesh(G.plane, new T.MeshBasicMaterial({ map: FX.glow, color: th.rim, transparent: true, opacity: 0.5, blending: T.AdditiveBlending, depthWrite: false })); sh.rotation.x = -Math.PI / 2; sh.scale.set(3.2, 3.2, 1); L.group.add(sh); P.shadow = sh;
   cam.position.set(P.x + 4, 5, camZ);
-  mode = 'play'; paused = false; actEdge = false; jumpBuf = 0; show(null); $('hud').hidden = false; $('touch').hidden = !touchMode;
+  mode = 'play'; paused = false; actEdge = false; jumpBuf = 0; noteT = 0; $('note').hidden = true; show(null); $('hud').hidden = false; $('touch').hidden = !touchMode;
   $('hudLevel').textContent = lv.id + ' ' + lv.title; hud(); closeQ();
   toast(lv.log || '', 7); Music.setDuck(1); Music.play(SONGS[lv.theme] ? lv.theme : 'cell');
 }
@@ -1030,7 +1165,7 @@ function burst(x, y, col) {
   if (S.set.low) return;
   for (let i = 0; i < 8; i++) { const g = glow(col, 0.9, 0.9); g.position.set(x, y, 0.5); L.group.add(g); const a = i / 8 * Math.PI * 2; L.fx.push({ o: g, t: 0, vx: Math.cos(a) * 4, vy: Math.sin(a) * 4, life: 0.5 }); }
 }
-function respawn() { const c = L.cps[L.cp]; P.x = c.x; P.y = c.y + 0.1; P.vx = P.vy = 0; P.inv = 1.5; }
+function respawn() { const c = L.cps[L.cp]; P.duck = false; PH = STAND; P.x = c.x; P.y = c.y + 0.1; P.vx = P.vy = 0; P.inv = 1.5; }
 
 /* ---------- question stations ---------- */
 function figHTML(f) {
@@ -1078,7 +1213,7 @@ function figHTML(f) {
 function openQ(st) {
   L.active = st; const q = st.queue[st.qi];
   st.perm = q.fixed ? q.options.map(function (_, i) { return i; }) : shuffle(q.options.map(function (_, i) { return i; }));
-  st.tried = {}; st.firstTry = true;
+  st.tried = {}; st.firstTry = true; st.wrongN = 0;
   st.pads.forEach(function (p) { const on = p.i < q.options.length; p.s.off = !on; p.m.visible = on; p.lb.visible = on; p.m.material = emat('#3d8bd4', '#0f3a66'); });
   const inPair = st.pair && st.pair.qs.indexOf(q) >= 0, pairTxt = inPair ? 'Look-alike pair ' + (st.pair.qs.indexOf(q) + 1) + ' of 2: ' + st.pair.name : '';
   let meta = st.boss ? st.boss.name + ': ' + '■'.repeat(st.boss.hp) + '□'.repeat(st.boss.max - st.boss.hp) + (inPair ? ' · ' + pairTxt : '')
@@ -1117,7 +1252,10 @@ function answer(i) {
   } else {
     st.tried[i] = 1; st.firstTry = false; if (st.pads[i]) st.pads[i].m.material = mat('#5a6470');
     const btn = $('qopts').querySelector('[data-i="' + i + '"]'); if (btn) { btn.disabled = true; btn.classList.add('no'); }
-    $('qfb').textContent = '✗ Not that one. ' + (q.hint || q.explain); hurt();
+    st.wrongN = (st.wrongN || 0) + 1;
+    if (st.wrongN >= 2) { const ci = st.perm.indexOf(q.answer), b2 = $('qopts').querySelector('[data-i="' + ci + '"]'); if (b2) b2.classList.add('help'); if (st.pads[ci]) st.pads[ci].m.material = emat('#ffd700', '#7a5a00'); $('qfb').textContent = '✗ Not that one. ' + (q.hint || q.explain) + ' The right answer is glowing gold.'; }
+    else $('qfb').textContent = '✗ Not that one. ' + (q.hint || q.explain);
+    miss();
   }
   hud();
 }
@@ -1148,7 +1286,12 @@ function step(dt) {
     mv.s.x0 += dx; mv.s.x1 += dx; mv.s.y0 += dy; mv.s.y1 += dy; mv.m.position.x += dx; mv.m.position.y += dy;
     if (P.ground === mv.s) { P.x += dx; P.y += dy; }
   });
-  P.vx += (ax * SPEED * (bo ? 1.45 : 1) - P.vx) * Math.min(1, dt * 14);
+  /* duck: crouch low while on the ground; stay crouched under a low ceiling */
+  const wantDuck = keys.duck && !L.active && P.ground && !(jumpBuf > 0);
+  if (wantDuck) P.duck = true;
+  else if (P.duck) { PH = STAND; const blocked = L.solids.some(function (s) { return !s.off && !s.oneWay && hit(s); }); if (blocked) { PH = CROUCH; jumpBuf = 0; } else P.duck = false; }
+  PH = P.duck ? CROUCH : STAND;
+  P.vx += (ax * SPEED * (bo ? 1.45 : 1) * (P.duck ? 0.5 : 1) - P.vx) * Math.min(1, dt * 14);
   jumpBuf -= dt; coyote = P.ground ? 0.1 : coyote - dt;
   if (P.ground) P.dbl = true;
   if (jumpBuf > 0 && coyote > 0) { P.vy = JUMP * (bo ? 1.15 : 1); jumpBuf = 0; coyote = 0; beep(420, 0.08, 'triangle'); }
@@ -1164,10 +1307,26 @@ function step(dt) {
 
   L.hazards.forEach(function (h) {
     if (!h.alive) return; h.t += dt;
+    if (h.kind === 'snapper') {
+      const c = (h.t + h.offset) % h.period, upStart = h.period - 1.9, up = c > upStart;
+      const f = up ? Math.min(1, (c - upStart) / 0.25, (h.period - c) / 0.25) : 0, lift = -1.3 + f * 2.7;
+      h.head.position.set(c > upStart - 0.6 && !up ? (Math.random() - 0.5) * 0.12 : 0, lift, 0);
+      const open = up ? 0.2 + Math.abs(Math.sin(h.t * 6)) * 0.6 : 0.9; h.arms[0].rotation.z = -open; h.arms[1].rotation.z = open;
+      h.y = h.gy + lift + 0.2;
+      if (lift > -0.2 && P.inv <= 0 && Math.abs(P.x - h.x) < 0.75 && P.y < h.gy + lift + 0.6 && P.y + PH > h.gy) { P.inv = 1.3; P.vx = P.x < h.x ? -8 : 8; P.vy = 8; toast('Engulfed! Phagocytes eat by wrapping around things. Jump past while it is hiding.', 3.5); hurt(true); }
+      return;
+    }
+    if (h.kind === 'antibody') {
+      const c = (h.t + h.offset) % h.period, fly = c < h.span / h.speed;
+      h.x = fly ? h.x0 - c * h.speed : h.x0 + 2; h.y = h.gy + 1.15; h.m.visible = fly; h.m.position.set(h.x, h.y + Math.sin(h.t * 9) * 0.05, 0); h.m.rotation.z = Math.sin(h.t * 6) * 0.15;
+      if (h.warn) h.warn.material.opacity = !fly && c > h.period - 1 ? 0.5 + 0.5 * Math.sin(h.t * 20) : 0.15;
+      if (fly && P.inv <= 0 && P.shield <= 0 && Math.abs(P.x - h.x) < 0.7 && P.y + PH > h.y - 0.25 && P.y < h.y + 0.35) { P.inv = 1.3; P.vx = -7; P.vy = 6; toast('Tagged by an antibody! Duck (down arrow or S) or jump over it.', 3.5); hurt(true); }
+      return;
+    }
     if (h.kind === 'virus') { const k = Math.asin(Math.sin(h.t * h.sp + h.ph)) * 2 / Math.PI; h.x = h.bx + k * h.range; h.y = h.by + Math.abs(Math.sin(h.t * 6)) * 0.12; h.m.position.set(h.x, h.y, 0); h.m.rotation.y = Math.cos(h.t * h.sp + h.ph) > 0 ? 0.6 : -0.6; }
     else { h.x = h.bx + Math.sin(h.t * h.sp + h.ph) * h.ax; h.y = h.by + Math.sin(h.t * h.sp * 1.3 + h.ph) * h.ay; h.m.position.set(h.x, h.y, 0); h.m.rotation.z += dt * 2.5; }
-    const dx = P.x - h.x, dy = P.y + 0.7 - h.y;
-    if (Math.abs(dx) > 0.85 || Math.abs(dy) > 1.0) return;
+    const dx = P.x - h.x, dy = P.y + PH * 0.52 - h.y;
+    if (Math.abs(dx) > 0.85 || Math.abs(dy) > PH * 0.52 + 0.3) return;
     const name = h.kind === 'virus' ? 'virus' : 'free radical';
     if ((P.vy < -1 && P.y > h.y - 0.25) || P.shield > 0) { h.alive = false; h.m.visible = false; if (P.shield <= 0) P.vy = 12; L.score += 50; popup(h.x, h.y, '+50', '#ffd166'); burst(h.x, h.y, h.kind === 'virus' ? '#9be36b' : '#ff6b4a'); beep(900, 0.12, 'square', 'pop, ' + name + ' stopped'); hud(); return; }
     if (P.inv > 0) return;
@@ -1208,7 +1367,7 @@ function step(dt) {
       record({ code: t.door.set.code }, t.it.good);
       if (t.it.good) { L.first++; L.streak++; L.score += 50; t.door.got++; doorText(t.door); beep(880, 0.15, 'sine', 'chime, correct'); toast('✓ ' + t.it.text, 2.5);
         if (t.door.got >= t.door.need) { t.door.solid.off = true; t.door.mesh.visible = false; t.door.label.visible = false; toast('✓ All collected. The gate is open.', 3); } }
-      else { toast('✗ ' + t.it.text + ': ' + t.it.explain, 6); hurt(); }
+      else { toast('✗ ' + t.it.text + ': ' + t.it.explain, 6); miss(); }
       hud();
     }
   });
@@ -1224,14 +1383,25 @@ function step(dt) {
   if (actEdge) {
     actEdge = false;
     if (L.active) $('qfb').textContent = L.active.lock ? 'Press a number key from 1 to 5.' : 'Press the letter of your answer.';
-    else if (L.zone) zoneAct(L.zone);
+    else { const k = nearScan(); if (k) doScan(k); else if (L.zone) zoneAct(L.zone); }
   }
+  L.scans.forEach(function (k) {
+    k.t += dt; k.ring.rotation.y += dt * 2; const g = k.g, u = g.userData, by = k.y;
+    if (u.hop) { const close = Math.abs(P.x - k.x) < 3; g.position.y = by + (close ? Math.abs(Math.sin(k.t * 6)) * 0.6 : 0); }
+    if (u.grow) { const sc = 0.75 + 0.25 * Math.sin(k.t * 0.8); g.scale.set(1, sc, 1); }
+    if (u.wiggle) g.rotation.z = Math.sin(k.t * 5) * 0.12;
+    if (u.spin) g.rotation.y += dt;
+    const nr = nearScan() === k; k.nm.scale.set(nr ? 3.6 : 3, nr ? 1.8 : 1.5, 1);
+    if (nr && !k.done && !k.told && !L.active) { k.told = true; toast('Press E to scan the ' + k.sc.name + '.', 3); }
+  });
+  L.helps.forEach(function (h) { h.material.opacity = 0.55 + 0.4 * Math.sin(P.t * 6); });
+  if (noteT > 0) { noteT -= dt; if (noteT <= 0) $('note').hidden = true; }
   if (L.goal) { L.goal.m.position.y = L.goal.y + 1.6 + Math.sin(P.t * 2) * 0.2; L.goal.m.rotation.y += dt; if (Math.abs(P.x - L.goal.x) < 1.3 && !L.over) finish(); }
 
   P.m.position.set(P.x, P.y + (P.ground ? Math.abs(Math.sin(P.t * 11)) * 0.07 * Math.min(1, Math.abs(P.vx) / 3) : 0), 0);
   P.m.rotation.y += (P.face * 0.75 - P.m.rotation.y) * Math.min(1, dt * 10);
   P.m.visible = !(P.inv > 0 && Math.floor(P.t * 12) % 2);
-  const sq = P.ground ? 1 : 1 + Math.min(0.18, Math.abs(P.vy) * 0.012); P.m.scale.set(1 / sq, sq, 1 / sq);
+  const sq = P.duck ? 0.58 : P.ground ? 1 : 1 + Math.min(0.18, Math.abs(P.vy) * 0.012); P.m.scale.set(P.duck ? 1.2 : 1 / sq, sq, P.duck ? 1.2 : 1 / sq);
   P.shadow.position.set(P.x, (P.ground ? P.y : P.y - 0.5) + 0.04, 0); P.shadow.visible = !!P.ground;
   cam.position.x += (P.x + P.face * 2.5 - cam.position.x) * Math.min(1, dt * 4);
   const lift = L.active && L.active.chart ? 2.4 : 0;
@@ -1327,8 +1497,13 @@ function applySettings() {
 function pause(on) {
   if (mode !== 'play') return; paused = on; show(on ? 'pause' : null); musicLevel();
   if (on) {
-    const v = (BQ.data[L.world.id] || {}).vocab || [];
-    $('guide').innerHTML = v.map(function (t) { return '<dt>' + esc(t.term) + '</dt><dd>' + esc(t.def) + '</dd>'; }).join(''); $('btnResume').focus();
+    const d = BQ.data[L.world.id] || {}, seen = {}, total = {};
+    (d.scans || []).forEach(function (sc) { total[sc.word] = 1; });
+    const words = (d.scans || []).filter(function (sc) { if (!S.words[sc.word] || seen[sc.word]) return false; seen[sc.word] = 1; return true; });
+    $('guide').innerHTML = '<dt class="gh">Words you discovered: ' + words.length + ' of ' + Object.keys(total).length + '</dt>' +
+      words.map(function (sc) { return '<dt>✓ ' + esc(sc.word) + '</dt><dd>' + esc(sc.def) + '</dd>'; }).join('') +
+      '<dt class="gh">More words for this world</dt>' + (d.vocab || []).filter(function (t) { return !seen[t.term]; }).map(function (t) { return '<dt>' + esc(t.term) + '</dt><dd>' + esc(t.def) + '</dd>'; }).join('');
+    $('btnResume').focus();
   }
 }
 function resize() {
@@ -1353,7 +1528,7 @@ function tick(t) {
 
 /* ---------- controls ---------- */
 let touchMode = false;
-const KEYMAP = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ' ': 'jump', ArrowUp: 'jump', w: 'jump', W: 'jump', e: 'act', E: 'act', Enter: 'act', ArrowDown: 'act', s: 'act', S: 'act' };
+const KEYMAP = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ' ': 'jump', ArrowUp: 'jump', w: 'jump', W: 'jump', e: 'act', E: 'act', Enter: 'act', ArrowDown: 'duck', s: 'duck', S: 'duck' };
 const held = {};
 function press(k, down) {
   if (k === 'jump' && down && !keys.jump) jumpBuf = 0.12;

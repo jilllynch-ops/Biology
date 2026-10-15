@@ -455,6 +455,20 @@ FieldGuide.registerQuestions(1, {
           "hint": "When inside and outside match, water moves in and out equally, so the mass hardly changes.", "explain": "At 0.4 M the mass barely changed (-1%), so the inside of the cells is close to 0.4 M." } ] }
   ],
 
+  /* MAZE: walls of three doorways; only the doorway for the next step opens. */
+  "mazes": [
+    { "id": "maze-levels", "code": "BIO.A.1.2.2", "steels": "3.1.9-12.B", "title": "Zoom out through the body: go through the doorway for the next level up",
+      "start": "Organelle",
+      "steps": [
+        { "label": "Cell", "hint": "What are organelles found inside?", "why": "Organelles, like mitochondria, work together inside a cell." },
+        { "label": "Tissue", "hint": "What do many similar cells form when they work together?", "why": "Similar cells working together form a tissue, like heart muscle." },
+        { "label": "Organ", "hint": "What is made of several kinds of tissue?", "why": "Different tissues together form an organ, like the heart." },
+        { "label": "Organ system", "hint": "What do organs form when they work together?", "why": "Organs working together form an organ system, like the circulatory system." },
+        { "label": "Organism", "hint": "What is the whole living thing made of all its systems?", "why": "All the organ systems together make one organism, a whole person." }
+      ],
+      "extra": ["Organelle", "Molecule"],
+      "explain": "Organelles make up cells, cells form tissues, tissues form organs, organs form organ systems, and organ systems make an organism." }
+  ],
   /* SEQUENCE: touch the steps in the correct order. */
   "sequences": [
     { "id": "s-exo", "code": "BIO.A.4.1.2", "steels": "3.1.9-12.C", "title": "Exocytosis: ship a protein out of the cell",
@@ -523,6 +537,47 @@ FieldGuide.registerQuestions(1, {
   ],
 
   /* FIELD GUIDE: vocabulary shown on the pause screen. */
+  /* SCAN: specimens to look at in the world (press E). Each teaches one word, saved to the Field Guide. */
+  "scans": [
+    {"id": "s-frog", "name": "Frog", "look": "frog", "color": "#5fbf5a", "word": "Respond", "def": "To react to a change around you.", "note": "Get close and the frog hops away. Living things RESPOND to what is around them. That is a sign of life."},
+    {"id": "s-rock", "name": "Rock", "look": "rock", "color": "#8a8f96", "word": "Nonliving", "def": "Not alive: no cells, no energy use, no growing, no reproducing.", "note": "A rock has no cells. It does not use energy, grow, or make more rocks. It is NONLIVING."},
+    {"id": "s-sprout", "name": "Seedling", "look": "sprout", "color": "#7be06a", "word": "Grow and develop", "def": "To get bigger and change over a lifetime.", "note": "This seedling GROWS bigger and DEVELOPS new leaves. All living things grow and develop."},
+    {"id": "s-lily", "name": "Lily pad", "look": "lily", "color": "#3f9a4a", "word": "Energy", "def": "What living things use to stay alive and do work. Food is a source of energy.", "note": "A lily pad uses sunlight to make its own food. Every living thing uses ENERGY, but only some, like plants, make their own food. Lily pads don't walk around, but they are still alive."},
+    {"id": "s-eggs", "name": "Frog eggs", "look": "eggs", "color": "#e8f0d0", "word": "Reproduce", "def": "To make more living things of the same kind.", "note": "These eggs will hatch into new frogs. Living things REPRODUCE: they make more of their own kind."},
+    {"id": "s-bact", "name": "Pond bacterium", "look": "rod", "color": "#9be36b", "word": "Cell", "def": "The smallest unit of life. Every living thing is made of one or more cells.", "note": "This bacterium is just ONE cell, with no nucleus, and it is still alive. Every living thing is made of at least one CELL."},
+    {"id": "s-turtle", "name": "Turtle", "look": "turtle", "color": "#6a8a3a", "word": "Homeostasis", "def": "Keeping conditions inside the body steady.", "note": "The turtle warms up in the sun when it is cold and slides into the water when it is hot. Keeping its inside steady is called HOMEOSTASIS."},
+    {"id": "s-dna", "name": "DNA strand", "look": "helix", "color": "#7fd4ff", "word": "DNA", "def": "The molecule that carries the instructions for building and running a living thing.", "note": "Every living thing has DNA in its cells. DNA is the instruction book for life, and it is passed on when living things reproduce."},
+    {"id": "s-bact2", "name": "Bacterium", "look": "rod", "color": "#9be36b", "word": "Prokaryote", "def": "A cell with no nucleus. Its DNA floats in the cytoplasm.", "note": "Bacteria are PROKARYOTES: tiny cells with NO nucleus. Their DNA floats loose. They still have ribosomes, cytoplasm, and a plasma membrane."},
+    {"id": "s-membrane", "name": "Cell edge", "look": "blob", "color": "#7fd4ff", "word": "Plasma membrane", "def": "The thin barrier around every cell that controls what goes in and out.", "note": "Every cell has a PLASMA MEMBRANE around it, like a skin. It decides what goes in and what comes out."},
+    {"id": "s-cyto", "name": "Cell jelly", "look": "blob", "color": "#c8ff7a", "word": "Cytoplasm", "def": "The jelly-like fluid that fills a cell.", "note": "CYTOPLASM is the jelly that fills every cell. The cell's parts float in it."},
+    {"id": "s-ribo", "name": "Ribosome", "look": "blob", "color": "#ffd166", "word": "Ribosome", "def": "A tiny structure that builds proteins. Every cell has them.", "note": "RIBOSOMES are tiny protein builders. Every cell has them, prokaryote or eukaryote."},
+    {"id": "s-animal", "name": "Animal cell", "look": "cell", "color": "#ffb0d0", "word": "Eukaryote", "def": "A cell that keeps its DNA in a nucleus and has organelles wrapped in membranes.", "note": "Animal and plant cells are EUKARYOTES. Their DNA is kept inside a nucleus, and they have ORGANELLES (cell parts) wrapped in membranes."},
+    {"id": "s-nucleus", "name": "Nucleus", "look": "blob", "color": "#8a5ac8", "word": "Nucleus", "def": "The organelle that holds a eukaryotic cell's DNA.", "note": "The NUCLEUS is the control center. It holds the cell's DNA. Prokaryotes don't have one."},
+    {"id": "s-mito", "name": "Mitochondrion", "look": "rod", "color": "#ff9f6e", "word": "Mitochondria", "def": "Organelles that release energy from food.", "note": "MITOCHONDRIA (one is a mitochondrion) release energy from food. They are wrapped in membranes, so only eukaryotes have them."},
+    {"id": "s-er", "name": "Rough ER", "look": "stack", "color": "#7fd4ff", "word": "Endoplasmic reticulum", "def": "Folded membranes that make and move materials. Rough ER has ribosomes and helps make proteins.", "note": "The ENDOPLASMIC RETICULUM (ER) is a folded maze of membranes. ROUGH ER is dotted with ribosomes and helps make proteins that will leave the cell."},
+    {"id": "s-golgi", "name": "Golgi apparatus", "look": "stack", "color": "#ffd166", "word": "Golgi apparatus", "def": "The organelle that finishes and packages proteins before they leave the cell.", "note": "The GOLGI APPARATUS finishes proteins and packs them into bubbles to ship out, like a post office."},
+    {"id": "s-plant", "name": "Plant cell", "look": "cell", "color": "#7be06a", "word": "Cell wall", "def": "A stiff wall outside the membrane of plant cells (and bacteria), but not animal cells.", "note": "Plant cells have a stiff CELL WALL and green CHLOROPLASTS that make food from sunlight. Animal cells have neither one."},
+    {"id": "s-dna2", "name": "DNA", "look": "helix", "color": "#7fd4ff", "word": "Base pairs", "def": "Matching letters: in DNA, A pairs with T and C pairs with G.", "note": "DNA is written in four letters: A, T, C, and G. They pair up: A with T, and C with G."},
+    {"id": "s-mrna", "name": "mRNA", "look": "rod", "color": "#ffd166", "word": "Transcription", "def": "Copying DNA's code into messenger RNA (mRNA).", "note": "TRANSCRIPTION copies DNA into messenger RNA (mRNA). RNA uses U instead of T, so where DNA has A, mRNA gets U. T gets A, C gets G, and G gets C."},
+    {"id": "s-ribo2", "name": "Ribosome", "look": "blob", "color": "#ffd166", "word": "Translation", "def": "Reading mRNA at a ribosome to build a protein.", "note": "At a RIBOSOME, TRANSLATION reads the mRNA three letters at a time. Each three-letter word is a CODON, like AUG."},
+    {"id": "s-trna", "name": "tRNA", "look": "blob", "color": "#7be0ad", "word": "Anticodon", "def": "Three letters on a tRNA that pair with an mRNA codon.", "note": "Each tRNA carries one amino acid. Its ANTICODON pairs with the codon: A with U, and G with C. Codon AUG matches anticodon UAC."},
+    {"id": "s-protein", "name": "Amino acid chain", "look": "rod", "color": "#c59cff", "word": "Protein", "def": "A chain of amino acids folded into a shape that does a job.", "note": "Amino acids link into a chain that folds up into a PROTEIN. A stop codon tells the ribosome the protein is done."},
+    {"id": "s-diffuse", "name": "Crowded particles", "look": "blob", "color": "#7fd4ff", "word": "Diffusion", "def": "Particles spreading from crowded places to less crowded places, with no energy.", "note": "Particles spread out from where they are CROWDED to where they are LESS crowded. That is DIFFUSION, and it needs no energy."},
+    {"id": "s-gradient", "name": "Crowding hill", "look": "blob", "color": "#9fe0ff", "word": "Concentration gradient", "def": "A difference in how crowded a substance is from one place to another.", "note": "A difference in crowding from one side to the other is a CONCENTRATION GRADIENT. Moving from crowded to less crowded is like sliding downhill."},
+    {"id": "s-channel", "name": "Transport protein", "look": "blob", "color": "#c59cff", "word": "Facilitated diffusion", "def": "Diffusion through a transport protein, with no energy used.", "note": "Some molecules, like glucose, are too big to slip through the membrane. A TRANSPORT PROTEIN lets them through, still downhill and with no energy. That is FACILITATED DIFFUSION."},
+    {"id": "s-water", "name": "Water drop", "look": "blob", "color": "#7fd4ff", "word": "Osmosis", "def": "Water moving across a membrane.", "note": "When WATER moves across a membrane from where there is more water to less water, it is called OSMOSIS."},
+    {"id": "s-exo", "name": "Vesicle leaving", "look": "blob", "color": "#7be0ad", "word": "Exocytosis", "def": "Releasing material when a vesicle joins the plasma membrane.", "note": "A bubble (VESICLE) joins the membrane and spills its cargo outside. EXOcytosis means EXIT the cell."},
+    {"id": "s-endo", "name": "Vesicle forming", "look": "blob", "color": "#7be0ad", "word": "Endocytosis", "def": "Taking material in by wrapping the membrane around it.", "note": "The membrane folds IN around something big and pinches off into a vesicle. ENDOcytosis means INTO the cell. White blood cells eat germs this way."},
+    {"id": "s-pump", "name": "Pump", "look": "blob", "color": "#ff9f6e", "word": "Active transport", "def": "Moving particles from less crowded to more crowded, using energy (ATP).", "note": "A PUMP uses ATP energy to push particles from LESS crowded to MORE crowded, like pushing uphill. That is ACTIVE TRANSPORT."},
+    {"id": "s-atp", "name": "ATP", "look": "blob", "color": "#c8ff7a", "word": "ATP", "def": "The molecule that gives cells energy for jobs like pumping.", "note": "ATP is the cell's energy molecule, like a charged battery. Pumps need it to work."},
+    {"id": "s-tissue", "name": "Heart muscle", "look": "blob", "color": "#ff8fa0", "word": "Tissue", "def": "A group of similar cells working together.", "note": "Many muscle cells working together form muscle TISSUE."},
+    {"id": "s-organ", "name": "Heart", "look": "blob", "color": "#ff6b6b", "word": "Organ", "def": "Different tissues working together to do a job.", "note": "The heart is an ORGAN: muscle, nerve, and other tissues working together to pump blood."},
+    {"id": "s-system", "name": "Blood vessels", "look": "rod", "color": "#ff6b6b", "word": "Organ system", "def": "Organs working together to do a big job for the body.", "note": "The heart and blood vessels make the circulatory ORGAN SYSTEM, which moves blood around the body."},
+    {"id": "s-organism", "name": "Whole person", "look": "blob", "color": "#ffd8b0", "word": "Organism", "def": "One whole living thing.", "note": "All the organ systems together make an ORGANISM, one whole living thing, like a person."},
+    {"id": "s-receptor", "name": "Skin sensor", "look": "blob", "color": "#ffd166", "word": "Receptor", "def": "A part that senses a change.", "note": "RECEPTORS sense changes. Nerve endings in your skin feel when you get too hot or too cold."},
+    {"id": "s-feedback", "name": "Thermostat", "look": "blob", "color": "#7be0ad", "word": "Negative feedback", "def": "A response that undoes a change to bring the body back to normal.", "note": "NEGATIVE FEEDBACK undoes a change. Too hot? Sweat to cool down. Too cold? Shiver to warm up. Then the body is back to normal."},
+    {"id": "s-glucose", "name": "Blood sugar", "look": "blob", "color": "#ffd166", "word": "Blood glucose", "def": "Sugar in the blood that cells use for energy.", "note": "After a snack, sugar (GLUCOSE) in the blood goes up. The pancreas tells cells to take it in. When it drops too low, the liver releases stored glucose."}
+  ],
   "vocab": [
     { "term": "Prokaryote", "def": "A single-celled organism with no nucleus and no membrane-bound organelles." },
     { "term": "Eukaryote", "def": "An organism whose cells have a nucleus and membrane-bound organelles." },
