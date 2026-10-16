@@ -39,7 +39,7 @@ button:disabled { opacity: .45; cursor: default; }
 .card.wide { max-width: 640px; }
 #menu { background: linear-gradient(90deg, transparent 30%, rgba(11, 29, 42, .7)); }
 #menu .card { margin-right: 4%; }
-#levels, #progress, #settings, #pause, #done { background: rgba(11, 29, 42, .82); }
+#levels, #progress, #settings, #pause, #done, #about { background: rgba(11, 29, 42, .82); }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 .btns > * { flex: 1 1 auto; }
 .row { display: flex; gap: 10px; align-items: flex-start; }
@@ -158,9 +158,14 @@ ul.slots { list-style: none; padding-left: 0; }
 #miniPick .ys { font-weight: 700; }
 #miniCard { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 520px; width: calc(100% - 32px); max-height: calc(100% - 32px); overflow-y: auto; }
 #miniCard[hidden] { display: none; }
+#miniPow { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; background: rgba(11, 29, 42, .85); padding: 6px 12px; border-radius: 12px; }
+#miniPow div { width: 220px; height: 14px; border: 2px solid #fff; border-radius: 8px; overflow: hidden; }
+#miniPow i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #7be0ad, #ffd166, #ff6b6b); }
 .pcode { font-family: var(--display); font-size: 1.6em; letter-spacing: .15em; color: var(--signal); }
 .opt.pclose { opacity: .8; }
 .nickbad { color: #ffb09c; font-weight: 700; }
+.ver { font-size: .8em; margin: 0; }
+.about ul { margin: 4px 0; padding-left: 1.2em; } .about li { margin: 3px 0; }
 .gearinfo { margin: 4px 0 0; font-size: .9em; }
 #guide .gh { color: #9fe0ff; margin-top: 8px; }
 #toast { position: absolute; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); background: var(--deep); border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; }
@@ -197,7 +202,7 @@ ul.slots { list-style: none; padding-left: 0; }
   <div id="toast" role="status" aria-live="polite" hidden></div>
   <div id="note" role="status" aria-live="polite" hidden></div>
   <div id="mini" hidden><div id="miniTop" aria-live="off"></div><div id="miniAim" aria-hidden="true"></div><div id="miniMsg" role="status" aria-live="polite" hidden></div>
-    <div id="miniPick" role="group" aria-label="Choose an antibody"></div><div id="miniCard" class="card"></div></div>
+    <div id="miniPick" role="group" aria-label="Choose an antibody"></div><div id="miniPow" hidden><span>Power</span><div><i id="miniPowFill"></i></div></div><div id="miniCard" class="card"></div></div>
   <div id="cap" hidden></div>
   <div id="touch" hidden>
     <div><button type="button" data-k="left" aria-label="Move left">◀</button><button type="button" data-k="right" aria-label="Move right">▶</button><button type="button" data-k="duck" aria-label="Duck">▼</button><button type="button" data-k="run" aria-label="Run (hold)">Run</button></div>
@@ -211,10 +216,36 @@ ul.slots { list-style: none; padding-left: 0; }
       <div id="cust"></div>
       <button type="button" id="btnPlay" class="primary">Start mission</button>
       <div class="btns">
-        <button type="button" id="btnLevels">Map</button><button type="button" id="btnProgress">Progress</button><button type="button" id="btnSettings">Settings</button>
+        <button type="button" id="btnLevels">Map</button><button type="button" id="btnProgress">Progress</button><button type="button" id="btnSettings">Settings</button><button type="button" id="btnAbout">About</button>
       </div>
       <p id="menuStars" class="dim"></p>
+      <p id="menuVer" class="dim ver"></p>
     </div>
+  </section>
+
+  <section id="about" class="screen" hidden>
+    <div class="card wide about"><h2>About Earthling Field Guide</h2>
+      <p><b>Earthling Field Guide: A Keystone Biology Mission</b><br>Created by J.E. Lynch<br><span id="aboutVer" class="dim"></span></p>
+      <p>A free learning game for Pennsylvania high school biology. Players explore as an alien field researcher, discover vocabulary and key ideas, and practice the Keystone Biology eligible content.</p>
+      <h3>Standards</h3>
+      <ul>
+        <li>Pennsylvania Department of Education. <i>Keystone Exams: Biology. Assessment Anchors and Eligible Content.</i> Harrisburg, PA.</li>
+        <li>Pennsylvania Department of Education. <i>Pennsylvania Integrated Standards for Science, Environment, Ecology, Technology and Engineering (STEELS), Grades 9–12.</i> Harrisburg, PA.</li>
+      </ul>
+      <h3>About the content</h3>
+      <ul>
+        <li>All questions, notes, and activities were written for this game. They are aligned to the standards above but are not official Keystone Exam items.</li>
+        <li>The data sets in "Read the Data" (for example, potato cores in sugar solutions and enzyme activity) are illustrative, modeled on classic classroom labs. They are not real measurements.</li>
+      </ul>
+      <h3>Credits</h3>
+      <ul>
+        <li>Game design and curriculum: J.E. Lynch.</li>
+        <li>Programming help: Claude, an AI model made by Anthropic.</li>
+        <li>3-D graphics: three.js (r128), MIT License.</li>
+        <li>Fonts: Chakra Petch (Cadson Demak) and Atkinson Hyperlegible (Braille Institute), SIL Open Font License, from Google Fonts.</li>
+        <li>All pictures, models, music, and sounds are drawn or generated by the game's own code.</li>
+      </ul>
+      <button type="button" data-back>Back</button></div>
   </section>
 
   <section id="levels" class="screen" hidden>

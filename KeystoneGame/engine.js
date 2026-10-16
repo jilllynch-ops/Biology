@@ -60,20 +60,38 @@ try {
 } catch (e) { /* play without saving */ }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
 
-/* NAME CHECK: blocks rude or hurtful nicknames. The word lists are stored scrambled (ROT13) so students
-   reading the code do not see them. Letters are also checked with common look-alike swaps (0 for o, $ for s). */
-const NOPE_SUB = ["shpx", "fuvg", "phag", "ovgpu", "fyhg", "juber", "chffl", "cravf", "intvan", "cbea", "qvyqb", "avtt", "arteb", "ergneq", "nffubyr", "qhzonff", "wnpxnff", "onfgneq", "obyybpx", "wvmm", "ubeal", "uvgyre", "anmv", "gjng", "jnax", "cvff", "snt", "xvxr", "jrgonpx", "genaal", "frkl", "ahqr", "anxrq", "obare", "gvggvrf", "zbgures", "ohyyfuvg", "qhzos"].map(rot13), NOPE_WHOLE = ["nff", "nefr", "qvpx", "pbpx", "phz", "gvg", "gvgf", "frk", "nany", "encr", "ubr", "ubrf", "qnza", "penc", "ohgg", "cbbc", "sneg", "obbo", "obbof", "fcvp", "puvax", "tbbx", "pbba", "cnxv", "qlxr", "ubzb", "xxx", "crr", "gheq", "fhpx", "fhpxf", "ybfre", "fghcvq", "vqvbg", "qhzo", "htyl", "sng", "xvyy", "qvr"].map(rot13);
+/* NAME CHECK: blocks rude, hurtful, or impersonating nicknames in English and Spanish.
+   The word lists are stored scrambled (ROT13) so students reading the code do not see them.
+   Checks ignore capitals and accents, undo look-alike swaps (0 for o, 4 for a, $ for s, 1 for i or l, v for u),
+   ignore spaces and symbols between letters, and squeeze stretched letters (fuuuck). Short words like
+   "ass" or "die" are only blocked as whole words, so names like Cassie or Diego are fine.
+   Teachers can allow a name anyway by opening the game with #teacher at the end of the web address. */
+const NOPE_SUB = ["nffubyr", "onfgneq", "ovgpu", "oybjwbo", "obzogurfpubby", "obbof", "ohyyfuvg", "pnoeba", "puvatn", "puhcncbyy", "puhcniret", "pyvgbevf", "pbpnvar", "pbpxurnq", "pbwba", "pbapunghznqer", "pbapurfhznqer", "pbapurghzner", "phyreb", "phyvnb", "phzfubg", "phag", "qrrmahg", "qrrmahgm", "qvpxurnq", "qvyqb", "qhzonff", "raphrenq", "sntt", "sragnaly", "sbyyne", "shpx", "shx", "tvyvcbyy", "tbabeern", "unaqwbo", "urvyuvgyre", "uragnv", "urebva", "uvwnqrchgn", "uvwbqrchgn", "uvwhrchg", "uvgyre", "wvmm", "xvyyhefrys", "xvyylbhefrys", "yvtzn", "znycnevq", "znznovpub", "znznthri", "znznuhri", "znevpba", "znevwhnan", "znfgheo", "zvreqn", "zbyrfg", "zbgures", "avtt", "abobqlyvxrflbh", "ahgfnpx", "betnfz", "bklpbqbar", "crqbcuvy", "craqrw", "cravf", "crepbprg", "cuhpx", "cbepuzbaxrl", "cbea", "cbeabtens", "chffl", "chgnznqer", "enturnq", "ergneq", "evzwbo", "fnaqavttre", "fpuybat", "fpubbyfubbg", "fpebghz", "furznyr", "fuvg", "fubbghcfpubby", "fyhg", "fhtzn", "fhtbaqrrm", "fhtbaqrf", "fhvpvqr", "grfgvpyr", "gvggvrf", "gbjryurnq", "hanyvir", "intvan", "iretn", "jnaxre", "jrgonpx", "juvgrcbjre", "juber"].map(rot13),
+  NOPE_WHOLE = ["420", "nqqrenyy", "nqzva", "nqzvavfgengbe", "nuhrbanb", "nypbuby", "nany", "nahf", "nefr", "nefrubyr", "nfubyr", "nff", "nffubyr", "nffcynl", "nffjvcr", "njrban", "njrbanb", "nmm", "nmmubyr", "onobfn", "onobfb", "onyyf", "onyym", "onyymm", "onfgneq", "onjym", "ornare", "orre", "oreenpn", "oreenpb", "orjof", "orjom", "ovngpu", "ovgpu", "ow", "oybjwbo", "obon", "obob", "obynf", "obyvgnf", "obyybpx", "obyhqn", "obyhqb", "obzogurfpubby", "obare", "obat", "obbo", "obbovrf", "obbof", "obbom", "obbglubyr", "ohyyfuvg", "ohgg", "ohggubyr", "olgpu", "pnoeba", "pnoeban", "pnoebanmb", "pnoebaprgr", "pnoebaqrzvreqn", "pnpubaqn", "pnpubaqb", "pntnqn", "pntnqnqrzvreqn", "pntnqb", "pntne", "pntba", "pntban", "pnyragba", "pnyragban", "pnyvragr", "pnyyngr", "pnyyngrynobpn", "pnaanovf", "pnchyyn", "pnchyyb", "pnerphyb", "pnerzbaqn", "pnercvpun", "pnergnoyn", "pneriretn", "pnjx", "purng", "purngre", "puvatnqn", "puvatnqnznqer", "puvatnqnghznqer", "puvatnqren", "puvatnqb", "puvatne", "puvatnghznqer", "puvatba", "puvatban", "puvathra", "puvax", "pubpun", "puhpun", "puhpuvgn", "puhcncbyynf", "puhcniretn", "puhcniretnf", "pyvg", "pyvgbevf", "pbpnvar", "pbpx", "pbpxnaqonyyf", "pbpxurnq", "pbpxaonyyf", "pbtrzbf", "pbtre", "pbtvqn", "pbtvqb", "pbwrzr", "pbwvb", "pbwba", "pbwbarf", "pbwbahqb", "pbxr", "pbzrzvreqn", "pbanmb", "pbapun", "pbapunqrghznqer", "pbapunghznqer", "pbapurfhznqer", "pbapurfhzner", "pbapurghznqer", "pbapurghzner", "pbapurgiznqer", "pbapuhqn", "pbapuhqb", "pbargn", "pbavgb", "pbab", "pbabqrghznqer", "pbabrznqer", "pbabghznqer", "pbbpu", "pbbpuvr", "pbbpul", "pbba", "pbeerefr", "pbeevqn", "penpx", "penc", "penccl", "pevccyr", "pgz", "pgzer", "phynmb", "phyren", "phyreb", "phyvn", "phyvnqn", "phyvnqb", "phyvnb", "phyvgb", "phyb", "phyba", "phyban", "phybevpb", "phz", "phzz", "phzzvat", "phzzl", "phzf", "phzfubg", "phag", "qnza", "qrrmahgf", "qrrmahggf", "qrrmahggm", "qrrmahgm", "qrfahqn", "qrfahqvgn", "qrfahqvgb", "qrfahqb", "qrirybcre", "qrmaigm", "qvpx", "qvpxurnq", "qvpxurq", "qvpxyrg", "qvr", "qvrovgpu", "qvx", "qvxx", "qvyqb", "qbat", "qbatre", "qehax", "qhzo", "qhzonff", "qhzonmm", "qhzos", "qlxr", "rpfgnfl", "raphrenqn", "raphrenqvgn", "raphrenqvgb", "raphrenqb", "raphrene", "rfghcvqn", "rfghcvqb", "rfgicvqn", "rfgicvqb", "snpx", "snt", "snttbg", "snttl", "snc", "snccvat", "sneg", "sng", "sngnff", "snjx", "spx", "spxvat", "sragnaly", "sbyynqn", "sbyynqb", "sbyynqbe", "sbyynqben", "sbyyne", "sbyyba", "sbeen", "sbeeb", "shpp", "shpx", "shpxre", "shpxvat", "shpxe", "shx", "shxre", "shd", "tnlnff", "tvy", "tvyvcbyyn", "tvyvcbyynf", "tbqqnza", "tbabeern", "tbabeernuvwhrchgn", "tbabeernuc", "tbabeervgn", "tbbx", "tebbzre", "unprefrhancnwn", "unprehancnwn", "unpx", "unpxrqlbhetnzr", "unpxre", "unaqwbo", "ungrlbh", "uqc", "uqcg", "urvy", "urvyuvgyre", "uryy", "uragnv", "urebva", "uvwnqrcreen", "uvwnqrchgn", "uvwbqrynpuvatnqn", "uvwbqrcreen", "uvwbqrchgn", "uvwhrchgn", "uvwhrchgnuc", "uvwhrcign", "uvwhrcigb", "uvwircign", "uvwircigb", "uvgyre", "uwbo", "ub", "ubr", "ubrf", "ubzb", "ubzbcubovp", "ubbun", "ubbxre", "uber", "ubeal", "ubfgvn", "ubfgvnf", "uc", "ucg", "ucgn", "uhrba", "uhrchgn", "uhrivgb", "uhriba", "uhriban", "uhribaqrzvreqn", "uhribauc", "uhribf", "uhrihqb", "vqvbg", "vqvbgn", "vqvbgnqrzvreqn", "vzorpvy", "vzorpvyqrzvreqn", "wnpxnff", "wnpxbss", "wnynefr", "wninfpevcg", "wrexbss", "wvmm", "wbqrqren", "wbqre", "wbqrgr", "wbqvqn", "wbqvqb", "wbqvraqn", "wbqba", "wbqban", "wcg", "wcgn", "whrchgn", "whhy", "xoea", "xoeba", "xoeban", "xoebanmb", "xvxr", "xvyy", "xvyynyy", "xvyyzr", "xvyyhefrys", "xvyylbfrys", "xvyylbhefrys", "xxx", "xzf", "xag", "xbpx", "xbapun", "xbab", "xhag", "xlxr", "xlf", "ynovn", "ynpbapunqrghznqer", "ynchgnznqer", "ynchgndhrgrcnevb", "yrna", "yrsn", "yvtzn", "ybfre", "yfq", "zntvpzhfuebbzf", "znycnevqn", "znycnevqb", "znycnevqbuc", "znznovpub", "znznqn", "znznqnf", "znznthron", "znznthrin", "znznthrinmb", "znznthrib", "znznthribqrzvreqn", "znznuhrib", "znznuhribf", "znzncvatn", "znzne", "znzregn", "znzregb", "znzrf", "znzba", "znzban", "znahryn", "zneqvgb", "znevpn", "znevpnuc", "znevpba", "znevpban", "znevpbanmb", "znevpbaqrzvreqn", "znevpbauc", "znevpbafba", "znevphfb", "znevwhnan", "znevx", "znevxn", "znevxba", "znevdhvgn", "znfgheonpvba", "znfgheone", "znfgheongr", "znfgheongvba", "znfgheoo", "zqzn", "zrpntbra", "zrpntbragbqb", "zrpntbraghznqer", "zrgu", "zrinyriretn", "zs", "zvreqn", "zvreqreb", "zvreqbfn", "zvreqbfb", "zvys", "zbq", "zbqrengbe", "zbsb", "zbyrfg", "zbyrfgre", "zbyyl", "zbaqn", "zbeba", "zbgures", "zbgureshpxre", "anxrq", "anytn", "anytnf", "anytnfcnenqnf", "anytba", "anytban", "anmv", "avpbgvar", "avtre", "avttn", "avttnu", "avttre", "avccyr", "avccyrf", "avcf", "azzf", "abobqlyvxrflbh", "abwbqn", "abwbqnf", "abznzrf", "afsj", "ahqr", "ahyy", "ahg", "ahgfnpx", "ahgg", "ahggvat", "ahgmnpx", "betnfz", "betl", "bkl", "bklpbqbar", "cnrqb", "cnwn", "cnwnmb", "cnwrne", "cnwren", "cnwrenqrzvreqn", "cnwreb", "cnwrebqrzvreqn", "cnwvyyn", "cnwhn", "cnwhb", "cnxv", "cnffjq", "cnffjbeq", "crqb", "crqbsvyb", "crqbcuvyr", "crr", "crra", "crrahf", "cryznmb", "crybgn", "crybgnf", "crybghqn", "crybghqb", "crybghqbqrzvreqn", "craqrwn", "craqrwnqn", "craqrwnqnf", "craqrwvgn", "craqrwvgb", "craqrwb", "craqrwbqrzvreqn", "crar", "cravf", "crep", "crepbprg", "creen", "creenrapryb", "creenchgn", "creebqrzvreqn", "cuhpx", "cvpun", "cvpuba", "cvpuhyn", "cvpuhyba", "cvapur", "cvatn", "cvatnqrzvreqn", "cvatnybpn", "cvatnmb", "cvath", "cvathreb", "cvebon", "cvebob", "cvebobuc", "cvff", "cvffrq", "cvgb", "caqwn", "caqwb", "cbyyn", "cbyyba", "cbbc", "cbepuzbaxrl", "cbea", "cbeauho", "cbeab", "cbeabtensvn", "cevpx", "cevapvcny", "cevatn", "cevatnqn", "cevatnqb", "cevatnb", "ceba", "checyrqenax", "chff", "chffv", "chffvr", "chffl", "chfl", "chgn", "chgnqrzvreqn", "chgnu", "chgnznqer", "chgnm", "chgnmb", "chgrne", "chgrevn", "chgreb", "chgvyyn", "chgvgn", "chgvgnevpn", "chgvgb", "chgb", "chgbqrzvreqn", "chgban", "chgbevpb", "chmml", "cign", "cigb", "dy", "dyb", "enpvfg", "enturnq", "encr", "encrure", "encruvz", "encvat", "encvfg", "erpbapurghzner", "erdy", "ergneq", "ergneqrq", "ergenfnqn", "ergenfnqb", "evzwbo", "ebbg", "fnpbqrjrn", "fnpbjrn", "fnaqavttre", "fncbuc", "fpuybat", "fpubbyfubbgre", "fpebghz", "frpxf", "frzra", "frk", "frkb", "frkbfn", "frkbfb", "frkgvat", "frkhny", "frkkk", "frkl", "furznyr", "fuvvg", "fuvg", "fubbghcfpubby", "fuebbzf", "fulg", "fvatnqn", "fvatnqren", "fvatnb", "fvatne", "fvatba", "fxnax", "fyhg", "fyig", "fcnm", "fcrez", "fcvp", "fgbare", "fghcvq", "fhoabezny", "fhpx", "fhpxf", "fhtzn", "fhtbaqrrm", "fhtbaqrfr", "fhvpvqr", "fhcrehfre", "flfgrz", "gnenqn", "gnenqb", "gneq", "gnehtn", "gnehtb", "grnpure", "grdhvyn", "greebevfg", "grfgvpyrf", "grgnf", "grgnftenaqrf", "grgba", "grgban", "grgbgnf", "gubg", "gvg", "gvgf", "gvggvrf", "gvggl", "gbjryurnq", "gentnfnoyrf", "genaal", "ghznqer", "ghchgnznqer", "gheq", "ghivrwn", "gjng", "htyl", "hanyvirlbhefrys", "haqrsvarq", "hezbz", "hezbztnl", "int", "intvan", "inwnlwnl", "inyrfznqer", "inyrfiretn", "inyriretn", "incr", "incvat", "iretn", "iretnf", "iretnmb", "iretba", "iretban", "irethreb", "irgrnpntne", "irgrnpuvatne", "irgrnynpuvatnqn", "irgrnynzvreqn", "irgrnyniretn", "irgrnypnenwb", "ibqxn", "ihyin", "jnax", "jnaxre", "jrn", "jrrq", "jrravr", "jrravf", "jrba", "jrban", "jrbanmb", "jrbady", "jrgonpx", "juvfxrl", "juvgrcbjre", "juvgrcevqr", "juber", "ja", "knank", "kkk", "lbznzn", "lbhezbz", "lbhezbzvftnl", "mrkl", "mbcrapb", "mbeen", "mbeenchgn"].map(rot13),
+  NOPE_REVIEW = ["nhgvfg", "pundhrgn", "penpxre", "uhribfqrbeb", "arteb", "cnwneenpb"].map(rot13);
 function rot13(w) { return w.replace(/[a-z]/g, function (c) { return String.fromCharCode((c.charCodeAt(0) - 97 + 13) % 26 + 97); }); }
-function nickOK(n) {
-  if (!n || !/[a-z]/i.test(n)) return true;
-  const leet = n.toLowerCase().replace(/0/g, 'o').replace(/[1!|]/g, 'i').replace(/3/g, 'e').replace(/[4@]/g, 'a').replace(/[5$]/g, 's').replace(/7/g, 't').replace(/8/g, 'b').replace(/9/g, 'g');
+const NOPE_SET = new Set(NOPE_WHOLE), NOPE_LONG = NOPE_WHOLE.filter(function (w) { return w.length >= 7; }), NOPE_RSET = new Set(NOPE_REVIEW);
+function nickCheck(n) {
+  if (!n) return 'ok';
   const two = function (x) { return x.replace(/(.)\1{2,}/g, '$1$1'); }, one = function (x) { return x.replace(/(.)\1+/g, '$1'); };
-  const flat = two(leet.replace(/[^a-z]/g, '')), flat1 = one(flat), words = leet.split(/[^a-z]+/).map(two).filter(Boolean);
-  if (NOPE_SUB.some(function (w) { return flat.indexOf(w) >= 0 || (one(w).length >= 4 && flat1.indexOf(one(w)) >= 0); })) return false;
-  const raw = leet.split(/[^a-z]+/).filter(Boolean), rawFlat = leet.replace(/[^a-z]/g, '');
-  if (NOPE_WHOLE.some(function (w) { return flat === w || rawFlat === w || words.indexOf(w) >= 0 || raw.indexOf(w) >= 0; })) return false;
-  return true;
+  const base = n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const leet = function (x, o) { return x.replace(/0/g, 'o').replace(/1/g, o).replace(/3/g, 'e').replace(/[4@]/g, 'a').replace(/[5$]/g, 's').replace(/7/g, 't').replace(/8/g, 'b').replace(/9/g, 'g').replace(/[!|]/g, 'i'); };
+  const forms = [base, base.replace(/[0-9]/g, ' '), base.replace(/[a-z]/g, ' '), leet(base, 'i'), leet(base, 'l'), leet(base, 'i').replace(/v/g, 'u')];
+  let verdict = 'ok';
+  forms.forEach(function (f) {
+    if (verdict === 'bad') return;
+    const toks = f.split(/[^a-z0-9]+/).filter(Boolean), flat = toks.join(''), cands = [flat, two(flat)];
+    toks.forEach(function (t, k) { cands.push(t, two(t)); if (toks[k + 1]) cands.push(t + toks[k + 1]); if (toks[k + 2]) cands.push(t + toks[k + 1] + toks[k + 2]); });
+    if (NOPE_SUB.some(function (r) { return flat.indexOf(r) >= 0 || two(flat).indexOf(r) >= 0 || (one(r).length >= 4 && one(flat).indexOf(one(r)) >= 0); }) ||
+        cands.some(function (c) { return NOPE_SET.has(c) || (c.length >= 5 && NOPE_SET.has(one(c))); }) ||
+        NOPE_LONG.some(function (w) { return flat.indexOf(w) >= 0; })) { verdict = 'bad'; return; }
+    if (cands.some(function (c) { return NOPE_RSET.has(c); })) verdict = 'review';
+  });
+  return verdict;
 }
+function nickOK(n) { return nickCheck(n) === 'ok' || (S.okNames && S.okNames.indexOf(n) >= 0); }
+function safeName() { const a = ['Cell', 'Leaf', 'Spore', 'Atom', 'Comet', 'Nova', 'Gene', 'Moss', 'Coral', 'Orbit', 'Fern', 'Comet'], b = ['Explorer', 'Scout', 'Ranger', 'Finder', 'Seeker', 'Pilot'];
+  return a[Math.floor(Math.random() * a.length)] + b[Math.floor(Math.random() * b.length)] + (10 + Math.floor(Math.random() * 90)); }
 /* Leaderboard: kept separate so it can later talk to an online score service.
    To go online, replace submit() and top() with calls to that service.
    It stores a nickname and a score only. Never add names, emails, or other personal details. */
@@ -129,6 +147,11 @@ const SONGS = {
   nucleus: { name: 'busy factory theme', bpm: 104, root: 58, scale: 'minor', prog: [0, 5, 2, 6], seed: 5, drums: 1, lead: 'square' },
   membrane: { name: 'flowing membrane theme', bpm: 92, root: 60, scale: 'mixo', prog: [0, 6, 3, 0], seed: 9, drums: 1, lead: 'triangle' },
   body: { name: 'heartbeat theme', bpm: 112, root: 57, scale: 'minor', prog: [0, 5, 3, 4], seed: 13, drums: 2, lead: 'triangle' },
+  shore: { name: 'ocean breeze theme', bpm: 92, root: 62, scale: 'major', prog: [0, 4, 5, 3], seed: 19, drums: 1, lead: 'triangle' },
+  lab: { name: 'molecule builder theme', bpm: 104, root: 60, scale: 'mixo', prog: [0, 3, 6, 4], seed: 23, drums: 1, lead: 'square' },
+  gut: { name: 'enzyme groove theme', bpm: 100, root: 57, scale: 'dorian', prog: [0, 3, 0, 4], seed: 29, drums: 2, lead: 'triangle' },
+  leaf: { name: 'sunlit leaf theme', bpm: 96, root: 64, scale: 'major', prog: [0, 5, 3, 4], seed: 31, drums: 1, lead: 'triangle' },
+  meadow: { name: 'wild meadow theme', bpm: 112, root: 60, scale: 'major', prog: [0, 4, 3, 4], seed: 37, drums: 1, lead: 'square' },
   boss: { name: 'boss battle theme', bpm: 138, root: 55, scale: 'minor', prog: [0, 0, 5, 4], seed: 17, drums: 3, lead: 'square' }
 };
 const Music = { want: null, cur: null, song: null, mel: null, step: 0, next: 0, timer: 0, gain: null, duck: 1, gesture: false, noise: null };
@@ -188,6 +211,8 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
+/* Change this line each time a new version is uploaded. */
+const VERSION = 'Version 17 · October 15, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -206,6 +231,16 @@ const THEMES = {
     mote: '#ffb8f0', shafts: '#c89bff', pal: ['#ff9f6e', '#7fd4ff', '#f4e285', '#c59cff'], shapes: ['ring', 'blob', 'pillar'], density: 0.5, glow: true, fogD: 0.013, hemi: ['#d7b8ff', '#120826'], key: '#ffd6f5' },
   membrane: { skyTop: '#06222a', horizon: '#d88c3e', skyBottom: '#4a2a1a', sun: ['#ffc070', 45, 10, 240], ridge: '#3a2a26', ground: '#55301a', top: '#a8763c', rim: '#fff0b8',
     mote: '#ffd98a', shafts: '#ffcf80', pal: ['#f2c078', '#5fd0c5', '#e8875a'], shapes: ['pillar', 'blob', 'pillar'], density: 0.45, glow: true, fogD: 0.011, hemi: ['#ffd9a0', '#1a1410'], key: '#ffd08a' },
+  shore: { skyTop: '#0b2a4a', horizon: '#9fd8ec', skyBottom: '#2a6f97', sun: ['#fff2c0', 30, 12, 220], ridge: '#1b4965', ground: '#3a3426', top: '#c9b27c', rim: '#fff2c0',
+    mote: '#d0f4ff', shafts: '#bfefff', pal: ['#1b4965', '#3f7fa8', '#62b6cb'], shapes: ['hill', 'blob'], density: 0.6, fogD: 0.010, hemi: ['#cfefff', '#1a2a3a'], key: '#fff2d0' },
+  lab: { skyTop: '#140a24', horizon: '#c27c3a', skyBottom: '#2a1640', sun: ['#ffc970', -30, 14, 210], ridge: '#2a1a40', ground: '#2a2038', top: '#7a5ab0', rim: '#ffe0a0',
+    mote: '#ffd98a', shafts: '#ffc970', pal: ['#ffd166', '#7be0ad', '#ff9f6e', '#c59cff'], shapes: ['ring', 'bean', 'blob'], density: 0.5, glow: true, fogD: 0.013, hemi: ['#ffd9b0', '#140a20'], key: '#ffe0b0' },
+  gut: { skyTop: '#1a0610', horizon: '#e0703a', skyBottom: '#401018', sun: ['#ffb070', 10, 14, 220], ridge: '#4a1a1a', ground: '#4a2020', top: '#c0604a', rim: '#ffd0a0',
+    mote: '#ffc090', shafts: '#ffb080', pal: ['#ff9f6e', '#ffd166', '#e85d5d'], shapes: ['blob', 'disc', 'bean'], density: 0.5, glow: true, fogD: 0.013, hemi: ['#ffc0a0', '#200808'], key: '#ffd0b0' },
+  leaf: { skyTop: '#04140a', horizon: '#5fbf5a', skyBottom: '#0a2a12', sun: ['#d8ff8a', -20, 16, 230], ridge: '#0e3a1a', ground: '#123a1c', top: '#3f8a3a', rim: '#d8ffb0',
+    mote: '#d8ff8a', shafts: '#c8ff9a', pal: ['#2f7a3a', '#7be06a', '#c8ff7a'], shapes: ['disc', 'bean', 'pillar'], density: 0.5, glow: true, fogD: 0.012, hemi: ['#d8ffb0', '#06140a'], key: '#e8ffd0' },
+  meadow: { skyTop: '#2a6fd4', horizon: '#cfeeff', skyBottom: '#8fc9f0', sun: ['#fff6d0', 40, 18, 240], ridge: '#5a8a4a', ground: '#3a4a22', top: '#7aa84a', rim: '#fff6c0',
+    mote: '#ffffff', shafts: '#fff6d0', pal: ['#4a7a3a', '#6a9a4a', '#8aba5a'], shapes: ['tree', 'hill'], density: 0.8, fogD: 0.008, hemi: ['#e8f6ff', '#3a4a2a'], key: '#fff6e0' },
   body: { skyTop: '#120206', horizon: '#a82a3c', skyBottom: '#3a0a12', sun: ['#ff6b7a', 0, 16, 230], pulse: true, ridge: '#3a0a16', ground: '#45101e', top: '#9a3c52', rim: '#ffc0c8',
     mote: '#ff9aa8', shafts: '#ff8090', pal: ['#e85d5d', '#ffb3a7', '#c9364a'], shapes: ['disc', 'disc', 'blob'], density: 0.5, glow: true, fogD: 0.013, hemi: ['#ff9aa8', '#1a0408'], key: '#ffb0b8' }
 };
@@ -490,6 +525,14 @@ function specimen(look, col) {
   else if (look === 'rod') { g.userData.wiggle = true; sph(col, 0.7, 0.3, 0.3, 0, 0.8); const f = new T.Mesh(G.cyl, M(col)); f.scale.set(0.03, 0.5, 0.03); f.rotation.z = Math.PI / 2; f.position.set(-0.9, 0.8, 0); g.add(f); sph('#ffd166', 0.25, 0.08, 0.08, 0.1, 0.8, 0.22); }
   else if (look === 'cell') { const m = new T.Mesh(G.sph, basic(col, 0.35, true)); m.scale.setScalar(0.85); m.position.y = 0.9; g.add(m); sph('#8a5ac8', 0.3, 0.3, 0.3, 0.1, 0.9, 0.2); sph('#ff9f6e', 0.15, 0.08, 0.08, -0.4, 0.7, 0.3); }
   else if (look === 'helix') { g.userData.spin = true; for (let i = 0; i < 10; i++) { const a = i * 0.7; sph(i % 2 ? '#7fd4ff' : '#ffb09c', 0.1, 0.1, 0.1, Math.cos(a) * 0.3, 0.2 + i * 0.16, Math.sin(a) * 0.3); sph(i % 2 ? '#ffd166' : '#7be0ad', 0.1, 0.1, 0.1, -Math.cos(a) * 0.3, 0.2 + i * 0.16, -Math.sin(a) * 0.3); } }
+  else if (look === 'drop') { const d = new T.Mesh(G.sph, basic('#7fd4ff', 0.6, true)); d.scale.set(0.5, 0.6, 0.5); d.position.y = 0.7; g.add(d); const tp = new T.Mesh(G.cone, basic('#7fd4ff', 0.6, true)); tp.scale.set(0.32, 0.3, 0.32); tp.position.y = 1.4; g.add(tp); }
+  else if (look === 'ice') { const w = new T.Mesh(G.cyl, basic('#2a7fb8', 0.6)); w.scale.set(1.1, 0.3, 1.1); w.position.y = 0.15; g.add(w); const ic = new T.Mesh(G.box, emat('#e8f8ff', '#3a6a8a')); ic.scale.set(0.8, 0.5, 0.8); ic.position.y = 0.45; g.add(ic); g.userData.bob = true; }
+  else if (look === 'chain') { const cs = ['#ffd166', '#7be0ad', '#ff9f6e', '#7fd4ff', '#c59cff', '#ff8fb1']; for (let i = 0; i < 6; i++) sph(cs[i], 0.2, 0.2, 0.2, -0.75 + i * 0.3, 0.6 + Math.sin(i * 1.1) * 0.25, 0); g.userData.spin = true; }
+  else if (look === 'atom') { g.userData.spin = true; sph('#30343a', 0.32, 0.32, 0.32, 0, 0.9, 0); [[0, 1, 0], [0.94, -0.33, 0], [-0.47, -0.33, 0.82], [-0.47, -0.33, -0.82]].forEach(function (d) { const v = new T.Vector3(d[0], d[1], d[2]).normalize(), st = new T.Mesh(G.cyl, M('#cccccc')); st.scale.set(0.04, 0.5, 0.04); st.position.set(v.x * 0.35, 0.9 + v.y * 0.35, v.z * 0.35); st.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), v); g.add(st); sph('#ffffff', 0.15, 0.15, 0.15, v.x * 0.7, 0.9 + v.y * 0.7, v.z * 0.7); }); }
+  else if (look === 'mushroom') { const st = new T.Mesh(G.cyl, M('#f0e0c8')); st.scale.set(0.15, 0.6, 0.15); st.position.y = 0.3; g.add(st); sph('#c0503a', 0.5, 0.28, 0.5, 0, 0.65); }
+  else if (look === 'grass') { for (let i = 0; i < 7; i++) { const b = new T.Mesh(G.cone, M('#6ac04a')); b.scale.set(0.07, 0.45 + (i % 3) * 0.12, 0.07); b.position.set(-0.45 + i * 0.15, 0.45, (i % 2) * 0.15); b.rotation.z = (i - 3) * 0.08; g.add(b); } g.userData.grow = true; }
+  else if (look === 'critter') { g.userData.hop = true; sph(col, 0.5, 0.42, 0.42, 0, 0.5); [-0.18, 0.18].forEach(function (ex) { const ear = new T.Mesh(G.cone, M(col)); ear.scale.set(0.09, 0.22, 0.09); ear.position.set(ex, 1.0, 0); g.add(ear); sph('#10202c', 0.06, 0.06, 0.06, ex * 0.8, 0.62, 0.38); }); }
+  else if (look === 'sun') { const s0 = new T.Mesh(G.sph, emat('#ffd166', '#c08a10')); s0.scale.setScalar(0.5); s0.position.y = 1; g.add(s0); g.add(glow('#ffd166', 4, 0.6)); g.children[g.children.length - 1].position.y = 1; g.userData.spin = true; }
   else if (look === 'stack') { for (let i = 0; i < 4; i++) sph(col, 0.7 - i * 0.08, 0.08, 0.35, 0, 0.4 + i * 0.22); }
   else sph(col, 0.6, 0.55, 0.5, 0, 0.6);
   g.add(glow(col, 2.6, 0.25)); return g;
@@ -1710,6 +1753,7 @@ function step(dt) {
     if (u.grow) { const sc = 0.75 + 0.25 * Math.sin(k.t * 0.8); g.scale.set(1, sc, 1); }
     if (u.wiggle) g.rotation.z = Math.sin(k.t * 5) * 0.12;
     if (u.spin) g.rotation.y += dt;
+    if (u.bob) g.position.y = by + Math.sin(k.t * 2) * 0.08;
     const nr = nearScan() === k; k.nm.scale.set(nr ? 3.6 : 3, nr ? 1.8 : 1.5, 1);
     if (nr && !k.done && !k.told && !L.active) { k.told = true; toast('Press E to scan the ' + k.sc.name + '.', 3); }
   });
@@ -1779,6 +1823,7 @@ function finish() {
 const ANTIGENS = [{ name: 'Triangle', geo: 'cone', col: '#ff6b6b', sym: '▲' }, { name: 'Cube', geo: 'box', col: '#7fd4ff', sym: '■' }, { name: 'Ring', geo: 'tor', col: '#ffd166', sym: '●' }, { name: 'Diamond', geo: 'oct', col: '#7be0ad', sym: '◆' }];
 let M = null;
 function enterMini(p) {
+  if (p.game === 'golf') return enterGolf(p);
   closeQ(); mode = 'mini'; Object.keys(keys).forEach(function (k) { keys[k] = false; });
   M = { p: p, grp: new T.Group(), germs: [], shots: [], fx: [], t: 0, hearts: 3, score: 0, tagged: 0, wrong: 0, sel: 0, cx: 0, cy: -0.05, spawn: 1.2, dur: 50, cool: 0, k: {}, intro: true, over: false, boost: false,
     bg: scene.background, fog: scene.fog };
@@ -1862,19 +1907,139 @@ function miniEnd() {
 }
 function exitMini() {
   scene.remove(M.grp); disposeGroup(M.grp); scene.background = M.bg; scene.fog = M.fog; scene.add(L.group);
-  L.score += M.score; S.words['Antibody'] = 1; S.words['Antigen'] = 1; save();
+  L.score += M.score; (M.kind === 'golf' ? ['Enzyme', 'Active site', 'Substrate', 'Denature'] : ['Antibody', 'Antigen']).forEach(function (w) { S.words[w] = 1; }); save(); $('miniAim').hidden = false; $('miniPow').hidden = true;
   $('mini').hidden = true; $('hud').hidden = false; $('touch').hidden = !touchMode; mode = 'play'; P.x = M.p.x + 2.2; P.y = M.p.y; P.vx = P.vy = 0; P.inv = 1.5;
   cam.position.set(P.x + 2.5, P.y + 5.2, camZ); toast('Back from the portal with +' + M.score + ' points!', 4); hud(); M = null; Object.keys(keys).forEach(function (k) { keys[k] = false; });
 }
 function miniKey(e, down) {
-  if (!M) return; const k = e.key;
+  if (!M) return; if (M.kind === 'golf') return golfKey(e, down); const k = e.key;
   if (down && M.intro && (k === 'Enter' || k === ' ')) { e.preventDefault(); miniStart(); return; }
   if (down && M.over && (k === 'Enter' || k === ' ' || k === 'e' || k === 'E')) { e.preventDefault(); exitMini(); return; }
   if (/^[1-4]$/.test(k) && down) { miniSel(+k - 1); return; }
   const map = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down', ' ': 'fire', Enter: 'fire' };
   if (map[k]) { M.k[map[k]] = down; e.preventDefault(); }
 }
-function miniStart() { M.intro = false; miniPanel(''); beep(600, 0.2, 'triangle', 'go'); miniHud(); }
+function miniStart() { M.intro = false; miniPanel(''); beep(600, 0.2, 'triangle', 'go'); if (M.kind === 'golf') golfHole(0); else miniHud(); }
+/* ---------- PORTAL MINI-GAME: ENZYME MINI GOLF ----------
+   Putt the substrate (the ball) into the enzyme whose ACTIVE SITE has the same shape. Wrong shapes, and
+   enzymes whose shape was changed by heat or the wrong pH (denatured), will not hold the substrate. */
+const GOLFSHAPE = { square: { seg: 4, sym: '■' }, triangle: { seg: 3, sym: '▲' }, circle: { seg: 24, sym: '●' } };
+const HOLES = [
+  { sub: { name: 'Starch', shape: 'square', col: '#ffd166' }, env: 'Hole 1 · In the mouth · 37 °C · pH 7', start: [-10, 0],
+    cups: [{ x: 9, z: -4, name: 'Amylase', shape: 'square', ok: true }, { x: 9, z: 4, name: 'Protease', shape: 'triangle', why: 'Protease breaks down proteins. Its active site does not fit starch.' },
+      { x: 3, z: 0, name: 'Lipase', shape: 'circle', why: 'Lipase breaks down fats. Its active site does not fit starch.' }],
+    bumpers: [[-3, -3, 1], [-3, 3, 1], [3, -5.5, 0.8]], fact: 'Amylase (in saliva) breaks starch into sugars. Each enzyme fits only its own substrate, like a key in a lock.' },
+  { sub: { name: 'Protein', shape: 'triangle', col: '#ff8fb1' }, env: 'Hole 2 · In the stomach · 37 °C · pH 2 (very acidic)', start: [-10, 3],
+    cups: [{ x: 9, z: 3, name: 'Trypsin (works best at pH 8)', shape: 'triangle', denat: true, why: 'Trypsin works best at pH 8. In strong stomach acid its active site changes shape (it is denatured), so the protein no longer fits.' },
+      { x: 8, z: -4, name: 'Pepsin (works best at pH 2)', shape: 'triangle', ok: true }, { x: 0, z: 5, name: 'Amylase', shape: 'square', why: 'Amylase breaks down starch. Its active site does not fit a protein.' }],
+    bumpers: [[-2, 0, 1.2], [3, -2, 0.9], [4, 3.5, 0.8]], fact: 'Pepsin works in the acid of the stomach. pH changes an enzyme\'s shape, so each enzyme works best at its own pH.' },
+  { sub: { name: 'Fat', shape: 'circle', col: '#7be0ad' }, env: 'Hole 3 · In the small intestine · 37 °C · pH 8', start: [-10, -3],
+    cups: [{ x: 2, z: -5, name: 'Lipase (heated to 70 °C)', shape: 'circle', denat: true, why: 'This lipase was heated to 70 °C. High heat denatured it: its active site lost its shape.' },
+      { x: 9, z: 1, name: 'Lipase', shape: 'circle', ok: true }, { x: 4, z: 5, name: 'Pepsin', shape: 'triangle', why: 'Pepsin breaks down proteins, and it works in acid, not here. Its active site does not fit fat.' }],
+    bumpers: [[-4, -1, 1], [0, 1.5, 1], [5, -1.5, 0.9]], fact: 'Lipase breaks fats into fatty acids and glycerol. Enzymes work best near body temperature; too much heat denatures them.' }];
+function enterGolf(p) {
+  closeQ(); mode = 'mini'; Object.keys(keys).forEach(function (k) { keys[k] = false; });
+  M = { kind: 'golf', p: p, grp: new T.Group(), hi: -1, strokes: 0, score: 0, k: {}, intro: true, over: false, aim: 0, pow: 0, charging: false, ball: null, cups: [], bumpers: [], t: 0, bg: scene.background, fog: scene.fog };
+  scene.remove(L.group); scene.add(M.grp); scene.background = new T.Color('#0b1d2a'); scene.fog = null;
+  const felt = new T.Mesh(new T.PlaneGeometry(26, 16), new T.MeshLambertMaterial({ color: '#2f8a5a', emissive: '#0a2a1a' })); felt.rotation.x = -Math.PI / 2; M.grp.add(felt);
+  [[0, -8.3, 26.6, 0.6], [0, 8.3, 26.6, 0.6], [-13.3, 0, 0.6, 17.2], [13.3, 0, 0.6, 17.2]].forEach(function (w) { const m = new T.Mesh(G.box, emat('#8a5ac8', '#2a1a4a')); m.scale.set(w[2], 0.7, w[3]); m.position.set(w[0], 0.35, w[1]); M.grp.add(m); });
+  for (let i = 0; i < 40; i++) { const st = glow('#9fd8ff', 1 + Math.random() * 2, 0.4); st.position.set((Math.random() - 0.5) * 80, 4 + Math.random() * 20, -20 - Math.random() * 30); M.grp.add(st); }
+  M.aimLine = new T.Mesh(G.box, basic('#ffffff', 0.85)); M.grp.add(M.aimLine);
+  $('hud').hidden = true; $('touch').hidden = true; $('toast').hidden = true; $('note').hidden = true; $('mini').hidden = false; $('miniPick').innerHTML = ''; $('miniAim').hidden = true; $('miniPow').hidden = false;
+  miniPanel('<h2>⛳ Enzyme Mini Golf</h2><p><b>Enzymes</b> are proteins that speed up reactions. Each enzyme has an <b>active site</b>: a pocket with a special shape.</p>' +
+    '<p>Your ball is the <b>substrate</b>. Putt it into the enzyme whose active site has the <b>same shape</b>. A wrong shape will not hold it.</p>' +
+    '<p>Careful: <b>heat or the wrong pH</b> can change an enzyme\'s shape. That is called being <b>denatured</b>, and a denatured enzyme stops working.</p>' +
+    '<p class="dim">Aim: move the mouse (or left and right arrows). Putt: hold the mouse button (or space) to charge, then let go. 3 holes. Fewer putts = more points.</p>' +
+    '<button type="button" id="miniGo" class="primary">Start</button>');
+  golfCam(); setTimeout(function () { const b = $('miniGo'); if (b) b.focus(); }, 50);
+}
+function golfCam() { const w = cam.aspect < 1.5 ? 1.25 : 1; cam.position.set(0, 20 * w, 15 * w); cam.lookAt(0, 0, 0.3); }
+function golfHole(i) {
+  M.cups.forEach(function (c) { M.grp.remove(c.g); }); M.bumpers.forEach(function (b) { M.grp.remove(b.m); }); if (M.ball) M.grp.remove(M.ball.m);
+  M.hi = i; M.strokes = 0; M.cups = []; M.bumpers = []; const H = HOLES[i];
+  H.bumpers.forEach(function (b) { const m = new T.Mesh(G.cyl, emat('#c59cff', '#3a1a6a')); m.scale.set(b[2], 0.8, b[2]); m.position.set(b[0], 0.4, b[1]); M.grp.add(m); M.bumpers.push({ x: b[0], z: b[1], r: b[2], m: m }); });
+  H.cups.forEach(function (c) {
+    const g = new T.Group(), sh = GOLFSHAPE[c.shape];
+    const rim = new T.Mesh(G.tor, emat(c.denat ? '#c05050' : '#e8f4ff', '#333333')); rim.scale.set(1.05, 1.05, 0.8); rim.rotation.x = Math.PI / 2; rim.position.y = 0.05; g.add(rim);
+    const hole = new T.Mesh(new T.CylinderGeometry(0.95, 0.95, 0.04, 24), basic('#08140e')); hole.position.y = 0.02; g.add(hole);
+    const site = new T.Mesh(new T.CylinderGeometry(0.62, 0.62, 0.06, sh.seg), basic(c.denat ? '#ff6b6b' : '#ffffff', 0.9)); site.position.y = 0.05; site.rotation.y = c.shape === 'square' ? Math.PI / 4 : 0;
+    if (c.denat) { site.scale.set(1.35, 1, 0.55); site.rotation.y = 0.7; }
+    g.add(site); g.add(glow(c.denat ? '#ff6b6b' : '#9fe0ff', 3.2, 0.35));
+    const lb = label((c.denat ? '🔥 ' : '') + c.name + ' ' + sh.sym, 4.2, { bd: c.denat ? '#ff6b6b' : '#9fe0ff' }); lb.position.set(0, 2.3, -0.6); g.add(lb);
+    g.position.set(c.x, 0, c.z); M.grp.add(g); M.cups.push(Object.assign({ g: g, site: site, flash: 0 }, c));
+  });
+  const S2 = H.sub, sh = GOLFSHAPE[S2.shape], m = new T.Group(), body = new T.Mesh(new T.CylinderGeometry(0.42, 0.42, 0.5, sh.seg), emat(S2.col, '#444444'));
+  body.position.y = 0.25; if (S2.shape === 'square') body.rotation.y = Math.PI / 4; m.add(body); m.add(glow(S2.col, 2, 0.5));
+  const bl = label(S2.name + ' ' + sh.sym, 2.6, { bd: S2.col }); bl.position.y = 1.4; m.add(bl);
+  M.grp.add(m); M.ball = { m: m, x: H.start[0], z: H.start[1], vx: 0, vz: 0, sink: 0 }; m.position.set(M.ball.x, 0, M.ball.z);
+  M.aim = Math.atan2(-(H.cups.find(function (c) { return c.ok; }).z - H.start[1]), 1) * 0; golfMsg(H.env + '. Your substrate: ' + S2.name + ' ' + sh.sym + '. Find the enzyme with the matching active site.', '#9fe0ff', 5); golfHud();
+}
+function golfHud() { $('miniTop').textContent = 'Hole ' + (M.hi + 1) + ' of ' + HOLES.length + '   Putts: ' + M.strokes + '   Score: ' + M.score; $('miniPowFill').style.width = Math.round(M.pow * 100) + '%'; }
+function golfMsg(t, col, secs) { miniFlash(t, col, secs); }
+function golfStill() { const b = M.ball; return b && Math.hypot(b.vx, b.vz) < 0.12 && !b.sink; }
+function golfShoot() {
+  if (!golfStill() || M.intro || M.over) { M.charging = false; return; }
+  const sp = 4 + M.pow * 17; M.ball.vx = Math.cos(M.aim) * sp; M.ball.vz = Math.sin(M.aim) * sp; M.strokes++; M.charging = false; M.pow = 0; beep(500, 0.08, 'triangle', 'tock, putt'); golfHud();
+}
+function golfStep(dt) {
+  golfCam(); M.t += dt; if (M.flashT > 0) { M.flashT -= dt; if (M.flashT <= 0) $('miniMsg').hidden = true; }
+  if (M.intro || M.over || !M.ball) return;
+  const b = M.ball;
+  if (M.k.left) M.aim -= dt * 1.8; if (M.k.right) M.aim += dt * 1.8;
+  if (M.charging) { M.chargeT = (M.chargeT || 0) + dt; const u = (M.chargeT / 1.1) % 2; M.pow = u < 1 ? u : 2 - u; golfHud(); }
+  /* aim line */
+  const still = golfStill(); M.aimLine.visible = still;
+  if (still) { const len = 1.5 + M.pow * 5; M.aimLine.scale.set(len, 0.06, 0.12); M.aimLine.position.set(b.x + Math.cos(M.aim) * (len / 2 + 0.6), 0.3, b.z + Math.sin(M.aim) * (len / 2 + 0.6)); M.aimLine.rotation.y = -M.aim; }
+  if (b.sink) {
+    b.sink += dt; const c = b.cup; b.x += (c.x - b.x) * Math.min(1, dt * 8); b.z += (c.z - b.z) * Math.min(1, dt * 8); b.m.position.set(b.x, -b.sink * 0.6, b.z); b.m.scale.setScalar(Math.max(0.05, 1 - b.sink));
+    if (b.sink > 1.1) { const pts = Math.max(100, 400 - 75 * (M.strokes - 1)); M.score += pts; golfMsg('✓ It fits! ' + HOLES[M.hi].fact + ' (+' + pts + ')', '#7be0ad', 6); if (M.hi + 1 < HOLES.length) { const fact = HOLES[M.hi].fact; golfHole(M.hi + 1); golfMsg('✓ It fits! ' + fact + ' Next: ' + HOLES[M.hi].env + '.', '#7be0ad', 9); } else golfEnd(); }
+    return;
+  }
+  /* rolling, friction, walls, bumpers */
+  const steps = 4;
+  for (let k = 0; k < steps; k++) {
+    const h = dt / steps; b.x += b.vx * h; b.z += b.vz * h;
+    const sp = Math.hypot(b.vx, b.vz); if (sp > 0) { const ns = Math.max(0, sp - (0.9 + sp * 0.9) * h); b.vx *= ns / sp; b.vz *= ns / sp; }
+    if (b.x < -12.6) { b.x = -12.6; b.vx = Math.abs(b.vx) * 0.8; } if (b.x > 12.6) { b.x = 12.6; b.vx = -Math.abs(b.vx) * 0.8; }
+    if (b.z < -7.6) { b.z = -7.6; b.vz = Math.abs(b.vz) * 0.8; } if (b.z > 7.6) { b.z = 7.6; b.vz = -Math.abs(b.vz) * 0.8; }
+    M.bumpers.forEach(function (bp) { const dx = b.x - bp.x, dz = b.z - bp.z, d = Math.hypot(dx, dz), mn = bp.r + 0.42; if (d < mn && d > 0) { const nx = dx / d, nz = dz / d, dot = b.vx * nx + b.vz * nz; b.x = bp.x + nx * mn; b.z = bp.z + nz * mn; if (dot < 0) { b.vx -= 2 * dot * nx * 0.9; b.vz -= 2 * dot * nz * 0.9; } beep(700, 0.03, 'square'); } });
+    for (let ci = 0; ci < M.cups.length; ci++) {
+      const c = M.cups[ci], dx = b.x - c.x, dz = b.z - c.z, d = Math.hypot(dx, dz), v = Math.hypot(b.vx, b.vz);
+      if (d < 0.8 && v < 9) {
+        if (c.ok) { b.sink = 0.01; b.cup = c; b.vx = b.vz = 0; beep(880, 0.3, 'sine', 'plink, substrate fits the active site'); burst2(c); return; }
+        if (!c.bounced || M.t - c.bounced > 0.6) { c.bounced = M.t; const nx = d > 0.01 ? dx / d : -1, nz = d > 0.01 ? dz / d : 0; b.vx = nx * 5; b.vz = nz * 5; b.x = c.x + nx * 0.9; b.z = c.z + nz * 0.9; c.flash = 0.8;
+          golfMsg('✗ Rolled right out! ' + (c.denat ? c.why : (c.why || 'The shapes do not match.')), '#ffb09c', 5); beep(200, 0.25, 'sawtooth', 'boing, does not fit'); M.wrongs = (M.wrongs || 0) + 1; }
+      }
+    }
+  }
+  M.cups.forEach(function (c) { if (c.flash > 0) { c.flash -= dt; c.g.position.y = Math.sin(c.flash * 40) * 0.05; } else c.g.position.y = 0; });
+  b.m.position.set(b.x, 0, b.z); b.m.rotation.y += Math.hypot(b.vx, b.vz) * dt * 0.8;
+}
+function burst2(c) { const g = glow('#7be0ad', 5, 0.9); g.position.set(c.x, 0.6, c.z); M.grp.add(g); setTimeout(function () { if (M) M.grp.remove(g); }, 700); }
+function golfEnd() {
+  M.over = true; M.aimLine.visible = false;
+  miniPanel('<h2>⛳ Course complete!</h2><p>Score: <b>' + M.score + '</b></p>' +
+    '<p><b>What you showed:</b> an enzyme only works on the substrate that fits its <b>active site</b>. Amylase fits starch, pepsin and trypsin fit proteins, lipase fits fats.</p>' +
+    '<p>An enzyme works best at its own <b>temperature and pH</b>. Too much heat, or the wrong pH, changes the active site\'s shape. The enzyme is <b>denatured</b> and stops working.</p>' +
+    '<p class="dim">Enzymes are catalysts: they speed up reactions by lowering the energy needed to start them, and they are not used up.</p>' +
+    '<button type="button" id="miniBack" class="primary">Return through the portal</button>');
+  setTimeout(function () { const b = $('miniBack'); if (b) b.focus(); }, 50);
+}
+function golfKey(e, down) {
+  const k = e.key;
+  if (down && M.intro && (k === 'Enter' || k === ' ')) { e.preventDefault(); miniStart(); return; }
+  if (down && M.over && (k === 'Enter' || k === ' ' || k === 'e' || k === 'E')) { e.preventDefault(); exitMini(); return; }
+  if (k === 'ArrowLeft' || k === 'a' || k === 'A') { M.k.left = down; e.preventDefault(); }
+  if (k === 'ArrowRight' || k === 'd' || k === 'D') { M.k.right = down; e.preventDefault(); }
+  if (k === ' ' || k === 'Enter') { e.preventDefault(); if (down && !M.charging && golfStill()) { M.charging = true; M.chargeT = 0; } else if (!down && M.charging) golfShoot(); }
+}
+function golfPointer(e, type) {
+  if (M.intro || M.over || !M.ball) return;
+  const r = $('stage').getBoundingClientRect(), v = new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, 1 - ((e.clientY - r.top) / r.height) * 2), rc = new T.Raycaster(); rc.setFromCamera(v, cam);
+  const o = rc.ray.origin, d = rc.ray.direction; if (Math.abs(d.y) > 1e-4 && type !== 'up') { const t = -o.y / d.y; const px = o.x + d.x * t, pz = o.z + d.z * t; if (golfStill()) M.aim = Math.atan2(pz - M.ball.z, px - M.ball.x); }
+  if (type === 'down' && golfStill()) { M.charging = true; M.chargeT = 0; }
+  if (type === 'up' && M.charging) golfShoot();
+}
 /* ---------- MOTHERSHIP STATION: report, supply shop, practice bay, wardrobe ---------- */
 const SHOP = [
   { id: 'life', icon: '💗', name: 'Extra life', cost: 600, desc: 'Start your next level with one more life.' },
@@ -1968,7 +2133,7 @@ function openMap() {
   buildLevels(); show('levels'); const c = document.querySelector('.mnode.cur') || document.querySelector('.mnode'); if (c) c.focus(); else $('btnMapPlay').focus();
 }
 function show(name) {
-  ['menu', 'levels', 'progress', 'settings', 'pause', 'done'].forEach(function (n) { $(n).hidden = n !== name; });
+  ['menu', 'levels', 'progress', 'settings', 'pause', 'done', 'about'].forEach(function (n) { $(n).hidden = n !== name; });
 }
 function menuScene() {
   Music.play('menu');
@@ -2105,7 +2270,7 @@ function resize() {
 function tick(t) {
   requestAnimationFrame(tick);
   const dt = Math.min((t - last) / 1000 || 0, 1 / 30); last = t;
-  if (mode === 'mini' && M) { miniStep(dt); }
+  if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else miniStep(dt); }
   else if (mode === 'play' && !paused) {
     step(dt);
     if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').hidden = true; }
@@ -2165,6 +2330,8 @@ function wire() {
   $('cust').addEventListener('click', function (e) { const b = e.target.closest('.chip'); if (!b) return; S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); buildMenu(); const again = $('cust').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); });
   $('btnPlay').onclick = function () { openMap(); };
   $('btnLevels').onclick = function () { openMap(); };
+  $('btnAbout').onclick = function () { show('about'); $('aboutVer').textContent = VERSION; };
+  $('menuVer').textContent = VERSION + ' · by J.E. Lynch';
   $('btnProgress').onclick = function () { buildProgress(); show('progress'); };
   $('btnSettings').onclick = function () { backTo = 'menu'; show('settings'); };
   $('levelList').addEventListener('click', function (e) { const b = e.target.closest('.lvl'); if (!b) return; if (b.dataset.lock) { mapInfo(+b.dataset.i); return; } const en = allLevels()[+b.dataset.i]; startLevel(en.w, en.lv); });
@@ -2176,7 +2343,12 @@ function wire() {
   $('nick').addEventListener('input', function () { const v = $('nick').value.replace(/[^A-Za-z0-9 _-]/g, '').slice(0, 12); if (v !== $('nick').value) $('nick').value = v; $('nickMsg').textContent = ''; });
   const nickSave = function () {
     const v = $('nick').value.trim();
-    if (!nickOK(v)) { $('nickMsg').textContent = 'Please choose a name that is appropriate and respectful. Try again.'; $('nickMsg').className = 'nickbad'; $('nick').value = S.nick; $('nick').focus(); beep(200, 0.2, 'sawtooth', 'buzz, name not allowed'); return; }
+    if (!nickOK(v)) {
+      if (TEACH) { S.okNames = (S.okNames || []).concat([v]); S.nick = v; save(); $('nickMsg').textContent = 'Teacher mode: "' + v + '" is allowed on this device even though it matched the word filter.'; $('nickMsg').className = 'dim'; return; }
+      const sug = safeName(); $('nickMsg').innerHTML = 'Please choose a name that is appropriate and respectful. Try again, or use <button type="button" id="nickSug">' + sug + '</button>';
+      $('nickMsg').className = 'nickbad'; $('nick').value = S.nick; $('nick').focus(); beep(200, 0.2, 'sawtooth', 'buzz, name not allowed');
+      $('nickSug').onclick = function () { $('nick').value = sug; nickSave(); }; return;
+    }
     S.nick = v; save(); $('nickMsg').textContent = v ? 'Saved: ' + v : ''; $('nickMsg').className = 'dim';
   };
   $('nick').addEventListener('change', nickSave); $('nick').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickSave(); } });
@@ -2197,9 +2369,10 @@ function wire() {
   $('btnQuit').onclick = menuScene; $('btnMenu').onclick = menuScene;
   $('btnReplay').onclick = function () { startLevel(LAST.w, LAST.lv); };
   $('btnNext').onclick = function () { const list = allLevels(), i = list.findIndex(function (e) { return e.lv === LAST.lv; }); startLevel(list[i + 1].w, list[i + 1].lv); };
-  const aimAt = function (e) { if (mode !== 'mini' || !M) return; const r = $('stage').getBoundingClientRect(); M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
+  const aimAt = function (e) { if (mode !== 'mini' || !M) return; if (M.kind === 'golf') return golfPointer(e, 'move'); const r = $('stage').getBoundingClientRect(); M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
   $('stage').addEventListener('pointermove', aimAt);
-  $('stage').addEventListener('pointerdown', function (e) { if (mode !== 'mini' || !M) return; aimAt(e); miniFire(); });
+  $('stage').addEventListener('pointerdown', function (e) { if (mode !== 'mini' || !M) return; if (M.kind === 'golf') return golfPointer(e, 'down'); aimAt(e); miniFire(); });
+  window.addEventListener('pointerup', function (e) { if (mode === 'mini' && M && M.kind === 'golf') golfPointer(e, 'up'); });
   $('mini').addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !M) return; if (b.id === 'miniGo') miniStart(); else if (b.id === 'miniBack') exitMini(); else if (b.dataset.ab != null) { miniSel(+b.dataset.ab); b.blur(); } });
   $('hudInv').addEventListener('click', function (e) { const b = e.target.closest('[data-use]'); if (!b) return; b.blur(); if (b.dataset.use === 'fly') useFly(); else useLens(); });
   $('stTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-tab]'); if (b) stationTab(b.dataset.tab); });
