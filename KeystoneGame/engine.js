@@ -50,22 +50,36 @@ BQ.loadWorlds = function (max) {
 /* ---------- saving (on this device only) ---------- */
 const KEY = 'bioquest-save-v1';
 function fresh() {
-  return { alien: { shape: 0, color: 0, eyes: 2, ant: 2, gear: 0, estyle: 0, mouth: 1 }, levels: {}, missed: {}, codes: {}, seen: {}, rare: {}, words: {},
+  return { alien: { shape: 0, color: 0, eyes: 2, ant: 2, gear: 0, estyle: 0, mouth: 1 }, levels: {}, missed: {}, codes: {}, seen: {}, rare: {}, words: {}, bank: 0, inv: { life: 0, shield: 0, fly: 0, lens: 0 }, owned: {},
     set: { text: 1, low: false, sound: true, music: true, vol: 50, cap: true, unlock: false }, nick: '', board: [] };
 }
 let S = fresh();
 try {
   const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
-  if (raw) { const f = fresh(); S = Object.assign(f, raw); S.alien = Object.assign(fresh().alien, raw.alien); S.set = Object.assign(fresh().set, raw.set); }
+  if (raw) { const f = fresh(); S = Object.assign(f, raw); S.inv = Object.assign(fresh().inv, raw.inv); S.alien = Object.assign(fresh().alien, raw.alien); S.set = Object.assign(fresh().set, raw.set); }
 } catch (e) { /* play without saving */ }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* ignore */ } }
 
+/* NAME CHECK: blocks rude or hurtful nicknames. The word lists are stored scrambled (ROT13) so students
+   reading the code do not see them. Letters are also checked with common look-alike swaps (0 for o, $ for s). */
+const NOPE_SUB = ["shpx", "fuvg", "phag", "ovgpu", "fyhg", "juber", "chffl", "cravf", "intvan", "cbea", "qvyqb", "avtt", "arteb", "ergneq", "nffubyr", "qhzonff", "wnpxnff", "onfgneq", "obyybpx", "wvmm", "ubeal", "uvgyre", "anmv", "gjng", "jnax", "cvff", "snt", "xvxr", "jrgonpx", "genaal", "frkl", "ahqr", "anxrq", "obare", "gvggvrf", "zbgures", "ohyyfuvg", "qhzos"].map(rot13), NOPE_WHOLE = ["nff", "nefr", "qvpx", "pbpx", "phz", "gvg", "gvgf", "frk", "nany", "encr", "ubr", "ubrf", "qnza", "penc", "ohgg", "cbbc", "sneg", "obbo", "obbof", "fcvp", "puvax", "tbbx", "pbba", "cnxv", "qlxr", "ubzb", "xxx", "crr", "gheq", "fhpx", "fhpxf", "ybfre", "fghcvq", "vqvbg", "qhzo", "htyl", "sng", "xvyy", "qvr"].map(rot13);
+function rot13(w) { return w.replace(/[a-z]/g, function (c) { return String.fromCharCode((c.charCodeAt(0) - 97 + 13) % 26 + 97); }); }
+function nickOK(n) {
+  if (!n || !/[a-z]/i.test(n)) return true;
+  const leet = n.toLowerCase().replace(/0/g, 'o').replace(/[1!|]/g, 'i').replace(/3/g, 'e').replace(/[4@]/g, 'a').replace(/[5$]/g, 's').replace(/7/g, 't').replace(/8/g, 'b').replace(/9/g, 'g');
+  const two = function (x) { return x.replace(/(.)\1{2,}/g, '$1$1'); }, one = function (x) { return x.replace(/(.)\1+/g, '$1'); };
+  const flat = two(leet.replace(/[^a-z]/g, '')), flat1 = one(flat), words = leet.split(/[^a-z]+/).map(two).filter(Boolean);
+  if (NOPE_SUB.some(function (w) { return flat.indexOf(w) >= 0 || (one(w).length >= 4 && flat1.indexOf(one(w)) >= 0); })) return false;
+  const raw = leet.split(/[^a-z]+/).filter(Boolean), rawFlat = leet.replace(/[^a-z]/g, '');
+  if (NOPE_WHOLE.some(function (w) { return flat === w || rawFlat === w || words.indexOf(w) >= 0 || raw.indexOf(w) >= 0; })) return false;
+  return true;
+}
 /* Leaderboard: kept separate so it can later talk to an online score service.
    To go online, replace submit() and top() with calls to that service.
    It stores a nickname and a score only. Never add names, emails, or other personal details. */
 BQ.Leaderboard = {
   submit: function (nick, score) {
-    if (!nick) return;
+    if (!nick || !nickOK(nick)) return;
     const row = S.board.find(function (r) { return r.nick === nick; });
     if (row) row.score = Math.max(row.score, score); else S.board.push({ nick: nick, score: score });
     S.board.sort(function (a, b) { return b.score - a.score; }); S.board = S.board.slice(0, 10); save();
@@ -174,7 +188,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
-const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00']];
+const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
   'Lab goggles: see hidden platforms and secret paths that other players cannot see.',
@@ -302,7 +316,7 @@ function labelTex(text, o) {
   const bg = o.bg || '#0e2433', fg = o.fg || '#ffffff', bd = o.bd || '#ffd166', key = text + '|' + bg + fg + bd + (o.big ? 1 : 0);
   if (texCache[key]) return texCache[key];
   const c = document.createElement('canvas'); c.width = 512; c.height = 256;
-  const g = c.getContext('2d'); let size = o.big ? 110 : 62, lines;
+  const g = c.getContext('2d'); let size = o.big ? (String(text).length <= 2 ? 180 : 110) : String(text).length <= 14 ? 92 : 62, lines;
   for (;;) {
     g.font = '700 ' + size + 'px "Atkinson Hyperlegible", Arial, sans-serif'; lines = wrapText(g, text, 460);
     const wide = Math.max.apply(null, lines.map(function (l) { return g.measureText(l).width; }));
@@ -316,6 +330,8 @@ function labelTex(text, o) {
   const t = new T.CanvasTexture(c); texCache[key] = t; return t;
 }
 function label(text, w, o) {
+  /* readable everywhere: small labels get a minimum size, and all labels follow the Text size setting */
+  const ts = [0.9, 1, 1.15, 1.3][S.set.text] || 1; if (!(o && o.big) && w < 2.6) w = 2.6; w *= ts;
   const sp = new T.Sprite(new T.SpriteMaterial({ map: labelTex(text, o), transparent: true }));
   sp.scale.set(w, w / 2, 1); return sp;
 }
@@ -405,7 +421,7 @@ const HW = 0.42, STAND = 1.35, CROUCH = 0.78; let PH = STAND; const SPEED = 7.2,
 function addPickup(kind, x, y) {
   const g = new T.Group(), shield = kind === 'shield', life = kind === 'life', col = shield ? '#7fd4ff' : life ? '#ff8fb1' : '#c8ff7a';
   const core = new T.Mesh(shield ? G.tor : G.sph, emat(col, '#2a3a4a')); core.scale.setScalar(shield ? 0.4 : 0.38); g.add(core); g.add(glow(col, 2.8, 0.75));
-  const lb = label(shield ? 'Shield' : life ? 'Extra life' : 'ATP boost', 2); lb.position.y = 1; g.add(lb); g.position.set(x, y, 0); L.group.add(g);
+  const lb = label(shield ? 'Shield' : life ? 'Extra life' : 'ATP boost', 3); lb.position.y = 1.3; g.add(lb); g.position.set(x, y, 0); L.group.add(g);
   L.boosts.push({ x: x, y: y, m: g, got: false, kind: kind });
 }
 /* ---------- 3-D cell models that the player assembles part by part ---------- */
@@ -478,6 +494,17 @@ function specimen(look, col) {
   else sph(col, 0.6, 0.55, 0.5, 0, 0.6);
   g.add(glow(col, 2.6, 0.25)); return g;
 }
+/* QUESTION ROTATION: a level names a question, but each play may use a different question that tests the
+   same Keystone eligible content (same code). Questions never seen come first, then the ones seen longest ago. */
+function rotQ(id) {
+  const q = QMAP[id]; if (!q) return null;
+  const boss = !!(q.tags && q.tags.indexOf('boss') >= 0);
+  const pool = Object.keys(QMAP).filter(function (k) { const c = QMAP[k]; return k.indexOf('.') < 0 && c.world === q.world && c.code === q.code && !L.used[k] && !!(c.tags && c.tags.indexOf('boss') >= 0) === boss && c.options && c.options.length >= 2; });
+  if (!pool.length) return q;
+  const unseen = pool.filter(function (k) { return !S.seen[k]; });
+  const pick = unseen.length ? unseen[Math.floor(Math.random() * unseen.length)] : pool.sort(function (a, c) { return (S.seen[a] || 0) - (S.seen[c] || 0); })[0];
+  L.used[pick] = 1; return QMAP[pick];
+}
 function nearScan() { return L.scans.find(function (k) { return Math.abs(P.x - k.x) < 1.6 && P.y > k.y - 1 && P.y < k.y + 2.4; }); }
 function showNote(sc) {
   const n = $('note'); n.innerHTML = '<small>New word for your Field Guide</small><b>' + esc(sc.word) + '</b><span>' + esc(sc.note) + '</span>';
@@ -525,6 +552,32 @@ function builder() {
     gap: function (len) { b.x += len; return b; },
     rise: function (dy) { b.y += dy; return b; },
     plat: function (dx, dy, w) { const s = addSolid(b.x + dx, b.x + dx + w, b.y + dy - 0.4, b.y + dy, { oneWay: true }); L.group.add(box(s.x0, s.x1, s.y0, s.y1, 3, L.th.top)); return b; },
+    /* HIDDEN SPARKS: bonus sparks worth 25 that only Lab goggles can see (anyone can still bump into them) */
+    hsparks: function (dx, dy, n) {
+      const see = S.alien.gear === 1;
+      for (let i = 0; i < n; i++) { const m = new T.Mesh(G.oct, emat('#d8b0ff', '#6a3aa0')); m.scale.setScalar(0.3); m.add(glow('#c59cff', 5, 0.6)); m.position.set(b.x + dx + i * 1.3, b.y + dy, 0); m.visible = see; L.group.add(m); L.sparks.push({ x: m.position.x, y: m.position.y, m: m, val: 25 }); }
+      L.secrets.push({ x: b.x + dx + n * 0.65, y: b.y + dy }); return b;
+    },
+    /* CLUE TERMINAL: one escape-room clue. Your answer letter becomes part of the portal code. */
+    clue: function (dx, qid) {
+      const q = rotQ(qid); if (!q) return b;
+      const x = b.x + dx, y = b.y, n = L.clues.length + 1, g = new T.Group();
+      const post = new T.Mesh(G.cyl, emat('#2a4a5a', '#0a2030')); post.scale.set(0.3, 1.6, 0.3); post.position.y = 0.8; g.add(post);
+      const scr = new T.Mesh(G.box, emat('#7be0ad', '#1a6a4a')); scr.scale.set(1.3, 0.9, 0.12); scr.position.set(0, 1.9, 0.1); scr.rotation.x = -0.25; g.add(scr); g.add(glow('#7be0ad', 2.6, 0.4));
+      g.position.set(x, y, 0.5); L.group.add(g);
+      const lb = label('Clue ' + n + ': press E', 3, { bd: '#7be0ad' }); lb.position.set(x, y + 3.3, 0.5); L.group.add(lb);
+      L.clues.push({ n: n, x: x, y: y, q: q, perm: shuffle(q.options.map(function (_, i) { return i; })), choice: null, lb: lb, scr: scr }); return b;
+    },
+    /* PORTAL: a locked gateway to a 3-D mini-game. The code is the letters of your clue answers. */
+    portal: function (dx, game) {
+      const x = b.x + dx, y = b.y, g = new T.Group();
+      const ring = new T.Mesh(G.tor, emat('#8a5ac8', '#3a1a6a')); ring.scale.set(1.9, 2.2, 1.4); ring.position.y = 2.4; g.add(ring);
+      const swirl = new T.Mesh(new T.CircleGeometry(1.75, 32), new T.MeshBasicMaterial({ color: '#ff6b6b', transparent: true, opacity: 0.45, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
+      swirl.scale.y = 1.15; swirl.position.y = 2.4; g.add(swirl); g.add(glow('#c59cff', 7, 0.35)); g.children[g.children.length - 1].position.y = 2.4;
+      g.position.set(x, y, -0.6); L.group.add(g);
+      const lb = label('🔒 Portal: needs a code', 3.6, { bd: '#c59cff' }); lb.position.set(x, y + 5.4, 0); L.group.add(lb);
+      L.portal = { x: x, y: y, g: g, swirl: swirl, ring: ring, lb: lb, open: false, tries: 0, game: game || 'immune' }; return b;
+    },
     /* HIDDEN PLATFORM: solid for everyone, but only Lab goggles make it visible */
     hplat: function (dx, dy, w) {
       const s2 = addSolid(b.x + dx, b.x + dx + w, b.y + dy - 0.4, b.y + dy), see = S.alien.gear === 1, m = box(s2.x0, s2.x1, s2.y0, s2.y1, 3, see ? '#c59cff' : L.th.top, see ? 0.85 : 0.07);
@@ -556,7 +609,7 @@ function builder() {
     station: function (list, o) {
       const qs = [];
       (Array.isArray(list) ? list : [list]).forEach(function (e) {
-        if (typeof e === 'string') { if (QMAP[e]) qs.push(QMAP[e]); return; }
+        if (typeof e === 'string') { const rq = rotQ(e); if (rq) qs.push(rq); return; }
         const ids = shuffle(Object.keys(QMAP).filter(function (k) { return k.indexOf(e.sort + '.') === 0 && !L.used[k]; })).slice(0, e.n || 3);
         ids.forEach(function (k) { L.used[k] = 1; qs.push(QMAP[k]); });
       });
@@ -690,11 +743,13 @@ function builder() {
     },
     goal: function () {
       addGround(b.x, b.x + 10, b.y);
-      const g = new T.Group(), hull = mesh('sph', '#cfd8e3'); hull.scale.set(1.7, 0.45, 1.7); g.add(hull); g.add(glow(L.th.rim, 7, 0.6));
-      const beam = new T.Mesh(G.cyl, basic(L.th.rim, 0.12, true)); beam.scale.set(1.3, 40, 1.3); beam.position.y = 20; g.add(beam);
-      const dome = mesh('sph', '#7fd4ff', 0.7); dome.scale.set(0.8, 0.6, 0.8); dome.position.y = 0.35; g.add(dome);
-      g.position.set(b.x + 6, b.y + 1.6, 0); L.group.add(g); L.goal = { x: b.x + 6, y: b.y, m: g };
-      const sp = label('Scout pod: send report', 4.4); sp.position.set(b.x + 6, b.y + 4.4, 0); L.group.add(sp);
+      const g = new T.Group(), hull = mesh('sph', '#cfd8e3'); hull.scale.set(2.4, 0.55, 2.4); g.add(hull); g.add(glow(L.th.rim, 9, 0.6));
+      const dome = mesh('sph', '#7fd4ff', 0.7); dome.scale.set(1.1, 0.8, 1.1); dome.position.y = 0.4; g.add(dome);
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, lt = new T.Mesh(G.sph, emat('#ffd166', '#c08a10')); lt.scale.setScalar(0.14); lt.position.set(Math.cos(a) * 2.2, -0.1, Math.sin(a) * 2.2); g.add(lt); }
+      g.position.set(b.x + 6, b.y + 6.6, 0); L.group.add(g);
+      const beam = new T.Mesh(new T.CylinderGeometry(0.7, 1.7, 6.2, 20, 1, true), basic(L.th.rim, 0.16, true)); beam.position.set(b.x + 6, b.y + 3.1, 0); L.group.add(beam);
+      L.goal = { x: b.x + 6, y: b.y, m: g, beam: beam };
+      const sp = label('Mothership: step into the beam', 4.6); sp.position.set(b.x + 6, b.y + 8.6, 0); L.group.add(sp);
       b.x += 10; return b;
     }
   };
@@ -1027,6 +1082,53 @@ function buildProtein() {
   L.temps.push({ s: sd, m: g, life: 4 }); P.vy = Math.max(P.vy, 0); beep(760, 0.15, 'triangle', 'click-click, protein built');
   popup(P.x, P.y - 0.4, 'Protein built!', '#ffd166');
 }
+function nearClue() { return L.clues.find(function (c) { return Math.abs(P.x - c.x) < 1.4 && Math.abs(P.y - c.y) < 1.5; }); }
+function nearPortal() { const p = L.portal; return p && Math.abs(P.x - p.x) < 1.8 && Math.abs(P.y - p.y) < 2 ? p : null; }
+function codeText() { return L.clues.map(function (c) { return c.choice == null ? '_' : 'ABCDE'[c.choice]; }).join(' · '); }
+function openClue(c) {
+  const q = c.q; L.active = { clue: c, tried: {} }; P.vx = 0;
+  $('qpanel').classList.remove('compact', 'short');
+  $('qmeta').textContent = '🔐 Portal clue ' + c.n + ' of ' + L.clues.length + (c.choice != null ? ' · your answer now: ' + 'ABCDE'[c.choice] : '');
+  $('qprompt').innerHTML = esc(q.prompt) + (q.stem ? '<span class="stem">' + esc(q.stem) + '</span>' : ''); $('qfig').innerHTML = figHTML(q.figure);
+  $('qopts').innerHTML = c.perm.map(function (oi, i) { return '<button type="button" class="opt" data-i="' + i + '"><b>' + 'ABCDE'[i] + '</b> ' + esc(q.options[oi]) + '</button>'; }).join('') + '<button type="button" class="opt pclose" data-close="1">Close (Esc)</button>';
+  $('qfb').textContent = ''; $('qhow').textContent = 'Press the letter of your answer. The letter becomes part of the portal code. The portal tells you if the code works.';
+  $('qpanel').hidden = false; Music.setDuck(0.45);
+}
+function clueAnswer(i) {
+  const c = L.active.clue; if (i >= c.q.options.length) return;
+  c.choice = i; c.lb.material.map = labelTex('Clue ' + c.n + ': ' + 'ABCDE'[i], { bd: '#ffd166' }); c.lb.material.needsUpdate = true; c.scr.material = emat('#ffd166', '#6a5010');
+  beep(700, 0.15, 'triangle', 'beep, answer saved'); closeQ(); toast('Answer saved: ' + 'ABCDE'[i] + '. Portal code so far: ' + codeText(), 4);
+}
+function openPortalPanel() {
+  const p = L.portal; L.active = { portal: p, tried: {} }; P.vx = 0;
+  const missing = L.clues.filter(function (c) { return c.choice == null; }).length;
+  $('qpanel').classList.remove('compact', 'short');
+  $('qmeta').textContent = '🌀 Locked portal'; $('qfig').innerHTML = '';
+  $('qprompt').innerHTML = 'Code: <span class="pcode">' + codeText() + '</span>';
+  $('qopts').innerHTML = (missing ? '' : '<button type="button" class="opt" data-try="1"><b>E</b> Try this code</button>') + '<button type="button" class="opt pclose" data-close="1">Close (Esc)</button>';
+  $('qfb').textContent = missing ? 'Find all ' + L.clues.length + ' green clue terminals in this level and answer them. ' + missing + ' still to go.' : '';
+  $('qhow').textContent = 'The code is the letters of your clue answers, in order. Wrong letters? Go back to a clue and change your answer.';
+  $('qpanel').hidden = false; Music.setDuck(0.45);
+}
+function tryCode() {
+  const p = L.portal; if (L.clues.some(function (c) { return c.choice == null; })) return;
+  const right = L.clues.filter(function (c) { return c.perm[c.choice] === c.q.answer; });
+  p.tries++;
+  if (right.length === L.clues.length) {
+    p.open = true; L.clues.forEach(function (c) { record(c.q, p.tries === 1); });
+    if (p.tries === 1) { L.first += 0; L.score += 300; }
+    p.swirl.material.color.set('#7be0ad'); p.ring.material = emat('#7be0ad', '#1a6a4a'); p.lb.material.map = labelTex('🌀 Portal open: press E', { bd: '#7be0ad' }); p.lb.material.needsUpdate = true;
+    [523, 659, 784, 1047].forEach(function (f, k) { setTimeout(function () { beep(f, 0.18, 'triangle', k === 0 ? 'unlock chime, portal open' : null); }, k * 110); });
+    closeQ(); burst(p.x, p.y + 2.4, '#7be0ad'); toast('✓ Code accepted! The portal is open. Press E at the portal to go through.', 5);
+    showNote({ word: 'Clues solved', note: L.clues.map(function (c) { return 'Clue ' + c.n + ': ' + c.q.explain; }).join(' ') });
+    return;
+  }
+  beep(200, 0.3, 'sawtooth', 'buzz, code not accepted');
+  let msg = '✗ Code not accepted. ' + right.length + ' of ' + L.clues.length + ' letters are right.';
+  if (p.tries >= 2) { const bad = L.clues.find(function (c) { return c.perm[c.choice] !== c.q.answer; }); msg += ' Hint: clue ' + bad.n + ' is not right yet. ' + (bad.q.hint || ''); }
+  else msg += ' Go back to a clue and change your answer.';
+  $('qfb').textContent = msg;
+}
 function zoneTarget(z) {
   if (!z || z.done) return false;
   if (z.kind === 'hunt' && z.model && Math.abs(P.x - z.mx) < 3.6) return true;
@@ -1295,7 +1397,7 @@ function doorText(d) {
 function startLevel(w, lv) {
   teardown();
   const th = THEMES[lv.theme] || THEMES.cell;
-  L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [], models: [], flies: [], secrets: [], temps: [],
+  L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [], models: [], flies: [], secrets: [], temps: [], clues: [], portal: null,
     score: 0, streak: 0, hp: 5, time: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
   scene.add(L.group);
   const b = builder(); lv.build(b); L.len = b.x;
@@ -1312,12 +1414,16 @@ function startLevel(w, lv) {
   cam.position.set(P.x + 4, 5, camZ);
   mode = 'play'; paused = false; actEdge = false; jumpBuf = 0; noteT = 0; $('note').hidden = true; if (S.alien.gear) setTimeout(function () { if (mode === 'play') toast(GEARINFO[S.alien.gear], 5); }, 6000); show(null); $('hud').hidden = false; $('touch').hidden = !touchMode;
   $('hudLevel').textContent = lv.id + ' ' + lv.title; hud(); closeQ();
-  toast(lv.log || '', 7); Music.setDuck(1); Music.play(SONGS[lv.theme] ? lv.theme : 'cell');
+  toast(lv.log || '', 7); loadSupplies();
+  /* beamed down from the mothership */
+  { P.y = 6; P.vy = -1; const bm = new T.Mesh(new T.CylinderGeometry(0.6, 1.4, 9, 16, 1, true), new T.MeshBasicMaterial({ color: th.rim, transparent: true, opacity: 0.35, blending: T.AdditiveBlending, depthWrite: false }));
+    bm.position.set(2, 4.5, 0); L.group.add(bm); L.fx.push({ o: bm, t: 0, vx: 0, vy: 0, life: 1.4 }); } Music.setDuck(1); Music.play(SONGS[lv.theme] ? lv.theme : 'cell');
 }
 function hud() {
   let h = ''; for (let i = 0; i < 5; i++) h += i < L.hp ? '●' : '○';
   $('hudHp').textContent = h + '  ♥×' + L.lives + '  ◆' + L.coins; $('hudHp').setAttribute('aria-label', 'Energy ' + L.hp + ' of 5, ' + L.lives + ' lives, ' + L.coins + ' sparks');
   $('hudScore').textContent = L.score; $('hudStreak').textContent = L.streak > 1 ? 'Streak ×' + L.streak : '';
+  $('hudInv').innerHTML = (S.inv.fly > 0 ? '<button type="button" data-use="fly" title="Flight capsule (F)">🚀×' + S.inv.fly + ' <small>F</small></button>' : '') + (S.inv.lens > 0 ? '<button type="button" data-use="lens" title="Hint lens (H)">🔍×' + S.inv.lens + ' <small>H</small></button>' : '');
 }
 function toast(text, secs) { if (!text) return; $('toast').textContent = text; $('toast').hidden = false; toastT = secs || 4; }
 function record(q, ok) {
@@ -1411,7 +1517,7 @@ function openQ(st) {
 const HOW = 'Press A, B, C, or D to answer (or click an answer).';
 function closeQ() { if (L) L.active = null; $('qpanel').hidden = true; $('qpanel').classList.remove('compact', 'short'); Music.setDuck(1); }
 function answer(i) {
-  const st = L.active; if (!st || st.done || st.tried[i]) return;
+  const st = L.active; if (st && st.clue) return clueAnswer(i); if (st && st.portal) return; if (!st || st.done || st.tried[i]) return;
   const q = st.queue[st.qi]; if (i >= q.options.length) return;
   const ok = st.perm[i] === q.answer;
   if (st.firstTry) record(q, ok);
@@ -1455,7 +1561,20 @@ function moveY(dy) {
     else if (dy <= 0) { P.y = s.y1; P.vy = 0; P.ground = s; } else { P.y = s.y0 - PH; P.vy = 0; if (s.qb && !s.qb.used) bumpBlock(s.qb); }
   });
 }
+function beamUp() {
+  L.over = true; L.beamT = 0; closeQ(); P.vx = P.vy = 0; Music.stop(); beep(300, 1.4, 'sine', 'rising hum, beamed up to the mothership');
+  [400, 500, 650, 850].forEach(function (f, k) { setTimeout(function () { beep(f, 0.25, 'sine'); }, 250 + k * 260); });
+}
 function step(dt) {
+  if (L.beamT != null) {
+    L.beamT += dt; P.t += dt; const u = Math.min(1, L.beamT / 1.6), g = L.goal;
+    P.x += (g.x - P.x) * Math.min(1, dt * 6); P.y = g.y + u * u * 6.4; P.m.position.set(P.x, P.y, 0); P.m.rotation.y += dt * 9; P.m.scale.setScalar(Math.max(0.05, 1 - u * 0.95)); P.m.visible = true;
+    g.beam.material.opacity = 0.35 + Math.sin(L.beamT * 30) * 0.1; g.m.position.y = g.y + 6.6 + (L.beamT > 1.6 ? (L.beamT - 1.6) * (L.beamT - 1.6) * 30 : 0);
+    if (L.beamT > 1.6) { g.beam.visible = false; P.m.visible = false; }
+    cam.position.y += (g.y + 5.5 - cam.position.y) * Math.min(1, dt * 2); cam.lookAt(cam.position.x, cam.position.y - 0.6, 0);
+    if (L.beamT > 2.3 && !L.done2) { L.done2 = true; finish(); }
+    return;
+  }
   L.time += dt; P.t += dt;
   const ax = L.active ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   if (L.active) jumpBuf = 0;
@@ -1557,7 +1676,7 @@ function step(dt) {
   });
   P.hist.unshift({ x: P.x, y: P.y }); if (P.hist.length > 300) P.hist.pop();
   P.trail.forEach(function (g, k) { const h = P.hist[Math.min(P.hist.length - 1, (k + 1) * 9)]; g.position.set(h.x, h.y + 0.6, -0.4); });
-  L.sparks.forEach(function (s) { if (!s.got && Math.abs(P.x - s.x) < 0.7 && Math.abs(P.y + 0.7 - s.y) < 0.9) { s.got = 1; s.m.visible = false; L.score += 10; L.coins++; beep(1200, 0.06, 'square'); if (L.coins >= 50) { L.coins -= 50; L.lives = Math.min(9, L.lives + 1); popup(P.x, P.y + 1, 'Extra life!', '#7be0ad'); beep(1400, 0.3, 'triangle', 'jingle, extra life'); } hud(); } s.m.rotation.y += dt * 3; });
+  L.sparks.forEach(function (s) { if (!s.got && Math.abs(P.x - s.x) < 0.7 && Math.abs(P.y + 0.7 - s.y) < 0.9) { s.got = 1; s.m.visible = false; L.score += s.val || 10; L.coins++; if (s.val) popup(s.x, s.y + 0.6, '+' + s.val, '#d8b0ff'); beep(1200, 0.06, 'square'); if (L.coins >= 50) { L.coins -= 50; L.lives = Math.min(9, L.lives + 1); popup(P.x, P.y + 1, 'Extra life!', '#7be0ad'); beep(1400, 0.3, 'triangle', 'jingle, extra life'); } hud(); } s.m.rotation.y += dt * 3; });
   L.tokens.forEach(function (t) {
     if (t.got) return; t.gem.rotation.y += dt * 2;
     if (Math.abs(P.x - t.x) < 0.8 && Math.abs(P.y + 0.7 - t.y) < 0.95) {
@@ -1571,7 +1690,7 @@ function step(dt) {
   });
   let near = null;
   L.stations.forEach(function (st) { if (!st.done && P.x > st.x0 && P.x < st.x1) near = st; if (st.boss && st.boss.m.visible) { st.boss.m.position.y = st.boss.y + Math.sin(P.t * 2) * 0.5; st.boss.m.rotation.y = Math.sin(P.t) * 0.4; } });
-  if (near !== L.active) { if (near) openQ(near); else closeQ(); }
+  if (near !== L.active && !(L.active && (L.active.clue || L.active.portal))) { if (near) openQ(near); else closeQ(); }
   let zone = null; L.zones.forEach(function (z) { if (!z.done && P.x > z.x0 && P.x < z.x1) zone = z; });
   if (!near) { if (zone !== L.zone) { L.zone = zone; if (!zone || zone.kind !== 'become') setBadge(null); if (zone) showZone(zone); else closeQ(); } } else L.zone = null;
   L.zones.forEach(function (z) { zoneTick(z, dt); });
@@ -1580,8 +1699,10 @@ function step(dt) {
   L.spin.forEach(function (t) { t.rotation.z += dt * 2; });
   if (actEdge) {
     actEdge = false;
-    if (L.active) $('qfb').textContent = L.active.lock ? 'Press a number key from 1 to 5.' : 'Press the letter of your answer.';
-    else { const k = nearScan(); if (k) doScan(k); else if (S.alien.gear === 3 && !P.ground && !zoneTarget(L.zone)) buildProtein(); else if (L.zone) zoneAct(L.zone); }
+    if (L.active && L.active.portal) tryCode();
+    else if (L.active && L.active.clue) $('qfb').textContent = 'Press the letter of your answer, or Esc to close.';
+    else if (L.active) $('qfb').textContent = L.active.lock ? 'Press a number key from 1 to 5.' : 'Press the letter of your answer.';
+    else { const k = nearScan(), cl = nearClue(), pt = nearPortal(); if (k) doScan(k); else if (cl) openClue(cl); else if (pt) { if (pt.open) enterMini(pt); else openPortalPanel(); } else if (S.alien.gear === 3 && !P.ground && !zoneTarget(L.zone)) buildProtein(); else if (L.zone) zoneAct(L.zone); }
   }
   L.scans.forEach(function (k) {
     k.t += dt; k.ring.rotation.y += dt * 2; const g = k.g, u = g.userData, by = k.y;
@@ -1593,6 +1714,9 @@ function step(dt) {
     if (nr && !k.done && !k.told && !L.active) { k.told = true; toast('Press E to scan the ' + k.sc.name + '.', 3); }
   });
   if (S.alien.gear === 1 && !L.toldSecret && L.secrets.some(function (q) { return Math.abs(q.x - P.x) < 6; })) { L.toldSecret = true; toast('Your Lab goggles reveal a hidden path! Look for the glowing purple platforms.', 4); }
+  if (L.portal) { const p = L.portal; p.swirl.rotation.z += dt * (p.open ? 3 : 0.8); p.swirl.material.opacity = 0.35 + Math.sin(P.t * 3) * 0.12;
+    if (nearPortal() && !L.active && !p.told) { p.told = true; toast(p.open ? 'Press E to enter the portal.' : 'A locked portal! Press E to see the code it needs.', 3); } else if (!nearPortal()) p.told = false; }
+  L.clues.forEach(function (c) { if (!c.told && !L.active && Math.abs(P.x - c.x) < 1.4 && Math.abs(P.y - c.y) < 1.5) { c.told = true; toast('A portal clue! Press E to read it.', 3); } });
   L.helps.forEach(function (h) { h.material.opacity = 0.55 + 0.4 * Math.sin(P.t * 6); });
   L.models.forEach(function (md) { modelTick(md, dt, L.zones.find(function (z) { return z.model === md; })); });
   L.flies = L.flies.filter(function (f) {
@@ -1607,7 +1731,7 @@ function step(dt) {
     return true;
   });
   if (noteT > 0) { noteT -= dt; if (noteT <= 0) $('note').hidden = true; }
-  if (L.goal) { L.goal.m.position.y = L.goal.y + 1.6 + Math.sin(P.t * 2) * 0.2; L.goal.m.rotation.y += dt; if (Math.abs(P.x - L.goal.x) < 1.3 && !L.over) finish(); }
+  if (L.goal) { L.goal.m.position.y = L.goal.y + 6.6 + Math.sin(P.t * 2) * 0.2; L.goal.m.rotation.y += dt; L.goal.beam.material.opacity = 0.12 + Math.sin(P.t * 5) * 0.05; if (Math.abs(P.x - L.goal.x) < 1.3 && !L.over) beamUp(); }
 
   P.m.position.set(P.x, P.y + (P.ground ? Math.abs(Math.sin(P.t * 11)) * 0.07 * Math.min(1, Math.abs(P.vx) / 3) : 0), 0);
   P.m.rotation.y += (P.face * 0.75 - P.m.rotation.y) * Math.min(1, dt * 10);
@@ -1626,8 +1750,9 @@ function step(dt) {
   sceneryTick(dt, P.t);
   L.anim.forEach(function (a) { a.m.position.y = a.y + Math.sin(P.t * 0.6 + a.ph) * a.amp; a.m.rotation.z += a.rot * dt; });
 }
+let LAST = null, STTAB = 'report', PQ = null;
 function finish() {
-  L.over = true; mode = 'done'; closeQ();
+  L.over = true; mode = 'done'; closeQ(); LAST = { w: L.world, lv: L.lv };
   const acc = L.total ? L.first / L.total : 1, stars = acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : 1;
   const bonus = Math.max(0, Math.round(240 - L.time)) * 2; L.score += bonus;
   const before = totalStars(), old = S.levels[L.lv.id] || { stars: 0, best: 0 };
@@ -1639,12 +1764,204 @@ function finish() {
   $('doneStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars); $('doneStars').setAttribute('aria-label', stars + ' of 3 stars');
   $('doneBody').innerHTML = '<p>' + esc(L.lv.outro || '') + '</p><dl><dt>Score</dt><dd>' + L.score + (L.score > old.best && old.best ? ' (new best)' : '') + '</dd><dt>Right on the first try</dt><dd>' + L.first + ' of ' + L.total + '</dd><dt>Speed bonus</dt><dd>' + bonus + '</dd>' + (L.rare ? '<dt>Rare specimen</dt><dd>' + (L.rare.got ? 'Found!' : (S.rare[L.lv.id] ? 'Found on an earlier visit' : 'Still hidden in this level')) + '</dd>' : '') + '</dl>' +
     (L.debrief ? '<h3>Lab Lock debrief</h3><ul class="debrief">' + L.debrief.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>' : '') +
-    (got.length ? '<p class="unlock">New gear unlocked: ' + got.map(function (g) { return esc(g[0]); }).join(', ') + '. Put it on from the main menu.</p>' : '');
+    (got.length ? '<p class="unlock">New gear unlocked: ' + got.map(function (g) { return esc(g[0]); }).join(', ') + '. Put it on in the Wardrobe.</p>' : '');
+  S.bank = (S.bank || 0) + L.score; save();
+  $('doneBody').innerHTML += '<p class="bank">+' + L.score + ' points added. You have <b>' + S.bank + '</b> points to spend in the Supply Shop.</p>';
   const list = allLevels(), i = list.findIndex(function (e) { return e.lv === L.lv; });
-  $('btnNext').hidden = i >= list.length - 1; $('hud').hidden = true; $('touch').hidden = true; $('toast').hidden = true; show('done');
+  $('btnNext').hidden = i >= list.length - 1; $('hud').hidden = true; $('touch').hidden = true; $('toast').hidden = true;
+  menuScene(); show('done'); stationTab('report');
   ($('btnNext').hidden ? $('btnReplay') : $('btnNext')).focus();
 }
 
+/* ---------- PORTAL MINI-GAME: IMMUNE DEFENSE ----------
+   You are inside a blood vessel. Germs float toward you. Each germ is covered in one antigen shape.
+   Fire the antibody whose shape fits that antigen. Shape decides function, like a key in a lock. */
+const ANTIGENS = [{ name: 'Triangle', geo: 'cone', col: '#ff6b6b', sym: '▲' }, { name: 'Cube', geo: 'box', col: '#7fd4ff', sym: '■' }, { name: 'Ring', geo: 'tor', col: '#ffd166', sym: '●' }, { name: 'Diamond', geo: 'oct', col: '#7be0ad', sym: '◆' }];
+let M = null;
+function enterMini(p) {
+  closeQ(); mode = 'mini'; Object.keys(keys).forEach(function (k) { keys[k] = false; });
+  M = { p: p, grp: new T.Group(), germs: [], shots: [], fx: [], t: 0, hearts: 3, score: 0, tagged: 0, wrong: 0, sel: 0, cx: 0, cy: -0.05, spawn: 1.2, dur: 50, cool: 0, k: {}, intro: true, over: false, boost: false,
+    bg: scene.background, fog: scene.fog };
+  scene.remove(L.group); scene.add(M.grp); scene.background = new T.Color('#2a0610'); scene.fog = new T.FogExp2('#3a0a16', 0.022);
+  const tube = new T.Mesh(new T.CylinderGeometry(7, 7, 160, 28, 1, true), new T.MeshLambertMaterial({ color: '#b02a3a', emissive: '#3a0610', side: T.BackSide }));
+  tube.rotation.x = Math.PI / 2; tube.position.z = -60; M.grp.add(tube);
+  M.cells = [];
+  for (let i = 0; i < (S.set.low ? 14 : 30); i++) { const c = new T.Mesh(G.tor, emat('#e0384a', '#5a0a14')); c.scale.set(0.5, 0.5, 0.35); const a = Math.random() * 6.3, r = 3 + Math.random() * 3.4; c.position.set(Math.cos(a) * r, Math.sin(a) * r, -Math.random() * 120); c.rotation.set(Math.random() * 3, Math.random() * 3, 0); M.grp.add(c); M.cells.push(c); }
+  $('hud').hidden = true; $('touch').hidden = true; $('toast').hidden = true; $('note').hidden = true; $('mini').hidden = false;
+  $('miniPick').innerHTML = ANTIGENS.map(function (a, i) { return '<button type="button" data-ab="' + i + '" style="--c:' + a.col + '"><span class="ys">Y</span><span style="color:' + a.col + '">' + a.sym + '</span> ' + (i + 1) + '</button>'; }).join('');
+  miniPanel('<h2>🛡️ Immune Defense</h2><p>The portal pulled you <b>inside a blood vessel</b>. Germs are floating toward you!</p>' +
+    '<p>Every germ is covered in <b>antigens</b>: shapes on its surface. Your weapons are <b>antibodies</b>: Y-shaped proteins. Each antibody fits only <b>one</b> antigen shape, like a key fits one lock.</p>' +
+    '<p><b>Match the shape to tag the germ.</b> A wrong shape just bounces off.</p><p class="dim">Aim: move the mouse (or arrow keys). Fire: click (or space). Pick an antibody: keys 1 to 4. Don\'t let 3 germs get past you!</p>' +
+    '<button type="button" id="miniGo" class="primary">Start</button>');
+  miniSel(0); camMini(); setTimeout(function () { const b = $('miniGo'); if (b) b.focus(); }, 50);
+}
+function camMini() { cam.position.set(0, 0, 10); cam.lookAt(0, 0, -40); }
+function miniPanel(html) { $('miniCard').innerHTML = html; $('miniCard').hidden = !html; }
+function miniSel(i) { M.sel = i; document.querySelectorAll('#miniPick [data-ab]').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.ab === i ? 'true' : 'false'); }); }
+function miniHud() { $('miniTop').textContent = '♥'.repeat(M.hearts) + '♡'.repeat(3 - M.hearts) + '   Tagged: ' + M.tagged + '   Score: ' + M.score + '   Time: ' + Math.max(0, Math.ceil(M.dur - M.t)); }
+function miniGerm() {
+  const ty = Math.floor(Math.random() * ANTIGENS.length), A = ANTIGENS[ty], g = new T.Group(), body = new T.Mesh(G.sph, emat('#b49ad0', '#4a3060')); body.scale.setScalar(1.25); g.add(body);
+  const dirs = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0.7, 0.7, 0], [-0.7, 0.7, 0], [0.7, -0.7, 0], [-0.7, -0.7, 0], [0, 0.7, 0.7], [0.7, 0, 0.7], [-0.7, 0, 0.7]];
+  dirs.forEach(function (d) { const v = new T.Vector3(d[0], d[1], d[2]).normalize(), sp = new T.Mesh(G[A.geo], emat(A.col, '#333333')); sp.scale.setScalar(A.geo === 'cone' ? 0.3 : A.geo === 'tor' ? 0.27 : 0.34); if (A.geo === 'cone') sp.scale.y = 0.34; sp.position.copy(v.multiplyScalar(1.4)); sp.lookAt(v.clone().multiplyScalar(3)); if (A.geo === 'cone') sp.rotateX(Math.PI / 2); g.add(sp); });
+  g.add(glow(A.col, 4.5, 0.35)); const tag = label(A.sym, 1.6, { bd: A.col, big: true }); tag.position.y = 2.3; g.add(tag);
+  const a = Math.random() * 6.3, r = Math.random() * 3.2; g.position.set(Math.cos(a) * r, Math.sin(a) * r * 0.75, -75);
+  M.grp.add(g); M.germs.push({ g: g, ty: ty, sp: 7 + Math.min(6, M.t * 0.12) + Math.random() * 2, alive: true, spin: (Math.random() - 0.5) * 2 });
+}
+function miniFire() {
+  if (M.cool > 0 || M.intro || M.over) return; M.cool = M.boost ? 0.14 : 0.32;
+  const A = ANTIGENS[M.sel], ab = new T.Group(), mt = emat(A.col, '#444444');
+  const st = new T.Mesh(G.cyl, mt); st.scale.set(0.05, 0.3, 0.05); st.position.y = -0.15; ab.add(st);
+  [-1, 1].forEach(function (sd) { const arm = new T.Mesh(G.cyl, mt); arm.scale.set(0.045, 0.24, 0.045); arm.position.set(sd * 0.08, 0.08, 0); arm.rotation.z = -sd * 0.6; ab.add(arm); });
+  ab.add(glow(A.col, 1.2, 0.6));
+  /* find the germ under the crosshair */
+  let best = null, bz = -1e9; const v = new T.Vector3();
+  M.germs.forEach(function (gm) { if (!gm.alive) return; v.copy(gm.g.position).project(cam); const e = gm.g.position.clone(); e.x += 1.6; e.project(cam); const rad = Math.abs(e.x - v.x) * 1.15;
+    const dx = v.x - M.cx, dy = (v.y - M.cy) / cam.aspect; if (Math.sqrt(dx * dx + dy * dy) < rad + 0.03 && gm.g.position.z > bz) { bz = gm.g.position.z; best = gm; } });
+  const from = new T.Vector3(0, -1.6, 7.5), to = best ? best.g.position.clone() : new T.Vector3(M.cx * 30, M.cy * 18, -60);
+  ab.position.copy(from); M.grp.add(ab); M.shots.push({ o: ab, from: from, to: to, t: 0, dur: Math.max(0.15, from.distanceTo(to) / 90), target: best, ty: M.sel });
+  beep(900, 0.06, 'square');
+}
+function miniStep(dt) {
+  camMini(); M.cells.forEach(function (c) { c.position.z += dt * 8; c.rotation.x += dt; if (c.position.z > 10) c.position.z -= 130; });
+  const kx = (M.k.right ? 1 : 0) - (M.k.left ? 1 : 0), ky = (M.k.up ? 1 : 0) - (M.k.down ? 1 : 0);
+  M.cx = Math.max(-0.95, Math.min(0.95, M.cx + kx * dt * 1.3)); M.cy = Math.max(-0.9, Math.min(0.9, M.cy + ky * dt * 1.3));
+  const c = $('stage'), ch = $('miniAim'); ch.style.left = ((M.cx + 1) / 2 * c.clientWidth) + 'px'; ch.style.top = ((1 - M.cy) / 2 * c.clientHeight) + 'px';
+  if (M.k.fire) miniFire();
+  M.fx = M.fx.filter(function (f) { f.t += dt; f.o.scale.setScalar(f.s0 * (1 + f.t * 3)); f.o.traverse(function (o) { if (o.material) o.material.opacity = Math.max(0, 1 - f.t / 0.4); }); if (f.t > 0.4) { M.grp.remove(f.o); return false; } return true; });
+  if (M.intro || M.over) return;
+  M.t += dt; M.cool -= dt;
+  if (!M.boost && M.t > 25) { M.boost = true; miniFlash('Memory cells! Your body remembers these germs, so your antibodies now fire twice as fast.', '#7be0ad', 3.5); beep(880, 0.4, 'triangle', 'power-up, memory cells'); }
+  M.spawn -= dt; if (M.spawn <= 0 && M.t < M.dur - 3) { miniGerm(); M.spawn = Math.max(0.65, 1.5 - M.t * 0.02); }
+  M.germs.forEach(function (gm) {
+    if (!gm.alive) return; gm.g.position.z += gm.sp * dt; gm.g.rotation.y += gm.spin * dt; gm.g.rotation.x += gm.spin * dt * 0.5;
+    if (gm.g.position.z > 6) { gm.alive = false; M.grp.remove(gm.g); M.hearts--; miniFlash('A germ got past you!', '#ff6b6b', 1.5); beep(150, 0.4, 'sawtooth', 'thud, a germ got past'); if (M.hearts <= 0) miniEnd(); }
+  });
+  M.germs = M.germs.filter(function (gm) { return gm.alive || false; });
+  M.shots = M.shots.filter(function (sh) {
+    sh.t += dt; const u = Math.min(1, sh.t / sh.dur); if (sh.target && sh.target.alive) sh.to.copy(sh.target.g.position);
+    sh.o.position.lerpVectors(sh.from, sh.to, u); sh.o.rotation.z += dt * 10;
+    if (u < 1) return true;
+    M.grp.remove(sh.o); const gm = sh.target;
+    if (gm && gm.alive) {
+      if (gm.ty === sh.ty) { gm.alive = false; M.tagged++; M.score += 50; gm.g.traverse(function (o) { if (o.material) { o.material = o.material.clone(); o.material.transparent = true; } }); M.fx.push({ o: gm.g, t: 0, s0: 1 }); beep(1200, 0.12, 'triangle', 'pop, germ tagged'); if (M.tagged % 5 === 1) miniFlash('Tagged! The antibody fits the ' + ANTIGENS[gm.ty].name.toLowerCase() + ' antigen. A phagocyte will eat this germ.', '#7be0ad', 2.2); }
+      else { M.wrong++; miniFlash('Bounced off! A ' + ANTIGENS[sh.ty].name.toLowerCase() + ' antibody does not fit a ' + ANTIGENS[gm.ty].name.toLowerCase() + ' antigen.', '#ffb09c', 2.2); beep(220, 0.15, 'sawtooth', 'boing, wrong shape'); gm.g.position.z -= 4; }
+    }
+    return false;
+  });
+  if (M.t >= M.dur) miniEnd();
+  miniHud(); if (M.flashT > 0) { M.flashT -= dt; if (M.flashT <= 0) $('miniMsg').hidden = true; }
+}
+function miniFlash(t, col, secs) { const m = $('miniMsg'); m.textContent = t; m.style.borderColor = col; m.hidden = false; M.flashT = secs; }
+function miniEnd() {
+  if (M.over) return; M.over = true; const bonus = M.hearts * 100; M.score += bonus;
+  miniPanel('<h2>' + (M.hearts > 0 ? '🛡️ Infection stopped!' : '🛡️ Defense over') + '</h2><p>You tagged <b>' + M.tagged + '</b> germs' + (M.hearts ? ' and kept ' + M.hearts + ' hearts (+' + bonus + ')' : '') + '. Score: <b>' + M.score + '</b></p>' +
+    '<p><b>What really happens:</b> B cells make antibodies that fit one antigen shape. Antibodies tag germs so phagocytes (like white blood cells) can eat them. <b>Memory cells</b> remember the antigen, so the next time your body fights back faster. That is how vaccines work.</p>' +
+    '<p class="dim">Big idea: a protein\'s <b>shape</b> decides its <b>job</b>. Enzymes, antibodies, and transport proteins all work this way.</p>' +
+    '<button type="button" id="miniBack" class="primary">Return through the portal</button>');
+  setTimeout(function () { const b = $('miniBack'); if (b) b.focus(); }, 50);
+}
+function exitMini() {
+  scene.remove(M.grp); disposeGroup(M.grp); scene.background = M.bg; scene.fog = M.fog; scene.add(L.group);
+  L.score += M.score; S.words['Antibody'] = 1; S.words['Antigen'] = 1; save();
+  $('mini').hidden = true; $('hud').hidden = false; $('touch').hidden = !touchMode; mode = 'play'; P.x = M.p.x + 2.2; P.y = M.p.y; P.vx = P.vy = 0; P.inv = 1.5;
+  cam.position.set(P.x + 2.5, P.y + 5.2, camZ); toast('Back from the portal with +' + M.score + ' points!', 4); hud(); M = null; Object.keys(keys).forEach(function (k) { keys[k] = false; });
+}
+function miniKey(e, down) {
+  if (!M) return; const k = e.key;
+  if (down && M.intro && (k === 'Enter' || k === ' ')) { e.preventDefault(); miniStart(); return; }
+  if (down && M.over && (k === 'Enter' || k === ' ' || k === 'e' || k === 'E')) { e.preventDefault(); exitMini(); return; }
+  if (/^[1-4]$/.test(k) && down) { miniSel(+k - 1); return; }
+  const map = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down', ' ': 'fire', Enter: 'fire' };
+  if (map[k]) { M.k[map[k]] = down; e.preventDefault(); }
+}
+function miniStart() { M.intro = false; miniPanel(''); beep(600, 0.2, 'triangle', 'go'); miniHud(); }
+/* ---------- MOTHERSHIP STATION: report, supply shop, practice bay, wardrobe ---------- */
+const SHOP = [
+  { id: 'life', icon: '💗', name: 'Extra life', cost: 600, desc: 'Start your next level with one more life.' },
+  { id: 'shield', icon: '🛡️', name: 'Shield bubble', cost: 400, desc: 'Start your next level protected for 15 seconds.' },
+  { id: 'fly', icon: '🚀', name: 'Flight capsule', cost: 900, desc: 'Press F during a level to fly for 20 seconds.' },
+  { id: 'lens', icon: '🔍', name: 'Hint lens (3 uses)', cost: 500, desc: 'Press H when you are stuck and the right choice glows gold.', qty: 3 },
+  { id: 'g1', icon: '🥽', name: 'Lab goggles', cost: 1500, desc: 'Gear: see hidden platforms. (Or earn 3 stars.)', gear: 1 },
+  { id: 'g2', icon: '🦸', name: 'Explorer cape', cost: 2500, desc: 'Gear: hold jump while falling to fly. (Or earn 8 stars.)', gear: 2 },
+  { id: 'g3', icon: '🎩', name: 'Ribosome hat', cost: 3500, desc: 'Gear: press E in the air to build a protein platform. (Or earn 12 stars.)', gear: 3 }];
+function gearOpen(i) { return GEAR[i][1] <= totalStars() || !!S.owned[i]; }
+function stationTab(t) {
+  STTAB = t; document.querySelectorAll('#stTabs [data-tab]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.tab === t ? 'true' : 'false'); });
+  $('doneReport').hidden = t !== 'report'; const body = $('stBody'); body.hidden = t === 'report';
+  if (t === 'shop') {
+    body.innerHTML = '<p class="bank">Points to spend: <b>' + (S.bank || 0) + '</b></p><div class="shop">' + SHOP.map(function (it) {
+      const have = it.gear ? gearOpen(it.gear) : 0, n = it.gear ? 0 : S.inv[it.id] || 0, can = !have && (S.bank || 0) >= it.cost;
+      return '<div class="item"><span class="ic">' + it.icon + '</span><span class="tx"><b>' + esc(it.name) + '</b>' + (n ? ' <span class="own">You have ' + n + '</span>' : '') + '<br><span class="dim">' + esc(it.desc) + '</span></span>' +
+        '<button type="button" data-buy="' + it.id + '"' + (can ? '' : ' disabled') + '>' + (have ? 'Owned' : it.cost + ' pts') + '</button></div>';
+    }).join('') + '</div><p class="dim">Spending points never lowers your high scores.</p>';
+  } else if (t === 'practice') { PQ = practiceSet(); practiceShow(); }
+  else if (t === 'wardrobe') { body.innerHTML = '<div id="stCust" class="cust">' + custHTML() + '</div>'; }
+}
+function stationClick(e) {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.buy) {
+    const it = SHOP.find(function (x) { return x.id === b.dataset.buy; }); if (!it || (S.bank || 0) < it.cost) return;
+    S.bank -= it.cost; if (it.gear) { S.owned[it.gear] = true; S.alien.gear = it.gear; refreshAlien(); } else S.inv[it.id] = (S.inv[it.id] || 0) + (it.qty || 1);
+    save(); beep(1200, 0.15, 'square', 'ka-ching, bought ' + it.name); stationTab('shop'); const nb = $('stBody').querySelector('[data-buy="' + it.id + '"]'); if (nb) nb.focus(); return;
+  }
+  if (b.classList.contains('chip')) { S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); stationTab('wardrobe'); const again = $('stBody').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); return; }
+  if (b.dataset.pa != null) practiceAnswer(+b.dataset.pa);
+  if (b.id === 'pqNext') { PQ.i++; practiceShow(); }
+  if (b.id === 'pqMore') { PQ = practiceSet(); practiceShow(); }
+}
+/* practice: questions you missed first, then ones you saw longest ago */
+function practiceSet() {
+  const ids = Object.keys(QMAP).filter(function (k) { return S.missed[k] || S.seen[k]; });
+  ids.sort(function (a, c) { return ((S.missed[c] || 0) - (S.missed[a] || 0)) || ((S.seen[a] || 0) - (S.seen[c] || 0)); });
+  return { qs: ids.slice(0, 5).map(function (k) { return QMAP[k]; }), i: 0, right: 0, tried: {}, earned: 0 };
+}
+function practiceShow() {
+  const body = $('stBody');
+  if (!PQ.qs.length) { body.innerHTML = '<p>Play a level first. Questions you meet in the levels come back here for practice.</p>'; return; }
+  if (PQ.i >= PQ.qs.length) { body.innerHTML = '<p><b>Practice round done!</b> ' + PQ.right + ' of ' + PQ.qs.length + ' right on the first try. You earned ' + PQ.earned + ' points.</p><div class="btns"><button type="button" id="pqMore" class="primary">Practice more</button></div>'; $('pqMore').focus(); return; }
+  const q = PQ.qs[PQ.i]; PQ.perm = q.fixed ? q.options.map(function (_, i) { return i; }) : shuffle(q.options.map(function (_, i) { return i; })); PQ.tried = {}; PQ.first = true; PQ.solved = false;
+  body.innerHTML = '<p class="dim">Practice Bay · question ' + (PQ.i + 1) + ' of ' + PQ.qs.length + ' · +50 points for each one right on the first try</p><p class="pqp">' + esc(q.prompt) + (q.stem ? '<br><span class="dim">' + esc(q.stem) + '</span>' : '') + '</p>' +
+    (q.figure ? figHTML(q.figure) : '') + '<div class="pqo">' + PQ.perm.map(function (oi, k) { return '<button type="button" class="opt" data-pa="' + k + '"><b>' + 'ABCDE'[k] + '</b> ' + esc(q.options[oi]) + '</button>'; }).join('') + '</div><p id="pqFb" class="fb" aria-live="polite"></p>';
+  const f = body.querySelector('.opt'); if (f) f.focus();
+}
+function practiceAnswer(k) {
+  const q = PQ.qs[PQ.i]; if (!q || PQ.tried[k] || PQ.solved) return; const ok = PQ.perm[k] === q.answer, btn = $('stBody').querySelector('[data-pa="' + k + '"]');
+  if (ok) {
+    if (PQ.first) { PQ.right++; PQ.earned += 50; S.bank = (S.bank || 0) + 50; if (S.missed[q.id]) { S.missed[q.id]--; if (S.missed[q.id] <= 0) delete S.missed[q.id]; } }
+    S.seen[q.id] = Date.now(); save(); beep(880, 0.2, 'sine', 'chime, correct');
+    $('pqFb').innerHTML = '✓ ' + esc(q.explain || 'Correct!') + '<br><button type="button" id="pqNext" class="primary">Next</button>'; $('pqNext').focus(); PQ.solved = true;
+  } else {
+    PQ.tried[k] = 1; if (PQ.first) { S.missed[q.id] = (S.missed[q.id] || 0) + 1; save(); } PQ.first = false; if (btn) { btn.disabled = true; btn.classList.add('no'); }
+    const wrongs = Object.keys(PQ.tried).length; let msg = '✗ Not that one. ' + esc(q.hint || '');
+    if (wrongs >= 2) { const cb = $('stBody').querySelector('[data-pa="' + PQ.perm.indexOf(q.answer) + '"]'); if (cb) cb.classList.add('help'); msg += ' The right answer is glowing gold.'; }
+    $('pqFb').innerHTML = msg; beep(160, 0.3, 'sawtooth', 'low buzz, not correct');
+  }
+}
+/* supplies: loaded at the start of a level, or used with F (flight) and H (hint lens) */
+function loadSupplies() {
+  const used = [];
+  if (S.inv.life > 0) { L.lives += S.inv.life; used.push(S.inv.life + ' extra ' + (S.inv.life > 1 ? 'lives' : 'life')); S.inv.life = 0; }
+  if (S.inv.shield > 0) { S.inv.shield--; P.shield = 15; P.shieldM = new T.Mesh(G.tor, basic('#7fd4ff', 0.45, true)); P.shieldM.scale.setScalar(0.95); P.shieldM.position.y = 0.75; P.m.add(P.shieldM); used.push('a 15-second shield'); }
+  save(); if (used.length) setTimeout(function () { if (mode === 'play') toast('Supplies loaded: ' + used.join(' and ') + '.', 4); }, 2500);
+}
+function useFly() { if (!L || L.active || L.over || !(S.inv.fly > 0)) { if (L && !(S.inv.fly > 0)) toast('No flight capsules. Buy them in the Supply Shop on the mothership.', 3); return; } S.inv.fly--; save(); giveFlight(20, ''); hud(); }
+function useLens() {
+  if (!L || L.over) return; if (!(S.inv.lens > 0)) { toast('No hint lenses. Buy them in the Supply Shop on the mothership.', 3); return; }
+  let did = false;
+  if (L.active) { const st = L.active, q = st.queue[st.qi], ci = st.perm.indexOf(q.answer), b2 = $('qopts').querySelector('[data-i="' + ci + '"]'); if (b2) { b2.classList.add('help'); did = true; } }
+  else if (L.zone && !L.zone.done) {
+    const z = L.zone; let g = null;
+    if (z.kind === 'hunt') { const t = z.toks.find(function (k) { return k.good && !k.got; }); if (t) g = t.g; }
+    else if (z.kind === 'catch') { const t = z.toks.find(function (k) { return k.text === z.c.steps[z.si].need; }); if (t) g = t.g; }
+    else if (z.kind === 'become') { const d = z.doors.find(function (q) { return q.d.ok; }); if (d) { helpGlow(d.g); d.g.userData.help.position.set(d.s.x0 + 0.7, (d.s.y0 + d.s.y1) / 2, 1); did = true; } }
+    else if (z.kind === 'maze') { const d = z.walls[z.si].find(function (q) { return q.d.ok; }); if (d) { helpGlow(d.g); d.g.userData.help.position.set(d.s.x0 + 0.7, (d.s.y0 + d.s.y1) / 2, 1); did = true; } }
+    else if (z.kind === 'sequence') { const t = z.toks.find(function (k) { return k.si === z.next; }); if (t) g = t.g; }
+    else if (z.kind === 'wordbank') { const t = z.toks.find(function (k) { return !k.got && k.word === z.wb.sentences[z.si].answer; }); if (t) g = t.g; }
+    if (g) { helpGlow(g); did = true; }
+  }
+  if (!did) { toast('The hint lens works during a challenge. Walk into one first.', 3); return; }
+  S.inv.lens--; save(); beep(1000, 0.2, 'triangle', 'shimmer, hint lens'); toast('🔍 Hint lens: the right choice is glowing gold.', 3); hud();
+}
 /* ---------- menus ---------- */
 function openMap() {
   if (mode === 'play' || mode === 'done') { menuScene(); }
@@ -1663,19 +1980,22 @@ function menuScene() {
   menuGrp.userData.anim = []; scenery(th, -10, 10, menuGrp, menuGrp.userData.anim); const halo = glow(th.rim, 5, 0.35); halo.position.y = 0.1; menuGrp.add(halo); refreshAlien(); show('menu'); buildMenu();
 }
 function refreshAlien() { if (!menuGrp) return; if (menuAlien) menuGrp.remove(menuAlien); menuAlien = buildAlien(S.alien); menuAlien.scale.setScalar(1.5); menuGrp.add(menuAlien); }
-function buildMenu() {
+function custHTML() {
   const stars = totalStars();
   const rows = [['Body', 'shape', ['Round', 'Tall', 'Wide', 'Jelly', 'Cube']], ['Color', 'color', COLORS.map(function (c) { return c[0]; })], ['Eyes', 'eyes', ['1', '2', '3'], 1], ['Eye style', 'estyle', ['Classic', 'Anime', 'Sleepy']],
     ['Mouth', 'mouth', ['None', 'Smile', 'Open', 'Cat', 'Fangs', 'Tongue']], ['Antennae', 'ant', ['0', '1', '2']],
-    ['Gear', 'gear', GEAR.map(function (g) { return g[1] > stars ? g[0] + ' (' + g[1] + ' stars)' : g[0]; })]];
-  $('cust').innerHTML = rows.map(function (r) {
+    ['Gear', 'gear', GEAR.map(function (g, i) { return !gearOpen(i) ? g[0] + ' (' + g[1] + ' stars)' : g[0]; })]];
+  return rows.map(function (r) {
     return '<div class="row"><span class="rl">' + r[0] + '</span><span class="rb">' + r[2].map(function (name, i) {
-      const v = i + (r[3] || 0), lock = r[1] === 'gear' && GEAR[i][1] > stars;
+      const v = i + (r[3] || 0), lock = r[1] === 'gear' && !gearOpen(i);
       return '<button type="button" class="chip" data-k="' + r[1] + '" data-v="' + v + '"' + (S.alien[r[1]] === v ? ' aria-pressed="true"' : ' aria-pressed="false"') + (lock ? ' disabled' : '') +
         (r[1] === 'color' ? ' style="--sw:' + COLORS[i][1] + '"><i class="sw"></i>' : '>') + esc(name) + '</button>';
     }).join('') + '</span></div>';
   }).join('') + '<p class="dim gearinfo">' + GEARINFO[S.alien.gear || 0] + '</p>';
-  const list = allLevels(), started = Object.keys(S.levels).length > 0;
+}
+function buildMenu() {
+  $('cust').innerHTML = custHTML();
+  const stars = totalStars(), list = allLevels(), started = Object.keys(S.levels).length > 0;
   $('btnPlay').textContent = started ? 'Continue mission' : 'Start mission';
   $('menuStars').textContent = list.length ? stars + ' of ' + list.length * 3 + ' stars' : 'No world files found in this folder.';
   $('btnPlay').disabled = !list.length;
@@ -1756,7 +2076,7 @@ function buildProgress() {
   }
   const codes = Object.keys(S.codes).sort();
   if (codes.length) html += '<h3>By Keystone code</h3><table class="ftab"><tr><th>Code</th><th>First-try correct</th></tr>' + codes.map(function (k) { return '<tr><td>' + esc(k) + '</td><td>' + S.codes[k].right + ' of ' + S.codes[k].tries + '</td></tr>'; }).join('') + '</table>';
-  const top = BQ.Leaderboard.top(5);
+  const top = BQ.Leaderboard.top(10).filter(function (r) { return nickOK(r.nick); }).slice(0, 5); if (!nickOK(S.nick)) { S.nick = ''; save(); }
   html += '<h3>High scores on this device</h3>' + (top.length ? '<ol class="board">' + top.map(function (r) { return '<li><span>' + esc(r.nick) + '</span><span class="num">' + r.score + '</span></li>'; }).join('') + '</ol>' : '<p class="dim">Enter a nickname below, then finish a level to post a score. Your total so far: ' + totalScore() + '.</p>');
   $('progBody').innerHTML = html; $('nick').value = S.nick;
 }
@@ -1785,7 +2105,8 @@ function resize() {
 function tick(t) {
   requestAnimationFrame(tick);
   const dt = Math.min((t - last) / 1000 || 0, 1 / 30); last = t;
-  if (mode === 'play' && !paused) {
+  if (mode === 'mini' && M) { miniStep(dt); }
+  else if (mode === 'play' && !paused) {
     step(dt);
     if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').hidden = true; }
   } else if (menuGrp) {
@@ -1809,11 +2130,17 @@ function press(k, down) {
 function wire() {
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    if (mode === 'mini') { miniKey(e, true); return; }
+    if (mode === 'play' && e.key === 'Escape' && L && L.active && (L.active.clue || L.active.portal)) { closeQ(); e.preventDefault(); return; }
     if (mode === 'play' && (e.key === 'p' || e.key === 'P' || e.key === 'Escape')) { pause(!paused); e.preventDefault(); return; }
+    if (mode === 'play' && !paused && !(L && L.active) && (e.key === 'f' || e.key === 'F')) { useFly(); return; }
+    if (mode === 'play' && !paused && (e.key === 'h' || e.key === 'H')) { useLens(); return; }
     if (e.key === 'm' || e.key === 'M') { S.set.music = !S.set.music; save(); applySettings(); toast(S.set.music ? 'Music on' : 'Music off (press M to turn it back on)', 2.5); return; }
+    if (mode !== 'play' && !$('done').hidden && STTAB === 'practice' && /^[a-eA-E1-5]$/.test(e.key) && !(e.target && e.target.tagName === 'INPUT')) { practiceAnswer(/[1-5]/.test(e.key) ? +e.key - 1 : 'abcde'.indexOf(e.key.toLowerCase())); return; }
     if (mode !== 'play' || paused) return;
     if (e.target && e.target.tagName === 'BUTTON' && (e.key === 'Enter' || e.key === ' ')) e.target.blur();
     if (L && L.active) {
+      if (L.active.portal && /^(e|E|Enter| )$/.test(e.key)) { tryCode(); e.preventDefault(); return; }
       if (/^[a-eA-E]$/.test(e.key) && !L.active.lock) { answer('abcde'.indexOf(e.key.toLowerCase())); e.preventDefault(); return; }
       if (/^[1-9]$/.test(e.key)) { answer(+e.key - 1); e.preventDefault(); return; }
       if (KEYMAP[e.key]) { e.preventDefault(); return; }
@@ -1823,6 +2150,7 @@ function wire() {
   });
   /* a movement stops only when every key for it is released; answer keys never affect movement */
   window.addEventListener('keyup', function (e) {
+    if (mode === 'mini') { miniKey(e, false); return; }
     const nk = e.key.length === 1 ? e.key.toLowerCase() : e.key, k = KEYMAP[nk]; if (!k || !held[nk]) return; delete held[nk];
     if (!Object.keys(held).some(function (h) { return KEYMAP[h] === k; })) press(k, false);
   });
@@ -1833,7 +2161,7 @@ function wire() {
     const k = b.dataset.k, up = function (e) { press(k, false); e.preventDefault(); };
     b.addEventListener('pointerdown', function (e) { press(k, true); e.preventDefault(); }); b.addEventListener('pointerup', up); b.addEventListener('pointerleave', up); b.addEventListener('pointercancel', up);
   });
-  $('qopts').addEventListener('click', function (e) { const b = e.target.closest('.opt'); if (b) { answer(+b.dataset.i); b.blur(); } });
+  $('qopts').addEventListener('click', function (e) { const b = e.target.closest('.opt'); if (!b) return; b.blur(); if (b.dataset.close) { closeQ(); return; } if (b.dataset.try) { tryCode(); return; } answer(+b.dataset.i); });
   $('cust').addEventListener('click', function (e) { const b = e.target.closest('.chip'); if (!b) return; S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); buildMenu(); const again = $('cust').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); });
   $('btnPlay').onclick = function () { openMap(); };
   $('btnLevels').onclick = function () { openMap(); };
@@ -1845,7 +2173,13 @@ function wire() {
   $('btnMapPlay').onclick = function () { const e = nextUp(); if (e) startLevel(e.w, e.lv); };
   $('btnMap').onclick = function () { openMap(); };
   document.querySelectorAll('[data-back]').forEach(function (b) { b.onclick = function () { if (b.closest('#settings') && backTo === 'pause') show('pause'); else show('menu'); }; });
-  $('nick').addEventListener('input', function () { S.nick = $('nick').value.replace(/[^A-Za-z0-9 _-]/g, '').slice(0, 12); save(); });
+  $('nick').addEventListener('input', function () { const v = $('nick').value.replace(/[^A-Za-z0-9 _-]/g, '').slice(0, 12); if (v !== $('nick').value) $('nick').value = v; $('nickMsg').textContent = ''; });
+  const nickSave = function () {
+    const v = $('nick').value.trim();
+    if (!nickOK(v)) { $('nickMsg').textContent = 'Please choose a name that is appropriate and respectful. Try again.'; $('nickMsg').className = 'nickbad'; $('nick').value = S.nick; $('nick').focus(); beep(200, 0.2, 'sawtooth', 'buzz, name not allowed'); return; }
+    S.nick = v; save(); $('nickMsg').textContent = v ? 'Saved: ' + v : ''; $('nickMsg').className = 'dim';
+  };
+  $('nick').addEventListener('change', nickSave); $('nick').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickSave(); } });
   $('setText').onchange = function () { S.set.text = +$('setText').value; save(); applySettings(); };
   ['Low', 'Sound', 'Music', 'Cap', 'Unlock'].forEach(function (n) { $('set' + n).onchange = function () { S.set[n.toLowerCase()] = $('set' + n).checked; save(); applySettings(); }; });
   $('setVol').oninput = function () { S.set.vol = +$('setVol').value; save(); musicLevel(); };
@@ -1861,8 +2195,15 @@ function wire() {
   $('btnRestart').onclick = function () { startLevel(L.world, L.lv); };
   $('btnPauseSet').onclick = function () { backTo = 'pause'; show('settings'); };
   $('btnQuit').onclick = menuScene; $('btnMenu').onclick = menuScene;
-  $('btnReplay').onclick = function () { startLevel(L.world, L.lv); };
-  $('btnNext').onclick = function () { const list = allLevels(), i = list.findIndex(function (e) { return e.lv === L.lv; }); startLevel(list[i + 1].w, list[i + 1].lv); };
+  $('btnReplay').onclick = function () { startLevel(LAST.w, LAST.lv); };
+  $('btnNext').onclick = function () { const list = allLevels(), i = list.findIndex(function (e) { return e.lv === LAST.lv; }); startLevel(list[i + 1].w, list[i + 1].lv); };
+  const aimAt = function (e) { if (mode !== 'mini' || !M) return; const r = $('stage').getBoundingClientRect(); M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
+  $('stage').addEventListener('pointermove', aimAt);
+  $('stage').addEventListener('pointerdown', function (e) { if (mode !== 'mini' || !M) return; aimAt(e); miniFire(); });
+  $('mini').addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !M) return; if (b.id === 'miniGo') miniStart(); else if (b.id === 'miniBack') exitMini(); else if (b.dataset.ab != null) { miniSel(+b.dataset.ab); b.blur(); } });
+  $('hudInv').addEventListener('click', function (e) { const b = e.target.closest('[data-use]'); if (!b) return; b.blur(); if (b.dataset.use === 'fly') useFly(); else useLens(); });
+  $('stTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-tab]'); if (b) stationTab(b.dataset.tab); });
+  $('stBody').addEventListener('click', stationClick);
 }
 function boot() {
   if (TEACH) $('teacherRow').hidden = false;
@@ -1877,6 +2218,6 @@ function boot() {
   wire(); applySettings(); menuScene(); requestAnimationFrame(tick);
   const jump = (location.hash || '').match(/level-(\d+-\d+)/i);
   if (jump) { const e = allLevels().find(function (x) { return x.lv.id === jump[1]; }); if (e) startLevel(e.w, e.lv); }
-  BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, start: startLevel };
+  BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, start: startLevel, mini: function () { return M; }, cam: function () { return cam; } };
 }
 })();

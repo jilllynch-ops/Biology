@@ -18,6 +18,8 @@
    squeeze = a low tunnel to crawl through while ducking (dx, length).
    scan = a specimen to scan with E; it teaches a word and saves it to the Field Guide (dx, scan id).
    hplat = a hidden platform: solid for everyone, but only visible with Lab goggles (used for the secret climbs).
+   hsparks = bonus sparks only Lab goggles can see. clue = an escape-room clue terminal (dx, question id).
+   portal = a locked portal to the Immune Defense mini-game; its code is the letters of the level's clue answers.
    maze = Organization Maze: walls of three doorways; only the next level opens.
    balance = keep a body measurement in its normal range with switches (an elevator, or the 1-5 boss). */
 FieldGuide.registerWorld({
@@ -30,7 +32,7 @@ FieldGuide.registerWorld({
       build: function (b) {
         /* teaches: moving, jumping, double jump, ? blocks, viruses, then the Specimen Hunt */
         b.hint(5, 4.4, 'Move: arrow keys or A and D. Hold Shift to run!').hint(12, 4.6, 'Jump: space bar. Tap it again in the air to double jump!')
-          .qblock(17, 3.4, 'sparks').ground(21)
+          .qblock(17, 3.4, 'sparks').ground(21).hsparks(-12, 6.2, 4)
           .hint(3, 4.8, 'See a 🔍? Walk up and press E to scan it and learn a new word!').scan(8, 's-frog').scan(12.5, 's-rock').scan(16.5, 's-sprout').ground(21)
           .arc(-2.5, 7, 2.6).gap(3.5).ground(12)
           .hint(-8, 4.6, 'Viruses! Jump on them or over them.').virus(-4, 2.4, 0.8)
@@ -42,7 +44,7 @@ FieldGuide.registerWorld({
           .hunt('life')
           .qblock(3, 3.4, 'boost').ground(8)
           .station([{ sort: 'alive', n: 3 }])
-          .virus(5, 2.6, 1).snapper(12, 3.5, 1.2).ground(16)
+          .virus(5, 2.6, 1).snapper(12, 3.5, 1.2).ground(16).hsparks(-9, 6.4, 5)
           .station(['w1q01', 'w1q02'])
           .goal();
       } },
@@ -54,20 +56,21 @@ FieldGuide.registerWorld({
         b.sparks(4, 1.2, 5).virus(9, 2, 1).ground(12).gap(3).ground(5).gap(3.5)
           .hint(4, 4.6, 'Toxin crystals! Jump over them.').spikes(4, 2.2).ground(9)
           .review()
-          .hint(4, 4.6, 'Antibodies tag invaders, like you! Duck under them or jump over.').antibody(15, 15, 3.4).ground(16)
+          .hint(4, 4.6, 'Antibodies tag invaders, like you! Duck under them or jump over.').antibody(15, 15, 3.4).ground(16).hsparks(-11, 6.2, 4)
           .scan(3, 's-bact2').scan(8, 's-membrane').scan(13, 's-cyto').scan(18, 's-ribo').ground(21)
           .hunt('build-prok')
-          .sparks(0, 8, 5).sparks(1, 11, 4).qblock(3, 3.4, 'boost').ground(7).bridge(11)
+          .sparks(0, 8, 5).sparks(1, 11, 4).qblock(3, 3.4, 'boost').ground(7).clue(5, 'w1q03').ground(8).bridge(11)
           .hint(7, 5.2, 'White blood cells engulf invaders like you! Jump when they hide.').virus(4, 2.5, 1.2).snapper(9.5, 3.6, 0).qblock(13, 3.4, 'sparks').ground(16)
           .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .scan(3, 's-animal').scan(8, 's-nucleus').scan(13, 's-mito').scan(18, 's-er').scan(23, 's-golgi').scan(28, 's-plant').ground(31)
           .hunt('build-euk')
-          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7)
+          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7).clue(4, 'w1q04').ground(7)
           .mixed(2, ['BIO.A.1.1.1'])
           .rise(1.5).ground(5).rise(1.5).sparks(1, 1.2, 3).ground(5).gap(4).rise(-3)
           .qblock(3, 3.4, 'shield').virus(7, 2, 1.4).spikes(11, 1.8).ground(15)
           .station(['w1q05', 'w1q06'])
-          .bridge(12, { ay: 1.4, sp: 1.1 }).ground(4)
+          .bridge(12, { ay: 1.4, sp: 1.1 }).ground(4).clue(2, 'w1q24').ground(5)
+          .hint(1, 6.6, 'Portal! Its code is the letters of your 3 clue answers.').portal(6).ground(11)
           .goal();
       } },
     { id: '1-3', title: 'The Protein Factory', theme: 'nucleus',
@@ -77,7 +80,7 @@ FieldGuide.registerWorld({
         /* adds: flying free radicals, more enemies together, faster moving platforms */
         b.hint(7, 4.6, 'Free radicals damage cells. Jump on top of them!').hazard(11, 1.0, { ax: 2.2, ay: 0.15, sp: 1.1 }).sparks(3, 1.2, 3).ground(16)
           .review()
-          .squeeze(2, 3.5).antibody(14, 8, 3).ground(16)
+          .squeeze(2, 3.5).antibody(14, 8, 3).ground(16).hsparks(-5, 6.4, 4)
           .qblock(3, 3.4, 'boost').ground(6)
           .bridge(11)
           .hazard(4, 1.0, { ax: 1.5 }).hazard(9, 3.2, { ax: 0.5, ay: 1.2, sp: 1.8 }).virus(10, 1.6, 1.2).sparks(2, 2.5, 4).ground(12)
@@ -104,7 +107,7 @@ FieldGuide.registerWorld({
       log: 'Mission log: Reached the plasma membrane. Become the molecules and find out how each one gets across.',
       outro: 'Report sent: passive transport goes from crowded to less crowded with no energy. Active transport uses ATP to go from less crowded to more crowded.',
       build: function (b) {
-        b.ground(10).sparks(-6, 1.2, 4).review()
+        b.ground(10).sparks(-6, 1.2, 4).hsparks(-8, 5.8, 4).review()
           .scan(3, 's-diffuse').scan(8, 's-gradient').ground(11)
           .become('b-oxygen')
           .gap(3.5).ground(5)
@@ -133,21 +136,22 @@ FieldGuide.registerWorld({
       outro: 'Report sent: cells form tissues, organs, and systems, and negative feedback keeps the whole body in balance.',
       build: function (b) {
         /* feedback loops you operate: wire the loop, balance blood glucose, then beat the temperature boss */
-        b.sparks(4, 1.2, 4).virus(8, 2, 1).ground(12).review()
+        b.sparks(4, 1.2, 4).virus(8, 2, 1).ground(12).hsparks(-10, 6.2, 4).review()
           .qblock(3, 3.4, 'sparks').ground(6)
           .scan(3, 's-tissue').scan(8, 's-organ').scan(13, 's-system').scan(18, 's-organism').ground(21)
           .maze('maze-levels')
-          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7)
+          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7).clue(4, 'w1q22').ground(7)
           .station(['w1q24', 'w1q25'])
           .bridge(11)
           .virus(4, 2.4, 1.2).snapper(9.5, 3.4, 0).ground(14).hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .scan(3, 's-receptor').scan(8, 's-feedback').ground(11)
           .sequence('seq-loop')
           .mixed(2, ['BIO.A.1.1.1', 'BIO.A.1.2.1', 'BIO.B.2.2.1', 'BIO.B.2.2.2', 'BIO.A.4.1.3', 'BIO.A.4.1.1', 'BIO.A.4.1.2'])
-          .scan(3, 's-glucose').ground(6)
+          .clue(3, 'w1q29').scan(8, 's-glucose').ground(11)
           .balance('bal-glucose')
           .squeeze(3, 4).antibody(15, 8, 3.2, 1).ground(16)
           .qblock(3, 3.4, 'shield').hazard(8, 1.2, { ax: 2, sp: 1.3 }).virus(12, 2, 1.4).ground(16)
+          .clue(3, 'w1q30').ground(6).hint(1, 6.6, 'Portal! Its code is the letters of your 3 clue answers.').portal(6).ground(11)
           .hint(-3, 4.6, 'Boss ahead: The Imbalance')
           .balance('bal-temp')
           .goal();

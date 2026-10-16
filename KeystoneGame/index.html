@@ -131,6 +131,36 @@ ul.slots { list-style: none; padding-left: 0; }
 @media (prefers-reduced-motion: reduce) { .mapsvg .pulse, .mapsvg .malien { animation: none; } }
 .mapinfo { margin: 10px 2px; min-height: 2.8em; }
 .mapinfo .st { color: var(--signal); letter-spacing: .1em; }
+#done { background: linear-gradient(90deg, transparent 30%, rgba(11, 29, 42, .78)); }
+.card.station { margin-right: 4%; max-width: 560px; max-height: calc(100dvh - 24px); overflow-y: auto; }
+.sttop { margin: 0; color: var(--signal); font-family: var(--display); letter-spacing: .08em; text-transform: uppercase; font-size: .85em; }
+.tabs button[aria-pressed="true"] { border-color: var(--signal); background: var(--deep); box-shadow: inset 0 0 0 1px var(--signal); }
+.shop { display: flex; flex-direction: column; gap: 8px; }
+.shop .item { display: flex; gap: 10px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
+.shop .ic { font-size: 26px; }
+.shop .tx { flex: 1; }
+.shop .own { color: var(--signal); font-size: .85em; }
+.bank b { color: var(--signal); }
+.pqo { display: flex; flex-direction: column; gap: 6px; }
+.pqp { font-weight: 600; }
+#hudInv button { padding: 2px 8px; margin-left: 6px; font-size: .9em; }
+#hudInv small { opacity: .7; }
+@media (max-width: 700px) { #done { align-items: flex-end; background: linear-gradient(180deg, transparent 15%, rgba(11, 29, 42, .85)); } .card.station { margin: auto auto 0; } }
+#mini { position: absolute; inset: 0; pointer-events: none; }
+#mini > * { pointer-events: auto; }
+#miniTop { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(11, 29, 42, .8); border-radius: 12px; padding: 6px 14px; font-family: var(--display); white-space: pre; }
+#miniAim { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 10px #fff; pointer-events: none; }
+#miniAim::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px; background: #fff; border-radius: 50%; }
+#miniMsg { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); max-width: min(560px, 92%); background: rgba(11, 29, 42, .9); border: 2px solid #7be0ad; border-radius: 12px; padding: 6px 12px; text-align: center; }
+#miniPick { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+#miniPick button { font-size: 20px; padding: 6px 12px; display: inline-flex; gap: 6px; align-items: center; }
+#miniPick button[aria-pressed="true"] { border-color: var(--c); box-shadow: 0 0 0 2px var(--c), 0 0 14px var(--c); }
+#miniPick .ys { font-weight: 700; }
+#miniCard { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 520px; width: calc(100% - 32px); max-height: calc(100% - 32px); overflow-y: auto; }
+#miniCard[hidden] { display: none; }
+.pcode { font-family: var(--display); font-size: 1.6em; letter-spacing: .15em; color: var(--signal); }
+.opt.pclose { opacity: .8; }
+.nickbad { color: #ffb09c; font-weight: 700; }
 .gearinfo { margin: 4px 0 0; font-size: .9em; }
 #guide .gh { color: #9fe0ff; margin-top: 8px; }
 #toast { position: absolute; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); background: var(--deep); border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; }
@@ -157,7 +187,7 @@ ul.slots { list-style: none; padding-left: 0; }
 
   <div id="hud" hidden>
     <span id="hudHp"></span><span id="hudScore">0</span><span id="hudStreak"></span>
-    <span id="hudLevel"></span><button type="button" id="btnPause" aria-label="Pause">Pause</button>
+    <span id="hudInv"></span><span id="hudLevel"></span><button type="button" id="btnPause" aria-label="Pause">Pause</button>
   </div>
   <div id="qpanel" hidden>
     <div id="qmeta"></div><div id="qprompt"></div><div id="qfig"></div><div id="qopts"></div>
@@ -166,6 +196,8 @@ ul.slots { list-style: none; padding-left: 0; }
   </div>
   <div id="toast" role="status" aria-live="polite" hidden></div>
   <div id="note" role="status" aria-live="polite" hidden></div>
+  <div id="mini" hidden><div id="miniTop" aria-live="off"></div><div id="miniAim" aria-hidden="true"></div><div id="miniMsg" role="status" aria-live="polite" hidden></div>
+    <div id="miniPick" role="group" aria-label="Choose an antibody"></div><div id="miniCard" class="card"></div></div>
   <div id="cap" hidden></div>
   <div id="touch" hidden>
     <div><button type="button" data-k="left" aria-label="Move left">◀</button><button type="button" data-k="right" aria-label="Move right">▶</button><button type="button" data-k="duck" aria-label="Duck">▼</button><button type="button" data-k="run" aria-label="Run (hold)">Run</button></div>
@@ -192,6 +224,7 @@ ul.slots { list-style: none; padding-left: 0; }
   <section id="progress" class="screen" hidden>
     <div class="card wide"><h2>Progress</h2><div id="progBody"></div>
       <label class="set" for="nick"><span>Nickname for high scores<br><span class="dim">Use a made-up name, not your real one.</span></span><input type="text" id="nick" maxlength="12" autocomplete="off"></label>
+      <p id="nickMsg" class="dim" role="status" aria-live="polite"></p>
       <button type="button" data-back>Back</button></div>
   </section>
 
@@ -215,8 +248,12 @@ ul.slots { list-style: none; padding-left: 0; }
   </section>
 
   <section id="done" class="screen" hidden>
-    <div class="card"><h2 id="doneTitle"></h2><div id="doneStars"></div><div id="doneBody"></div>
-      <div class="btns"><button type="button" id="btnNext" class="primary">Next level</button><button type="button" id="btnReplay">Play again</button><button type="button" id="btnMap">Map</button><button type="button" id="btnMenu">Main menu</button></div></div>
+    <div class="card station"><p class="sttop">🛸 Mothership Station</p>
+      <div id="stTabs" class="btns tabs" role="group" aria-label="Station areas"><button type="button" data-tab="report">📋 Report</button><button type="button" data-tab="shop">🛒 Supply Shop</button><button type="button" data-tab="practice">🎯 Practice Bay</button><button type="button" data-tab="wardrobe">👕 Wardrobe</button></div>
+      <div id="doneReport"><h2 id="doneTitle"></h2><div id="doneStars"></div><div id="doneBody"></div></div>
+      <div id="stBody" hidden></div>
+      <p class="dim beamtx">When you are ready, beam back down to keep exploring.</p>
+      <div class="btns"><button type="button" id="btnNext" class="primary">Beam down: next level ▶</button><button type="button" id="btnReplay">Play again</button><button type="button" id="btnMap">Map</button><button type="button" id="btnMenu">Main menu</button></div></div>
   </section>
 
   <div id="err" hidden><p>This browser could not start 3D graphics. Try a current version of Chrome, Edge, Firefox, or Safari.</p></div>
