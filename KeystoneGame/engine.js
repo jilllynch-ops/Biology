@@ -50,7 +50,7 @@ BQ.loadWorlds = function (max) {
 /* ---------- saving (on this device only) ---------- */
 const KEY = 'bioquest-save-v1';
 function fresh() {
-  return { alien: { shape: 0, color: 0, eyes: 2, ant: 2, gear: 0, estyle: 0, mouth: 1 }, levels: {}, missed: {}, codes: {}, seen: {}, rare: {}, words: {}, bank: 0, inv: { life: 0, shield: 0, fly: 0, lens: 0 }, owned: {},
+  return { alien: { shape: 0, color: 0, eyes: 2, ant: 2, gear: 0, estyle: 0, mouth: 1 }, levels: {}, missed: {}, codes: {}, seen: {}, rare: {}, words: {}, found: {}, ach: {}, colDone: {}, stat: {}, bank: 0, inv: { life: 0, shield: 0, fly: 0, lens: 0 }, owned: {},
     set: { text: 1, low: false, sound: true, music: true, vol: 50, cap: true, unlock: false }, nick: '', board: [] };
 }
 let S = fresh();
@@ -105,6 +105,77 @@ BQ.Leaderboard = {
   top: function (n) { return S.board.slice(0, n || 10); }
 };
 
+/* ---------- TEXT (translation-ready) ----------
+   New interface text uses stable keys. English is the fallback, so a missing Spanish line still shows English.
+   tx('key') or tx('key', { n: 3 }) replaces {n} in the text. Language lives in S.set.lang ('en' or 'es'). */
+const I18N = {
+  en: {
+    'j.title': 'Field Journal', 'j.found': '{n} of {m} discovered', 'j.where': 'Found in level {lv}', 'j.unknown': 'Not discovered yet',
+    'j.collection': 'Collection complete!', 'j.colReward': 'Collection complete: {lv}! +{p} points', 'j.rare': 'Rare Specimen', 'j.rareYes': 'Found', 'j.rareNo': 'Still hidden',
+    'j.achTab': 'Achievements', 'j.world': 'World {n}', 'j.short': 'Quick wins', 'j.medium': 'Bigger goals', 'j.long': 'Grand goals', 'j.earned': '{n} of {m} earned',
+    'j.word': 'Word', 'j.tip': 'Specimens you scan with E are saved here forever. Find them all to complete a collection.', 'j.open': 'Field Journal',
+    'a.pop': 'Achievement unlocked!',
+    'a.first-scan': 'First Discovery', 'a.first-scan.d': 'Scan your first specimen.',
+    'a.first-rare': 'Treasure Hunter', 'a.first-rare.d': 'Find a Rare Specimen.',
+    'a.hidden-10': 'Sharp Eyes', 'a.hidden-10.d': 'Collect 10 hidden purple sparks.',
+    'a.shopper': 'Supply Run', 'a.shopper.d': 'Buy something in the Supply Shop.',
+    'a.stylist': 'New Look', 'a.stylist.d': 'Change your look in the Wardrobe.',
+    'a.cell': 'Cell Builder', 'a.cell.d': 'Build a 3-D cell.',
+    'a.code': 'Code Breaker', 'a.code.d': 'Open a portal on your first try.',
+    'a.scan-25': 'Naturalist', 'a.scan-25.d': 'Scan 25 different specimens.',
+    'a.collection': 'Collector', 'a.collection.d': 'Complete every specimen in one level.',
+    'a.no-help': 'On My Own', 'a.no-help.d': 'Finish a level without a gold hint.',
+    'a.speedy': 'Speedy Scientist', 'a.speedy.d': 'Finish a level in under 3 minutes.',
+    'a.immune': 'Immune Hero', 'a.immune.d': 'Tag 15 germs in Immune Defense.',
+    'a.golf': 'Perfect Fit', 'a.golf.d': 'Sink an enzyme golf hole in one putt.',
+    'a.practice': 'Practice Pays', 'a.practice.d': 'Get 5 Practice Bay questions right on the first try.',
+    'a.second-look': 'Second Look', 'a.second-look.d': 'Go back to a finished level and discover something you missed.',
+    'a.persist': 'Never Give Up', 'a.persist.d': 'Solve a challenge after the gold hint appears.',
+    'a.world1': 'Cell Expert', 'a.world1.d': 'Finish every level in World 1.',
+    'a.world2': 'Energy Expert', 'a.world2.d': 'Finish every level in World 2.',
+    'a.scan-all': 'Master Naturalist', 'a.scan-all.d': 'Discover every specimen in Worlds 1 and 2.',
+    'a.rare-all': 'Rare Collector', 'a.rare-all.d': 'Find every Rare Specimen.',
+    'a.stars-30': 'Star Scientist', 'a.stars-30.d': 'Earn 30 stars.',
+    'r.time': 'Time', 'r.bestTime': 'best {t}', 'r.newBestTime': 'new personal best!'
+  },
+  es: {
+    'j.title': 'Diario de campo', 'j.found': '{n} de {m} descubiertos', 'j.where': 'Se encuentra en el nivel {lv}', 'j.unknown': 'Aún no descubierto',
+    'j.collection': '¡Colección completa!', 'j.colReward': '¡Colección completa: {lv}! +{p} puntos', 'j.rare': 'Espécimen raro', 'j.rareYes': 'Encontrado', 'j.rareNo': 'Aún escondido',
+    'j.achTab': 'Logros', 'j.world': 'Mundo {n}', 'j.short': 'Logros rápidos', 'j.medium': 'Metas mayores', 'j.long': 'Grandes metas', 'j.earned': '{n} de {m} conseguidos',
+    'j.word': 'Palabra', 'j.tip': 'Los especímenes que escaneas con E se guardan aquí para siempre. Encuéntralos todos para completar una colección.', 'j.open': 'Diario de campo',
+    'a.pop': '¡Logro desbloqueado!',
+    'a.first-scan': 'Primer descubrimiento', 'a.first-scan.d': 'Escanea tu primer espécimen.',
+    'a.first-rare': 'Cazador de tesoros', 'a.first-rare.d': 'Encuentra un espécimen raro.',
+    'a.hidden-10': 'Ojos agudos', 'a.hidden-10.d': 'Recoge 10 chispas moradas escondidas.',
+    'a.shopper': 'De compras', 'a.shopper.d': 'Compra algo en la tienda de suministros.',
+    'a.stylist': 'Nuevo look', 'a.stylist.d': 'Cambia tu aspecto en el vestidor.',
+    'a.cell': 'Constructor de células', 'a.cell.d': 'Construye una célula en 3D.',
+    'a.code': 'Descifrador', 'a.code.d': 'Abre un portal en tu primer intento.',
+    'a.scan-25': 'Naturalista', 'a.scan-25.d': 'Escanea 25 especímenes diferentes.',
+    'a.collection': 'Coleccionista', 'a.collection.d': 'Completa todos los especímenes de un nivel.',
+    'a.no-help': 'Por mi cuenta', 'a.no-help.d': 'Termina un nivel sin una pista dorada.',
+    'a.speedy': 'Científico veloz', 'a.speedy.d': 'Termina un nivel en menos de 3 minutos.',
+    'a.immune': 'Héroe inmunitario', 'a.immune.d': 'Marca 15 microbios en Defensa Inmunitaria.',
+    'a.golf': 'Encaje perfecto', 'a.golf.d': 'Mete un hoyo del minigolf de enzimas en un solo golpe.',
+    'a.practice': 'La práctica vale', 'a.practice.d': 'Acierta 5 preguntas de la Sala de Práctica al primer intento.',
+    'a.second-look': 'Segunda mirada', 'a.second-look.d': 'Vuelve a un nivel terminado y descubre algo que te perdiste.',
+    'a.persist': 'Nunca me rindo', 'a.persist.d': 'Resuelve un reto después de que aparezca la pista dorada.',
+    'a.world1': 'Experto en células', 'a.world1.d': 'Termina todos los niveles del Mundo 1.',
+    'a.world2': 'Experto en energía', 'a.world2.d': 'Termina todos los niveles del Mundo 2.',
+    'a.scan-all': 'Gran naturalista', 'a.scan-all.d': 'Descubre todos los especímenes de los Mundos 1 y 2.',
+    'a.rare-all': 'Coleccionista de rarezas', 'a.rare-all.d': 'Encuentra todos los especímenes raros.',
+    'a.stars-30': 'Científico estrella', 'a.stars-30.d': 'Gana 30 estrellas.',
+    'r.time': 'Tiempo', 'r.bestTime': 'mejor {t}', 'r.newBestTime': '¡nuevo récord personal!'
+  }
+};
+function tx(key, vars) {
+  const lang = (S && S.set && S.set.lang) || 'en', tbl = I18N[lang] || I18N.en;
+  let str = tbl[key]; if (str == null) { str = I18N.en[key]; if (str == null) { if (!tx.miss[key]) { tx.miss[key] = 1; console.warn('Missing text key:', key); } return key; } }
+  if (vars) Object.keys(vars).forEach(function (k) { str = str.split('{' + k + '}').join(vars[k]); });
+  return str;
+}
+tx.miss = {};
+function fmtTime(sec) { sec = Math.round(sec); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
 /* ---------- small helpers ---------- */
 const $ = function (id) { return document.getElementById(id); };
 const esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -503,6 +574,7 @@ function modelTick(md, dt, z) {
   if (md.finishAt > 0 && !md.done) { md.finishAt -= dt; if (md.finishAt <= 0) finishModel(md); }
 }
 function finishModel(md) {
+  award('cell');
   md.done = true; md.ghost.visible = false; md.tag.material.map = labelTex('✓ Your ' + md.name, { bd: '#7be0ad' }); md.tag.material.needsUpdate = true; md.tag.scale.set(3.6, 1.8, 1);
   Object.keys(md.parts).forEach(function (n) { md.parts[n].lb.visible = true; });
   burst(md.home.x, md.home.y, '#7be0ad'); beep(990, 0.4, 'sine', 'fanfare, cell model complete');
@@ -555,12 +627,56 @@ function showNote(sc) {
 }
 function doScan(k) {
   if (k.done) { showNote(k.sc); return; }
-  k.done = true; const fresh = !S.words[k.sc.word]; S.words[k.sc.word] = 1; save();
+  k.done = true; const fresh = !S.words[k.sc.word]; S.words[k.sc.word] = 1; if (!S.found) S.found = {};
+  const newSpec = !S.found[k.sc.id]; S.found[k.sc.id] = Date.now(); save();
+  if (newSpec) { award('first-scan'); if (S.levels[L.lv.id] && S.levels[L.lv.id].stars) award('second-look'); checkCollections(); checkBig(); }
   k.ring.material = basic('#7be0ad', 0.7, true); k.nm.material.map = labelTex('✓ ' + k.sc.name, { bd: '#7be0ad' }); k.nm.material.needsUpdate = true;
   L.score += 20; popup(k.x, k.y + 2.2, fresh ? 'New word: ' + k.sc.word : k.sc.word, '#9fe0ff'); burst(k.x, k.y + 1, '#9fe0ff'); beep(1000, 0.18, 'sine', 'scanner chirp, new word'); showNote(k.sc); hud();
 }
+/* ---------- ACHIEVEMENTS: short, medium, and long goals that reward exploring, persistence, and mastery ---------- */
+const ACH = [
+  { id: 'first-scan', ic: '🔍', tier: 'short' }, { id: 'first-rare', ic: '💎', tier: 'short' }, { id: 'hidden-10', ic: '✨', tier: 'short' }, { id: 'shopper', ic: '🛒', tier: 'short' },
+  { id: 'stylist', ic: '👕', tier: 'short' }, { id: 'cell', ic: '🧫', tier: 'short' }, { id: 'code', ic: '🔐', tier: 'short' }, { id: 'persist', ic: '💪', tier: 'short' },
+  { id: 'scan-25', ic: '📓', tier: 'medium' }, { id: 'collection', ic: '📚', tier: 'medium' }, { id: 'no-help', ic: '🎯', tier: 'medium' }, { id: 'speedy', ic: '⏱️', tier: 'medium' },
+  { id: 'immune', ic: '🛡️', tier: 'medium' }, { id: 'golf', ic: '⛳', tier: 'medium' }, { id: 'practice', ic: '🎓', tier: 'medium' }, { id: 'second-look', ic: '🔁', tier: 'medium' },
+  { id: 'world1', ic: '🧫', tier: 'long' }, { id: 'world2', ic: '🌿', tier: 'long' }, { id: 'scan-all', ic: '🏆', tier: 'long' }, { id: 'rare-all', ic: '💠', tier: 'long' }, { id: 'stars-30', ic: '⭐', tier: 'long' }];
+let achQ = [], achBusy = false;
+function award(id) {
+  if (!S.ach) S.ach = {}; if (S.ach[id]) return; S.ach[id] = Date.now(); save();
+  achQ.push(id); if (!achBusy) achNext();
+}
+function achNext() {
+  const id = achQ.shift(); if (!id) { achBusy = false; $('achPop').hidden = true; return; }
+  achBusy = true; const a = ACH.find(function (x) { return x.id === id; }) || { ic: '🏅' };
+  $('achPop').innerHTML = '<span class="ai">' + a.ic + '</span><span><small>' + esc(tx('a.pop')) + '</small><b>' + esc(tx('a.' + id)) + '</b><em>' + esc(tx('a.' + id + '.d')) + '</em></span>';
+  $('achPop').hidden = false; beep(1180, 0.25, 'triangle', 'sparkle, achievement unlocked');
+  setTimeout(achNext, 3800);
+}
+function stat(k, add) { if (!S.stat) S.stat = {}; S.stat[k] = (S.stat[k] || 0) + (add || 1); save(); return S.stat[k]; }
+/* plan of a level (which specimens and secrets it holds), read by running its build steps on a stand-in builder */
+function levelPlan(lv) {
+  if (lv._plan) return lv._plan; const plan = { scans: [], rare: false };
+  const p = new Proxy({}, { get: function (o, k) { if (k === 'x' || k === 'y') return 0; return function () { if (k === 'scan') plan.scans.push(arguments[1]); if (k === 'rare') plan.rare = true; return p; }; } });
+  try { lv.build(p); } catch (e) { /* ignore */ }
+  lv._plan = plan; return plan;
+}
+function scanData(w, id) { return ((BQ.data[w] || {}).scans || []).find(function (sc) { return sc.id === id; }); }
+function isFound(w, id) { const sc = scanData(w, id); return !!(S.found && S.found[id]) || !!(sc && S.words[sc.word] && !(S.found && Object.keys(S.found).length)); }
+function checkCollections() {
+  allLevels().forEach(function (e) {
+    const pl = levelPlan(e.lv); if (!pl.scans.length || (S.colDone && S.colDone[e.lv.id])) return;
+    if (pl.scans.every(function (id) { return S.found[id]; })) { S.colDone[e.lv.id] = Date.now(); S.bank = (S.bank || 0) + 200; save(); toast(tx('j.colReward', { lv: e.lv.id + ' ' + e.lv.title, p: 200 }), 4); award('collection'); }
+  });
+}
+function checkBig() {
+  const list = allLevels(), done = function (w) { const ls = list.filter(function (e) { return e.w.id === w; }); return ls.length && ls.every(function (e) { return S.levels[e.lv.id] && S.levels[e.lv.id].stars; }); };
+  if (done(1)) award('world1'); if (done(2)) award('world2'); if (totalStars() >= 30) award('stars-30');
+  const ids = []; list.forEach(function (e) { levelPlan(e.lv).scans.forEach(function (id) { ids.push(id); }); });
+  if (Object.keys(S.found || {}).length >= 25) award('scan-25'); if (ids.length && ids.every(function (id) { return S.found[id]; })) award('scan-all');
+  const rares = list.filter(function (e) { return levelPlan(e.lv).rare; }); if (rares.length && rares.every(function (e) { return S.rare[e.lv.id]; })) award('rare-all');
+}
 /* no getting stuck: after two wrong tries, the right choice glows gold */
-function helpGlow(g) { if (!g || g.userData.help) return; const h = glow('#ffd700', 3.4, 0.8); g.add(h); g.userData.help = h; L.helps.push(h); }
+function helpGlow(g) { if (L) L.helped = true; if (!g || g.userData.help) return; const h = glow('#ffd700', 3.4, 0.8); g.add(h); g.userData.help = h; L.helps.push(h); }
 function unhelp(g) { if (g && g.userData.help) { g.remove(g.userData.help); L.helps = L.helps.filter(function (h) { return h !== g.userData.help; }); g.userData.help = null; } }
 function bumpBlock(qb) {
   qb.used = true; qb.m.material = emat('#8a6a40', '#2a1a08'); qb.q.visible = false; qb.gl.visible = false; qb.m.position.y += 0.25; setTimeout(function () { qb.m.position.y -= 0.25; }, 120);
@@ -1158,7 +1274,7 @@ function tryCode() {
   const right = L.clues.filter(function (c) { return c.perm[c.choice] === c.q.answer; });
   p.tries++;
   if (right.length === L.clues.length) {
-    p.open = true; L.clues.forEach(function (c) { record(c.q, p.tries === 1); });
+    p.open = true; L.clues.forEach(function (c) { record(c.q, p.tries === 1); }); if (p.tries === 1) award('code');
     if (p.tries === 1) { L.first += 0; L.score += 300; }
     p.swirl.material.color.set('#7be0ad'); p.ring.material = emat('#7be0ad', '#1a6a4a'); p.lb.material.map = labelTex('🌀 Portal open: press E', { bd: '#7be0ad' }); p.lb.material.needsUpdate = true;
     [523, 659, 784, 1047].forEach(function (f, k) { setTimeout(function () { beep(f, 0.18, 'triangle', k === 0 ? 'unlock chime, portal open' : null); }, k * 110); });
@@ -1565,6 +1681,7 @@ function answer(i) {
   const ok = st.perm[i] === q.answer;
   if (st.firstTry) record(q, ok);
   if (ok) {
+    if (st.wrongN >= 2) award('persist');
     if (st.firstTry) { L.first++; L.streak++; L.score += 100 + Math.min(L.streak, 5) * 20; } else L.score += 40;
     beep(880, 0.25, 'sine', 'chime, correct'); toast('✓ Correct. ' + q.explain, 5);
     if (st.boss) { st.boss.hp--; st.boss.m.scale.setScalar(0.45 + 0.55 * st.boss.hp / st.boss.max); }
@@ -1583,7 +1700,7 @@ function answer(i) {
     st.tried[i] = 1; st.firstTry = false; if (st.pads[i]) st.pads[i].m.material = mat('#5a6470');
     const btn = $('qopts').querySelector('[data-i="' + i + '"]'); if (btn) { btn.disabled = true; btn.classList.add('no'); }
     st.wrongN = (st.wrongN || 0) + 1;
-    if (st.wrongN >= 2) { const ci = st.perm.indexOf(q.answer), b2 = $('qopts').querySelector('[data-i="' + ci + '"]'); if (b2) b2.classList.add('help'); if (st.pads[ci]) st.pads[ci].m.material = emat('#ffd700', '#7a5a00'); $('qfb').textContent = '✗ Not that one. ' + (q.hint || q.explain) + ' The right answer is glowing gold.'; }
+    if (st.wrongN >= 2) { L.helped = true; const ci = st.perm.indexOf(q.answer), b2 = $('qopts').querySelector('[data-i="' + ci + '"]'); if (b2) b2.classList.add('help'); if (st.pads[ci]) st.pads[ci].m.material = emat('#ffd700', '#7a5a00'); $('qfb').textContent = '✗ Not that one. ' + (q.hint || q.explain) + ' The right answer is glowing gold.'; }
     else $('qfb').textContent = '✗ Not that one. ' + (q.hint || q.explain);
     miss();
   }
@@ -1698,7 +1815,7 @@ function step(dt) {
   });
   if (P.shield > 0) { P.shield -= dt; if (P.shieldM) P.shieldM.rotation.y += dt * 4; if (P.shield <= 0 && P.shieldM) { P.m.remove(P.shieldM); P.shieldM = null; toast('Shield used up.', 2); } }
   if (L.rare && !L.rare.got) { L.rare.m.rotation.y += dt * 2; L.rare.m.position.y = L.rare.y + Math.sin(P.t * 2) * 0.2;
-    if (Math.abs(P.x - L.rare.x) < 1 && Math.abs(P.y + 0.7 - L.rare.y) < 1.1) { L.rare.got = true; L.rare.m.visible = false; L.score += 500; S.rare[L.lv.id] = true; save(); popup(L.rare.x, L.rare.y, 'Rare specimen! +500', '#ffd700'); burst(L.rare.x, L.rare.y, '#ffd700'); beep(1320, 0.4, 'triangle', 'sparkle, rare specimen found'); hud(); } }
+    if (Math.abs(P.x - L.rare.x) < 1 && Math.abs(P.y + 0.7 - L.rare.y) < 1.1) { L.rare.got = true; L.rare.m.visible = false; L.score += 500; S.rare[L.lv.id] = true; save(); award('first-rare'); checkBig(); popup(L.rare.x, L.rare.y, 'Rare specimen! +500', '#ffd700'); burst(L.rare.x, L.rare.y, '#ffd700'); beep(1320, 0.4, 'triangle', 'sparkle, rare specimen found'); hud(); } }
   L.fx = L.fx.filter(function (f) {
     f.t += dt; f.o.position.x += (f.vx || 0) * dt; f.o.position.y += f.vy * dt; f.o.material.opacity = Math.max(0, 1 - f.t / f.life);
     if (f.t >= f.life) { L.group.remove(f.o); return false; } return true;
@@ -1719,7 +1836,7 @@ function step(dt) {
   });
   P.hist.unshift({ x: P.x, y: P.y }); if (P.hist.length > 300) P.hist.pop();
   P.trail.forEach(function (g, k) { const h = P.hist[Math.min(P.hist.length - 1, (k + 1) * 9)]; g.position.set(h.x, h.y + 0.6, -0.4); });
-  L.sparks.forEach(function (s) { if (!s.got && Math.abs(P.x - s.x) < 0.7 && Math.abs(P.y + 0.7 - s.y) < 0.9) { s.got = 1; s.m.visible = false; L.score += s.val || 10; L.coins++; if (s.val) popup(s.x, s.y + 0.6, '+' + s.val, '#d8b0ff'); beep(1200, 0.06, 'square'); if (L.coins >= 50) { L.coins -= 50; L.lives = Math.min(9, L.lives + 1); popup(P.x, P.y + 1, 'Extra life!', '#7be0ad'); beep(1400, 0.3, 'triangle', 'jingle, extra life'); } hud(); } s.m.rotation.y += dt * 3; });
+  L.sparks.forEach(function (s) { if (!s.got && Math.abs(P.x - s.x) < 0.7 && Math.abs(P.y + 0.7 - s.y) < 0.9) { s.got = 1; s.m.visible = false; L.score += s.val || 10; L.coins++; if (s.val) { popup(s.x, s.y + 0.6, '+' + s.val, '#d8b0ff'); if (stat('hidden') >= 10) award('hidden-10'); } beep(1200, 0.06, 'square'); if (L.coins >= 50) { L.coins -= 50; L.lives = Math.min(9, L.lives + 1); popup(P.x, P.y + 1, 'Extra life!', '#7be0ad'); beep(1400, 0.3, 'triangle', 'jingle, extra life'); } hud(); } s.m.rotation.y += dt * 3; });
   L.tokens.forEach(function (t) {
     if (t.got) return; t.gem.rotation.y += dt * 2;
     if (Math.abs(P.x - t.x) < 0.8 && Math.abs(P.y + 0.7 - t.y) < 0.95) {
@@ -1796,17 +1913,19 @@ function step(dt) {
 }
 let LAST = null, STTAB = 'report', PQ = null;
 function finish() {
-  L.over = true; mode = 'done'; closeQ(); LAST = { w: L.world, lv: L.lv };
+  L.over = true; mode = 'done'; closeQ(); LAST = { w: L.world, lv: L.lv }; noteT = 0; $('note').hidden = true;
   const acc = L.total ? L.first / L.total : 1, stars = acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : 1;
   const bonus = Math.max(0, Math.round(240 - L.time)) * 2; L.score += bonus;
   const before = totalStars(), old = S.levels[L.lv.id] || { stars: 0, best: 0 };
-  S.levels[L.lv.id] = { stars: Math.max(old.stars, stars), best: Math.max(old.best, L.score) }; save();
+  const tm = Math.round(L.time), newBestT = !old.time || tm < old.time;
+  S.levels[L.lv.id] = { stars: Math.max(old.stars, stars), best: Math.max(old.best, L.score), time: newBestT ? tm : old.time }; save();
+  if (!L.helped && L.first > 0) award('no-help'); if (tm < 180) award('speedy'); checkBig();
   BQ.Leaderboard.submit(S.nick, totalScore());
   const after = totalStars(), got = GEAR.filter(function (g) { return g[1] > before && g[1] <= after; });
   Music.stop(); [523, 659, 784, 1047].forEach(function (f, k) { setTimeout(function () { beep(f, k === 3 ? 0.6 : 0.18, 'triangle', k === 0 ? 'fanfare, level complete' : null); }, k * 120); });
   $('doneTitle').textContent = L.lv.id + ' ' + L.lv.title + ': report sent';
   $('doneStars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars); $('doneStars').setAttribute('aria-label', stars + ' of 3 stars');
-  $('doneBody').innerHTML = '<p>' + esc(L.lv.outro || '') + '</p><dl><dt>Score</dt><dd>' + L.score + (L.score > old.best && old.best ? ' (new best)' : '') + '</dd><dt>Right on the first try</dt><dd>' + L.first + ' of ' + L.total + '</dd><dt>Speed bonus</dt><dd>' + bonus + '</dd>' + (L.rare ? '<dt>Rare specimen</dt><dd>' + (L.rare.got ? 'Found!' : (S.rare[L.lv.id] ? 'Found on an earlier visit' : 'Still hidden in this level')) + '</dd>' : '') + '</dl>' +
+  $('doneBody').innerHTML = '<p>' + esc(L.lv.outro || '') + '</p><dl><dt>Score</dt><dd>' + L.score + (L.score > old.best && old.best ? ' (new best)' : '') + '</dd><dt>' + esc(tx('r.time')) + '</dt><dd>' + fmtTime(tm) + (newBestT && old.time ? ' (' + esc(tx('r.newBestTime')) + ')' : old.time ? ' (' + esc(tx('r.bestTime', { t: fmtTime(old.time) })) + ')' : '') + '</dd><dt>Right on the first try</dt><dd>' + L.first + ' of ' + L.total + '</dd><dt>Speed bonus</dt><dd>' + bonus + '</dd>' + (L.rare ? '<dt>Rare specimen</dt><dd>' + (L.rare.got ? 'Found!' : (S.rare[L.lv.id] ? 'Found on an earlier visit' : 'Still hidden in this level')) + '</dd>' : '') + '</dl>' +
     (L.debrief ? '<h3>Lab Lock debrief</h3><ul class="debrief">' + L.debrief.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>' : '') +
     (got.length ? '<p class="unlock">New gear unlocked: ' + got.map(function (g) { return esc(g[0]); }).join(', ') + '. Put it on in the Wardrobe.</p>' : '');
   S.bank = (S.bank || 0) + L.score; save();
@@ -1898,6 +2017,7 @@ function miniStep(dt) {
 }
 function miniFlash(t, col, secs) { const m = $('miniMsg'); m.textContent = t; m.style.borderColor = col; m.hidden = false; M.flashT = secs; }
 function miniEnd() {
+  if (M && M.tagged >= 15) award('immune');
   if (M.over) return; M.over = true; const bonus = M.hearts * 100; M.score += bonus;
   miniPanel('<h2>' + (M.hearts > 0 ? '🛡️ Infection stopped!' : '🛡️ Defense over') + '</h2><p>You tagged <b>' + M.tagged + '</b> germs' + (M.hearts ? ' and kept ' + M.hearts + ' hearts (+' + bonus + ')' : '') + '. Score: <b>' + M.score + '</b></p>' +
     '<p><b>What really happens:</b> B cells make antibodies that fit one antigen shape. Antibodies tag germs so phagocytes (like white blood cells) can eat them. <b>Memory cells</b> remember the antigen, so the next time your body fights back faster. That is how vaccines work.</p>' +
@@ -1992,7 +2112,7 @@ function golfStep(dt) {
   if (still) { const len = 1.5 + M.pow * 5; M.aimLine.scale.set(len, 0.06, 0.12); M.aimLine.position.set(b.x + Math.cos(M.aim) * (len / 2 + 0.6), 0.3, b.z + Math.sin(M.aim) * (len / 2 + 0.6)); M.aimLine.rotation.y = -M.aim; }
   if (b.sink) {
     b.sink += dt; const c = b.cup; b.x += (c.x - b.x) * Math.min(1, dt * 8); b.z += (c.z - b.z) * Math.min(1, dt * 8); b.m.position.set(b.x, -b.sink * 0.6, b.z); b.m.scale.setScalar(Math.max(0.05, 1 - b.sink));
-    if (b.sink > 1.1) { const pts = Math.max(100, 400 - 75 * (M.strokes - 1)); M.score += pts; golfMsg('✓ It fits! ' + HOLES[M.hi].fact + ' (+' + pts + ')', '#7be0ad', 6); if (M.hi + 1 < HOLES.length) { const fact = HOLES[M.hi].fact; golfHole(M.hi + 1); golfMsg('✓ It fits! ' + fact + ' Next: ' + HOLES[M.hi].env + '.', '#7be0ad', 9); } else golfEnd(); }
+    if (b.sink > 1.1) { if (M.strokes === 1) award('golf'); const pts = Math.max(100, 400 - 75 * (M.strokes - 1)); M.score += pts; golfMsg('✓ It fits! ' + HOLES[M.hi].fact + ' (+' + pts + ')', '#7be0ad', 6); if (M.hi + 1 < HOLES.length) { const fact = HOLES[M.hi].fact; golfHole(M.hi + 1); golfMsg('✓ It fits! ' + fact + ' Next: ' + HOLES[M.hi].env + '.', '#7be0ad', 9); } else golfEnd(); }
     return;
   }
   /* rolling, friction, walls, bumpers */
@@ -2066,10 +2186,10 @@ function stationClick(e) {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.buy) {
     const it = SHOP.find(function (x) { return x.id === b.dataset.buy; }); if (!it || (S.bank || 0) < it.cost) return;
-    S.bank -= it.cost; if (it.gear) { S.owned[it.gear] = true; S.alien.gear = it.gear; refreshAlien(); } else S.inv[it.id] = (S.inv[it.id] || 0) + (it.qty || 1);
+    award('shopper'); S.bank -= it.cost; if (it.gear) { S.owned[it.gear] = true; S.alien.gear = it.gear; refreshAlien(); } else S.inv[it.id] = (S.inv[it.id] || 0) + (it.qty || 1);
     save(); beep(1200, 0.15, 'square', 'ka-ching, bought ' + it.name); stationTab('shop'); const nb = $('stBody').querySelector('[data-buy="' + it.id + '"]'); if (nb) nb.focus(); return;
   }
-  if (b.classList.contains('chip')) { S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); stationTab('wardrobe'); const again = $('stBody').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); return; }
+  if (b.classList.contains('chip')) { award('stylist'); S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); stationTab('wardrobe'); const again = $('stBody').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); return; }
   if (b.dataset.pa != null) practiceAnswer(+b.dataset.pa);
   if (b.id === 'pqNext') { PQ.i++; practiceShow(); }
   if (b.id === 'pqMore') { PQ = practiceSet(); practiceShow(); }
@@ -2092,7 +2212,7 @@ function practiceShow() {
 function practiceAnswer(k) {
   const q = PQ.qs[PQ.i]; if (!q || PQ.tried[k] || PQ.solved) return; const ok = PQ.perm[k] === q.answer, btn = $('stBody').querySelector('[data-pa="' + k + '"]');
   if (ok) {
-    if (PQ.first) { PQ.right++; PQ.earned += 50; S.bank = (S.bank || 0) + 50; if (S.missed[q.id]) { S.missed[q.id]--; if (S.missed[q.id] <= 0) delete S.missed[q.id]; } }
+    if (PQ.first) { if (stat('practice') >= 5) award('practice'); PQ.right++; PQ.earned += 50; S.bank = (S.bank || 0) + 50; if (S.missed[q.id]) { S.missed[q.id]--; if (S.missed[q.id] <= 0) delete S.missed[q.id]; } }
     S.seen[q.id] = Date.now(); save(); beep(880, 0.2, 'sine', 'chime, correct');
     $('pqFb').innerHTML = '✓ ' + esc(q.explain || 'Correct!') + '<br><button type="button" id="pqNext" class="primary">Next</button>'; $('pqNext').focus(); PQ.solved = true;
   } else {
@@ -2133,7 +2253,7 @@ function openMap() {
   buildLevels(); show('levels'); const c = document.querySelector('.mnode.cur') || document.querySelector('.mnode'); if (c) c.focus(); else $('btnMapPlay').focus();
 }
 function show(name) {
-  ['menu', 'levels', 'progress', 'settings', 'pause', 'done', 'about'].forEach(function (n) { $(n).hidden = n !== name; });
+  ['menu', 'levels', 'progress', 'settings', 'pause', 'done', 'about', 'journal'].forEach(function (n) { $(n).hidden = n !== name; });
 }
 function menuScene() {
   Music.play('menu');
@@ -2161,7 +2281,7 @@ function custHTML() {
 function buildMenu() {
   $('cust').innerHTML = custHTML();
   const stars = totalStars(), list = allLevels(), started = Object.keys(S.levels).length > 0;
-  $('btnPlay').textContent = started ? 'Continue mission' : 'Start mission';
+  $('btnPlay').textContent = started ? '🎮 Platformer: continue' : '🎮 Platformer Adventure';
   $('menuStars').textContent = list.length ? stars + ' of ' + list.length * 3 + ' stars' : 'No world files found in this folder.';
   $('btnPlay').disabled = !list.length;
 }
@@ -2229,7 +2349,7 @@ function mapInfo(i) {
   const list = allLevels(), e = list[i]; if (!e) return;
   const sv = S.levels[e.lv.id], open = unlocked(i, list), stars = sv ? sv.stars : 0;
   $('mapInfo').innerHTML = '<b>' + e.lv.id + ': ' + esc(e.lv.title) + '</b> ' + (open ? '<span class="st">' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</span>' +
-    (sv && sv.best ? ' · Best score ' + sv.best : '') + ' · Rare specimen: ' + (S.rare[e.lv.id] ? 'found 💎' : 'not found yet') +
+    (sv && sv.best ? ' · Best score ' + sv.best : '') + (sv && sv.time ? ' · ' + tx('r.time') + ' ' + fmtTime(sv.time) : '') + ' · Rare specimen: ' + (S.rare[e.lv.id] ? 'found 💎' : 'not found yet') +
     '<br><span class="dim">' + (stars ? 'Conquered! Play again for more stars.' : 'Open. Click it or press Enter to play.') + '</span>' : '<span class="dim">Locked. Finish the level before it to open this one.</span>');
 }
 function buildProgress() {
@@ -2249,6 +2369,53 @@ function applySettings() {
   document.documentElement.style.setProperty('--ts', [0.9, 1, 1.15, 1.3][S.set.text]);
   $('setText').value = S.set.text; $('setLow').checked = S.set.low; $('setSound').checked = S.set.sound; $('setCap').checked = S.set.cap; $('setMusic').checked = S.set.music; $('setVol').value = S.set.vol; musicLevel(); if (S.set.music && Music.want) Music.play(Music.want); $('setUnlock').checked = S.set.unlock;
   if (renderer) resize();
+}
+/* 3-D snapshots of specimens for journal cards (rendered once, then reused) */
+let TH = null; const thumbCache = {};
+function thumb(look, col) {
+  const key = look + col; if (thumbCache[key]) return thumbCache[key];
+  try {
+    if (!TH) { TH = { scene: new T.Scene(), cam: new T.PerspectiveCamera(32, 1, 0.1, 50), rt: new T.WebGLRenderTarget(128, 128), buf: new Uint8Array(128 * 128 * 4), cv: document.createElement('canvas') };
+      TH.cv.width = TH.cv.height = 128; TH.scene.add(new T.HemisphereLight('#ffffff', '#445566', 1.1)); const d = new T.DirectionalLight('#ffffff', 0.8); d.position.set(2, 4, 5); TH.scene.add(d); TH.cam.position.set(0, 1.5, 4.4); TH.cam.lookAt(0, 0.75, 0); }
+    const g = specimen(look, col); g.rotation.y = 0.5; TH.scene.add(g);
+    const oc = new T.Color(); renderer.getClearColor(oc); const oa = renderer.getClearAlpha();
+    renderer.setRenderTarget(TH.rt); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(TH.scene, TH.cam); renderer.readRenderTargetPixels(TH.rt, 0, 0, 128, 128, TH.buf); renderer.setRenderTarget(null); renderer.setClearColor(oc, oa);
+    TH.scene.remove(g);
+    const ctx = TH.cv.getContext('2d'), img = ctx.createImageData(128, 128); for (let y = 0; y < 128; y++) img.data.set(TH.buf.subarray((127 - y) * 512, (128 - y) * 512), y * 512);
+    ctx.clearRect(0, 0, 128, 128); ctx.putImageData(img, 0, 0); thumbCache[key] = TH.cv.toDataURL();
+  } catch (e) { thumbCache[key] = ''; }
+  return thumbCache[key];
+}
+let JTAB = 1;
+function openJournal(from) { backTo = from || 'menu'; show('journal'); journalTab(JTAB); }
+function journalTab(tab) {
+  JTAB = tab; const tabs = []; for (let w = 1; w <= 6; w++) if (BQ.worlds[w]) tabs.push(w);
+  $('jTabs').innerHTML = tabs.map(function (w) { return '<button type="button" data-jt="' + w + '" aria-pressed="' + (tab === w) + '">' + esc(tx('j.world', { n: w })) + '</button>'; }).join('') +
+    (BQ.cozy ? '<button type="button" data-jt="cozy" aria-pressed="' + (tab === 'cozy') + '">🌿 ' + esc(tx('cz.reserve')) + '</button>' : '') +
+    '<button type="button" data-jt="ach" aria-pressed="' + (tab === 'ach') + '">🏅 ' + esc(tx('j.achTab')) + '</button>';
+  if (tab === 'cozy' && BQ.cozy) { $('jBody').innerHTML = BQ.cozy.journalHTML(); return; }
+  if (tab === 'ach') {
+    const got = ACH.filter(function (a) { return S.ach && S.ach[a.id]; }).length;
+    $('jBody').innerHTML = '<p class="dim">' + esc(tx('j.earned', { n: got, m: ACH.length })) + '</p>' + ['short', 'medium', 'long'].map(function (tier) {
+      return '<h3>' + esc(tx('j.' + tier)) + '</h3><div class="achs">' + ACH.filter(function (a) { return a.tier === tier; }).map(function (a) { const on = S.ach && S.ach[a.id];
+        return '<div class="ach' + (on ? ' on' : '') + '"><span class="ai">' + (on ? a.ic : '🔒') + '</span><span><b>' + esc(tx('a.' + a.id)) + '</b><br><span class="dim">' + esc(tx('a.' + a.id + '.d')) + '</span></span></div>'; }).join('') + '</div>';
+    }).join(''); return;
+  }
+  const w = tab, list = allLevels().filter(function (e) { return e.w.id === w; });
+  const uniq = {}; let all = 0, fnd = 0;
+  const html = list.map(function (e) {
+    const pl = levelPlan(e.lv); let n = 0;
+    const cards = pl.scans.map(function (id) {
+      const sc = scanData(w, id); if (!sc) return ''; const f = !!(S.found && S.found[id]); if (f) n++;
+      const img = thumb(sc.look || 'blob', sc.color || '#9fe0ff');
+      return '<div class="jc' + (f ? '' : ' unk') + '">' + (img ? '<img alt="" src="' + img + '">' : '<span class="ji">?</span>') + '<div>' +
+        (f ? '<b>' + esc(sc.name) + '</b> <span class="jw">' + esc(tx('j.word')) + ': ' + esc(sc.word) + '</span><p>' + esc(sc.note) + '</p>' : '<b>???</b><p class="dim">' + esc(tx('j.unknown')) + ' · ' + esc(tx('j.where', { lv: e.lv.id })) + '</p>') + '</div></div>';
+    }).join('');
+    pl.scans.forEach(function (id) { if (!uniq[id]) { uniq[id] = 1; all++; if (S.found && S.found[id]) fnd++; } }); const done = n === pl.scans.length && n > 0;
+    return '<section class="jl"><h3>' + esc(e.lv.id + ' ' + e.lv.title) + ' <span class="jn' + (done ? ' ok' : '') + '">' + (done ? '✓ ' + esc(tx('j.collection')) : n + ' / ' + pl.scans.length) + '</span>' +
+      (pl.rare ? ' <span class="jr">💎 ' + esc(tx('j.rare')) + ': ' + esc(S.rare[e.lv.id] ? tx('j.rareYes') : tx('j.rareNo')) + '</span>' : '') + '</h3><div class="jcs">' + cards + '</div></section>';
+  }).join('');
+  $('jBody').innerHTML = '<p class="dim">' + esc(tx('j.tip')) + '</p><p><b>' + esc(tx('j.found', { n: fnd, m: all })) + '</b></p>' + html;
 }
 function pause(on) {
   if (mode !== 'play') return; paused = on; show(on ? 'pause' : null); musicLevel();
@@ -2270,7 +2437,8 @@ function resize() {
 function tick(t) {
   requestAnimationFrame(tick);
   const dt = Math.min((t - last) / 1000 || 0, 1 / 30); last = t;
-  if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else miniStep(dt); }
+  if (mode === 'cozy' && BQ.cozy) BQ.cozy.step(dt);
+  else if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else miniStep(dt); }
   else if (mode === 'play' && !paused) {
     step(dt);
     if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').hidden = true; }
@@ -2295,6 +2463,7 @@ function press(k, down) {
 function wire() {
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    if (mode === 'cozy' && BQ.cozy) { BQ.cozy.key(e, true); return; }
     if (mode === 'mini') { miniKey(e, true); return; }
     if (mode === 'play' && e.key === 'Escape' && L && L.active && (L.active.clue || L.active.portal)) { closeQ(); e.preventDefault(); return; }
     if (mode === 'play' && (e.key === 'p' || e.key === 'P' || e.key === 'Escape')) { pause(!paused); e.preventDefault(); return; }
@@ -2315,11 +2484,12 @@ function wire() {
   });
   /* a movement stops only when every key for it is released; answer keys never affect movement */
   window.addEventListener('keyup', function (e) {
+    if (mode === 'cozy' && BQ.cozy) { BQ.cozy.key(e, false); return; }
     if (mode === 'mini') { miniKey(e, false); return; }
     const nk = e.key.length === 1 ? e.key.toLowerCase() : e.key, k = KEYMAP[nk]; if (!k || !held[nk]) return; delete held[nk];
     if (!Object.keys(held).some(function (h) { return KEYMAP[h] === k; })) press(k, false);
   });
-  window.addEventListener('blur', function () { Object.keys(keys).forEach(function (k) { keys[k] = false; }); Object.keys(held).forEach(function (h) { delete held[h]; }); if (mode === 'play' && !paused) pause(true); });
+  window.addEventListener('blur', function () { if (mode === 'cozy' && BQ.cozy) BQ.cozy.blur(); Object.keys(keys).forEach(function (k) { keys[k] = false; }); Object.keys(held).forEach(function (h) { delete held[h]; }); if (mode === 'play' && !paused) pause(true); });
   window.addEventListener('resize', resize);
   window.addEventListener('touchstart', function () { if (!touchMode) { touchMode = true; if (mode === 'play') $('touch').hidden = false; } }, { passive: true });
   document.querySelectorAll('#touch button').forEach(function (b) {
@@ -2329,6 +2499,8 @@ function wire() {
   $('qopts').addEventListener('click', function (e) { const b = e.target.closest('.opt'); if (!b) return; b.blur(); if (b.dataset.close) { closeQ(); return; } if (b.dataset.try) { tryCode(); return; } answer(+b.dataset.i); });
   $('cust').addEventListener('click', function (e) { const b = e.target.closest('.chip'); if (!b) return; S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); buildMenu(); const again = $('cust').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); });
   $('btnPlay').onclick = function () { openMap(); };
+  $('btnCozy').hidden = !BQ.cozy; $('btnCozy').onclick = function () { if (BQ.cozy) BQ.cozy.start(); };
+  ['pointerdown', 'pointermove', 'pointerup', 'wheel'].forEach(function (ev) { $('stage').addEventListener(ev, function (e) { if (mode === 'cozy' && BQ.cozy) BQ.cozy.pointer(e, ev); }, ev === 'wheel' ? { passive: false } : undefined); });
   $('btnLevels').onclick = function () { openMap(); };
   $('btnAbout').onclick = function () { show('about'); $('aboutVer').textContent = VERSION; };
   $('menuVer').textContent = VERSION + ' · by J.E. Lynch';
@@ -2339,7 +2511,7 @@ function wire() {
   ['mouseover', 'focusin'].forEach(function (ev) { $('levelList').addEventListener(ev, function (e) { const b = e.target.closest && e.target.closest('.lvl'); if (b) mapInfo(+b.dataset.i); }); });
   $('btnMapPlay').onclick = function () { const e = nextUp(); if (e) startLevel(e.w, e.lv); };
   $('btnMap').onclick = function () { openMap(); };
-  document.querySelectorAll('[data-back]').forEach(function (b) { b.onclick = function () { if (b.closest('#settings') && backTo === 'pause') show('pause'); else show('menu'); }; });
+  document.querySelectorAll('[data-back]').forEach(function (b) { b.onclick = function () { if ((b.closest('#settings') || b.closest('#journal')) && backTo === 'pause') show('pause'); else if (b.closest('#journal') && backTo === 'done') show('done'); else if (b.closest('#journal') && backTo === 'cozy') { show(null); if (BQ.cozy) BQ.cozy.resume(); } else show('menu'); }; });
   $('nick').addEventListener('input', function () { const v = $('nick').value.replace(/[^A-Za-z0-9 _-]/g, '').slice(0, 12); if (v !== $('nick').value) $('nick').value = v; $('nickMsg').textContent = ''; });
   const nickSave = function () {
     const v = $('nick').value.trim();
@@ -2366,6 +2538,8 @@ function wire() {
   $('btnResume').onclick = function () { pause(false); };
   $('btnRestart').onclick = function () { startLevel(L.world, L.lv); };
   $('btnPauseSet').onclick = function () { backTo = 'pause'; show('settings'); };
+  $('btnJournal').onclick = function () { openJournal('menu'); }; $('btnPauseJournal').onclick = function () { openJournal('pause'); };
+  $('jTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-jt]'); if (b) journalTab(b.dataset.jt === 'ach' || b.dataset.jt === 'cozy' ? b.dataset.jt : +b.dataset.jt); });
   $('btnQuit').onclick = menuScene; $('btnMenu').onclick = menuScene;
   $('btnReplay').onclick = function () { startLevel(LAST.w, LAST.lv); };
   $('btnNext').onclick = function () { const list = allLevels(), i = list.findIndex(function (e) { return e.lv === LAST.lv; }); startLevel(list[i + 1].w, list[i + 1].lv); };
@@ -2375,7 +2549,7 @@ function wire() {
   window.addEventListener('pointerup', function (e) { if (mode === 'mini' && M && M.kind === 'golf') golfPointer(e, 'up'); });
   $('mini').addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !M) return; if (b.id === 'miniGo') miniStart(); else if (b.id === 'miniBack') exitMini(); else if (b.dataset.ab != null) { miniSel(+b.dataset.ab); b.blur(); } });
   $('hudInv').addEventListener('click', function (e) { const b = e.target.closest('[data-use]'); if (!b) return; b.blur(); if (b.dataset.use === 'fly') useFly(); else useLens(); });
-  $('stTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-tab]'); if (b) stationTab(b.dataset.tab); });
+  $('stTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-tab]'); if (!b) return; if (b.dataset.tab === 'journal') { openJournal('done'); return; } stationTab(b.dataset.tab); });
   $('stBody').addEventListener('click', stationClick);
 }
 function boot() {
@@ -2391,6 +2565,10 @@ function boot() {
   wire(); applySettings(); menuScene(); requestAnimationFrame(tick);
   const jump = (location.hash || '').match(/level-(\d+-\d+)/i);
   if (jump) { const e = allLevels().find(function (x) { return x.lv.id === jump[1]; }); if (e) startLevel(e.w, e.lv); }
+  BQ.core = { T: T, get scene() { return scene; }, get cam() { return cam; }, get renderer() { return renderer; }, get G() { return G; }, get S() { return S; }, get HEMI() { return HEMI; }, get KEYL() { return KEYL; },
+    glow: glow, label: label, labelTex: labelTex, emat: emat, basic: basic, mesh: mesh, buildAlien: buildAlien, specimen: specimen, beep: beep, save: save, $: $, esc: esc, tx: tx, I18N: I18N, ACH: ACH, award: award,
+    show: show, teardown: teardown, menuScene: menuScene, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup };
+  if (BQ.onCore) BQ.onCore();
   BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, start: startLevel, mini: function () { return M; }, cam: function () { return cam; } };
 }
 })();
