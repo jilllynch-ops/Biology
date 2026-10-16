@@ -106,11 +106,32 @@ ul.slots { list-style: none; padding-left: 0; }
 .ftab th, .ftab td { border: 1px solid var(--line); padding: 3px 10px; text-align: left; }
 .ftab th { background: var(--deep); color: var(--signal); }
 .fsvg { display: block; width: 100%; max-width: 330px; margin: 0 0 8px; color: var(--ink); }
-#note { position: absolute; left: 12px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); max-width: min(330px, calc(100% - 24px)); background: var(--deep); border: 2px solid #9fe0ff; border-radius: 12px; padding: 8px 12px; box-shadow: 0 0 18px rgba(159,224,255,.35); }
+#note { position: absolute; left: 12px; bottom: calc(140px + env(safe-area-inset-bottom, 0px)); max-width: min(330px, calc(100% - 24px)); background: var(--deep); border: 2px solid #9fe0ff; border-radius: 12px; padding: 8px 12px; box-shadow: 0 0 18px rgba(159,224,255,.35); }
 #note small { display: block; color: #9fe0ff; font-size: .75em; letter-spacing: .04em; text-transform: uppercase; }
 #note b { display: block; font-family: var(--display); font-size: 1.25em; color: #fff; }
 #note span { display: block; line-height: 1.35; }
 .opt.help { box-shadow: 0 0 0 3px #ffd700, 0 0 14px #ffd700; }
+#menu .card { max-height: calc(100dvh - 24px); overflow-y: auto; }
+.card.map { max-width: 980px; width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; }
+.mapsvg { width: 100%; height: auto; display: block; border-radius: 14px; }
+.mapsvg .mapw { font: 700 22px var(--display, sans-serif); fill: #fff; }
+.mapsvg .mapu { font: 13px var(--body, sans-serif); fill: #e8f4ff; }
+.mapsvg .maps { font: 700 15px var(--body, sans-serif); fill: #ffd166; }
+.mapsvg .mid { font: 700 13px var(--display, sans-serif); fill: #10202c; }
+.mapsvg .locked .mid { font-size: 15px; }
+.mapsvg .mstar { font: 14px sans-serif; fill: #ffd166; }
+.mapsvg .mflag, .mapsvg .mrare { font-size: 16px; }
+.mapsvg .mnode { cursor: pointer; outline: none; }
+.mapsvg .mnode.locked { cursor: not-allowed; }
+.mapsvg .mnode:hover > circle:not(.pulse), .mapsvg .mnode:focus > circle:not(.pulse) { stroke: #ffffff; stroke-width: 5; }
+.mapsvg .pulse { animation: mpulse 1.4s ease-in-out infinite; transform-origin: center; }
+.mapsvg .malien { animation: mbob 1.2s ease-in-out infinite; }
+@keyframes mpulse { 0%, 100% { opacity: .9; } 50% { opacity: .25; } }
+@keyframes mbob { 0%, 100% { transform: translate(0px, -46px); } 50% { transform: translate(0px, -52px); } }
+@media (prefers-reduced-motion: reduce) { .mapsvg .pulse, .mapsvg .malien { animation: none; } }
+.mapinfo { margin: 10px 2px; min-height: 2.8em; }
+.mapinfo .st { color: var(--signal); letter-spacing: .1em; }
+.gearinfo { margin: 4px 0 0; font-size: .9em; }
 #guide .gh { color: #9fe0ff; margin-top: 8px; }
 #toast { position: absolute; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); background: var(--deep); border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; }
 #cap { position: absolute; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: .85em; }
@@ -147,7 +168,7 @@ ul.slots { list-style: none; padding-left: 0; }
   <div id="note" role="status" aria-live="polite" hidden></div>
   <div id="cap" hidden></div>
   <div id="touch" hidden>
-    <div><button type="button" data-k="left" aria-label="Move left">◀</button><button type="button" data-k="right" aria-label="Move right">▶</button><button type="button" data-k="duck" aria-label="Duck">▼</button></div>
+    <div><button type="button" data-k="left" aria-label="Move left">◀</button><button type="button" data-k="right" aria-label="Move right">▶</button><button type="button" data-k="duck" aria-label="Duck">▼</button><button type="button" data-k="run" aria-label="Run (hold)">Run</button></div>
     <div><button type="button" data-k="act" aria-label="Choose answer">E</button><button type="button" data-k="jump" aria-label="Jump">Jump</button></div>
   </div>
 
@@ -158,14 +179,14 @@ ul.slots { list-style: none; padding-left: 0; }
       <div id="cust"></div>
       <button type="button" id="btnPlay" class="primary">Start mission</button>
       <div class="btns">
-        <button type="button" id="btnLevels">Levels</button><button type="button" id="btnProgress">Progress</button><button type="button" id="btnSettings">Settings</button>
+        <button type="button" id="btnLevels">Map</button><button type="button" id="btnProgress">Progress</button><button type="button" id="btnSettings">Settings</button>
       </div>
       <p id="menuStars" class="dim"></p>
     </div>
   </section>
 
   <section id="levels" class="screen" hidden>
-    <div class="card wide"><h2>Levels</h2><div id="levelList"></div><button type="button" data-back>Back</button></div>
+    <div class="card map"><h2>Mission Map</h2><div id="levelList"></div><div class="btns"><button type="button" id="btnMapPlay" class="primary">Play</button><button type="button" data-back>Back</button></div></div>
   </section>
 
   <section id="progress" class="screen" hidden>
@@ -195,7 +216,7 @@ ul.slots { list-style: none; padding-left: 0; }
 
   <section id="done" class="screen" hidden>
     <div class="card"><h2 id="doneTitle"></h2><div id="doneStars"></div><div id="doneBody"></div>
-      <div class="btns"><button type="button" id="btnNext" class="primary">Next level</button><button type="button" id="btnReplay">Play again</button><button type="button" id="btnMenu">Main menu</button></div></div>
+      <div class="btns"><button type="button" id="btnNext" class="primary">Next level</button><button type="button" id="btnReplay">Play again</button><button type="button" id="btnMap">Map</button><button type="button" id="btnMenu">Main menu</button></div></div>
   </section>
 
   <div id="err" hidden><p>This browser could not start 3D graphics. Try a current version of Chrome, Edge, Firefox, or Safari.</p></div>

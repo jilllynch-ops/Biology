@@ -17,6 +17,7 @@
    antibody = flies at head height on a beat (dx, distance, period, offset): duck or jump.
    squeeze = a low tunnel to crawl through while ducking (dx, length).
    scan = a specimen to scan with E; it teaches a word and saves it to the Field Guide (dx, scan id).
+   hplat = a hidden platform: solid for everyone, but only visible with Lab goggles (used for the secret climbs).
    maze = Organization Maze: walls of three doorways; only the next level opens.
    balance = keep a body measurement in its normal range with switches (an elevator, or the 1-5 boss). */
 FieldGuide.registerWorld({
@@ -28,14 +29,14 @@ FieldGuide.registerWorld({
       outro: 'Report sent: every living thing on Earth shares the same signs of life.',
       build: function (b) {
         /* teaches: moving, jumping, double jump, ? blocks, viruses, then the Specimen Hunt */
-        b.hint(5, 4.4, 'Move: arrow keys or A and D').hint(12, 4.6, 'Jump: space bar. Tap it again in the air to double jump!')
+        b.hint(5, 4.4, 'Move: arrow keys or A and D. Hold Shift to run!').hint(12, 4.6, 'Jump: space bar. Tap it again in the air to double jump!')
           .qblock(17, 3.4, 'sparks').ground(21)
           .hint(3, 4.8, 'See a 🔍? Walk up and press E to scan it and learn a new word!').scan(8, 's-frog').scan(12.5, 's-rock').scan(16.5, 's-sprout').ground(21)
           .arc(-2.5, 7, 2.6).gap(3.5).ground(12)
           .hint(-8, 4.6, 'Viruses! Jump on them or over them.').virus(-4, 2.4, 0.8)
           .hint(3, 4.6, 'Duck: down arrow or S. Crawl through tight spots!').squeeze(6, 4).ground(13)
           .rise(1.5).ground(6).rise(1.5).sparks(1, 1.2, 4).ground(6)
-          .plat(-5.8, 2.4, 2.8).plat(-3.4, 4.8, 2.8).plat(-1, 8.4, 2.6).rare(0.3, 9.7)
+          .hplat(-5.8, 2.4, 2.8).hplat(-3.4, 4.8, 2.8).hplat(-1, 8.4, 2.6).rare(0.3, 9.7)
           .gap(3.5).rise(-3).hint(2, 4.6, 'Hungry amoebas pop up on a beat to engulf food. Jump when they hide!').snapper(5, 4, 0).ground(9)
           .scan(3, 's-lily').scan(8, 's-eggs').scan(13, 's-bact').scan(18, 's-turtle').scan(23, 's-dna').ground(26)
           .hunt('life')
@@ -56,11 +57,12 @@ FieldGuide.registerWorld({
           .hint(4, 4.6, 'Antibodies tag invaders, like you! Duck under them or jump over.').antibody(15, 15, 3.4).ground(16)
           .scan(3, 's-bact2').scan(8, 's-membrane').scan(13, 's-cyto').scan(18, 's-ribo').ground(21)
           .hunt('build-prok')
-          .qblock(3, 3.4, 'boost').ground(7).bridge(11)
+          .sparks(0, 8, 5).sparks(1, 11, 4).qblock(3, 3.4, 'boost').ground(7).bridge(11)
           .hint(7, 5.2, 'White blood cells engulf invaders like you! Jump when they hide.').virus(4, 2.5, 1.2).snapper(9.5, 3.6, 0).qblock(13, 3.4, 'sparks').ground(16)
-          .plat(-7, 2.4, 3).plat(-4.5, 4.8, 3).plat(-2, 8.4, 2.6).rare(-0.7, 9.7)
+          .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .scan(3, 's-animal').scan(8, 's-nucleus').scan(13, 's-mito').scan(18, 's-er').scan(23, 's-golgi').scan(28, 's-plant').ground(31)
           .hunt('build-euk')
+          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7)
           .mixed(2, ['BIO.A.1.1.1'])
           .rise(1.5).ground(5).rise(1.5).sparks(1, 1.2, 3).ground(5).gap(4).rise(-3)
           .qblock(3, 3.4, 'shield').virus(7, 2, 1.4).spikes(11, 1.8).ground(15)
@@ -81,12 +83,14 @@ FieldGuide.registerWorld({
           .hazard(4, 1.0, { ax: 1.5 }).hazard(9, 3.2, { ax: 0.5, ay: 1.2, sp: 1.8 }).virus(10, 1.6, 1.2).sparks(2, 2.5, 4).ground(12)
           .scan(3, 's-dna2').scan(8, 's-mrna').ground(11)
           .catchGame('c-transcribe')
+          .sparks(0.5, 8.5, 4).ground(6)
           .bridge(12, { ay: 1.6, sp: 1.0 })
           .hazard(3, 1.0, { ax: 1.2, sp: 2 }).ground(6).rise(1.5).qblock(2.5, 3.4, 'shield').ground(5).rise(-1.5)
           .hazard(5, 1.2, { ax: 3, sp: 1.4 }).snapper(9, 3.2, 0.8).sparks(2, 3.4, 5).ground(12)
-          .plat(-7, 2.4, 3).plat(-4.5, 4.8, 3).plat(-2, 8.4, 2.6).rare(-0.7, 9.7)
+          .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .scan(3, 's-ribo2').scan(8, 's-trna').scan(13, 's-protein').ground(16)
           .catchGame('c-translate')
+          .sparks(0.5, 8.5, 4).ground(6)
           .mixed(2, ['BIO.A.1.1.1', 'BIO.A.1.2.1'])
           .scan(3, 's-er').scan(8, 's-golgi').ground(11)
           .become('b-protein-er')
@@ -133,9 +137,10 @@ FieldGuide.registerWorld({
           .qblock(3, 3.4, 'sparks').ground(6)
           .scan(3, 's-tissue').scan(8, 's-organ').scan(13, 's-system').scan(18, 's-organism').ground(21)
           .maze('maze-levels')
+          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7)
           .station(['w1q24', 'w1q25'])
           .bridge(11)
-          .virus(4, 2.4, 1.2).snapper(9.5, 3.4, 0).ground(14).plat(-7, 2.4, 3).plat(-4.5, 4.8, 3).plat(-2, 8.4, 2.6).rare(-0.7, 9.7)
+          .virus(4, 2.4, 1.2).snapper(9.5, 3.4, 0).ground(14).hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .scan(3, 's-receptor').scan(8, 's-feedback').ground(11)
           .sequence('seq-loop')
           .mixed(2, ['BIO.A.1.1.1', 'BIO.A.1.2.1', 'BIO.B.2.2.1', 'BIO.B.2.2.2', 'BIO.A.4.1.3', 'BIO.A.4.1.1', 'BIO.A.4.1.2'])
