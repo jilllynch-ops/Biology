@@ -731,7 +731,7 @@ function build() {
     isl.forEach(function (q, k) { const m = new T.Mesh(new T.CylinderGeometry(q[2] * 0.8, q[2], 14 + q[2] * 0.3, 10), C.emat(ROCKBANDS[k % 5], '#1a1a10')); m.position.set(q[0], SEA_Y + 3, q[1]); g.add(m);
       const top = new T.Mesh(new T.CylinderGeometry(q[2] * 0.82, q[2] * 0.8, 1.2, 10), C.emat('#6aa040', '#0a1a06')); top.position.set(q[0], SEA_Y + 10.6 + q[2] * 0.15, q[1]); g.add(top);
       for (let t = 0; t < Math.max(2, q[2] / 4); t++) { const pc = new T.Mesh(LP.cone8, C.emat('#2f6a3a', '#081808')); const s3 = 1.5 + (t % 3); pc.scale.set(s3, s3 * 1.8, s3); pc.position.set(q[0] + Math.cos(t * 2.3) * q[2] * 0.5, SEA_Y + 12 + q[2] * 0.15 + s3 * 1.6, q[1] + Math.sin(t * 2.3) * q[2] * 0.5); g.add(pc); } });
-    W.gulls = []; for (let k = 0; k < 5; k++) { const b = new T.Group(); [-1, 1].forEach(function (sd) { const w = new T.Mesh(G.box, C.basic('#ffffff')); w.scale.set(1.1, 0.05, 0.3); w.position.x = sd * 0.55; w.rotation.z = sd * 0.25; b.add(w); }); g.add(b); W.gulls.push({ m: b, ph: k * 1.3, r: 30 + k * 9 }); } }
+    W.gulls = []; }
   /* the valley below the south lookout: patchwork farms, a little town, a wetland and the river */
   { const town = [[30, 120], [36, 126], [24, 128], [42, 116], [34, 134], [46, 128], [28, 140]], roofs = ['#c4462c', '#d0703a', '#8a3a2a', '#e09a4a'];
     town.forEach(function (t0, k) { const y = H(t0[0], t0[1]), hs = new T.Mesh(G.box, C.emat(k % 2 ? '#f0e6d0' : '#e8d8b8', '#2a2418')); hs.scale.set(3.2, 2.6, 3.6); hs.position.set(t0[0], y + 1.3, t0[1]); hs.rotation.y = k * 0.4; g.add(hs);
@@ -751,7 +751,7 @@ function build() {
   EDGES.forEach(function (e) { const mid = (e.a0 + e.a1) / 2 * Math.PI / 180, posts = [], rails = [];
     for (let a = e.a0 - 2; a <= e.a1 + 2; a += 2.4) { const r0 = a * Math.PI / 180, x = Math.cos(r0) * (EDGE + 2.4), z = Math.sin(r0) * (EDGE + 2.4), y = H(x, z); posts.push([x, y + 0.6, z, 0.16, 1.2, 0.16]);
       const r1 = (a + 2.4) * Math.PI / 180, x1 = Math.cos(r1) * (EDGE + 2.4), z1 = Math.sin(r1) * (EDGE + 2.4), L1 = Math.hypot(x1 - x, z1 - z); if (a + 2.4 <= e.a1 + 2) { [0.55, 1.0].forEach(function (hh) { rails.push([(x + x1) / 2, y + hh, (z + z1) / 2, L1, 0.1, 0.1, -Math.atan2(z1 - z, x1 - x)]); }); } }
-    g.add(inst(G.box, C.emat('#9a6a3a', '#1a0e05'), posts)); g.add(inst(G.box, C.emat('#b07a44', '#1a0e05'), rails));
+    g.add(inst(G.box, C.emat('#9a6a3a', '#1a0e05'), posts)); W.postTops = (W.postTops || []).concat(posts.filter(function (q, i) { return i % 3 === 0; }).map(function (q) { return [q[0], q[1] + 0.62, q[2]]; })); g.add(inst(G.box, C.emat('#b07a44', '#1a0e05'), rails));
     const vx = Math.cos(mid) * (EDGE + 0.9), vz = Math.sin(mid) * (EDGE + 0.9), vy = H(vx, vz), vw = new T.Group(); const st0 = new T.Mesh(G.cyl, C.emat('#4a5a6a', '#0a1018')); st0.scale.set(0.12, 1.1, 0.12); st0.position.y = 0.55; vw.add(st0);
     const hd = new T.Mesh(G.box, C.emat('#3a7ab0', '#0a1a2a')); hd.scale.set(0.45, 0.32, 0.6); hd.position.y = 1.25; vw.add(hd); [-1, 1].forEach(function (sd) { const ey = new T.Mesh(G.cyl, C.basic('#1a2a3a')); ey.scale.set(0.09, 0.2, 0.09); ey.rotation.x = Math.PI / 2; ey.position.set(sd * 0.11, 1.28, -0.35); vw.add(ey); });
     vw.position.set(vx, vy, vz); vw.rotation.y = -mid + Math.PI / 2; g.add(vw); W.colliders.push({ x: vx, z: vz, r: 0.4 });
@@ -780,6 +780,10 @@ function build() {
   /* pond water (green and cloudy until the mystery is solved) and the stream */
   W.water = new T.Mesh(new T.CircleGeometry(15.8, 56), new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10', side: T.DoubleSide }));
   W.water.rotation.x = -Math.PI / 2; W.water.position.set(POND.x, WL0, POND.z); g.add(W.water);
+  { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x0 = cv.getContext('2d'); x0.fillStyle = '#ffffff'; x0.fillRect(0, 0, 256, 256);
+    x0.strokeStyle = 'rgba(255,255,255,0.0)'; for (let k = 0; k < 22; k++) { const cx0 = (k * 97) % 256, cy0 = (k * 57 + 31) % 256, r0 = 6 + (k * 13) % 14; x0.strokeStyle = 'rgba(200,235,240,0.9)'; x0.lineWidth = 2; x0.beginPath(); x0.ellipse(cx0, cy0, r0, r0 * 0.55, 0, 0, 6.283); x0.stroke(); x0.globalAlpha = 0.5; x0.beginPath(); x0.ellipse(cx0, cy0, r0 * 1.6, r0 * 0.9, 0, 0.4, 2.6); x0.stroke(); x0.globalAlpha = 1; }
+    W.pondTex = new T.CanvasTexture(cv); W.pondTex.wrapS = W.pondTex.wrapT = T.RepeatWrapping; W.pondTex.repeat.set(3, 3); W.water.material.map = W.pondTex; W.water.material.needsUpdate = true;
+    W.rim = new T.Mesh(new T.RingGeometry(15.2, 16.4, 72), new T.MeshBasicMaterial({ color: '#e8f4d8', transparent: true, opacity: 0.35, depthWrite: false })); W.rim.rotation.x = -Math.PI / 2; W.rim.position.set(POND.x, WL0 + 0.04, POND.z); g.add(W.rim); }
   W.scum = new T.Group(); for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 3 + (i * 7 % 11); const m = new T.Mesh(new T.CircleGeometry(1 + (i % 3) * 0.5, 10), C.basic('#6fae3a', 0.7)); m.rotation.x = -Math.PI / 2; m.position.set(POND.x + Math.cos(a) * r, WL0 + 0.03, POND.z + Math.sin(a) * r); W.scum.add(m); } g.add(W.scum);
   /* creeks: one smooth ribbon of flowing water per creek, laid along its carved bed */
   { const cv0 = document.createElement('canvas'); cv0.width = 64; cv0.height = 256; const x0 = cv0.getContext('2d'), gr0 = x0.createLinearGradient(0, 0, 64, 0);
@@ -831,7 +835,8 @@ function build() {
     const t1 = new T.Mesh(G.cyl, cm(tc)); t1.scale.set(tw * s, th * s, tw * s); t1.position.set(x, y + th * s / 2, z); g.add(t1);
     if (kind === 'sycamore') for (let k = 0; k < 4; k++) { const pt = new T.Mesh(G.box, cm('#9a9a7a')); pt.scale.set(0.2 * s, 0.35 * s, 0.05); pt.position.set(x + Math.cos(k * 1.6) * tw * s * 0.95, y + (0.6 + k * 0.6) * s, z + Math.sin(k * 1.6) * tw * s * 0.95); pt.rotation.y = -k * 1.6 + Math.PI / 2; g.add(pt); }
     cr.position.set(x, y, z); cr.rotation.y = x * 0.37; g.add(cr);
-    W.colliders.push({ x: x, z: z, r: tw * s + 0.35, cr: crownR * s, bot: y + crownBot * s, m: cr }); W.anim.push({ m: cr, ph: x + z, sway: true });
+    W.colliders.push({ x: x, z: z, r: tw * s + 0.35, cr: crownR * s, bot: y + crownBot * s, m: cr });
+    for (let k = 0; k < 2; k++) { const a = x * 1.7 + k * 2.6; (W.perches = W.perches || []).push([x + Math.cos(a) * crownR * s * 0.85, y + crownBot * s + 0.35, z + Math.sin(a) * crownR * s * 0.85, kind]); } W.anim.push({ m: cr, ph: x + z, sway: true });
   };
   const FOREST = ['pine', 'oak', 'maple', 'hemlock', 'pine', 'spruce', 'redmaple', 'oak', 'pine', 'hickory', 'maple'];
   for (let i = 0; i < 70; i++) { const x = 24 + (i * 37 % 44), z = 16 + (i * 53 % 46); if (Math.hypot(x - HOLLOW.x, z - HOLLOW.z) < 11 || Math.hypot(x - 30, z - 28) < 4 || Math.hypot(x - 34, z - 44) < 4) continue; treeK(x + Math.sin(i) * 1.5, z + Math.cos(i * 1.3) * 1.5, 0.85 + (i % 4) * 0.13, FOREST[i % FOREST.length]); }
@@ -901,27 +906,21 @@ function build() {
   rock(34, -36, 2.2);   const lc = [], lcc = []; for (let i = 0; i < 9; i++) { const a = i * 0.9; lc.push([34 + Math.cos(a) * 1.75, H(34, -36) + 1.1 + Math.sin(i * 2.1) * 0.6, -36 + Math.sin(a) * 1.75, 0.5, 0.14, 0.5, a]); lcc.push(i % 3 ? '#c8d070' : '#e0a040'); }
   g.add(inst(G.sph, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#2a3008' }), lc, lcc));
   /* owl on a big oak in the forest, with pellets below */
-  tree(34, 44, 1.5, true); W.owl = new T.Group(); const ob = new T.Mesh(G.sph, C.emat('#8a6a4a', '#1a1008')); ob.scale.set(0.45, 0.6, 0.42); W.owl.add(ob);
-  const face = new T.Mesh(G.sph, C.emat('#e8d8b8', '#3a3020')); face.scale.set(0.34, 0.3, 0.12); face.position.set(0, 0.2, 0.34); W.owl.add(face);
-  [-1, 1].forEach(function (sd) { const ey = new T.Mesh(G.sph, C.emat('#ffc83a', '#5a4000')); ey.scale.setScalar(0.09); ey.position.set(sd * 0.13, 0.24, 0.44); W.owl.add(ey); const pu = new T.Mesh(G.sph, C.basic('#10202c')); pu.scale.setScalar(0.045); pu.position.set(sd * 0.13, 0.24, 0.52); W.owl.add(pu);
-    const tuft = new T.Mesh(G.cone, C.emat('#7a5a3a', '#1a1008')); tuft.scale.set(0.08, 0.2, 0.08); tuft.position.set(sd * 0.25, 0.6, 0.1); tuft.rotation.z = -sd * 0.3; W.owl.add(tuft); });
+  tree(34, 44, 1.5, true); W.owl = new T.Group(); W.owlM = BQ.creatures.makeOwl(); W.owl.add(W.owlM.g); /* barred owl (fauna.js) */
   const branch = new T.Mesh(G.cyl, trunkM); branch.scale.set(0.12, 1.4, 0.12); branch.rotation.z = Math.PI / 2; branch.position.set(34.6, H(34, 44) + 4.0, 44.9); g.add(branch);
-  W.owl.position.set(34.6, H(34, 44) + 4.6, 45.1); g.add(W.owl);
+  W.owl.position.set(34.6, H(34, 44) + 4.1, 45.0); g.add(W.owl);
   for (let i = 0; i < 3; i++) { const pe = new T.Mesh(G.sph, C.emat('#7a6a5a', '#1a1410')); pe.scale.set(0.22, 0.15, 0.32); pe.position.set(35.4 + i * 0.4, H(35.4, 46) + 0.12, 46 + (i % 2) * 0.3); g.add(pe); }
   /* milkweed with monarch butterflies; more butterflies in the meadow */
   const mw = C.emat('#7aa05a', '#14200a'), mwf = C.emat('#e8a0c8', '#3a1a2a'); for (let i = 0; i < 5; i++) { const x = 16 + (i % 3) * 0.9, z = 38 + Math.floor(i / 3) * 0.9, y = H(x, z); const st0 = new T.Mesh(G.cyl, mw); st0.scale.set(0.06, 1.2, 0.06); st0.position.set(x, y + 0.6, z); g.add(st0); const fl0 = new T.Mesh(G.sph, mwf); fl0.scale.set(0.3, 0.2, 0.3); fl0.position.set(x, y + 1.25, z); g.add(fl0); }
-  W.flies = []; const wingM = C.emat('#ff9f3a', '#5a2a00'), wingB = C.emat('#7fd4ff', '#103a5a'), wingY = C.emat('#ffe08a', '#5a4a10');
-  for (let i = 0; i < (S0low() ? 6 : 12); i++) { const b = new T.Group(), wm = i < 3 ? wingM : [wingM, wingB, wingY][i % 3]; [-1, 1].forEach(function (sd) { const w = new T.Mesh(G.box, wm); w.scale.set(0.32, 0.02, 0.26); w.position.x = sd * 0.17; b.add(w); }); g.add(b);
-    W.flies.push({ m: b, ph: i * 1.3, cx: i < 3 ? 16.9 : -6 + (i * 13 % 30), cz: i < 3 ? 38.5 : 34 + (i * 7 % 22), r: i < 3 ? 1.2 : 3 + (i % 3) }); }
+  W.flies = []; /* butterflies now come from creatures.js (real wing shapes and patterns) */
   /* cattails, lily pads, and dragonflies at the pond */
   const ctS = C.emat('#6a8a3a', '#10200a'), ctH = C.emat('#6a4a2a', '#140a04');
   const cts = [], cth = []; for (let i = 0; i < 26; i++) { const a = 2.2 + (i / 26) * 2.2, rr = 15.3 + (i % 3) * 0.5, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr, y = H(x, z); cts.push([x, y + 0.9, z, 0.05, 1.8, 0.05]); cth.push([x, y + 1.7, z, 0.12, 0.4, 0.12]); }
-  g.add(inst(LP.cyl, ctS, cts)); g.add(inst(LP.cyl, ctH, cth));
+  g.add(inst(LP.cyl, ctS, cts)); W.cattailTops = cts.map(function (c) { return [c[0], c[1] + 1.05, c[2]]; }); g.add(inst(LP.cyl, ctH, cth));
   const padM = C.emat('#4a9a3a', '#0a2008'), lotus = C.emat('#ffb0d0', '#4a1a2a'), pads = [], lots = [], padG = new T.CylinderGeometry(0.8, 0.8, 0.04, 14, 1, false, 0.3, 5.8);
   for (let i = 0; i < 12; i++) { const a = i * 2.1, rr = 4 + (i * 5 % 9), x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr; pads.push([x, WL0 + 0.05, z, 1, 1, 1, i]); if (i % 3 === 0) lots.push([x, WL0 + 0.2, z, 0.25, 0.18, 0.25]); }
   W.padIM = inst(padG, padM, pads); g.add(W.padIM); g.add(inst(G.sph, lotus, lots));
-  W.dflies = []; for (let i = 0; i < 3; i++) { const d0 = new T.Group(), bd = new T.Mesh(G.cyl, C.emat('#3a8ad0', '#0a2a5a')); bd.scale.set(0.06, 0.55, 0.06); bd.rotation.x = Math.PI / 2; d0.add(bd);
-    [-1, 1].forEach(function (sd) { [0.1, -0.1].forEach(function (zz) { const w = new T.Mesh(G.box, C.basic('#dff4ff', 0.6)); w.scale.set(0.5, 0.01, 0.1); w.position.set(sd * 0.27, 0.02, zz); d0.add(w); }); }); g.add(d0); W.dflies.push({ m: d0, ph: i * 2.1 }); }
+  W.dflies = []; for (let i = 0; i < 3; i++) { const d0 = BQ.creatures.makeDragonfly(); d0.g.scale.setScalar(1.3); g.add(d0.g); W.dflies.push({ d: d0, m: d0.g, ph: i * 2.1, x: -31 + i, z: 31, y: WL0 + 1, tx: -31, tz: 31, ty: WL0 + 1, t: i * 0.7, yaw: 0 }); } /* green darners (fauna.js) */
   /* anthill near the station with a trail of ants */
   const ah = new T.Mesh(G.cone, C.emat('#9a6a3a', '#2a1a08')); ah.scale.set(1.2, 0.7, 1.2); ah.position.set(14, H(14, 4) + 0.35, 4); g.add(ah); W.colliders.push({ x: 14, z: 4, r: 1 });
   W.ants = new T.InstancedMesh(LP.sph, C.basic('#1a1008'), 24); g.add(W.ants);
@@ -930,12 +929,8 @@ function build() {
   for (let i = 0; i < 6; i++) { const lf = new T.Mesh(G.box, C.emat(['#c08a3a', '#a06a2a', '#d0a04a'][i % 3], '#2a1a08')); lf.scale.set(0.5, 0.04, 0.3); lf.rotation.y = i; lf.position.set(-50 + Math.cos(i) * 1.1, H(-50, -27) + 0.85, -27 + Math.sin(i) * 0.8); g.add(lf); }
   W.worms = []; for (let i = 0; i < 4; i++) { const w = new T.Mesh(G.cyl, C.emat('#e08a8a', '#4a1a1a')); w.scale.set(0.06, 0.35, 0.06); w.position.set(-50.6 + i * 0.4, H(-50, -27) + 0.85, -26.6 + (i % 2) * 0.3); g.add(w); W.worms.push({ m: w, ph: i }); }
   /* a deer grazing at the orchard edge */
-  W.deer = new T.Group(); const dM = C.emat('#b07a4a', '#2a1808'), dB = new T.Mesh(G.sph, dM); dB.scale.set(0.55, 0.55, 1.1); dB.position.y = 1.35; W.deer.add(dB);
-  [[-0.3, 0.6], [0.3, 0.6], [-0.3, -0.6], [0.3, -0.6]].forEach(function (l) { const lg0 = new T.Mesh(G.cyl, dM); lg0.scale.set(0.07, 0.9, 0.07); lg0.position.set(l[0], 0.5, l[1]); W.deer.add(lg0); });
-  W.deerHead = new T.Group(); const nk = new T.Mesh(G.cyl, dM); nk.scale.set(0.15, 0.7, 0.15); nk.position.y = 0.35; W.deerHead.add(nk); const hd0 = new T.Mesh(G.sph, dM); hd0.scale.set(0.22, 0.24, 0.42); hd0.position.set(0, 0.75, 0.15); W.deerHead.add(hd0);
-  [-1, 1].forEach(function (sd) { const ear = new T.Mesh(G.cone, dM); ear.scale.set(0.08, 0.2, 0.05); ear.position.set(sd * 0.17, 0.98, 0.05); ear.rotation.z = -sd * 0.6; W.deerHead.add(ear); });
-  W.deerHead.position.set(0, 1.55, 0.95); W.deer.add(W.deerHead); const tail = new T.Mesh(G.sph, C.emat('#ffffff', '#3a3a3a')); tail.scale.set(0.12, 0.18, 0.1); tail.position.set(0, 1.6, -1.1); W.deer.add(tail); W.deerTail = tail;
-  W.dr = { x: -30, z: 50 }; W.deer.position.set(-30, H(-30, 50), 50); W.deer.rotation.y = 2.4; g.add(W.deer);
+  W.deerM = BQ.creatures.makeDeer(); W.deer = W.deerM.g; /* white-tailed deer (fauna.js) */
+  W.dr = { x: -30, z: 50, tx: -30, tz: 50, t: 2, walk: 0 }; W.deer.position.set(-30, H(-30, 50), 50); W.deer.rotation.y = 2.4; g.add(W.deer);
   /* meadow flowers and clover (instanced so they are cheap to draw) */
   const FN = S0low() ? 400 : 900, fl = new T.InstancedMesh(LP.sph, new T.MeshLambertMaterial({ color: '#ffffff' }), FN), dm = new T.Object3D(), fcol = ['#ff8fb1', '#ffd166', '#ffffff', '#c59cff', '#ff9f6e', '#7fd4ff'], stems = new T.InstancedMesh(LP.cyl, C.emat('#4a8a2a', '#0a1a08'), FN);
   for (let i = 0; i < FN; i++) { let x, z; if (i < 160) { x = -6 + rnd(i) * 30; z = 34 + rnd(i + 999) * 22; } else { const a = rnd(i) * 6.2832, r2 = 6 + Math.sqrt(rnd(i + 500)) * 56; x = Math.cos(a) * r2; z = Math.sin(a) * r2; }
@@ -944,7 +939,7 @@ function build() {
     dm.position.set(x, H(x, z) + 0.15, z); dm.scale.set(bad ? 0.0001 : 0.025, bad ? 0.0001 : 0.32, bad ? 0.0001 : 0.025); dm.updateMatrix(); stems.setMatrixAt(i, dm.matrix); }
   g.add(stems);
   g.add(fl);
-  const GN = S0low() ? 500 : 1100, gr = new T.InstancedMesh(LP.cone, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#0a1a08' }), GN), gc = new T.Color();
+  const GN = S0low() ? 500 : 1100, gr = new T.InstancedMesh(LP.cone, windy(new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#0a1a08' })), GN), gc = new T.Color();
   for (let i = 0; i < GN; i++) { const a = rnd(i + 3000) * 6.2832, r2 = Math.sqrt(rnd(i + 7000)) * 80, x = Math.cos(a) * r2, z = Math.sin(a) * r2; if (Math.hypot(x - POND.x, z - POND.z) < 17 || (x > 22 && z > 14 && r2 < EDGE) || pathDist(x, z) < 1.3 || (Math.abs(x - FARM.x) < 12 && Math.abs(z - FARM.z) < 10)) { dm.scale.setScalar(0.0001); } else dm.scale.set(0.15, 0.3 + (i % 4) * 0.08, 0.15);
     gc.set(['#5aa03a', '#6ab04a', '#4a9030'][i % 3]); gr.setColorAt(i, gc); dm.position.set(x, H(x, z) + 0.3, z); dm.updateMatrix(); gr.setMatrixAt(i, dm.matrix); }
   g.add(gr);
@@ -970,11 +965,11 @@ function build() {
   /* overlook bench */
   const bench = new T.Mesh(G.box, C.emat('#8a6a4a', '#1a0e05')); bench.scale.set(2, 0.3, 0.6); bench.position.set(HILL.x, H(HILL.x, HILL.z) + 0.5, HILL.z); g.add(bench);
   /* animals: frog, rabbit, a hawk circling, bees, butterflies */
-  W.frog = C.specimen('frog', '#5fbf5a'); W.frog.position.set(-8, H(-8, 30), 30); g.add(W.frog);
-  W.rabbit = C.specimen('critter', '#d8c8b0'); W.rabbit.position.set(4, H(4, 40), 40); g.add(W.rabbit); W.rab = { x: 4, z: 40, tx: 6, tz: 42, t: 0 };
-  W.hawk = new T.Group(); const hb = new T.Mesh(G.sph, C.emat('#6a4a2a', '#100a04')); hb.scale.set(0.5, 0.3, 1.1); W.hawk.add(hb); [-1, 1].forEach(function (sd) { const wgm = new T.Mesh(G.box, C.emat('#7a5a3a', '#100a04')); wgm.scale.set(2.4, 0.08, 0.7); wgm.position.x = sd * 1.3; W.hawk.add(wgm); }); g.add(W.hawk);
-  W.bees = []; for (let i = 0; i < 4; i++) { const b = new T.Mesh(G.sph, C.emat('#ffd166', '#5a4010')); b.scale.set(0.18, 0.15, 0.24); g.add(b); W.bees.push({ m: b, ph: i * 1.7 }); }
-  W.fish = new T.Group(); for (let i = 0; i < 6; i++) { const f = new T.Mesh(G.sph, C.emat('#ff9f6e', '#5a2a10')); f.scale.set(0.5, 0.22, 0.2); f.userData.ph = i; W.fish.add(f); } W.fish.visible = false; g.add(W.fish);
+  W.frogM = BQ.creatures.makeFrog(); W.frog = W.frogM.g; W.frog.scale.setScalar(1.4); W.frog.rotation.y = 2.2; W.frog.position.set(-8, H(-8, 30), 30); g.add(W.frog); /* green frog (fauna.js) */
+  W.rabM = BQ.creatures.makeRabbit(); W.rabbit = W.rabM.g; W.rabbit.scale.setScalar(1.15); W.rabbit.position.set(4, H(4, 40), 40); g.add(W.rabbit); W.rab = { x: 4, z: 40, tx: 6, tz: 42, t: 0 };
+  W.hawk = new T.Group(); g.add(W.hawk); /* the red-tailed hawk now comes from creatures.js */
+  W.bees = []; for (let i = 0; i < 4; i++) { const b = BQ.creatures.makeBee(); b.g.scale.setScalar(1.3); g.add(b.g); W.bees.push({ b: b, m: b.g, ph: i * 1.7 }); } /* bumblebees (fauna.js) */
+  W.fish = new T.Group(); W.fishM = []; for (let i = 0; i < 6; i++) { const fm = BQ.creatures.makeFish('sunfish'), f = fm.g; f.scale.setScalar(2); f.userData.ph = i; W.fish.add(f); W.fishM.push(fm); } /* pumpkinseed sunfish (fauna.js) */ W.fish.visible = false; g.add(W.fish);
   /* the people of Willow Creek: a field biologist, a local kid who fishes, a farmer, and a park ranger (all human) */
   const npc = function (id, x, z, look, sc) { sc = sc || 1; const m = buildHuman(look); m.position.set(x, H(x, z), z); m.scale.setScalar(sc); g.add(m); const tag = C.label(npcName(id), 2.6, { bd: '#ffd166' }); tag.scale.multiplyScalar(0.7); tag.position.set(x, H(x, z) + 2.75 * sc + 0.2, z); g.add(tag);
     const mk = C.glow('#ffd166', 1.4, 0.9); mk.position.set(x, H(x, z) + 2.75 * sc + 0.9, z); g.add(mk); W.npcs.push({ id: id, x: x, z: z, m: m, tag: tag, mark: mk }); W.colliders.push({ x: x, z: z, r: 0.7 }); };
@@ -983,13 +978,9 @@ function build() {
   npc('lu', FARM.x + 6, FARM.z + 9, { skin: '#c89070', hair: '#a8a8a8', hairStyle: 'long', shirt: '#b84a3a', pants: '#3a5a8a', bib: true, hat: 'straw' });
   npc('sam', 7, 55.5, { skin: '#f0c8a8', hair: '#c8783a', hairStyle: 'curly', shirt: '#9aa06a', pants: '#5a4a3a', hat: 'ranger', hatCol: '#5a6a3a', prop: 'binoculars' });
   /* animals you can listen to: a heron on the pond shore and fish hiding in the cold spring */
-  W.heron = new T.Group(); { const hm = C.emat('#7a8ca8', '#141a24'), hb = new T.Mesh(G.sph, hm); hb.scale.set(0.42, 0.45, 0.8); hb.position.y = 1.6; W.heron.add(hb);
-    const nk = new T.Mesh(G.cyl, hm); nk.scale.set(0.09, 0.8, 0.09); nk.position.set(0, 2.15, 0.45); nk.rotation.x = 0.35; W.heron.add(nk);
-    W.heronHead = new T.Group(); const hd = new T.Mesh(G.sph, C.emat('#e8ecf0', '#2a2a30')); hd.scale.set(0.16, 0.15, 0.24); W.heronHead.add(hd); const bk = new T.Mesh(G.cone, C.emat('#e8b03a', '#3a2a08')); bk.scale.set(0.05, 0.22, 0.05); bk.rotation.x = Math.PI / 2; bk.position.z = 0.36; W.heronHead.add(bk);
-    const pl = new T.Mesh(G.box, C.basic('#1a1a24')); pl.scale.set(0.3, 0.03, 0.02); pl.position.set(0, 0.06, -0.12); W.heronHead.add(pl); W.heronHead.position.set(0, 2.55, 0.6); W.heron.add(W.heronHead);
-    [-1, 1].forEach(function (sd) { const lg = new T.Mesh(G.cyl, C.emat('#c8a050', '#2a2008')); lg.scale.set(0.035, 1.3, 0.035); lg.position.set(sd * 0.12, 0.65, 0); W.heron.add(lg); }); }
+  W.heronM = BQ.creatures.makeHeron(); W.heron = W.heronM.g; W.heron.scale.setScalar(1.15); W.heronStrike = 0; W.heronNext = 6; /* great blue heron (fauna.js) */
   W.heron.position.set(-6.5, H(-6.5, 18.5), 18.5); W.heron.rotation.y = -1.6; g.add(W.heron);
-  W.springFish = []; for (let i = 0; i < 3; i++) { const f = new T.Mesh(G.sph, C.emat('#ffb06e', '#5a2a10')); f.scale.set(0.35, 0.16, 0.14); g.add(f); W.springFish.push(f); }
+  W.springFish = []; W.springFishM = []; for (let i = 0; i < 3; i++) { const fm = BQ.creatures.makeFish('sunfish'), f = fm.g; f.scale.setScalar(1.5); g.add(f); W.springFish.push(f); W.springFishM.push(fm); } /* sunfish hiding in the cold spring (fauna.js) */
   W.beacon = new T.Mesh(new T.CylinderGeometry(0.5, 0.5, 30, 12, 1, true), new T.MeshBasicMaterial({ color: '#ffd166', transparent: true, opacity: 0.35, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false })); W.beacon.visible = false; g.add(W.beacon);
   /* night lights: fireflies over the meadow and pond edge, a porch lamp with a luna moth */
   W.ffly = []; for (let i = 0; i < (S0low() ? 18 : 40); i++) { const f = C.glow('#d8ff7a', 0.9, 0); f.userData = { cx: -6 + rnd(i + 13000) * 34, cz: 24 + rnd(i + 13100) * 26, ph: rnd(i + 13200) * 6.28 }; g.add(f); W.ffly.push(f); }
@@ -1043,8 +1034,34 @@ function build() {
     const pg = new T.BufferGeometry(); pg.setAttribute('position', new T.BufferAttribute(pp, 3)); W.specks = new T.Points(pg, new T.PointsMaterial({ color: '#d8f0c0', size: 0.07, transparent: true, opacity: 0.7, depthWrite: false })); W.specks.visible = false; g.add(W.specks); }
   /* little energy trail while flying */
   W.trail = []; for (let i = 0; i < 10; i++) { const t0 = C.glow(['#9fe8ff', '#c59cff', '#ffd166'][i % 3], 0.8, 0.8); t0.visible = false; g.add(t0); W.trail.push(t0); }
+  /* WILDLIFE: songbirds that perch, hop and fly between trees, a hawk and gulls overhead, butterflies on the flowers,
+     and a heron and egrets in flight (creatures.js) */
+  if (BQ.creatures) { const CR = BQ.creatures, low = S0low(), P = W.perches || [], pick = function (f) { return P.filter(function (q) { return f(q[0], q[2], q[3]); }); };
+    const lawn = [], meadowFl = [], farmEdge = [], pondFl = [];
+    for (let i = 0; i < 60; i++) { const x = -4 + rnd(i + 20000) * 26, z = -2 + rnd(i + 20100) * 18; if (pathDist(x, z) > 1 && Math.hypot(x - STATION.x, z - STATION.z + 4) > 5) lawn.push([x, H(x, z) + 0.02, z]); }
+    for (let i = 0; i < 20; i++) { const x = ORCH.x - 7 + rnd(i + 20200) * 14, z = ORCH.z - 6 + rnd(i + 20300) * 12; lawn.push([x, H(x, z) + 0.02, z]); }
+    for (let i = 0; i < 160; i++) { const x = -6 + rnd(i) * 30, z = 34 + rnd(i + 999) * 22; if (Math.hypot(x - POND.x, z - POND.z) > 17 && pathDist(x, z) > 1.4 && (i % 4 === 0)) meadowFl.push([x, H(x, z) + 0.42, z]); }
+    for (let i = 0; i < 12; i++) { const x = FARM.x + 12 + rnd(i + 20400) * 3, z = FARM.z - 8 + rnd(i + 20500) * 16; farmEdge.push([x, H(x, z) + 0.3, z]); }
+    for (let i = 0; i < 12; i++) { const a = rnd(i + 20600) * 6.283, x = POND.x + Math.cos(a) * 18, z = POND.z + Math.sin(a) * 18; pondFl.push([x, H(x, z) + 0.35, z]); }
+    const milk = [[16, H(16, 38) + 1.3, 38], [16.9, H(16.9, 38) + 1.3, 38], [17.8, H(17.8, 38) + 1.3, 38], [16, H(16, 38.9) + 1.3, 38.9], [16.9, H(16.9, 38.9) + 1.3, 38.9]];
+    const farmPts = []; for (let i = 0; i < 14; i++) { const x = FARM.x - 8 + rnd(i + 20700) * 16, z = FARM.z - 5 + rnd(i + 20800) * 10; farmPts.push([x, H(x, z) + 0.02, z]); }
+    W.wild = CR.Wild({ group: g, H: H,
+      birds: [{ kind: 'robin', n: low ? 2 : 4, ground: true, perches: lawn }, { kind: 'cardinal', n: low ? 1 : 2, perches: pick(function (x, z, k) { return k === 'dogwood' || (Math.hypot(x, z) < 40 && k !== 'pine' && k !== 'spruce'); }) },
+        { kind: 'jay', n: low ? 1 : 2, perches: pick(function (x, z, k) { return x > 20 && z > 12; }) }, { kind: 'blackbird', n: low ? 2 : 3, perches: W.cattailTops || [] },
+        { kind: 'crow', n: 2, ground: true, perches: farmPts.concat(W.postTops || []) }],
+      soar: [{ kind: 'hawk', cx: 6, cz: 18, r: 26, y: 30, n: 1, speed: 0.1 }, { kind: 'gull', cx: 86, cz: -2, r: 14, y: 3, n: low ? 3 : 5, speed: 0.14 }],
+      butterflies: [{ kind: 'monarch', n: 3, flowers: milk.concat(meadowFl.slice(0, 6)) }, { kind: 'swallowtail', n: low ? 1 : 2, flowers: meadowFl }, { kind: 'cabbage', n: low ? 1 : 3, flowers: farmEdge.concat(meadowFl.slice(0, 8)) },
+        { kind: 'admiral', n: 1, flowers: lawn.slice(-12) }, { kind: 'azure', n: low ? 1 : 2, flowers: pondFl }] });
+    W.waders = [];
+    CR.makeWader('heron', function (w) { if (!w || !W) return; w.g.visible = false; g.add(w.g); w.t = -12 - Math.random() * 10; w.fly = null; W.waders.push(w); });
+    for (let i = 0; i < (low ? 1 : 2); i++) CR.makeWader('egret', function (w) { if (!w || !W) return; g.add(w.g); w.circle = { cx: -18, cz: 86, r: 8 + i * 5, y: VALLEY_Y + 14 + i * 3, a: i * 3 }; W.waders.push(w); }); }
   /* player */
   W.me = C.buildAlien(C.S.alien); g.add(W.me);
+  { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x0 = cv.getContext('2d'), gr0 = x0.createRadialGradient(32, 32, 2, 32, 32, 31); gr0.addColorStop(0, 'rgba(20,30,10,0.55)'); gr0.addColorStop(0.6, 'rgba(20,30,10,0.25)'); gr0.addColorStop(1, 'rgba(20,30,10,0)'); x0.fillStyle = gr0; x0.fillRect(0, 0, 64, 64);
+    const smat = new T.MeshBasicMaterial({ map: new T.CanvasTexture(cv), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }), sgeo = new T.PlaneGeometry(1, 1); sgeo.rotateX(-Math.PI / 2);
+    W.shadows = []; const sh = function (o, r, get) { const m = new T.Mesh(sgeo, smat); m.scale.set(r * 2, 1, r * 2); m.renderOrder = 1; g.add(m); W.shadows.push({ o: o, m: m, r: r, get: get }); };
+    sh(W.me, 0.75, function () { return [W.px, W.pz, W.py]; }); sh(W.deer, 1.1); sh(W.rabbit, 0.45); sh(W.frog, 0.4); sh(W.heron, 0.55); sh(W.owl, 0, null);
+    W.npcs.forEach(function (n) { sh(n.m, 0.7); }); W.shadows = W.shadows.filter(function (q) { if (q.r) return true; g.remove(q.m); return false; }); }
   const s = st(); W.px = s.pos ? s.pos[0] : STATION.x + 3; W.pz = s.pos ? s.pos[1] : STATION.z + 7; W.py = H(W.px, W.pz); W.vy = 0; W.ground = true; W.face = 0;
   /* sparkles mark things you can interact with */
   W.marks = []; spots().forEach(function (sp) { if (sp.noMark) return; const mk = C.glow('#ffffff', 1.1, 0.8); mk.position.set(sp.x, H(sp.x, sp.z) + (sp.my || 2), sp.z); g.add(mk); W.marks.push({ sp: sp, m: mk }); });
@@ -1052,11 +1069,15 @@ function build() {
   if (!S0low()) toonify(g);
 }
 /* cartoon 'stepped' shading like a picture book: every lit material gets 3 flat tones */
+/* grass sways in the wind: a tiny vertex-shader tweak, no extra cost per blade */
+const WIND = { value: 0 };
+function windPatch(sh) { sh.uniforms.uWind = WIND; sh.vertexShader = 'uniform float uWind;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef USE_INSTANCING\nvec3 ip = vec3(instanceMatrix[3][0], instanceMatrix[3][1], instanceMatrix[3][2]);\n#else\nvec3 ip = vec3(0.0);\n#endif\nfloat wk = clamp(position.y + 0.5, 0.0, 1.0); wk *= wk;\nfloat sw = sin(uWind * 1.7 + ip.x * 0.31 + ip.z * 0.23) * 0.55 + sin(uWind * 3.3 + ip.x * 0.9 - ip.z * 0.7) * 0.18;\ntransformed.x += sw * wk * 0.9; transformed.z += sw * wk * 0.45;'); }
+function windy(m) { m.userData.wind = 1; m.onBeforeCompile = windPatch; m.customProgramCacheKey = function () { return 'wind'; }; return m; }
 function toonify(root) {
   const grad = new T.DataTexture(new Uint8Array([88, 150, 215]), 3, 1, T.LuminanceFormat); grad.minFilter = grad.magFilter = T.NearestFilter; grad.needsUpdate = true; const cache = {};
   root.traverse(function (o) { const m = o.material; if (!m || m.type !== 'MeshLambertMaterial') return;
-    if (!cache[m.uuid]) { cache[m.uuid] = new T.MeshToonMaterial({ color: m.color, emissive: m.emissive, map: m.map, vertexColors: m.vertexColors, transparent: m.transparent, opacity: m.opacity, side: m.side, fog: m.fog, depthWrite: m.depthWrite, gradientMap: grad }); }
-    o.material = cache[m.uuid]; });
+    if (!cache[m.uuid]) { cache[m.uuid] = new T.MeshToonMaterial({ color: m.color, emissive: m.emissive, map: m.map, vertexColors: m.vertexColors, transparent: m.transparent, opacity: m.opacity, side: m.side, fog: m.fog, depthWrite: m.depthWrite, alphaTest: m.alphaTest, gradientMap: grad }); }
+    if (m.userData.wind) windy(cache[m.uuid]); o.material = cache[m.uuid]; });
 }
 
 /* ---------- INTERACTIONS ---------- */
@@ -1509,8 +1530,8 @@ function svPanel() {
 function svTally() { const v = W.sv; if (!v || !v.on) return; v.n++; amb('sfx', 'step', 0.6); const b = $('czSurvey').querySelector('.svn b'); if (b) b.textContent = v.n; }
 function svEvent(v) {
   const site = v.site, a = Math.random() * 6.283, r = 1 + Math.random() * 3.5, x = site.cx + Math.cos(a) * r, z = site.cz + Math.sin(a) * r * 0.6, g = new T.Group();
-  if (site.what === 'frog') { const f = C.specimen('frog', '#5fbf5a'); f.scale.setScalar(0.8); g.add(f); const ring = new T.Mesh(new T.RingGeometry(0.4, 0.55, 20), C.basic('#e8fbff', 0.7)); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05; g.add(ring); g.position.set(x, Math.max(H(x, z), WL0 - 0.15), z); if (v.rid === 'frog.night') { amb('env', 'frogs', 0.9); C.beep(140 + Math.random() * 40, 0.12, 'square'); } }
-  else { const b = new T.Group(), col = Math.random() < 0.5 ? '#ffd166' : ['#ff9f3a', '#7fd4ff', '#ffe08a'][Math.floor(Math.random() * 3)]; const body = new T.Mesh(C.G.sph, C.emat(col, '#3a2a08')); body.scale.set(0.12, 0.1, 0.16); b.add(body); [-1, 1].forEach(function (sd) { const w = new T.Mesh(C.G.box, C.basic('#ffffff', 0.7)); w.scale.set(0.22, 0.01, 0.14); w.position.x = sd * 0.13; b.add(w); }); g.add(b); g.add(C.glow('#fff4b0', 1, 0.7)); g.position.set(x, H(x, z) + 0.45, z); }
+  if (site.what === 'frog') { const fm = BQ.creatures.makeFrog(), f = fm.g; f.scale.setScalar(1.2); f.rotation.y = Math.random() * 6.28; BQ.creatures.poseFrog(fm, 0.3, 0, true); g.add(f); toonify(f); const ring = new T.Mesh(new T.RingGeometry(0.4, 0.55, 20), C.basic('#e8fbff', 0.7)); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05; g.add(ring); g.position.set(x, Math.max(H(x, z), WL0 - 0.15), z); if (v.rid === 'frog.night') { amb('env', 'frogs', 0.9); C.beep(140 + Math.random() * 40, 0.12, 'square'); } }
+  else { const CRT = BQ.creatures, isBee = Math.random() < 0.5, b = isBee ? CRT.makeBee() : CRT.makeButterfly(['monarch', 'cabbage', 'azure', 'swallowtail'][Math.floor(Math.random() * 4)]); if (isBee) { b.g.scale.setScalar(1.3); CRT.poseBee(b, 0.1, true); } else CRT.poseButterfly(b, 0.3, 'rest'); b.g.rotation.y = Math.random() * 6.28; g.add(b.g); toonify(b.g); g.add(C.glow('#fff4b0', 1, 0.7)); g.position.set(x, H(x, z) + 0.45, z); }
   W.g.add(g); v.ev.push({ g: g, t: site.what === 'frog' ? 2.2 : 1.8 }); v.m++;
 }
 function svStep(dt) {
@@ -1553,18 +1574,30 @@ function step(dt) {
   if (!W) return; W.t += dt; const cam = C.cam, s = st();
   /* scenery life: swaying trees, bees, rabbit, hawk, fish, fireflies, frog */
   W.anim.forEach(function (a) { if (a.sway) a.m.rotation.z = Math.sin(W.t * 1.2 + a.ph) * 0.03; if (a.fly) { a.m.position.y = a.y + Math.sin(W.t * 1.5 + a.ph) * 0.6; a.m.position.x = a.x + Math.sin(W.t * 0.7 + a.ph) * 0.8; } });
-  W.bees.forEach(function (b, i) { const x = 6 + Math.sin(W.t * 0.8 + b.ph) * 4, z = 44 + Math.cos(W.t * 0.6 + b.ph) * 3; b.m.position.set(x, H(x, z) + 0.9 + Math.sin(W.t * 6 + i) * 0.2, z); });
+  if (W.wild) W.wild.update(dt, { x: W.px, z: W.pz }, { night: isNight() });
+  if (W.waders) W.waders.forEach(function (w) {
+    if (w.circle) { const c = w.circle; c.a += dt * 0.11 * (16 / c.r); w.g.position.set(c.cx + Math.cos(c.a) * c.r, c.y + Math.sin(W.t * 0.4 + c.a) * 1.2, c.cz + Math.sin(c.a) * c.r); w.g.rotation.set(0, Math.atan2(-Math.sin(c.a), Math.cos(c.a)), -0.2); w.mixer.update(dt); return; }
+    /* the heron: every minute or so it flies across the reserve, low over the pond */
+    if (!w.fly) { w.t += dt; if (w.t > 0) { const ends = [[-130, 30, 150], [70, 18, -110], [-120, 24, -80], [130, 4, 40], [40, -6, 170]], a = ends[Math.floor(Math.random() * ends.length)]; let d = ends[Math.floor(Math.random() * ends.length)]; if (d === a) d = ends[(ends.indexOf(a) + 2) % ends.length];
+        w.fly = { A: new T.Vector3(a[0], a[1], a[2]), B: new T.Vector3(POND.x + 8, WL0 + 9, POND.z - 6), C: new T.Vector3(POND.x - 6, WL0 + 11, POND.z + 6), D: new T.Vector3(d[0], d[1], d[2]), u: 0 }; w.fly.dur = (w.fly.A.distanceTo(w.fly.B) + w.fly.B.distanceTo(w.fly.C) + w.fly.C.distanceTo(w.fly.D)) / 9; w.g.visible = true; } return; }
+    const f = w.fly; f.u += dt / f.dur; if (f.u >= 1) { w.fly = null; w.g.visible = false; w.t = -50 - Math.random() * 40; return; }
+    const pt = function (t, out) { const u = 1 - t; return out.set(u * u * u * f.A.x + 3 * u * u * t * f.B.x + 3 * u * t * t * f.C.x + t * t * t * f.D.x, u * u * u * f.A.y + 3 * u * u * t * f.B.y + 3 * u * t * t * f.C.y + t * t * t * f.D.y, u * u * u * f.A.z + 3 * u * u * t * f.B.z + 3 * u * t * t * f.C.z + t * t * t * f.D.z); };
+    const p0 = pt(f.u, w.g.position), p1 = pt(Math.min(1, f.u + 0.01), new T.Vector3()); w.g.rotation.set(0, Math.atan2(p1.x - p0.x, p1.z - p0.z), 0); w.act.timeScale = Math.sin(W.t * 0.5) > 0.6 ? 0.25 : 0.9; w.mixer.update(dt);
+  });
+  W.bees.forEach(function (b, i) { const P = function (t) { return [6 + Math.sin(t * 0.8 + b.ph) * 4, 44 + Math.cos(t * 0.6 + b.ph) * 3]; }, p = P(W.t), q = P(W.t + 0.05); b.m.position.set(p[0], H(p[0], p[1]) + 0.9 + Math.sin(W.t * 6 + i) * 0.2, p[1]); b.m.rotation.y = Math.atan2(q[0] - p[0], q[1] - p[1]); BQ.creatures.poseBee(b.b, dt, false); });
   const r = W.rab; r.t -= dt; if (r.t <= 0) { r.t = 1.5 + Math.random() * 2; r.tx = Math.max(-4, Math.min(20, r.x + (Math.random() - 0.5) * 8)); r.tz = Math.max(36, Math.min(54, r.z + (Math.random() - 0.5) * 8)); }
   const flee = Math.hypot(W.px - r.x, W.pz - r.z) < 4 && !(W.near && W.near.id === 'rabbit'); if (flee) { r.tx = r.x + (r.x - W.px) * 2; r.tz = r.z + (r.z - W.pz) * 2; }
-  r.x += Math.sign(r.tx - r.x) * Math.min(Math.abs(r.tx - r.x), dt * (flee ? 5 : 2)); r.z += Math.sign(r.tz - r.z) * Math.min(Math.abs(r.tz - r.z), dt * (flee ? 5 : 2));
-  W.rabbit.position.set(r.x, H(r.x, r.z) + Math.abs(Math.sin(W.t * 7)) * 0.3, r.z);
+  const ox = r.x, oz = r.z; r.x += Math.sign(r.tx - r.x) * Math.min(Math.abs(r.tx - r.x), dt * (flee ? 5 : 2)); r.z += Math.sign(r.tz - r.z) * Math.min(Math.abs(r.tz - r.z), dt * (flee ? 5 : 2));
+  { const mv = Math.hypot(r.x - ox, r.z - oz) > dt * 0.3; if (mv) { r.hp = (r.hp || 0) + dt * (flee ? 3.6 : 2.6); W.rabbit.rotation.y = Math.atan2(r.x - ox, r.z - oz); } else r.hp = 0; const hop = mv ? r.hp % 1 : 0;
+    W.rabbit.position.set(r.x, H(r.x, r.z) + Math.sin(hop * Math.PI) * (flee ? 0.4 : 0.25), r.z); BQ.creatures.poseRabbit(W.rabM, dt, hop, !mv && Math.hypot(W.px - r.x, W.pz - r.z) < 7); }
   W.hawk.position.set(10 + Math.cos(W.t * 0.3) * 18, 26, 44 + Math.sin(W.t * 0.3) * 18); W.hawk.rotation.y = -W.t * 0.3; W.hawk.rotation.z = 0.25;
-  if (W.heron) { W.heronHead.position.y = 2.55 + (Math.sin(W.t * 0.7) > 0.95 ? -0.5 : 0); W.heronHead.rotation.y = Math.sin(W.t * 0.4) * 0.4; }
-  if (W.springFish) W.springFish.forEach(function (f, i) { const a = W.t * 0.9 + i * 2.1; f.position.set(SPRING.x + Math.cos(a) * 1.8, H(SPRING.x, SPRING.z) + 0.2, SPRING.z + Math.sin(a) * 1.2); f.rotation.y = -a; });
+  if (W.heronM) { W.heronNext -= dt; if (W.heronNext <= 0 && !W.heronStrike) { W.heronStrike = 0.001; W.heronNext = 7 + Math.random() * 8; } if (W.heronStrike) { W.heronStrike += dt / 1.4; if (W.heronStrike >= 1) W.heronStrike = 0; } BQ.creatures.poseHeron(W.heronM, dt, W.heronStrike); }
+  if (W.springFish) W.springFish.forEach(function (f, i) { const a = W.t * 0.9 + i * 2.1; f.position.set(SPRING.x + Math.cos(a) * 1.8, H(SPRING.x, SPRING.z) + 0.2, SPRING.z + Math.sin(a) * 1.2); f.rotation.y = Math.atan2(-Math.sin(a) * 1.8, Math.cos(a) * 1.2); BQ.creatures.poseFish(W.springFishM[i], dt, 0.5); });
   if (W.listenFx) { if (W.listenT > 0 || (W.talk && W.talk.lines[0] && W.talk.lines[0].animal)) { W.listenT = Math.max(0, (W.listenT || 0) - dt); W.listenFx.material.opacity = 0.45 + Math.sin(W.t * 8) * 0.3; W.listenFx.position.set(W.px, W.py + 2.3, W.pz); } else W.listenFx.material.opacity = 0; }
   W.tads.forEach(function (t0, i) { const a = W.t * 0.6 + t0.ph, x = W.tadAt[0] + Math.cos(a) * (1.2 + (i % 3) * 0.7), z = W.tadAt[1] + Math.sin(a * 1.3) * 1.4; t0.m.position.set(x, Math.max(H(x, z) + 0.3, WL0 - 0.6 - (i % 4) * 0.25), z); t0.m.rotation.y = -a; t0.tail.rotation.y = Math.sin(W.t * 18 + i) * 0.6; });
   if (W.camUnder) { const o = W._wo || (W._wo = new T.Object3D()); W.weedList.forEach(function (b, i) { if (i % 2) return; o.position.set(b[0], b[1], b[2]); o.scale.set(b[3], b[4], b[5]); o.rotation.set(Math.sin(W.t * 1.3 + i) * 0.12, b[6], Math.cos(W.t * 1.1 + i) * 0.1); o.updateMatrix(); W.weed.setMatrixAt(i, o.matrix); }); W.weed.instanceMatrix.needsUpdate = true; }
-  if (W.fish.visible) W.fish.children.forEach(function (f, i) { const a = W.t * 0.5 + i * 1.05, rr = 5 + (i % 3) * 2.5; f.position.set(POND.x + Math.cos(a) * rr, W.water.position.y - 0.9 - (i % 3) * 1.1, POND.z + Math.sin(a) * rr); f.rotation.y = -a; });
+  if (W.fish.visible) W.fish.children.forEach(function (f, i) { const a = W.t * 0.5 + i * 1.05, rr = 5 + (i % 3) * 2.5; f.position.set(POND.x + Math.cos(a) * rr, W.water.position.y - 0.9 - (i % 3) * 1.1, POND.z + Math.sin(a) * rr); f.rotation.y = Math.atan2(-Math.sin(a), Math.cos(a)); BQ.creatures.poseFish(W.fishM[i], dt, 0.35); });
+  BQ.creatures.poseFrog(W.frogM, dt, W.frogJump ? Math.min(1, (1 - Math.max(0, W.frogJump)) * 2.2) : 0, !W.frogJump && (isNight() || Math.sin(W.t * 0.25) > 0.85));
   if (W.frogJump) { W.frogJump -= dt; const u = Math.max(0, W.frogJump); W.frog.position.set(-8 - (1 - u) * 4, H(-8, 30) + Math.sin((1 - u) * Math.PI) * 1.5, 30 - (1 - u) * 2); if (W.frogJump <= 0) { W.frogJump = 0; setTimeout(function () { if (W) W.frog.position.set(-8, H(-8, 30), 30); }, 6000); } }
   { const o = W._co || (W._co = new T.Object3D()); W.clouds.forEach(function (c, i) { c.x += dt * c.sp; if (c.x > 200) c.x = -200;
       for (let k = 0; k < 5; k++) { o.position.set(c.x + (k - 2) * 6, c.y + (k % 2) * 1.5, c.z + (k % 3) * 2); o.scale.set(7 + (k % 3) * 2, 3.5 + (k % 2), 5); o.updateMatrix(); W.cloudIM.setMatrixAt(i * 5 + k, o.matrix); } }); W.cloudIM.instanceMatrix.needsUpdate = true; }
@@ -1572,13 +1605,20 @@ function step(dt) {
   if (W.gulls) W.gulls.forEach(function (gl, k) { const a = W.t * 0.18 + gl.ph; gl.m.position.set(110 + Math.cos(a) * gl.r, 6 + k * 3 + Math.sin(W.t + k) * 1.5, -10 + Math.sin(a) * gl.r * 0.7); gl.m.rotation.y = -a; gl.m.children.forEach(function (w, j) { w.rotation.z = (j ? -1 : 1) * (0.25 + Math.sin(W.t * 4 + k) * 0.3); }); });
   if (W.mist2) W.mist2.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.4; }); if (W.creekTex) W.creekTex.offset.y -= dt * 0.35; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
   W.flies.forEach(function (f, i) { const a = W.t * 0.7 + f.ph, x = f.cx + Math.cos(a) * f.r, z = f.cz + Math.sin(a * 1.3) * f.r; f.m.position.set(x, H(x, z) + 1.4 + Math.sin(W.t * 2 + i) * 0.4, z); f.m.rotation.y = -a; f.m.children[0].rotation.z = Math.sin(W.t * 14 + i) * 0.8; f.m.children[1].rotation.z = -Math.sin(W.t * 14 + i) * 0.8; });
-  W.dflies.forEach(function (d0, i) { const a = W.t * 0.9 + d0.ph, x = -31 + Math.cos(a) * 3 + Math.sin(W.t * 2.3 + i) * 0.8, z = 31 + Math.sin(a) * 2.5; d0.m.position.set(x, WL0 + 1 + Math.sin(W.t * 3 + i) * 0.3, z); d0.m.rotation.y = -a - Math.PI / 2; });
+  /* dragonflies hover, then dart to a new spot over the shallows */
+  W.dflies.forEach(function (d0, i) { d0.t -= dt; if (d0.t <= 0) { const a = Math.random() * 6.283, rr = Math.random() * 3.5; d0.tx = -31 + Math.cos(a) * rr; d0.tz = 31 + Math.sin(a) * rr * 0.8; d0.ty = WL0 + 0.7 + Math.random() * 1.1; d0.t = 0.8 + Math.random() * 2.4; }
+    const dx = d0.tx - d0.x, dz = d0.tz - d0.z, dy = d0.ty - d0.y, dd = Math.hypot(dx, dz, dy), k = Math.min(1, dt * 7); d0.x += dx * k; d0.z += dz * k; d0.y += dy * k;
+    if (dd > 0.3) { const want = Math.atan2(dx, dz); d0.yaw += (((want - d0.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 12); }
+    d0.m.position.set(d0.x + Math.sin(W.t * 5 + i) * 0.03, d0.y + Math.sin(W.t * 4 + i) * 0.05, d0.z); d0.m.rotation.set(dd > 0.3 ? 0.15 : 0, d0.yaw, 0); BQ.creatures.poseDragonfly(d0.d, dt, false); });
   { const dm1 = new T.Object3D(); for (let i = 0; i < 24; i++) { const a = W.t * 0.35 + i * 0.27, rr = 1.2 + (i % 2) * 0.12, x = 14 + Math.cos(a) * rr + (i > 12 ? Math.cos(a) * 1.4 : 0), z = 4 + Math.sin(a) * rr; dm1.position.set(x, H(x, z) + 0.06, z); dm1.scale.set(0.07, 0.05, 0.12); dm1.rotation.y = -a; dm1.updateMatrix(); W.ants.setMatrixAt(i, dm1.matrix); } W.ants.instanceMatrix.needsUpdate = true; }
   W.worms.forEach(function (w) { w.m.rotation.z = Math.sin(W.t * 3 + w.ph) * 0.6; w.m.scale.y = 0.3 + Math.abs(Math.sin(W.t * 2 + w.ph)) * 0.12; });
   { const dd = Math.hypot(W.px - W.dr.x, W.pz - W.dr.z), alert = dd < 8 || W.deerAlert > 0; if (W.deerAlert > 0) W.deerAlert -= dt;
-    W.deerHead.rotation.x = alert ? -0.35 : 0.9 + Math.sin(W.t * 2) * 0.12; W.deerTail.position.y = alert ? 1.75 : 1.6;
+    const D = W.dr; let walk = 0; /* the deer wanders slowly, grazing; if you come close it stops, faces you and raises its white tail */
+    if (!alert) { D.t -= dt; if (D.t <= 0) { const a = Math.random() * 6.283, rr = Math.random() * 3.5; D.tx = -30 + Math.cos(a) * rr; D.tz = 50 + Math.sin(a) * rr; D.t = 6 + Math.random() * 8; }
+      const dx = D.tx - D.x, dz = D.tz - D.z, dl = Math.hypot(dx, dz); if (dl > 0.15) { walk = 1; const sp = Math.min(dl, dt * 0.9); D.x += dx / dl * sp; D.z += dz / dl * sp; const want = Math.atan2(dx, dz); W.deer.rotation.y += (((want - W.deer.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 2.5); } }
+    D.walk += (walk - D.walk) * Math.min(1, dt * 3); W.deer.position.set(D.x, H(D.x, D.z), D.z); BQ.creatures.poseDeer(W.deerM, dt, D.walk * 0.6, !alert && D.walk < 0.3, alert);
     if (alert) W.deer.rotation.y += (((Math.atan2(W.px - W.dr.x, W.pz - W.dr.z) - W.deer.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 2); }
-  if (W.owlLook > 0) { W.owlLook -= dt; W.owl.rotation.y = Math.sin(W.owlLook * 6) * 0.9; } else W.owl.rotation.y = Math.atan2(W.px - W.owl.position.x, W.pz - W.owl.position.z) * 0.7;
+  if (W.owlLook > 0) W.owlLook -= dt; BQ.creatures.poseOwl(W.owlM, dt, W.owlLook > 0 ? Math.sin(W.owlLook * 3) * 1.6 : (Math.hypot(W.px - W.owl.position.x, W.pz - W.owl.position.z) < 25 ? ((Math.atan2(W.px - W.owl.position.x, W.pz - W.owl.position.z) - W.owl.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI : Math.sin(W.t * 0.2) * 1.2));
   if (W.grow) W.grow.forEach(function (p) { if (p.scale.x < 1) p.scale.setScalar(Math.min(1, p.scale.x + dt * 0.8)); });
   if (W.clearT != null) { W.clearT += dt; const u = Math.min(1, W.clearT / 6); W.water.material.color.set('#5a8a3a').lerp(new T.Color('#3a8ac0'), u); W.scum.children.forEach(function (m) { m.scale.setScalar(Math.max(0.01, 1 - u)); });
     if (u >= 1) { W.scum.visible = false; W.fish.visible = true; W.clearT = null; } }
@@ -1631,6 +1671,10 @@ function step(dt) {
   W.trail.forEach(function (t0) { if (t0.visible) { t0.material.opacity -= dt * 1.6; if (t0.material.opacity <= 0) t0.visible = false; } });
   W.under = W.swim && W.py < wl - 1.3;
   if (W.under && !W.toldDive) { W.toldDive = true; showCard('msg', 'cz.diveTip'); W.cardT = 6; }
+  WIND.value = W.t;
+  if (W.shadows) W.shadows.forEach(function (q) { const p = q.get ? q.get() : [q.o.position.x, q.o.position.z, q.o.position.y]; const gy0 = groundAt(p[0], p[1]), up = Math.max(0, p[2] - gy0), k = Math.max(0.25, 1 - up / 6);
+    q.m.visible = q.o.visible !== false && !(W.camUnder) && gy0 > WL0 - 0.05 - (Math.hypot(p[0] - POND.x, p[1] - POND.z) < 15.6 ? -99 : 99); q.m.position.set(p[0], gy0 + 0.05, p[1]); q.m.scale.set(q.r * 2 * k, 1, q.r * 2 * k); q.m.material.opacity = 1; });
+  if (W.pondTex) { W.pondTex.offset.x = Math.sin(W.t * 0.05) * 0.3; W.pondTex.offset.y = W.t * 0.012; W.rim.material.opacity = 0.28 + Math.sin(W.t * 0.9) * 0.08; }
   W.me.position.set(W.px, W.py, W.pz); W.me.rotation.y += (((W.face - W.me.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 10);
   const legs = W.me.userData.legs, spd = Math.hypot(W.vx, W.vz);
   if (legs) { const before = W.stride || 0; W.stride = before + dt * spd * (k.run ? 1.1 : 1.5);
@@ -1653,6 +1697,7 @@ function step(dt) {
   const gc = H(want.x, want.z) + (W.under ? 0.6 : 1.2); if (want.y < gc) want.y = gc;
   cam.position.lerp(want, Math.min(1, dt * (W.talk || W.sitting ? 3 : 6))); if (W.talk || W.sitting) { W.lookAt = W.lookAt || tgt.clone(); W.lookAt.lerp(tgt, Math.min(1, dt * 4)); cam.lookAt(W.lookAt); } else { W.lookAt = null; cam.lookAt(tgt); }
   { const fov = W.dist < 4 ? 28 + (W.dist - 2.2) / 1.8 * 14 : 42; if (Math.abs(cam.fov - fov) > 0.05) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 5); cam.updateProjectionMatrix(); } }
+  if (W.camOverride) { const o = W.camOverride, tg = o.follow ? o.follow.getWorldPosition(new T.Vector3()) : o.look; cam.position.copy(o.follow ? tg.clone().add(o.off) : o.pos); cam.lookAt(tg); } /* used by tests to inspect animals up close */
   underwaterLook(cam); W.me.visible = W.dist > 3.2;
   { /* tree tops between the camera and the player fade out so you can always see yourself */
     const ax = tgt.x, az = tgt.z, bx = cam.position.x - ax, bz = cam.position.z - az, L2 = bx * bx + bz * bz, hy = Math.max(cam.position.y, tgt.y) + 0.4; let instDirty = false;

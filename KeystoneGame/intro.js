@@ -164,8 +164,16 @@ function buildMeadow(g) {
   const ship = saucer(); g.add(ship);
   const beam = new T.Mesh(new T.CylinderGeometry(0.9, 2.2, 1, 24, 1, true), new T.MeshBasicMaterial({ color: '#9fe8ff', transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })); g.add(beam);
   const me = C.buildAlien(C.S.alien); me.scale.setScalar(0.001); g.add(me);
-  const birds = []; for (let i = 0; i < 6; i++) { const b = new T.Group(); [-1, 1].forEach(function (sd) { const w = new T.Mesh(C.G.box, C.basic('#2a2a3a')); w.scale.set(0.9, 0.06, 0.25); w.position.x = sd * 0.42; b.add(w); }); b.userData.ph = i; g.add(b); birds.push(b); }
-  const flies = []; for (let i = 0; i < 7; i++) { const f = C.glow(['#ffd166', '#ff8fb1', '#c59cff'][i % 3], 0.7, 0.9); f.userData.ph = i * 0.9; g.add(f); flies.push(f); }
+  /* a flock of gulls and crows overhead, and real butterflies in the meadow (creatures.js); simple shapes only if that file is missing */
+  const CR = BQ.creatures, birds = [], flies = [];
+  for (let i = 0; i < 6; i++) { let b;
+    if (CR) { b = CR.makeBird(i % 3 === 2 ? 'crow' : 'gull'); b.g.scale.setScalar(3); b.g.userData.ph = i; g.add(b.g); birds.push(b); }
+    else { const o = new T.Group(); [-1, 1].forEach(function (sd) { const w = new T.Mesh(C.G.box, C.basic('#2a2a3a')); w.scale.set(0.9, 0.06, 0.25); w.position.x = sd * 0.42; o.add(w); }); o.userData.ph = i; g.add(o); birds.push({ g: o, box: 1 }); } }
+  const BFK = ['monarch', 'swallowtail', 'cabbage', 'admiral', 'azure', 'monarch', 'swallowtail'];
+  for (let i = 0; i < 7; i++) { let f;
+    if (CR) { f = CR.makeButterfly(BFK[i]); f.g.scale.multiplyScalar(0.8); f.freqVar = Math.random(); }
+    else f = { g: C.glow(['#ffd166', '#ff8fb1', '#c59cff'][i % 3], 0.7, 0.9) };
+    f.g.userData.ph = i * 0.9; g.add(f.g); flies.push(f); }
   return { ship: ship, beam: beam, me: me, birds: birds, flies: flies, water: water, gy: hills(0, 0) };
 }
 
@@ -235,8 +243,13 @@ function frame(t) {
     else if (t < 44.5) { const a = lerp(0.35, 2.2, seg(t, 30, 44.5)), r = lerp(6, 8.5, seg(t, 30, 44.5)); cp = new T.Vector3(ax + Math.sin(a) * r, ay + 1.4 + seg(t, 38, 44.5) * 1.2, az + Math.cos(a) * r); look = new T.Vector3(ax, ay, az); }
     else { const a = 2.2, r = 8.5, base = new T.Vector3(ax + Math.sin(a) * r, ay + 2.6, az + Math.cos(a) * r); cp = base.clone().lerp(new T.Vector3(ax + 14, ay + 18, az + 26), seg(t, 44.5, END)); look = new T.Vector3(ax, ay, az).lerp(new T.Vector3(-160, 30, -420), seg(t, 44.5, END)); }
     cam.position.copy(cp); cam.lookAt(look);
-    B.birds.forEach(function (b, i) { const k = ((t * 0.05 + i * 0.13) % 1); b.position.set(lerp(-120, 120, k), 34 + i * 2 + Math.sin(t + i) * 1.5, -60 - i * 6); b.rotation.y = -Math.PI / 2; b.children.forEach(function (w, j) { w.rotation.z = (j ? -1 : 1) * Math.sin(t * 7 + i) * 0.5; }); });
-    B.flies.forEach(function (f, i) { const ph = f.userData.ph; f.position.set(Math.sin(t * 0.5 + ph) * 7 + Math.sin(t * 3 + ph) * 0.5, gy + 1.2 + Math.sin(t * 2 + ph) * 0.4, 4 + Math.cos(t * 0.4 + ph) * 6); });
+    const dtI = Math.min(0.1, Math.max(0, t - (B.lastT || t))); B.lastT = t;
+    B.birds.forEach(function (b, i) { const k = ((t * 0.05 + i * 0.13) % 1); b.g.position.set(lerp(-120, 120, k), 34 + i * 2 + Math.sin(t + i) * 1.5, -60 - i * 6);
+      if (b.box) { b.g.rotation.y = -Math.PI / 2; b.g.children.forEach(function (w, j) { w.rotation.z = (j ? -1 : 1) * Math.sin(t * 7 + i) * 0.5; }); return; }
+      b.g.rotation.set(0, Math.PI / 2, -Math.cos(t + i) * 0.12); const flap = Math.sin(t * 0.6 + i * 1.7) > -0.2; BQ.creatures.poseBird(b, dtI, flap ? 'flap' : 'glide', 0.7, 0); });
+    B.flies.forEach(function (f, i) { const ph = f.g.userData.ph, P = function (tt) { return [Math.sin(tt * 0.5 + ph) * 7 + Math.sin(tt * 3 + ph) * 0.5, gy + 1.2 + Math.sin(tt * 2 + ph) * 0.4, 4 + Math.cos(tt * 0.4 + ph) * 6]; };
+      const p = P(t), q = P(t + 0.05); f.g.position.set(p[0], p[1], p[2]);
+      if (f.wings) { f.g.rotation.set(0, Math.atan2(q[0] - p[0], q[2] - p[2]), 0); BQ.creatures.poseButterfly(f, dtI, 'fly'); } });
     $('inTitle').style.opacity = t < 45 ? 0 : t < 47.5 ? seg(t, 45, 46.5) : 1 - seg(t, 48.5, END - 0.2);
   }
   /* subtitles */
