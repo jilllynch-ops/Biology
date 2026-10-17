@@ -135,13 +135,16 @@ function moonTex() { const cv = document.createElement('canvas'); cv.width = 256
   return new T.CanvasTexture(cv); }
 /* the Milky Way: two spiral arms of stars around a glowing core */
 function buildGalaxy(g) {
-  const n = C.S.set.low ? 4000 : 9000, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), c = new T.Color();
+  const n = C.S.set.low ? 10000 : 26000, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), c = new T.Color();
   const gauss = function (i, k) { return (hash3(i, k, 1) + hash3(i, k, 2) + hash3(i, k, 3) - 1.5) * 1.15; };
   for (let i = 0; i < n; i++) { const core = i % 5 === 0, r = core ? Math.pow(hash3(i, 9, 9), 1.8) * 70 : 30 + Math.pow(hash3(i, 8, 8), 0.8) * 260, arm = i % 2, a = core ? hash3(i, 7, 7) * 6.283 : r * 0.021 + arm * Math.PI + gauss(i, 4) * (0.28 + 18 / r);
     pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = gauss(i, 6) * (core ? 14 : 5) * (1 - r / 340); pos[i * 3 + 2] = Math.sin(a) * r;
     c.set(core ? (i % 3 ? '#ffe2b0' : '#fff4d8') : ['#cfe0ff', '#ffffff', '#aac8ff', '#ffd8e8', '#fff0c8'][i % 5]); const k = 0.45 + hash3(i, 10, 10) * 0.55; col[i * 3] = c.r * k; col[i * 3 + 1] = c.g * k; col[i * 3 + 2] = c.b * k; }
   const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3)); geo.setAttribute('color', new T.BufferAttribute(col, 3));
-  g.add(new T.Points(geo, new T.PointsMaterial({ size: 1.8, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false })));
+  g.add(new T.Points(geo, new T.PointsMaterial({ size: 1.6, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false })));
+  /* a fine haze of millions of faint stars (drawn as many tiny dim points) */
+  { const m = C.S.set.low ? 8000 : 22000, p2 = new Float32Array(m * 3); for (let i = 0; i < m; i++) { const r = 10 + Math.pow(hash3(i, 21, 3), 0.7) * 300, arm = i % 2, a = r * 0.021 + arm * Math.PI + gauss(i, 22) * 0.55; p2[i * 3] = Math.cos(a) * r; p2[i * 3 + 1] = gauss(i, 23) * 6 * (1 - r / 360); p2[i * 3 + 2] = Math.sin(a) * r; }
+    const g2 = new T.BufferGeometry(); g2.setAttribute('position', new T.BufferAttribute(p2, 3)); g.add(new T.Points(g2, new T.PointsMaterial({ size: 1, sizeAttenuation: false, color: '#c8d4ff', transparent: true, opacity: 0.55, depthWrite: false }))); }
   g.add(C.glow('#ffe6b8', 170, 0.85)); g.add(C.glow('#fff6e0', 60, 1));
   for (let i = 0; i < 46; i++) { const arm = i % 2, r = 50 + (i / 46) * 230, a = r * 0.021 + arm * Math.PI + (hash3(i, 1, 3) - 0.5) * 0.3, s = C.glow(['#6a7ad8', '#b06ac0', '#5a9ad0', '#d08ab0'][i % 4], 60 + hash3(i, 2, 3) * 50, 0.18); s.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); g.add(s); }
   const sunAt = new T.Vector3(Math.cos(190 * 0.021 + 0.12) * 190, 0, Math.sin(190 * 0.021 + 0.12) * 190), here = C.glow('#fff2c0', 9, 1); here.position.copy(sunAt); g.add(here);
@@ -180,17 +183,19 @@ function buildSpace(g) {
   const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3)); geo.setAttribute('color', new T.BufferAttribute(col, 3));
   const stars = new T.Points(geo, new T.PointsMaterial({ size: 1.7, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false })); g.add(stars);
   [['#7a4ad0', -180, 90, -420, 260], ['#d04a9a', 160, -60, -460, 240], ['#3a7ad0', 40, 140, -500, 300], ['#2ab0a0', -260, -120, -380, 200], ['#c05a3a', 280, 120, -300, 180]].forEach(function (nb) { const s = C.glow(nb[0], nb[4], 0.35); s.position.set(nb[1], nb[2], nb[3]); g.add(s); });
-  const giant = new T.Mesh(new T.SphereGeometry(26, 32, 20), new T.MeshLambertMaterial({ map: bandTex() })); giant.position.set(-120, 50, -300); giant.rotation.z = 0.3; g.add(giant);
-  const ring = new T.Mesh(new T.RingGeometry(34, 50, 48), new T.MeshBasicMaterial({ color: '#e8cfa0', transparent: true, opacity: 0.5, side: T.DoubleSide })); ring.position.copy(giant.position); ring.rotation.set(1.25, 0.2, 0.3); g.add(ring);
   const moon = new T.Mesh(new T.SphereGeometry(7, 32, 20), new T.MeshLambertMaterial({ map: moonTex() })); moon.position.set(46, 7, -150); g.add(moon); /* the camera passes close to the Moon on the way in */
-  const tex = earthTextures(), earth = new T.Group();
-  const ball = new T.Mesh(new T.SphereGeometry(70, 48, 32), new T.MeshPhongMaterial({ map: tex[0], shininess: 18, specular: '#1a2a3a' })); earth.add(ball);
-  const clouds = new T.Mesh(new T.SphereGeometry(71.6, 48, 32), new T.MeshLambertMaterial({ map: tex[1], transparent: true, depthWrite: false })); earth.add(clouds);
-  const halo = C.glow('#6ab8ff', 200, 0.55); earth.add(halo); halo.position.z = -10;
-  earth.position.set(60, -14, -440); earth.rotation.z = 0.35; g.add(earth);
+  /* Earth: a real satellite-style picture of Earth (earthtex.js) with drifting clouds and a thin blue atmosphere; drawn in code if that file is missing */
+  const real = window.FG_EARTH, L = new T.TextureLoader(), tex = real ? [L.load(real.day), L.load(real.clouds)] : earthTextures(), earth = new T.Group();
+  const ball = new T.Mesh(new T.SphereGeometry(70, 64, 40), new T.MeshPhongMaterial({ map: tex[0], shininess: 40, specular: '#141c26' })); earth.add(ball);
+  const clouds = new T.Mesh(new T.SphereGeometry(71.2, 64, 40), real ? new T.MeshLambertMaterial({ color: '#ffffff', alphaMap: tex[1], transparent: true, depthWrite: false }) : new T.MeshLambertMaterial({ map: tex[1], transparent: true, depthWrite: false })); earth.add(clouds);
+  const atm = new T.Mesh(new T.SphereGeometry(73.5, 48, 32), new T.ShaderMaterial({ transparent: true, depthWrite: false, side: T.BackSide, blending: T.AdditiveBlending,
+    vertexShader: 'varying vec3 vN; varying vec3 vV; void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+    fragmentShader: 'varying vec3 vN; varying vec3 vV; void main() { float k = pow(clamp(1.0 + dot(vN, vV) * 1.0, 0.0, 1.0), 3.0); gl_FragColor = vec4(0.35, 0.65, 1.0, 1.0) * k * 1.1; }' })); earth.add(atm);
+  const halo = C.glow('#6ab8ff', 190, 0.35); earth.add(halo); halo.position.z = -10;
+  earth.position.set(60, -14, -440); earth.rotation.z = 0.41; g.add(earth); /* Earth's tilt is about 23 degrees */
   const ship = saucer(); ship.scale.setScalar(0.9); g.add(ship);
   const streak = C.glow('#ffffff', 3, 0.9); streak.scale.set(18, 0.6, 1); streak.visible = false; g.add(streak);
-  return { stars: stars, earth: earth, ball: ball, clouds: clouds, ship: ship, streak: streak, tex: tex, giant: giant };
+  return { stars: stars, earth: earth, ball: ball, clouds: clouds, ship: ship, streak: streak, tex: tex };
 }
 function hills(x, z) { const d = Math.hypot(x, z); let h = 2.2 * Math.sin(x * 0.045) * Math.cos(z * 0.05) + 1.4 * Math.sin((x + z) * 0.03); h *= Math.min(1, Math.max(0, (d - 10) / 30)); h += Math.max(0, d - 90) * 0.35; return h; }
 function buildMeadow(g) {
@@ -261,7 +266,7 @@ function frame(t0) {
   /* scanner readout (the biologist's own instruments) */
   { const sc = $('inScan'); sc.style.opacity = t0 > 13.2 && t0 < 34.6 ? Math.min(1, (t0 - 13.2) / 0.6, (34.6 - t0) / 0.6) : 0; const rows = sc.querySelectorAll('div'); SCAN.forEach(function (x, i) { if (rows[i]) rows[i].classList.toggle('on', t0 >= x[0]); }); }
   if (t0 < SH) { prologue(t0); subs(t0); return; }
-  if (I.gal.visible || I.sol.visible || !I.A.earth.visible || !I.A.giant.visible) { I.gal.visible = I.sol.visible = false; I.A.earth.parent.children.forEach(function (o) { o.visible = true; }); I.A.streak.visible = false; I.A.ship.scale.setScalar(0.9); }
+  if (I.gal.visible || I.sol.visible || !I.A.earth.visible) { I.gal.visible = I.sol.visible = false; I.A.earth.parent.children.forEach(function (o) { o.visible = true; }); I.A.streak.visible = false; I.A.ship.scale.setScalar(0.9); }
   const t = t0 - SH;
   if (t < 16.4) {
     if (I.part !== 0) setSet(0);

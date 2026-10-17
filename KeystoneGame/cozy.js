@@ -473,6 +473,38 @@ Object.assign(C.I18N.es, {
   'a.cz-survey': 'Muestreador de campo', 'a.cz-survey.d': 'Completa 3 muestreos de vida silvestre en la reserva.'
 });
 C.ACH.push({ id: 'cz-survey', ic: '📋', tier: 'medium' });
+Object.assign(C.I18N.en, {
+  'cz.sc.title': 'Looking through the viewer', 'cz.sc.spot': 'Things to spot', 'cz.sc.help': 'Look around: arrow keys, WASD or drag · Zoom: + / − or mouse wheel · Hold the center ring on something to study it',
+  'cz.sc.done': 'Done (E)', 'cz.sc.zin': 'Zoom in', 'cz.sc.zout': 'Zoom out', 'cz.sc.all': 'You spotted everything from this lookout!', 'cz.sc.got': 'Spotted', 'cz.sc.left': '{n} left to find',
+  'cz.sc.sea.gulls': 'Gulls over the water', 'cz.sc.sea.island': 'An island with trees', 'cz.sc.sea.cliff': 'Stripes in the cliff below',
+  'cz.sc.sea.gullsD': 'Herring gulls eat fish, crabs and scraps. They carry nutrients from the sea to the land in their droppings: the sea and land food webs are connected.',
+  'cz.sc.sea.islandD': 'How did trees get onto an island? Seeds arrive by wind, on waves, and in bird droppings. Living things spread to new places slowly, one arrival at a time.',
+  'cz.sc.sea.cliffD': 'Each stripe in the cliff is a layer of sediment laid down at a different time. The oldest layers are at the bottom.',
+  'cz.sc.valley.town': 'The town', 'cz.sc.valley.farm': 'A red barn and farm fields', 'cz.sc.valley.wetland': 'The wetland pools',
+  'cz.sc.valley.townD': 'Rain runs off roofs, roads and lawns. Whatever is on them, like oil, salt or fertilizer, can wash into the river. This is called RUNOFF.',
+  'cz.sc.valley.farmD': 'Fertilizer helps crops grow. But when it rains, extra nitrogen and phosphorus can wash into streams, just like at Lu\'s farm by the pond.',
+  'cz.sc.valley.wetlandD': 'Wetland plants and mud slow the water down and trap mud and nutrients. A wetland works like a natural water filter, and it is a nursery for frogs, fish and birds.',
+  'cz.sc.canyon.river': 'The river at the bottom', 'cz.sc.canyon.mesa': 'A flat-topped mesa', 'cz.sc.canyon.wall': 'Striped canyon walls',
+  'cz.sc.canyon.riverD': 'This river carved the whole canyon, grain by grain, over a very long time. Moving water wearing rock away is called EROSION.',
+  'cz.sc.canyon.mesaD': 'A mesa is a hill with a flat top. Its top layer of rock is harder, so it wore away more slowly than the rock around it.',
+  'cz.sc.canyon.wallD': 'Each band in the walls is a different kind of rock, with its own color and hardness. Softer bands wear away faster.'
+});
+Object.assign(C.I18N.es, {
+  'cz.sc.title': 'Mirando por el visor', 'cz.sc.spot': 'Cosas para encontrar', 'cz.sc.help': 'Mira a tu alrededor: flechas, WASD o arrastra · Zoom: + / − o la rueda del ratón · Mantén el círculo del centro sobre algo para estudiarlo',
+  'cz.sc.done': 'Listo (E)', 'cz.sc.zin': 'Acercar', 'cz.sc.zout': 'Alejar', 'cz.sc.all': '¡Encontraste todo desde este mirador!', 'cz.sc.got': 'Encontrado', 'cz.sc.left': 'Faltan {n}',
+  'cz.sc.sea.gulls': 'Gaviotas sobre el agua', 'cz.sc.sea.island': 'Una isla con árboles', 'cz.sc.sea.cliff': 'Franjas en el acantilado',
+  'cz.sc.sea.gullsD': 'Las gaviotas comen peces, cangrejos y restos. Con sus excrementos llevan nutrientes del mar a la tierra: las redes alimentarias del mar y de la tierra están conectadas.',
+  'cz.sc.sea.islandD': '¿Cómo llegaron árboles a una isla? Las semillas llegan con el viento, con las olas y en los excrementos de las aves. Los seres vivos se extienden a lugares nuevos poco a poco.',
+  'cz.sc.sea.cliffD': 'Cada franja del acantilado es una capa de sedimento depositada en un momento distinto. Las capas más antiguas están abajo.',
+  'cz.sc.valley.town': 'El pueblo', 'cz.sc.valley.farm': 'Un granero rojo y campos de cultivo', 'cz.sc.valley.wetland': 'Las charcas del humedal',
+  'cz.sc.valley.townD': 'La lluvia corre por techos, calles y jardines. Lo que haya en ellos, como aceite, sal o fertilizante, puede llegar al río. Esto se llama ESCORRENTÍA.',
+  'cz.sc.valley.farmD': 'El fertilizante ayuda a crecer a los cultivos. Pero cuando llueve, el nitrógeno y el fósforo que sobran pueden llegar a los arroyos, igual que en la granja de Lu junto al estanque.',
+  'cz.sc.valley.wetlandD': 'Las plantas y el barro del humedal frenan el agua y atrapan barro y nutrientes. Un humedal funciona como un filtro natural, y es una guardería para ranas, peces y aves.',
+  'cz.sc.canyon.river': 'El río del fondo', 'cz.sc.canyon.mesa': 'Una meseta de cima plana', 'cz.sc.canyon.wall': 'Paredes del cañón a franjas',
+  'cz.sc.canyon.riverD': 'Este río excavó todo el cañón, grano a grano, durante muchísimo tiempo. El agua que desgasta la roca se llama EROSIÓN.',
+  'cz.sc.canyon.mesaD': 'Una meseta es un cerro de cima plana. Su capa de roca de arriba es más dura, así que se desgastó más despacio que la roca de alrededor.',
+  'cz.sc.canyon.wallD': 'Cada franja de las paredes es un tipo de roca distinto, con su propio color y dureza. Las franjas más blandas se desgastan más rápido.'
+});
 /* achievements for this mode (their text uses the cz.a.* keys) */
 ['cz-first', 'cz-compare', 'cz-hollow', 'cz-detective', 'cz-all'].forEach(function (id, i) {
   C.ACH.push({ id: id, ic: ['🌿', '⚖️', '🍄', '🐟', '🦉'][i], tier: i < 2 ? 'short' : i < 4 ? 'medium' : 'long' });
@@ -649,7 +681,7 @@ function ensureUI() {
   });
 }
 function $(id) { return document.getElementById(id); }
-function setLang(l) { C.S.set.lang = l; C.save(); refreshText(); }
+function setLang(l) { C.S.set.lang = l; C.save(); refreshText(); if (W && W.scope) scopePanel(); }
 function refreshText() {
   if (!W) return;
   document.querySelectorAll('.czLang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === (C.S.set.lang || 'en'))); });
@@ -696,7 +728,7 @@ function build() {
   const g = new T.Group(), G = C.G, scene = C.scene;
   /* low-detail shapes for things drawn hundreds of times (keeps Chromebooks smooth) */
   const LP = { sph: new T.SphereGeometry(1, 7, 5), cone: new T.ConeGeometry(1, 2, 5), cone8: new T.ConeGeometry(1, 2, 8), cyl: new T.CylinderGeometry(1, 1, 1, 5), sph10: new T.SphereGeometry(1, 10, 7) };
-  W = { g: g, tod: st().tod != null ? st().tod : 9, colliders: [], tops: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 10, distT: 10, vx: 0, vz: 0, flyE: 1, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
+  W = { g: g, tod: st().tod != null ? st().tod : 9, colliders: [], tops: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 11, distT: 11, vx: 0, vz: 0, flyE: 1, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
     bg: scene.background, fog: scene.fog, light: [C.HEMI.intensity, C.KEYL.intensity, C.KEYL.position.clone()] };
   scene.add(g);
   scene.background = new T.Color('#cfe9f7'); scene.fog = new T.Fog('#d0eaf6', 70, 260);
@@ -1056,11 +1088,11 @@ function build() {
     CR.makeWader('heron', function (w) { if (!w || !W) return; w.g.visible = false; g.add(w.g); w.t = -12 - Math.random() * 10; w.fly = null; W.waders.push(w); });
     for (let i = 0; i < (low ? 1 : 2); i++) CR.makeWader('egret', function (w) { if (!w || !W) return; g.add(w.g); w.circle = { cx: -18, cz: 86, r: 8 + i * 5, y: VALLEY_Y + 14 + i * 3, a: i * 3 }; W.waders.push(w); }); }
   /* player */
-  W.me = C.buildAlien(C.S.alien); g.add(W.me);
+  W.me = C.buildAlien(C.S.alien); W.me.scale.multiplyScalar(0.78); g.add(W.me); /* a little smaller, so more of the reserve fits on screen */
   { const cv = document.createElement('canvas'); cv.width = cv.height = 64; const x0 = cv.getContext('2d'), gr0 = x0.createRadialGradient(32, 32, 2, 32, 32, 31); gr0.addColorStop(0, 'rgba(20,30,10,0.55)'); gr0.addColorStop(0.6, 'rgba(20,30,10,0.25)'); gr0.addColorStop(1, 'rgba(20,30,10,0)'); x0.fillStyle = gr0; x0.fillRect(0, 0, 64, 64);
     const smat = new T.MeshBasicMaterial({ map: new T.CanvasTexture(cv), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }), sgeo = new T.PlaneGeometry(1, 1); sgeo.rotateX(-Math.PI / 2);
     W.shadows = []; const sh = function (o, r, get) { const m = new T.Mesh(sgeo, smat); m.scale.set(r * 2, 1, r * 2); m.renderOrder = 1; g.add(m); W.shadows.push({ o: o, m: m, r: r, get: get }); };
-    sh(W.me, 0.75, function () { return [W.px, W.pz, W.py]; }); sh(W.deer, 1.1); sh(W.rabbit, 0.45); sh(W.frog, 0.4); sh(W.heron, 0.55); sh(W.owl, 0, null);
+    sh(W.me, 0.6, function () { return [W.px, W.pz, W.py]; }); sh(W.deer, 1.1); sh(W.rabbit, 0.45); sh(W.frog, 0.4); sh(W.heron, 0.55); sh(W.owl, 0, null);
     W.npcs.forEach(function (n) { sh(n.m, 0.7); }); W.shadows = W.shadows.filter(function (q) { if (q.r) return true; g.remove(q.m); return false; }); }
   const s = st(); W.px = s.pos ? s.pos[0] : STATION.x + 3; W.pz = s.pos ? s.pos[1] : STATION.z + 7; W.py = H(W.px, W.pz); W.vy = 0; W.ground = true; W.face = 0;
   /* sparkles mark things you can interact with */
@@ -1271,6 +1303,7 @@ function start() {
   const s = st(); if (!s.f.met) setTimeout(function () { if (W && !W.talk) talkAma(); }, 800);
 }
 function exit() {
+  if (W.scope) closeScope();
   const s = st(); s.pos = [W.px, W.pz]; C.save(); if (W.camUnder && W.airFog) { C.scene.fog = W.airFog; C.scene.background = W.airBg; }
   C.cam.fov = 42; C.cam.updateProjectionMatrix(); if (BQ.amb) BQ.amb.stop(1);
   C.scene.remove(W.g); C.disposeGroup(W.g); C.scene.background = W.bg; C.scene.fog = W.fog; C.HEMI.intensity = W.light[0]; C.KEYL.intensity = W.light[1]; C.KEYL.position.copy(W.light[2]); C.HEMI.color.set('#ffffff'); C.HEMI.groundColor.set('#334455'); C.KEYL.color.set('#ffffff'); W = null;
@@ -1299,7 +1332,62 @@ function toggleFly() {
   if (W.flyE < 0.15) { showCard('msg', 'cz.flyLow'); W.cardT = 3; return; }
   W.flying = true; W.swim = false; W.vy = 5; W.ground = false; amb('sfx', 'whoosh', 0.8); if (!W.toldFly) { W.toldFly = true; showCard('msg', 'cz.flyTip'); W.cardT = 7; }
 }
-function viewer(id) { const v = W.views.find(function (q) { return q.id === id; }); if (!v) return; W.prevDist = W.distT > 4 ? W.distT : 10; W.distT = 2.3; W.dist = 3; W.pitch = id === 'valley' ? 0.32 : 0.12; W.yaw = Math.atan2(-v.x, -v.z); }
+/* ---------- LOOKOUT VIEWERS: look through binoculars, look around and zoom, and spot 3 things at each lookout ---------- */
+const SCOPE = {
+  sea: [{ k: 'gulls', at: function () { const g0 = W.wild && W.wild.soar.filter(function (o) { return o.kind === 'gull'; })[0]; return g0 ? g0.g.getWorldPosition(new T.Vector3()) : new T.Vector3(86, 3, -2); }, tol: 7 },
+    { k: 'island', at: function () { return new T.Vector3(150, SEA_Y + 12, -30); }, tol: 5 }, { k: 'cliff', at: function () { return new T.Vector3(70, -12, -4); }, tol: 7 }],
+  valley: [{ k: 'town', at: function () { return new T.Vector3(34, H(34, 128) + 2, 128); }, tol: 5 }, { k: 'farm', at: function () { return new T.Vector3(-28, H(-28, 96) + 3, 96); }, tol: 5 },
+    { k: 'wetland', at: function () { return new T.Vector3(-30, H(-30, 120) + 0.5, 120); }, tol: 5 }],
+  canyon: [{ k: 'river', at: function () { return new T.Vector3(-110, CANYON_Y, 0); }, tol: 6 }, { k: 'mesa', at: function () { return new T.Vector3(-135, CANYON_Y + 30, -20); }, tol: 5 },
+    { k: 'wall', at: function () { return new T.Vector3(-165, CANYON_Y + 22, 14); }, tol: 7 }] };
+function scopeUI() {
+  if ($('czScope')) return;
+  const css = document.createElement('style'); css.textContent = `
+#czScope { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+#czScope svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#czScope .ring { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 2px solid rgba(255,255,255,.75); box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+#czScope .ring i { position: absolute; inset: -6px; border-radius: 50%; border: 4px solid transparent; border-top-color: #ffd166; transform: rotate(0deg); opacity: 0; }
+#czScope .pan { position: absolute; left: 12px; bottom: 12px; max-width: min(380px, calc(100% - 24px)); background: rgba(11,29,42,.88); color: #fff; border: 1px solid #ffd166; border-radius: 12px; padding: 10px 12px; pointer-events: auto; }
+#czScope .pan h3 { margin: 0 0 6px; font-size: 1.05em; color: #ffd166; } #czScope .pan ul { margin: 0 0 6px; padding-left: 0; list-style: none; } #czScope .pan li.ok { color: #7be0ad; }
+#czScope .pan .fact { margin: 6px 0; padding: 6px 8px; background: rgba(255,209,102,.12); border-radius: 8px; } #czScope .pan .dim { opacity: .8; font-size: .9em; }
+#czScope .btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+#cozyUI.scoping #czPrompt, #cozyUI.scoping #czHelp, #cozyUI.scoping #czCard, #cozyUI.scoping #czObj, #cozyUI.scoping #czMv, #cozyUI.scoping #czInv { display: none !important; }`;
+  document.head.appendChild(css);
+  const d = document.createElement('div'); d.id = 'czScope'; d.hidden = true;
+  d.innerHTML = '<svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><mask id="czScM"><rect x="-200" y="-200" width="560" height="490" fill="#fff"/><circle cx="61" cy="45" r="33" fill="#000"/><circle cx="99" cy="45" r="33" fill="#000"/></mask></defs><rect x="-200" y="-200" width="560" height="490" fill="#05080c" mask="url(#czScM)"/></svg>' +
+    '<div class="ring"><i></i></div><div class="pan" role="dialog" aria-live="polite"></div>';
+  $('cozyUI').appendChild(d);
+  d.addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !W) return; b.blur(); if (b.dataset.sc === 'done') closeScope(); if (b.dataset.sc === 'in') scopeZoom(1.35); if (b.dataset.sc === 'out') scopeZoom(1 / 1.35); });
+}
+function scopePanel() {
+  const c = W.scope; if (!c) return; const s = st(), got = s.scope || {}, list = SCOPE[c.id], left = list.filter(function (q) { return !got[c.id + '.' + q.k]; }).length;
+  $('czScope').querySelector('.pan').innerHTML = '<h3>🔭 ' + C.esc(tx('cz.sc.title')) + ': ' + C.esc(tx('cz.t.' + c.id + 'view')) + '</h3><b>' + C.esc(tx('cz.sc.spot')) + '</b><ul>' +
+    list.map(function (q) { const ok = got[c.id + '.' + q.k]; return '<li class="' + (ok ? 'ok' : '') + '">' + (ok ? '✓ ' : '○ ') + C.esc(tx('cz.sc.' + c.id + '.' + q.k)) + '</li>'; }).join('') + '</ul>' +
+    (c.fact ? '<p class="fact">' + C.esc(tx('cz.sc.' + c.id + '.' + c.fact + 'D')) + '</p>' : '') + '<p class="dim">' + C.esc(left ? tx('cz.sc.left', { n: left }) : tx('cz.sc.all')) + '</p><p class="dim">' + C.esc(tx('cz.sc.help')) + '</p>' +
+    '<div class="btns"><button type="button" data-sc="in">➕ ' + C.esc(tx('cz.sc.zin')) + '</button><button type="button" data-sc="out">➖ ' + C.esc(tx('cz.sc.zout')) + '</button><button type="button" class="primary" data-sc="done">' + C.esc(tx('cz.sc.done')) + '</button></div>';
+}
+function viewer(id) {
+  const v = W.views.find(function (q) { return q.id === id; }); if (!v || W.talk) return; scopeUI();
+  const a = Math.atan2(v.z, v.x); W.k = {}; W.vx = W.vz = 0; W.ui = 'scope';
+  W.scope = { id: id, v: v, a0: a, a: a, p: id === 'valley' ? -0.26 : id === 'sea' ? -0.06 : -0.14, zoom: 1.6, k: {}, hold: 0, fact: null, pos: new T.Vector3(v.x + Math.cos(a) * 0.55, H(v.x, v.z) + 1.35, v.z + Math.sin(a) * 0.55) };
+  $('czScope').hidden = false; $('cozyUI').classList.add('scoping'); scopePanel(); amb('sfx', 'step', 0.6);
+}
+function closeScope() { if (!W || !W.scope) return; W.scope = null; W.ui = null; $('czScope').hidden = true; $('cozyUI').classList.remove('scoping'); C.cam.fov = 42; C.cam.updateProjectionMatrix(); }
+function scopeZoom(f) { if (W.scope) W.scope.zoom = Math.max(1, Math.min(6, W.scope.zoom * f)); }
+function scopeStep(dt, cam) {
+  const c = W.scope, k = c.k, sp = 0.9 / c.zoom;
+  c.a += ((k.r ? 1 : 0) - (k.l ? 1 : 0)) * dt * sp; c.p += ((k.f ? 1 : 0) - (k.b ? 1 : 0)) * dt * sp * 0.8;
+  while (c.a - c.a0 > Math.PI) c.a -= Math.PI * 2; while (c.a - c.a0 < -Math.PI) c.a += Math.PI * 2;
+  c.a = Math.max(c.a0 - 1.25, Math.min(c.a0 + 1.25, c.a)); c.p = Math.max(-0.75, Math.min(0.4, c.p));
+  const dir = new T.Vector3(Math.cos(c.a) * Math.cos(c.p), Math.sin(c.p), Math.sin(c.a) * Math.cos(c.p));
+  cam.position.copy(c.pos); cam.lookAt(c.pos.clone().add(dir)); cam.fov = 40 / c.zoom; cam.updateProjectionMatrix(); W.me.visible = false;
+  /* spotting: keep the center ring on a target for a moment */
+  const s = st(); s.scope = s.scope || {}; let on = null, best = 1e9;
+  SCOPE[c.id].forEach(function (q) { const P = q.at(), to = P.clone().sub(c.pos), dist = to.length(), ang = Math.acos(Math.max(-1, Math.min(1, to.normalize().dot(dir)))), need = Math.max(Math.atan2(q.tol, dist), (cam.fov * Math.PI / 180) * 0.06);
+    if (ang < need && ang / need < best && !s.scope[c.id + '.' + q.k]) { on = q; best = ang / need; } });
+  c.hold = on ? c.hold + dt : 0; const ri = $('czScope').querySelector('.ring i'); ri.style.opacity = on ? 1 : 0; ri.style.transform = 'rotate(' + Math.round(Math.min(1, c.hold / 0.9) * 360) + 'deg)';
+  if (on && c.hold > 0.9) { s.scope[c.id + '.' + on.k] = 1; c.fact = on.k; c.hold = 0; saveSoon(); amb('sfx', 'discover'); if (C.S.set.cap && C.caption) C.caption('sound: chime, spotted'); scopePanel(); }
+}
 function lookCloser() { if (W.dist > 4) { W.prevDist = W.distT; W.distT = 2.4; W.pitch = 0.15; if (!W.toldLook) { W.toldLook = true; showCard('msg', 'cz.lookTip'); W.cardT = 5; } } else W.distT = W.prevDist && W.prevDist > 4 ? W.prevDist : 10; }
 
 /* ---------- THE MAP: drawn from the real ground, filled in as you explore ---------- */
@@ -1601,7 +1689,7 @@ function step(dt) {
   if (W.frogJump) { W.frogJump -= dt; const u = Math.max(0, W.frogJump); W.frog.position.set(-8 - (1 - u) * 4, H(-8, 30) + Math.sin((1 - u) * Math.PI) * 1.5, 30 - (1 - u) * 2); if (W.frogJump <= 0) { W.frogJump = 0; setTimeout(function () { if (W) W.frog.position.set(-8, H(-8, 30), 30); }, 6000); } }
   { const o = W._co || (W._co = new T.Object3D()); W.clouds.forEach(function (c, i) { c.x += dt * c.sp; if (c.x > 200) c.x = -200;
       for (let k = 0; k < 5; k++) { o.position.set(c.x + (k - 2) * 6, c.y + (k % 2) * 1.5, c.z + (k % 3) * 2); o.scale.set(7 + (k % 3) * 2, 3.5 + (k % 2), 5); o.updateMatrix(); W.cloudIM.setMatrixAt(i * 5 + k, o.matrix); } }); W.cloudIM.instanceMatrix.needsUpdate = true; }
-  W.wfTex.offset.y -= dt * 1.6; if (W.fall2) W.fall2.offset.y -= dt * 1.6; if (W.seaTex) { W.seaTex.offset.x += dt * 0.004; W.seaTex.offset.y += dt * 0.002; }
+  W.wfTex.offset.y += dt * 1.6; if (W.fall2) W.fall2.offset.y += dt * 1.6; /* water falls DOWN: the pattern moves toward the bottom of each waterfall */ if (W.seaTex) { W.seaTex.offset.x += dt * 0.004; W.seaTex.offset.y += dt * 0.002; }
   if (W.gulls) W.gulls.forEach(function (gl, k) { const a = W.t * 0.18 + gl.ph; gl.m.position.set(110 + Math.cos(a) * gl.r, 6 + k * 3 + Math.sin(W.t + k) * 1.5, -10 + Math.sin(a) * gl.r * 0.7); gl.m.rotation.y = -a; gl.m.children.forEach(function (w, j) { w.rotation.z = (j ? -1 : 1) * (0.25 + Math.sin(W.t * 4 + k) * 0.3); }); });
   if (W.mist2) W.mist2.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.4; }); if (W.creekTex) W.creekTex.offset.y -= dt * 0.35; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
   W.flies.forEach(function (f, i) { const a = W.t * 0.7 + f.ph, x = f.cx + Math.cos(a) * f.r, z = f.cz + Math.sin(a * 1.3) * f.r; f.m.position.set(x, H(x, z) + 1.4 + Math.sin(W.t * 2 + i) * 0.4, z); f.m.rotation.y = -a; f.m.children[0].rotation.z = Math.sin(W.t * 14 + i) * 0.8; f.m.children[1].rotation.z = -Math.sin(W.t * 14 + i) * 0.8; });
@@ -1685,7 +1773,7 @@ function step(dt) {
   /* camera follows behind: smooth zoom, look-closer mode, and it slips under the water with you when you dive */
   W.dist += (W.distT - W.dist) * Math.min(1, dt * 5);
   const eDist = W.under ? Math.min(W.dist, 6) : W.dist, ePitch = W.under ? Math.min(W.pitch, 0.18) : W.pitch;
-  const tgt = new T.Vector3(W.px, W.py + (W.dist < 4 ? 1.1 : 1.6), W.pz), cp = Math.cos(ePitch);
+  const tgt = new T.Vector3(W.px, W.py + (W.dist < 4 ? 0.95 : 1.35), W.pz), cp = Math.cos(ePitch);
   const want = new T.Vector3(tgt.x + Math.sin(W.yaw) * cp * eDist, tgt.y + Math.sin(ePitch) * eDist, tgt.z + Math.cos(W.yaw) * cp * eDist);
   { /* keep the camera out of trees and rocks: move it in front of anything between it and the player */
     const vx = want.x - tgt.x, vz = want.z - tgt.z, L2 = vx * vx + vz * vz; let best = 1;
@@ -1697,8 +1785,9 @@ function step(dt) {
   const gc = H(want.x, want.z) + (W.under ? 0.6 : 1.2); if (want.y < gc) want.y = gc;
   cam.position.lerp(want, Math.min(1, dt * (W.talk || W.sitting ? 3 : 6))); if (W.talk || W.sitting) { W.lookAt = W.lookAt || tgt.clone(); W.lookAt.lerp(tgt, Math.min(1, dt * 4)); cam.lookAt(W.lookAt); } else { W.lookAt = null; cam.lookAt(tgt); }
   { const fov = W.dist < 4 ? 28 + (W.dist - 2.2) / 1.8 * 14 : 42; if (Math.abs(cam.fov - fov) > 0.05) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 5); cam.updateProjectionMatrix(); } }
+  if (W.ui === 'scope' && W.scope) scopeStep(dt, cam);
   if (W.camOverride) { const o = W.camOverride, tg = o.follow ? o.follow.getWorldPosition(new T.Vector3()) : o.look; cam.position.copy(o.follow ? tg.clone().add(o.off) : o.pos); cam.lookAt(tg); } /* used by tests to inspect animals up close */
-  underwaterLook(cam); W.me.visible = W.dist > 3.2;
+  underwaterLook(cam); W.me.visible = W.dist > 3.2 && !W.scope;
   { /* tree tops between the camera and the player fade out so you can always see yourself */
     const ax = tgt.x, az = tgt.z, bx = cam.position.x - ax, bz = cam.position.z - az, L2 = bx * bx + bz * bz, hy = Math.max(cam.position.y, tgt.y) + 0.4; let instDirty = false;
     W.colliders.forEach(function (c) { if (!c.cr) return; let hide = false;
@@ -1747,6 +1836,9 @@ function key(e, down) {
   if (down && W.ui === 'map' && (kk === 'Escape' || kk === 'm')) { e.preventDefault(); closeMap(); return; }
   if (W.ui === 'survey' && down) { if (kk === ' ' || kk === 'Enter') { e.preventDefault(); if (W.sv && !W.sv.on && W.sv.t >= 30) { W.sv.on = true; svPanel(); } else svTally(); return; } if (kk === 'Escape') { e.preventDefault(); svStop(); return; } }
   if (W.ui === 'survey') return;
+  if (W.ui === 'scope') { if (down && (kk === 'Escape' || kk === 'e' || kk === 'Enter')) { if (e.target && e.target.tagName === 'BUTTON' && kk === 'Enter') return; e.preventDefault(); closeScope(); return; }
+    if (down && (kk === '+' || kk === '=')) { scopeZoom(1.35); return; } if (down && (kk === '-' || kk === '_')) { scopeZoom(1 / 1.35); return; }
+    const sm = { w: 'f', ArrowUp: 'f', s: 'b', ArrowDown: 'b', a: 'l', ArrowLeft: 'l', d: 'r', ArrowRight: 'r' }; if (sm[kk] && W.scope) { W.scope.k[sm[kk]] = down; e.preventDefault(); } return; }
   if (W.ui === 'rest' && down) { if (/^[1-4]$/.test(kk)) { restChoice(['18.4', '22', '7.5', '-1'][+kk - 1]); return; } if (kk === 'Escape' || kk === 'e') { e.preventDefault(); standUp(); return; } }
   if (W.ui === 'map') { if (down && (kk === '+' || kk === '=')) mapZoom(1.3); if (down && (kk === '-' || kk === '_')) mapZoom(1 / 1.3); return; }
   if (down && kk === 'Escape') { e.preventDefault(); if (W.talk) { W.talk = null; $('czTalk').hidden = true; return; } setPause(!W.pause); return; }
@@ -1766,6 +1858,7 @@ function key(e, down) {
 }
 function pointer(e, type) {
   if (!W || W.pause) return;
+  if (W.ui === 'scope' && W.scope) { const c = W.scope; if (type === 'wheel') { scopeZoom(e.deltaY > 0 ? 1 / 1.15 : 1.15); e.preventDefault(); } else if (type === 'pointerdown') c.drag = { x: e.clientX, y: e.clientY, a: c.a, p: c.p }; else if (type === 'pointermove' && c.drag && e.buttons) { c.a = c.drag.a - (e.clientX - c.drag.x) * 0.004 / c.zoom; c.p = c.drag.p + (e.clientY - c.drag.y) * 0.004 / c.zoom; } else if (type === 'pointerup') c.drag = null; return; }
   if (type === 'wheel') { W.distT = Math.max(2.2, Math.min(30, W.distT * (e.deltaY > 0 ? 1.12 : 1 / 1.12))); e.preventDefault(); return; }
   if (type === 'pointerdown') W.drag = { x: e.clientX, y: e.clientY, yaw: W.yaw, pitch: W.pitch };
   else if (type === 'pointermove' && W.drag && e.buttons) { const sn = C.S.set.camSens || 1, inv = C.S.set.camInv ? -1 : 1; W.yaw = W.drag.yaw - (e.clientX - W.drag.x) * 0.008 * sn; W.pitch = Math.max(-0.35, Math.min(1.25, W.drag.pitch + (e.clientY - W.drag.y) * 0.006 * sn * inv)); }
@@ -1790,7 +1883,7 @@ function journalHTML() {
 }
 function blur() { if (W) W.k = {}; }
 const cb = document.getElementById('btnCozy'); if (cb) cb.hidden = false;
-BQ.cozy = { start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H };
+BQ.cozy = { start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _scopeT: function (id) { return SCOPE[id]; } };
 }
 if (BQ.core) init(); else BQ.onCore = init;
 })();
