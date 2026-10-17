@@ -207,7 +207,7 @@ function beep(freq, dur, type, cap) {
     AC = AC || new (window.AudioContext || window.webkitAudioContext)();
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = type || 'sine'; o.frequency.value = freq;
-    g.gain.setValueAtTime(0.07, AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
+    g.gain.setValueAtTime(0.07 * ((S.set.svol == null ? 100 : S.set.svol) / 100), AC.currentTime); g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
     o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + dur);
   } catch (e) { /* no sound available */ }
 }
@@ -287,7 +287,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 17 · October 15, 2026';
+const VERSION = 'Version 22 · October 17, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -2750,7 +2750,7 @@ function buildProgress() {
 }
 function applySettings() {
   document.documentElement.style.setProperty('--ts', [0.9, 1, 1.15, 1.3][S.set.text]);
-  $('setText').value = S.set.text; $('setLow').checked = S.set.low; $('setSound').checked = S.set.sound; $('setCap').checked = S.set.cap; $('setMusic').checked = S.set.music; $('setVol').value = S.set.vol; musicLevel(); if (S.set.music && Music.want) Music.play(Music.want); $('setUnlock').checked = S.set.unlock;
+  $('setText').value = S.set.text; $('setLow').checked = S.set.low; $('setSound').checked = S.set.sound; $('setCap').checked = S.set.cap; $('setMusic').checked = S.set.music; $('setVol').value = S.set.vol; $('setSvol').value = S.set.svol == null ? 100 : S.set.svol; musicLevel(); if (BQ.amb) BQ.amb.refresh(); if (S.set.music && Music.want) Music.play(Music.want); $('setUnlock').checked = S.set.unlock;
   if (renderer) resize();
 }
 /* 3-D snapshots of specimens for journal cards (rendered once, then reused) */
@@ -2820,7 +2820,8 @@ function resize() {
 function tick(t) {
   requestAnimationFrame(tick);
   const dt = Math.min((t - last) / 1000 || 0, 1 / 30); last = t;
-  if (mode === 'cozy' && BQ.cozy) BQ.cozy.step(dt);
+  if (mode === 'intro' && BQ.intro) BQ.intro.step(dt);
+  else if (mode === 'cozy' && BQ.cozy) BQ.cozy.step(dt);
   else if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else if (M.kind === 'dna') dnaStep(dt); else miniStep(dt); }
   else if (mode === 'play' && !paused) {
     step(dt);
@@ -2846,6 +2847,7 @@ function press(k, down) {
 function wire() {
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    if (mode === 'intro' && BQ.intro) { BQ.intro.key(e, true); return; }
     if (mode === 'cozy' && BQ.cozy) { BQ.cozy.key(e, true); return; }
     if (mode === 'mini') { miniKey(e, true); return; }
     if (mode === 'play' && e.key === 'Escape' && L && L.active && (L.active.clue || L.active.portal)) { closeQ(); e.preventDefault(); return; }
@@ -2867,6 +2869,7 @@ function wire() {
   });
   /* a movement stops only when every key for it is released; answer keys never affect movement */
   window.addEventListener('keyup', function (e) {
+    if (mode === 'intro') return;
     if (mode === 'cozy' && BQ.cozy) { BQ.cozy.key(e, false); return; }
     if (mode === 'mini') { miniKey(e, false); return; }
     const nk = e.key.length === 1 ? e.key.toLowerCase() : e.key, k = KEYMAP[nk]; if (!k || !held[nk]) return; delete held[nk];
@@ -2909,7 +2912,8 @@ function wire() {
   $('nick').addEventListener('change', nickSave); $('nick').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickSave(); } });
   $('setText').onchange = function () { S.set.text = +$('setText').value; save(); applySettings(); };
   ['Low', 'Sound', 'Music', 'Cap', 'Unlock'].forEach(function (n) { $('set' + n).onchange = function () { S.set[n.toLowerCase()] = $('set' + n).checked; save(); applySettings(); }; });
-  $('setVol').oninput = function () { S.set.vol = +$('setVol').value; save(); musicLevel(); };
+  $('setVol').oninput = function () { S.set.vol = +$('setVol').value; save(); musicLevel(); if (BQ.amb) BQ.amb.refresh(); };
+  $('setSvol').oninput = function () { S.set.svol = +$('setSvol').value; save(); if (BQ.amb) BQ.amb.refresh(); };
   const firstTouch = function () { if (Music.gesture) return; Music.gesture = true; if (Music.want) Music.play(Music.want); };
   window.addEventListener('pointerdown', firstTouch); window.addEventListener('keydown', firstTouch);
   let armed = false;
@@ -2950,8 +2954,8 @@ function boot() {
   if (jump) { const e = allLevels().find(function (x) { return x.lv.id === jump[1]; }); if (e) startLevel(e.w, e.lv); }
   BQ.core = { T: T, get scene() { return scene; }, get cam() { return cam; }, get renderer() { return renderer; }, get G() { return G; }, get S() { return S; }, get HEMI() { return HEMI; }, get KEYL() { return KEYL; },
     glow: glow, label: label, labelTex: labelTex, emat: emat, basic: basic, mesh: mesh, buildAlien: buildAlien, specimen: specimen, beep: beep, save: save, $: $, esc: esc, tx: tx, I18N: I18N, ACH: ACH, award: award,
-    show: show, teardown: teardown, menuScene: menuScene, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup };
-  if (BQ.onCore) BQ.onCore();
+    show: show, teardown: teardown, menuScene: menuScene, caption: caption, audio: function () { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { return null; } return AC; }, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup };
+  if (BQ.onCore) BQ.onCore(); (BQ.onCoreList || []).forEach(function (f) { f(); });
   BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, start: startLevel, mini: function () { return M; }, cam: function () { return cam; } };
 }
 })();

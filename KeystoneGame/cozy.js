@@ -13,7 +13,29 @@ const C = BQ.core, T = C.T, tx = C.tx;
 /* ---------- TEXT: English and Spanish ---------- */
 Object.assign(C.I18N.en, {
   'cz.reserve': 'Willow Creek Reserve', 'cz.mode': 'Cozy Exploration',
-  'cz.controls': 'Move: WASD or arrow keys · Run: Shift · Jump: Space (hold in the air to glide) · Interact: E · Journal: J · Turn camera: drag the mouse or Q / R · Menu: Esc',
+  'cz.controls': 'Move: WASD or arrows · Run: Shift · Jump: Space (hold in the air to glide) · Swim down: C · Interact: E · Look around: drag the mouse, Q / R, T / G · Zoom: mouse wheel or − / + · Look closer: V · Journal: J · Menu: Esc',
+  'cz.swimTip': 'You are swimming! Hold C to dive under the water. Hold Space to rise. Press Space at the surface near the shore to climb out.',
+  'cz.diveTip': 'Underwater! Look around with the mouse. You float back up on your own whenever you let go of C.',
+  'cz.flyTip': 'Flying! Space: go up · C: go down · Shift: faster. Watch your energy bar. When it runs out you glide down gently.',
+  'cz.flyNew': 'Warm air rises up this hill. Your alien suit can ride it! NEW ABILITY: press F to fly for a short time. Energy refills while you walk on the ground.',
+  'cz.flyLow': 'Not enough flight energy yet. It refills while you are on the ground.',
+  'cz.lookTip': 'Look closer: the camera zooms in so you can study small things. Press V again to zoom back out.',
+  'cz.t.whitepine': 'the tall pine', 'cz.t.hemlock': 'the hemlock trees', 'cz.t.redmaple': 'the red tree', 'cz.t.sycamore': 'the white-barked tree', 'cz.t.willow': 'the willow', 'cz.t.dogwood': 'the flowering tree', 'cz.t.hickory': 'the golden tree',
+  'cz.n.whitepine': 'Eastern white pine', 'cz.n.hemlock': 'Eastern hemlock', 'cz.n.redmaple': 'Red maple', 'cz.n.sycamore': 'American sycamore', 'cz.n.willow': 'Black willow', 'cz.n.dogwood': 'Flowering dogwood', 'cz.n.hickory': 'Shagbark hickory',
+  'cz.d.whitepine': 'An evergreen CONIFER. Its needles grow in bundles of 5, and its seeds grow inside cones instead of fruits. It keeps its needles all year, so it can do photosynthesis even in winter.',
+  'cz.d.hemlock': 'Pennsylvania\'s state tree! Hemlocks grow in cool, shady valleys. Their deep shade keeps streams cold, and cold water holds more DISSOLVED OXYGEN for trout and stream insects.',
+  'cz.d.redmaple': 'A DECIDUOUS tree: it drops its leaves in fall. Its winged seeds spin like little helicopters, so the wind carries them far from the parent tree.',
+  'cz.d.sycamore': 'Sycamores grow along streams. The bark peels off in patches and shows white wood underneath. Their roots hold the stream bank together and slow EROSION.',
+  'cz.d.willow': 'Black willows grow right at the water\'s edge, where the soil is soaked. Their branches shade the water, and many insects and birds feed and nest in them.',
+  'cz.d.dogwood': 'A small tree that grows in the shade of bigger trees. In spring its white blossoms feed POLLINATORS. In fall birds eat its red berries and spread the seeds in their droppings.',
+  'cz.d.hickory': 'Its nuts feed squirrels, chipmunks and deer. Squirrels bury nuts and forget some of them, so they help plant new hickory trees. The leaves turn golden in fall.',
+  'cz.d.biodiv': 'BIODIVERSITY: you found 5 different kinds of trees! Each kind has its own shape, leaves, seeds and job in the ecosystem. A forest with many species is more stable: if a disease harms one kind of tree, the others still give food and shelter.',
+  'cz.note': 'Field note', 'cz.camSpeed': 'Camera speed', 'cz.camInv': 'Invert up and down', 'cz.energy': 'Flight energy',
+  'cz.t.mussel': 'the freshwater mussels', 'cz.t.tadpole': 'the tadpoles', 'cz.t.pondweed': 'the pondweed',
+  'cz.n.mussel': 'Freshwater mussels', 'cz.n.tadpole': 'Tadpoles', 'cz.n.pondweed': 'Pondweed (underwater plant)',
+  'cz.d.mussel': 'Freshwater mussels are FILTER FEEDERS. One mussel pulls in many liters of water a day and eats algae and tiny particles, which helps keep the water clear. Many kinds of mussels are endangered, so scientists observe them in place without moving them.',
+  'cz.d.tadpole': 'Tadpoles are young frogs. They breathe with gills and eat algae. Later they grow legs and lungs and leave the water. This big change in body form is called METAMORPHOSIS.',
+  'cz.d.pondweed': 'Pondweed is a PRODUCER that lives underwater. It uses sunlight that passes through the water for PHOTOSYNTHESIS and releases oxygen into the water. When algae turn the water green, less light reaches it.',
   'cz.journal': 'Journal', 'cz.menu': 'Menu', 'cz.resume': 'Keep exploring', 'cz.toMenu': 'Main menu', 'cz.paused': 'Taking a break',
   'cz.recorded': 'Recorded in your Field Journal ✓', 'cz.next': 'E: continue', 'cz.choose': 'Choose with 1, 2, 3 or click',
   'cz.observe': 'Observe', 'cz.investigate': 'Investigate', 'cz.collect': 'Collect a sample', 'cz.talk': 'Talk to', 'cz.examine': 'Examine', 'cz.test': 'Test', 'cz.plant': 'Plant a seedling', 'cz.listen': 'Listen',
@@ -74,7 +96,29 @@ Object.assign(C.I18N.en, {
 });
 Object.assign(C.I18N.es, {
   'cz.reserve': 'Reserva Arroyo de los Sauces', 'cz.mode': 'Exploración tranquila',
-  'cz.controls': 'Moverse: WASD o flechas · Correr: Shift · Saltar: Espacio (mantenlo en el aire para planear) · Interactuar: E · Diario: J · Girar la cámara: arrastra el ratón o Q / R · Menú: Esc',
+  'cz.controls': 'Moverse: WASD o flechas · Correr: Shift · Saltar: Espacio (mantenlo en el aire para planear) · Bucear: C · Interactuar: E · Mirar alrededor: arrastra el ratón, Q / R, T / G · Zoom: rueda del ratón o − / + · Mirar de cerca: V · Diario: J · Menú: Esc',
+  'cz.swimTip': '¡Estás nadando! Mantén C para bucear bajo el agua. Mantén Espacio para subir. Pulsa Espacio en la superficie cerca de la orilla para salir.',
+  'cz.diveTip': '¡Bajo el agua! Mira alrededor con el ratón. Vuelves a flotar solo cuando sueltas C.',
+  'cz.flyTip': '¡Volando! Espacio: subir · C: bajar · Shift: más rápido. Mira tu barra de energía. Cuando se acaba, bajas planeando con suavidad.',
+  'cz.flyNew': 'El aire caliente sube por esta colina. ¡Tu traje alienígena puede aprovecharlo! NUEVA HABILIDAD: pulsa F para volar un rato. La energía se recarga mientras caminas por el suelo.',
+  'cz.flyLow': 'Todavía no hay suficiente energía para volar. Se recarga mientras estás en el suelo.',
+  'cz.lookTip': 'Mirar de cerca: la cámara se acerca para que estudies cosas pequeñas. Pulsa V otra vez para alejarla.',
+  'cz.t.whitepine': 'el pino alto', 'cz.t.hemlock': 'los tsugas', 'cz.t.redmaple': 'el árbol rojo', 'cz.t.sycamore': 'el árbol de corteza blanca', 'cz.t.willow': 'el sauce', 'cz.t.dogwood': 'el árbol en flor', 'cz.t.hickory': 'el árbol dorado',
+  'cz.n.whitepine': 'Pino blanco del este', 'cz.n.hemlock': 'Tsuga del Canadá', 'cz.n.redmaple': 'Arce rojo', 'cz.n.sycamore': 'Sicómoro americano', 'cz.n.willow': 'Sauce negro', 'cz.n.dogwood': 'Cornejo florido', 'cz.n.hickory': 'Nogal americano (shagbark)',
+  'cz.d.whitepine': 'Una CONÍFERA de hoja perenne. Sus agujas crecen en grupos de 5 y sus semillas crecen dentro de piñas en lugar de frutos. Conserva las agujas todo el año, así que puede hacer fotosíntesis incluso en invierno.',
+  'cz.d.hemlock': '¡El árbol oficial de Pensilvania! Las tsugas crecen en valles frescos y sombreados. Su sombra mantiene fríos los arroyos, y el agua fría guarda más OXÍGENO DISUELTO para las truchas y los insectos del arroyo.',
+  'cz.d.redmaple': 'Un árbol CADUCIFOLIO: pierde sus hojas en otoño. Sus semillas con alas giran como pequeños helicópteros, así el viento las lleva lejos del árbol que las produjo.',
+  'cz.d.sycamore': 'Los sicómoros crecen junto a los arroyos. La corteza se cae en parches y deja ver madera blanca. Sus raíces sostienen la orilla del arroyo y frenan la EROSIÓN.',
+  'cz.d.willow': 'Los sauces negros crecen justo en la orilla, donde el suelo está empapado. Sus ramas dan sombra al agua, y muchos insectos y aves se alimentan y anidan en ellos.',
+  'cz.d.dogwood': 'Un árbol pequeño que crece a la sombra de árboles más grandes. En primavera sus flores blancas alimentan a los POLINIZADORES. En otoño las aves comen sus bayas rojas y esparcen las semillas con sus excrementos.',
+  'cz.d.hickory': 'Sus nueces alimentan a ardillas, ardillas listadas y venados. Las ardillas entierran nueces y olvidan algunas, así que ayudan a plantar nuevos nogales. Sus hojas se vuelven doradas en otoño.',
+  'cz.d.biodiv': 'BIODIVERSIDAD: ¡encontraste 5 tipos diferentes de árboles! Cada tipo tiene su propia forma, hojas, semillas y función en el ecosistema. Un bosque con muchas especies es más estable: si una enfermedad daña a un tipo de árbol, los demás siguen dando alimento y refugio.',
+  'cz.note': 'Nota de campo', 'cz.camSpeed': 'Velocidad de la cámara', 'cz.camInv': 'Invertir arriba y abajo', 'cz.energy': 'Energía de vuelo',
+  'cz.t.mussel': 'los mejillones de agua dulce', 'cz.t.tadpole': 'los renacuajos', 'cz.t.pondweed': 'la planta acuática',
+  'cz.n.mussel': 'Mejillones de agua dulce', 'cz.n.tadpole': 'Renacuajos', 'cz.n.pondweed': 'Planta acuática sumergida',
+  'cz.d.mussel': 'Los mejillones de agua dulce son FILTRADORES. Un mejillón aspira muchos litros de agua al día y se come las algas y partículas diminutas, lo que ayuda a mantener el agua clara. Muchas especies están en peligro, así que los científicos los observan sin moverlos.',
+  'cz.d.tadpole': 'Los renacuajos son ranas jóvenes. Respiran con branquias y comen algas. Más tarde les crecen patas y pulmones y salen del agua. Este gran cambio de forma del cuerpo se llama METAMORFOSIS.',
+  'cz.d.pondweed': 'Esta planta acuática es un PRODUCTOR que vive bajo el agua. Usa la luz del sol que atraviesa el agua para la FOTOSÍNTESIS y suelta oxígeno al agua. Cuando las algas vuelven verde el agua, le llega menos luz.',
   'cz.journal': 'Diario', 'cz.menu': 'Menú', 'cz.resume': 'Seguir explorando', 'cz.toMenu': 'Menú principal', 'cz.paused': 'Un descanso',
   'cz.recorded': 'Guardado en tu diario de campo ✓', 'cz.next': 'E: continuar', 'cz.choose': 'Elige con 1, 2, 3 o haz clic',
   'cz.observe': 'Observar', 'cz.investigate': 'Investigar', 'cz.collect': 'Tomar una muestra', 'cz.talk': 'Hablar', 'cz.examine': 'Examinar', 'cz.test': 'Medir', 'cz.plant': 'Plantar un brote', 'cz.listen': 'Escuchar',
@@ -182,7 +226,10 @@ const FINDS = [
   { id: 'algae', look: 'drop', col: '#7be06a' }, { id: 'glow', look: 'mushroom', col: '#9fffd8' }, { id: 'fish', look: 'rod', col: '#ff9f6e' },
   { id: 'spring', look: 'drop', col: '#7fd4ff' }, { id: 'lichen', look: 'rock', col: '#c8d070' }, { id: 'owl', look: 'critter', col: '#8a6a4a' }, { id: 'monarch', look: 'sprout', col: '#ff9f3a' },
   { id: 'dragonfly', look: 'rod', col: '#5fb8ff' }, { id: 'cattail', look: 'grass', col: '#9a7a4a' }, { id: 'ants', look: 'eggs', col: '#6a4a3a' }, { id: 'nest', look: 'eggs', col: '#8fd0f0' },
-  { id: 'deer', look: 'critter', col: '#b07a4a' }, { id: 'worms', look: 'chain', col: '#e08a8a' }];
+  { id: 'deer', look: 'critter', col: '#b07a4a' }, { id: 'worms', look: 'chain', col: '#e08a8a' },
+  { id: 'whitepine', look: 'sprout', col: '#2f6a3a' }, { id: 'hemlock', look: 'sprout', col: '#2a5a46' }, { id: 'redmaple', look: 'sprout', col: '#c4462c' }, { id: 'sycamore', look: 'sprout', col: '#7ab04a' },
+  { id: 'willow', look: 'grass', col: '#8aba5a' }, { id: 'dogwood', look: 'sprout', col: '#fff0f4' }, { id: 'hickory', look: 'sprout', col: '#e0b03a' },
+  { id: 'pondweed', look: 'grass', col: '#3a9a5a' }, { id: 'mussel', look: 'rock', col: '#4a4a6a' }, { id: 'tadpole', look: 'frog', col: '#4a5a3a' }];
 
 /* ---------- WORLD SHAPE ---------- */
 const POND = { x: -20, z: 22 }, HILL = { x: 42, z: -42 }, FARM = { x: -52, z: -40 }, HOLLOW = { x: 56, z: 40 }, STATION = { x: 6, z: -6 }, STREAM = [[-28, -60], [-36, -46], [-44, -30], [-36, -12], [-30, 4], [-26, 12]];
@@ -190,21 +237,27 @@ const SPRING = { x: -28, z: -60 }, ORCH = { x: -40, z: 46 }, EDGE = 62, BOUND = 
 const PATHS = [[[6, -6], [-8, 8], [-12, 16]], [[6, -6], [-18, -20], [-40, -30]], [[6, -6], [24, -24], [34, -34]], [[-8, 8], [-24, 40], [-34, 44]], [[6, -6], [16, 12], [8, 34]], [[-40, -30], [-32, -52]], [[16, 12], [26, 24]]];
 function pathDist(x, z) { let d = 1e9; PATHS.forEach(function (pl) { for (let i = 0; i < pl.length - 1; i++) d = Math.min(d, segDist(x, z, pl[i], pl[i + 1])); }); return d; }
 function segDist(x, z, a, b) { const vx = b[0] - a[0], vz = b[1] - a[1], wx = x - a[0], wz = z - a[1], u = Math.max(0, Math.min(1, (wx * vx + wz * vz) / (vx * vx + vz * vz))); return Math.hypot(x - a[0] - u * vx, z - a[1] - u * vz); }
-function streamDist(x, z) { let d = 1e9; for (let i = 0; i < STREAM.length - 1; i++) d = Math.min(d, segDist(x, z, STREAM[i], STREAM[i + 1])); return d; }
+/* creeks are smooth curves: a few control points become a dense, gently bending line */
+function smoothLine(pts, n) { return new T.CatmullRomCurve3(pts.map(function (p) { return new T.Vector3(p[0], 0, p[1]); }), false, 'centripetal').getSpacedPoints(n).map(function (v) { return [v.x, v.z]; }); }
+const CREEKS = [{ id: 'stream', pts: smoothLine(STREAM, 90), w0: 1.5, w1: 2.6 }];
+function streamDist(x, z) { let d = 1e9; CREEKS.forEach(function (c) { const P = c.pts; for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > 12 || Math.abs(a[1] - z) > 12) continue; d = Math.min(d, segDist(x, z, a, P[i + 1])); } }); return d; }
 function H(x, z) {
   let h = 1.4 * Math.sin(x * 0.05) * Math.cos(z * 0.045) + 1.0 * Math.sin((x - z) * 0.032) + 0.5 * Math.sin(x * 0.13 + 1) * Math.sin(z * 0.11);
   h += 13 * Math.exp(-((x - HILL.x) ** 2 + (z - HILL.z) ** 2) / 520);
-  h -= 4.2 * Math.exp(-((x - POND.x) ** 2 + (z - POND.z) ** 2) / 170);
+  h -= 8.5 * Math.exp(-((x - POND.x) ** 2 + (z - POND.z) ** 2) / 170);
   const blend = function (cx, cz, r, fall, lvl) { const d = Math.hypot(x - cx, z - cz); if (d < r) h = lvl; else if (d < r + fall) { const u = (d - r) / fall; h = lvl * (1 - u) + h * u; } };
   blend(STATION.x, STATION.z, 8, 6, 0.8); blend(FARM.x, FARM.z, 11, 7, 1.6);
-  const sd = streamDist(x, z); if (sd < 3) h -= 0.9 * (1 - sd / 3);
+  const sd = streamDist(x, z); if (sd < 4.5) h -= 1.1 * (1 - (sd / 4.5) * (sd / 4.5));
   const dh = Math.hypot(x - HOLLOW.x, z - HOLLOW.z); if (dh < 7) h = h * 0.3 + 0.2;
   h += 12 * Math.exp(-((x + 28) * (x + 28)) / 140 - ((z + 70) * (z + 70)) / 34); /* the cliff with the waterfall */
   const d = Math.hypot(x, z); if (d > EDGE) { const rise = d - EDGE, a = Math.atan2(z, x); /* gentle rolling hills all around the reserve */
     h += 20 * (1 - Math.exp(-rise / 20)) * (0.72 + 0.28 * Math.sin(a * 5 + 1.3) * Math.cos(a * 2.2)) + 1.5 * Math.sin(a * 13) * Math.min(1, rise / 15); }
   return h;
 }
-const WL0 = H(POND.x, POND.z) + 2.6;
+const WL0 = H(POND.x, POND.z) + 6;
+/* bodies of water you can swim in: the pond (deep enough to dive) */
+const WATERS = [{ id: 'pond', x: POND.x, z: POND.z, r: 15.6, y: WL0 }];
+function waterAt(x, z) { for (let i = 0; i < WATERS.length; i++) { const w = WATERS[i]; if (Math.hypot(x - w.x, z - w.z) < w.r && H(x, z) < w.y - 0.05) return w; } return null; }
 
 /* ---------- STATE ---------- */
 let W = null; /* the running world */
@@ -239,13 +292,19 @@ function ensureUI() {
 #czHelp { position: absolute; bottom: 8px; right: 8px; max-width: 46%; font-size: .78em; background: rgba(11, 29, 42, .7); border-radius: 10px; padding: 4px 8px; opacity: .85; }
 #czPause { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(11, 29, 42, .7); }
 #czPause .card { max-width: 380px; }
+#czFly { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); width: 180px; height: 12px; border-radius: 8px; background: rgba(11, 29, 42, .8); border: 2px solid #9fe8ff; overflow: hidden; }
+#czFly i { display: block; height: 100%; background: linear-gradient(90deg, #9fe8ff, #c59cff); }
+#czFly[hidden] { display: none; }
+#czPause label { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 6px 0; }
 @media (max-width: 700px) { #czHelp { display: none; } #czObj { max-width: 100%; } }`;
   document.head.appendChild(css);
   const ui = document.createElement('div'); ui.id = 'cozyUI'; ui.hidden = true;
   ui.innerHTML = '<div id="czTop"><div id="czObj" aria-live="polite"></div><div id="czBtns"><span class="czLang btns" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></span>' +
     '<button type="button" id="czJ"></button><button type="button" id="czM"></button></div></div><div id="czPrompt" hidden></div><div id="czCard" role="status" aria-live="polite" hidden></div>' +
-    '<div id="czTalk" hidden></div><div id="czHelp"></div><div id="czPause" hidden><div class="card"><h2 id="czPT"></h2><button type="button" id="czRes" class="primary"></button><button type="button" id="czPJ"></button><span class="czLang btns" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></span><button type="button" id="czQuit"></button></div></div>';
+    '<div id="czTalk" hidden></div><div id="czHelp"></div><div id="czPause" hidden><div class="card"><h2 id="czPT"></h2><button type="button" id="czRes" class="primary"></button><button type="button" id="czPJ"></button><span class="czLang btns" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></span><label><span id="czSensL"></span><input type="range" id="czSens" min="0.4" max="2" step="0.1"></label><label><span id="czInvL"></span><input type="checkbox" id="czInv"></label><button type="button" id="czQuit"></button></div></div><div id="czFly" hidden aria-hidden="true"><i></i></div>';
   document.getElementById('toast').parentNode.appendChild(ui);
+  ui.querySelector('#czSens').addEventListener('input', function (e) { C.S.set.camSens = +e.target.value; C.save(); });
+  ui.querySelector('#czInv').addEventListener('change', function (e) { C.S.set.camInv = e.target.checked; C.save(); });
   ui.addEventListener('click', function (e) {
     const b = e.target.closest('button'); if (!b || !W) return; b.blur();
     if (b.dataset.lang) { setLang(b.dataset.lang); return; }
@@ -264,6 +323,7 @@ function refreshText() {
   document.querySelectorAll('.czLang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === (C.S.set.lang || 'en'))); });
   $('czJ').textContent = '📓 ' + tx('cz.journal'); $('czM').textContent = '☰ ' + tx('cz.menu'); $('czPT').textContent = tx('cz.paused');
   $('czRes').textContent = tx('cz.resume'); $('czPJ').textContent = '📓 ' + tx('cz.journal'); $('czQuit').textContent = tx('cz.toMenu'); $('czHelp').textContent = tx('cz.controls');
+  $('czSensL').textContent = tx('cz.camSpeed'); $('czInvL').textContent = tx('cz.camInv'); $('czSens').value = C.S.set.camSens || 1; $('czInv').checked = !!C.S.set.camInv; $('czFly').title = tx('cz.energy');
   objective(); if (W.card) showCard(W.card.id, W.card.extra); if (W.talk) drawTalk(); W.lastPrompt = null;
   W.npcs.forEach(function (n) { n.tag.material.map = C.labelTex(npcName(n.id), { bd: '#ffd166' }); n.tag.material.needsUpdate = true; });
 }
@@ -274,11 +334,11 @@ function build() {
   const g = new T.Group(), G = C.G, scene = C.scene;
   /* low-detail shapes for things drawn hundreds of times (keeps Chromebooks smooth) */
   const LP = { sph: new T.SphereGeometry(1, 7, 5), cone: new T.ConeGeometry(1, 2, 5), cone8: new T.ConeGeometry(1, 2, 8), cyl: new T.CylinderGeometry(1, 1, 1, 5), sph10: new T.SphereGeometry(1, 10, 7) };
-  W = { g: g, colliders: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 10, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
+  W = { g: g, colliders: [], tops: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 10, distT: 10, vx: 0, vz: 0, flyE: 1, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
     bg: scene.background, fog: scene.fog, light: [C.HEMI.intensity, C.KEYL.intensity, C.KEYL.position.clone()] };
   scene.add(g);
   scene.background = new T.Color('#cfe9f7'); scene.fog = new T.Fog('#d0eaf6', 70, 260);
-  C.HEMI.color.set('#dfefff'); C.HEMI.groundColor.set('#3a4a2a'); C.HEMI.intensity = 0.6; C.KEYL.color.set('#ffe8c0'); C.KEYL.position.set(40, 45, -30); C.KEYL.intensity = 0.8;
+  C.HEMI.color.set('#fff2d8'); C.HEMI.groundColor.set('#4a5a2a'); C.HEMI.intensity = 0.5; C.KEYL.color.set('#ffeccc'); C.KEYL.position.set(60, 55, 40); C.KEYL.intensity = 0.85;
   /* terrain with colors by place */
   const N = S0low() ? 110 : 140, geo = new T.PlaneGeometry(320, 320, N, N); geo.rotateX(-Math.PI / 2);
   const pos = geo.attributes.position, cols = new Float32Array(pos.count * 3), cc = new T.Color();
@@ -286,9 +346,9 @@ function build() {
     const x = pos.getX(i), z = pos.getZ(i), y = H(x, z); pos.setY(i, y);
     const dp = Math.hypot(x - POND.x, z - POND.z), dh = Math.hypot(x - HILL.x, z - HILL.z), forest = x > 22 && z > 14, farm = Math.abs(x - FARM.x) < 11 && Math.abs(z - FARM.z) < 9;
     const dd = Math.hypot(x, z), cliff = Math.abs(x + 28) < 9 && z < -61 && z > -74, pth = pathDist(x, z);
-    if (dp < 19) cc.set('#a8956a'); else if (farm) cc.set(((Math.floor((x - FARM.x + 11) / 1.6)) % 2) ? '#7a5a3a' : '#8a6a3a'); else if (cliff && y > 6) cc.set('#8a7a68'); else if (dh < 9 && y > 9) cc.set('#9a9a88'); else if (forest && dd < EDGE) cc.set('#2f5226');
-    else if (dd > EDGE + 2) cc.set('#4a7a34').lerp(new T.Color('#3a6a3a'), Math.min(1, (dd - EDGE) / 50)); else cc.set(y > 6 ? '#5a8a3a' : '#66983e');
-    if (pth < 1.6 && dd < EDGE && !farm && dp > 16.5) cc.lerp(new T.Color('#c2a874'), pth < 1 ? 0.85 : 0.45);
+    if (dp < 19) cc.set(y < WL0 - 0.3 ? '#6a7a4a' : '#e0c890'); else if (farm) cc.set(((Math.floor((x - FARM.x + 11) / 1.6)) % 2) ? '#7a5a3a' : '#8a6a3a'); else if (cliff && y > 6) cc.set('#8a7a68'); else if (dh < 9 && y > 9) cc.set('#9a9a88'); else if (forest && dd < EDGE) cc.set('#2f5226');
+    else if (dd > EDGE + 2) cc.set('#5a8a34').lerp(new T.Color('#3f6a34'), Math.min(1, (dd - EDGE) / 50)); else { const nn = Math.sin(x * 0.11 + Math.cos(z * 0.07) * 2) * Math.cos(z * 0.09 - x * 0.03); cc.set(y > 6 ? '#6f9a34' : '#5f9a38').lerp(new T.Color(nn > 0.35 ? '#94a83c' : nn < -0.4 ? '#3f7a30' : '#5f9a38'), 0.6); }
+    if (pth < 1.6 && dd < EDGE && !farm && dp > 16.5) cc.lerp(new T.Color('#c0844e'), pth < 1 ? 0.8 : 0.3);
     cc.offsetHSL(0, 0, (Math.sin(x * 1.7 + z * 2.3) * 0.5) * 0.04); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b;
   }
   geo.setAttribute('color', new T.BufferAttribute(cols, 3)); geo.computeVertexNormals();
@@ -305,15 +365,34 @@ function build() {
     mts.push([x, 0, z, sx, sy, sz, i]); mcol.push(i % 2 ? '#8fb0c8' : '#7f9fbf'); caps.push([x, sy * 0.36, z, sx * 0.3, sy * 0.3, sz * 0.3, i]); }
   g.add(inst(LP.cone8, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#304050' }), mts, mcol)); g.add(inst(LP.cone8, C.emat('#f4f8ff', '#8090a0'), caps));
   /* pond water (green and cloudy until the mystery is solved) and the stream */
-  W.water = new T.Mesh(new T.CircleGeometry(15.5, 48), new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10' }));
+  W.water = new T.Mesh(new T.CircleGeometry(15.8, 56), new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10', side: T.DoubleSide }));
   W.water.rotation.x = -Math.PI / 2; W.water.position.set(POND.x, WL0, POND.z); g.add(W.water);
   W.scum = new T.Group(); for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 3 + (i * 7 % 11); const m = new T.Mesh(new T.CircleGeometry(1 + (i % 3) * 0.5, 10), C.basic('#6fae3a', 0.7)); m.rotation.x = -Math.PI / 2; m.position.set(POND.x + Math.cos(a) * r, WL0 + 0.03, POND.z + Math.sin(a) * r); W.scum.add(m); } g.add(W.scum);
-  /* the stream follows the ground in short pieces so it never floats or sinks on slopes */
-  const strM = new T.MeshLambertMaterial({ color: '#6aa0c0', transparent: true, opacity: 0.8 }), strL = [], strJ = [];
-  for (let i = 0; i < STREAM.length - 1; i++) { const a = STREAM[i], b = STREAM[i + 1], len = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.ceil(len / 2), ang = -Math.atan2(b[1] - a[1], b[0] - a[0]);
-    for (let k = 0; k < n; k++) { const u = (k + 0.5) / n, mx = a[0] + (b[0] - a[0]) * u, mz = a[1] + (b[1] - a[1]) * u; strL.push([mx, Math.max(H(mx, mz), H(mx + 0.8, mz), H(mx - 0.8, mz), H(mx, mz + 0.8), H(mx, mz - 0.8)) + 0.12, mz, len / n + 0.9, 1, 2.3, ang]); } }
-  for (let i = 1; i < STREAM.length - 1; i++) { const p0 = STREAM[i]; strJ.push([p0[0], Math.max(H(p0[0], p0[1]), H(p0[0] + 0.8, p0[1]), H(p0[0] - 0.8, p0[1]), H(p0[0], p0[1] + 0.8), H(p0[0], p0[1] - 0.8)) + 0.13, p0[1], 1.15, 1, 1.15]); }
-  g.add(inst(new T.BoxGeometry(1, 0.02, 1), strM, strL)); g.add(inst(new T.CylinderGeometry(1, 1, 0.02, 16), strM, strJ));
+  /* creeks: one smooth ribbon of flowing water per creek, laid along its carved bed */
+  { const cv0 = document.createElement('canvas'); cv0.width = 64; cv0.height = 256; const x0 = cv0.getContext('2d'), gr0 = x0.createLinearGradient(0, 0, 64, 0);
+    gr0.addColorStop(0, '#5fb8b0'); gr0.addColorStop(0.5, '#3a9ab8'); gr0.addColorStop(1, '#5fb8b0'); x0.fillStyle = gr0; x0.fillRect(0, 0, 64, 256);
+    x0.strokeStyle = 'rgba(230,250,255,0.75)'; x0.lineWidth = 2.5; for (let k = 0; k < 9; k++) { const cx0 = 8 + (k * 23) % 48, cy0 = (k * 61) % 256; x0.beginPath(); x0.moveTo(cx0 - 6, cy0); x0.quadraticCurveTo(cx0, cy0 - 7, cx0 + 6, cy0); x0.stroke(); x0.beginPath(); x0.moveTo(cx0 - 6, cy0 + 128); x0.quadraticCurveTo(cx0, cy0 + 121, cx0 + 6, cy0 + 128); x0.stroke(); }
+    W.creekTex = new T.CanvasTexture(cv0); W.creekTex.wrapS = W.creekTex.wrapT = T.RepeatWrapping;
+    const cmat = new T.MeshLambertMaterial({ map: W.creekTex, transparent: true, opacity: 0.92, emissive: '#0a2a3a' });
+    CREEKS.forEach(function (c) {
+      const P = c.pts, n = P.length, pos = new Float32Array(n * 2 * 3), uv = new Float32Array(n * 2 * 2), idx = []; let along = 0; const ys = [];
+      /* the ground is drawn as a grid of triangles: find how high the drawn ground is, so the water never hides under it */
+      const GN = S0low() ? 110 : 140, cell = 320 / GN, gH = function (x, z) { const gx = Math.floor((x + 160) / cell), gz = Math.floor((z + 160) / cell); let m = -1e9; for (let a = 0; a <= 1; a++) for (let b = 0; b <= 1; b++) m = Math.max(m, H(-160 + (gx + a) * cell, -160 + (gz + b) * cell)); return m; };
+      const floor0 = [];
+      for (let i = 0; i < n; i++) { const a = P[Math.max(0, i - 1)], b = P[Math.min(n - 1, i + 1)], L0 = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, nx = -(b[1] - a[1]) / L0, nz = (b[0] - a[0]) / L0, w = (c.w0 + (c.w1 - c.w0) * i / (n - 1)) / 2;
+        const lo = Math.max(gH(P[i][0], P[i][1]), Math.min(gH(P[i][0] + nx * w, P[i][1] + nz * w), gH(P[i][0] - nx * w, P[i][1] - nz * w))) + 0.08; floor0.push(lo); ys.push(lo + 0.06); }
+      for (let i = 0; i < n; i++) { let a = 0, m = 0; for (let k = -3; k <= 3; k++) { const j = i + k; if (j >= 0 && j < n) { a += ys[j]; m++; } } ys[i] = Math.max(a / m, floor0[i]); }
+      for (let i = 0; i < n; i++) {
+        const a = P[Math.max(0, i - 1)], b = P[Math.min(n - 1, i + 1)], tx0 = b[0] - a[0], tz0 = b[1] - a[1], L0 = Math.hypot(tx0, tz0) || 1, nx = -tz0 / L0, nz = tx0 / L0, w = (c.w0 + (c.w1 - c.w0) * i / (n - 1)) / 2;
+        if (i > 0) along += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]);
+        pos.set([P[i][0] + nx * w, ys[i], P[i][1] + nz * w, P[i][0] - nx * w, ys[i], P[i][1] - nz * w], i * 6); uv.set([0, along / 4, 1, along / 4], i * 4);
+        if (i < n - 1) idx.push(i * 2, i * 2 + 1, i * 2 + 2, i * 2 + 1, i * 2 + 3, i * 2 + 2);
+      }
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3)); geo.setAttribute('uv', new T.BufferAttribute(uv, 2)); geo.setIndex(idx); geo.computeVertexNormals();
+      const m = new T.Mesh(geo, cmat); m.material.side = T.DoubleSide; g.add(m);
+      /* little white riffles where the water runs over stones */
+      for (let i = 6; i < n - 4; i += 9) { const st1 = new T.Mesh(LP.sph, C.emat('#9a9a8a', '#1a1a18')); st1.scale.set(0.35, 0.18, 0.3); st1.position.set(P[i][0] + Math.sin(i) * 0.5, ys[i] - 0.05, P[i][1] + Math.cos(i) * 0.4); g.add(st1); }
+    }); }
   /* trees: forest in the north-east, a few scattered */
   const trunkM = C.emat('#6a4a2a', '#1a0e05'), leafM = [C.emat('#3f8a3a', '#0a1a08'), C.emat('#4f9a3a', '#0a1a08'), C.emat('#2f7a3a', '#081808')];
   const tree = function (x, z, s, oak) {
@@ -321,12 +400,44 @@ function build() {
     const c = new T.Mesh(oak ? G.sph : G.cone, leafM[Math.floor(Math.abs(x * 7 + z * 3)) % 3]); if (oak) { c.scale.set(2.6 * s, 2.2 * s, 2.6 * s); c.position.set(x, y + 4.2 * s, z); } else { c.scale.set(1.8 * s, 2.6 * s, 1.8 * s); c.position.set(x, y + 4.6 * s, z); } g.add(c);
     W.colliders.push({ x: x, z: z, r: 0.6 * s + 0.3, cr: (oak ? 2.6 : 1.9) * s, bot: y + (oak ? 2.0 : 3.3) * s, m: c }); W.anim.push({ m: c, ph: x + z, sway: true });
   };
-  for (let i = 0; i < 70; i++) { const x = 24 + (i * 37 % 44), z = 16 + (i * 53 % 46); if (Math.hypot(x - HOLLOW.x, z - HOLLOW.z) < 11 || Math.hypot(x - 30, z - 28) < 4) continue; tree(x + Math.sin(i) * 1.5, z + Math.cos(i * 1.3) * 1.5, 0.9 + (i % 4) * 0.15, false); }
-  [[-60, 10], [-45, 40], [-5, 55], [25, -20], [-30, -55], [55, -10], [-62, -10], [10, 62], [-50, 58]].forEach(function (p, i) { tree(p[0], p[1], 1 + (i % 3) * 0.2, i % 2 === 0); });
+  /* MANY KINDS OF TREES (Pennsylvania natives): each has its own shape, bark and leaf color */
+  const crownM = {}, cm = function (col) { return crownM[col] || (crownM[col] = C.emat(col, '#0a1406')); };
+  const treeK = function (x, z, s, kind) {
+    const y = H(x, z), cr = new T.Group(); let tc = '#7a3a2a', th = 3, tw = 0.32, crownR = 2, crownBot = 3;
+    if (kind === 'pine') { tc = '#9a4a32'; th = 4.2; tw = 0.3; [[0, 2.1, 1.7], [1.3, 1.7, 1.5], [2.5, 1.3, 1.2], [3.5, 0.85, 0.9]].forEach(function (t2, k) { const c = new T.Mesh(G.cone, cm(['#2f6a3a', '#3a7a40', '#2a6236', '#44844a'][k])); c.scale.set(t2[1] * s, t2[2] * s * 0.8, t2[1] * s); c.position.y = (3.2 + t2[0]) * s; cr.add(c); }); crownR = 2.1; crownBot = 2.4; }
+    else if (kind === 'spruce') { tc = '#5a3a2a'; th = 3; tw = 0.26; const c = new T.Mesh(G.cone, cm('#1f4a34')); c.scale.set(1.3 * s, 3.6 * s, 1.3 * s); c.position.y = 4.6 * s; cr.add(c); crownR = 1.4; crownBot = 1.2; }
+    else if (kind === 'hemlock') { tc = '#6a4030'; th = 3; tw = 0.3; [[0, 2, 1.4], [1.6, 1.5, 1.2], [2.8, 0.9, 1]].forEach(function (t2) { const c = new T.Mesh(G.cone, cm('#2a5a46')); c.scale.set(t2[1] * s, t2[2] * s, t2[1] * s); c.position.y = (2.6 + t2[0]) * s; c.rotation.z = 0.12; cr.add(c); }); crownR = 2; crownBot = 1.4; }
+    else if (kind === 'oak') { tc = '#5a4030'; th = 3.2; tw = 0.42; [[0, 4.3, 0, 2.4], [-1.4, 3.8, 0.6, 1.6], [1.4, 3.9, -0.5, 1.7]].forEach(function (b, k) { const c = new T.Mesh(G.sph, cm(['#4a7a32', '#5a8a3a', '#3f7030'][k])); c.scale.set(b[3] * s, b[3] * 0.8 * s, b[3] * s); c.position.set(b[0] * s, b[1] * s, b[2] * s); cr.add(c); }); crownR = 2.6; crownBot = 2.4; }
+    else if (kind === 'maple' || kind === 'redmaple' || kind === 'hickory') { tc = '#6a5040'; th = 3; tw = 0.34; const cols = kind === 'redmaple' ? ['#c4462c', '#e0703a', '#b83a2a'] : kind === 'hickory' ? ['#e0b03a', '#ecc44a', '#d09a2a'] : ['#6ab040', '#7ac04a', '#5aa03a'];
+      [[0, 4.6, 0, 2], [-1, 4, 0.5, 1.4], [1, 4.1, -0.4, 1.4], [0, 5.6, 0, 1.3]].forEach(function (b, k) { const c = new T.Mesh(G.sph, cm(cols[k % 3])); c.scale.set(b[3] * s, b[3] * 0.9 * s, b[3] * s); c.position.set(b[0] * s, b[1] * s, b[2] * s); cr.add(c); }); crownR = 2.2; crownBot = 2.8; }
+    else if (kind === 'willow') { tc = '#5a4a32'; th = 2.6; tw = 0.4; const c = new T.Mesh(G.sph, cm('#8aba5a')); c.scale.set(2.4 * s, 2.0 * s, 2.4 * s); c.position.y = 3.8 * s; cr.add(c);
+      for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2, st0 = new T.Mesh(G.box, cm(k % 2 ? '#9aca6a' : '#7aaa4a')); st0.scale.set(0.7 * s, 2.8 * s, 0.14 * s); st0.position.set(Math.cos(a) * 2.0 * s, 2.6 * s, Math.sin(a) * 2.0 * s); st0.rotation.y = -a; cr.add(st0); } crownR = 2.8; crownBot = 1.3; }
+    else if (kind === 'sycamore') { tc = '#e4dccb'; th = 3.6; tw = 0.38; [[0, 4.8, 0, 2.3], [-1.5, 4.2, 0.4, 1.6], [1.4, 4.4, -0.3, 1.7]].forEach(function (b, k) { const c = new T.Mesh(G.sph, cm(['#7ab04a', '#6aa040', '#8ac05a'][k])); c.scale.set(b[3] * s, b[3] * 0.75 * s, b[3] * s); c.position.set(b[0] * s, b[1] * s, b[2] * s); cr.add(c); }); crownR = 2.6; crownBot = 3; }
+    else if (kind === 'dogwood') { tc = '#6a4a3a'; th = 1.6; tw = 0.2; const c = new T.Mesh(G.sph, cm('#4f8a3a')); c.scale.set(1.6 * s, 0.9 * s, 1.6 * s); c.position.y = 2.2 * s; cr.add(c);
+      for (let k = 0; k < 14; k++) { const a = k * 2.4, bl = new T.Mesh(LP.sph, cm(k % 3 ? '#fff6f0' : '#ffc8d8')); bl.scale.setScalar(0.18 * s); bl.position.set(Math.cos(a) * 1.3 * s, (2.2 + Math.sin(k * 1.7) * 0.6) * s, Math.sin(a) * 1.3 * s); cr.add(bl); } crownR = 1.6; crownBot = 1.4; }
+    const t1 = new T.Mesh(G.cyl, cm(tc)); t1.scale.set(tw * s, th * s, tw * s); t1.position.set(x, y + th * s / 2, z); g.add(t1);
+    if (kind === 'sycamore') for (let k = 0; k < 4; k++) { const pt = new T.Mesh(G.box, cm('#9a9a7a')); pt.scale.set(0.2 * s, 0.35 * s, 0.05); pt.position.set(x + Math.cos(k * 1.6) * tw * s * 0.95, y + (0.6 + k * 0.6) * s, z + Math.sin(k * 1.6) * tw * s * 0.95); pt.rotation.y = -k * 1.6 + Math.PI / 2; g.add(pt); }
+    cr.position.set(x, y, z); cr.rotation.y = x * 0.37; g.add(cr);
+    W.colliders.push({ x: x, z: z, r: tw * s + 0.35, cr: crownR * s, bot: y + crownBot * s, m: cr }); W.anim.push({ m: cr, ph: x + z, sway: true });
+  };
+  const FOREST = ['pine', 'oak', 'maple', 'hemlock', 'pine', 'spruce', 'redmaple', 'oak', 'pine', 'hickory', 'maple'];
+  for (let i = 0; i < 70; i++) { const x = 24 + (i * 37 % 44), z = 16 + (i * 53 % 46); if (Math.hypot(x - HOLLOW.x, z - HOLLOW.z) < 11 || Math.hypot(x - 30, z - 28) < 4 || Math.hypot(x - 34, z - 44) < 4) continue; treeK(x + Math.sin(i) * 1.5, z + Math.cos(i * 1.3) * 1.5, 0.85 + (i % 4) * 0.13, FOREST[i % FOREST.length]); }
+  [[-60, 10, 'oak'], [-45, 40, 'maple'], [-5, 55, 'redmaple'], [25, -20, 'pine'], [-30, -55, 'hemlock'], [55, -10, 'spruce'], [-62, -10, 'pine'], [10, 62, 'oak'], [-50, 58, 'maple'],
+   [-24, -62, 'hemlock'], [-33, -58, 'hemlock'], [-21, -54, 'hemlock'], [-38, -50, 'spruce'],
+   [-39, -37, 'sycamore'], [-41, -20, 'sycamore'], [-31, -6, 'sycamore'], [-35, 6, 'redmaple'],
+   [-36, 28, 'willow'], [-7, 33, 'willow'], [-34, 12, 'willow'],
+   [-12, 46, 'dogwood'], [22, 52, 'dogwood'], [-22, 4, 'dogwood'], [30, -14, 'dogwood'], [-14, -10, 'dogwood'],
+   [52, 8, 'hickory'], [46, -24, 'pine'], [-46, -2, 'hickory'], [2, 50, 'hickory'], [56, -32, 'spruce'], [24, -48, 'oak'], [-8, -40, 'redmaple'], [8, -52, 'pine'], [-52, 26, 'oak'], [-56, -54, 'maple']
+  ].forEach(function (p, i) { treeK(p[0], p[1], 1 + (i % 3) * 0.15, p[2]); });
+  /* shrubs and ferns: blueberry bushes, spicebush, ferns on the forest floor */
+  { const sh = [], shc = [], fr = []; for (let i = 0; i < 90; i++) { const a = rnd(i + 5000) * 6.283, r2 = 8 + Math.sqrt(rnd(i + 5100)) * 52, x = Math.cos(a) * r2, z = Math.sin(a) * r2; if (Math.hypot(x - POND.x, z - POND.z) < 17 || pathDist(x, z) < 2 || Math.hypot(x - STATION.x, z - STATION.z) < 10 || (Math.abs(x - FARM.x) < 13 && Math.abs(z - FARM.z) < 11) || streamDist(x, z) < 2.5) continue;
+      const s2 = 0.6 + rnd(i + 5200) * 0.5; sh.push([x, H(x, z) + 0.45 * s2, z, 1.1 * s2, 0.8 * s2, 1.1 * s2, i]); shc.push(['#3f7a34', '#4a8a3c', '#5a7a2a', '#6a8a3a'][i % 4]); }
+    for (let i = 0; i < 120; i++) { const x = 24 + rnd(i + 6000) * 42, z = 16 + rnd(i + 6100) * 44; if (Math.hypot(x, z) > EDGE) continue; fr.push([x, H(x, z) + 0.25, z, 0.5, 0.35, 0.5, i]); }
+    g.add(inst(LP.sph, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#081206' }), sh, shc)); g.add(inst(LP.cone, C.emat('#3a7a3a', '#081808'), fr)); }
   tree(18, -14, 1.3, true); /* the oak by the station */
   /* rocks on the hill and the ring around the hidden hollow (with a gap hidden behind bushes) */
   const rockM = C.emat('#8a8a80', '#1a1a18');
-  const rock = function (x, z, s) { const m = new T.Mesh(G.ico, rockM); m.scale.set(s, s * 0.8, s); m.position.set(x, H(x, z) + s * 0.4, z); m.rotation.y = x; g.add(m); W.colliders.push({ x: x, z: z, r: s * 0.95 }); };
+  const rock = function (x, z, s) { const m = new T.Mesh(G.ico, rockM); m.scale.set(s, s * 0.8, s); m.position.set(x, H(x, z) + s * 0.4, z); m.rotation.y = x; g.add(m); const c = { x: x, z: z, r: s * 0.95, top: H(x, z) + s * 1.05 }; W.colliders.push(c); W.tops.push(c); };
   for (let i = 0; i < 12; i++) { const a = i * 0.52; rock(HILL.x + Math.cos(a) * (11 + i % 3 * 3), HILL.z + Math.sin(a) * (11 + i % 3 * 3), 0.8 + (i % 3) * 0.4); }
   for (let a = 0; a < Math.PI * 2; a += 0.28) { if (Math.abs(((a + Math.PI) % (Math.PI * 2)) - Math.PI) < 0.3) continue; rock(HOLLOW.x + Math.cos(a) * 9, HOLLOW.z + Math.sin(a) * 9, 1.9); }
   const bushM = C.emat('#3a7a2a', '#081808'); for (let i = -1; i <= 1; i++) { const b = new T.Mesh(G.sph, bushM); b.scale.set(1.6, 1.3, 1.6); const x = HOLLOW.x + 9.6, z = HOLLOW.z + i * 1.6; b.position.set(x, H(x, z) + 0.8, z); g.add(b); W.anim.push({ m: b, ph: i, sway: true }); }
@@ -339,10 +450,14 @@ function build() {
     const a = i * 2.39996, r2 = EDGE + 4 + ((i * 37) % 60) * (i % 3 === 0 ? 1.4 : 0.9); let x = Math.cos(a) * r2, z = Math.sin(a) * r2;
     if (Math.hypot(x - SPRING.x, z + 66) < 11) { x *= 1.5; z *= 1.5; }
     const y = H(x, z), s2 = 1.1 + (i % 5) * 0.25;
-    dm0.position.set(x, y + 4.6 * s2, z); dm0.scale.set(1.9 * s2, 2.8 * s2, 1.9 * s2); dm0.rotation.y = i; dm0.updateMatrix(); cone.setMatrixAt(i, dm0.matrix);
-    tc.set(['#2f6a32', '#3a7a3a', '#2a5a30', '#4a8a3a'][i % 4]).offsetHSL(0, 0, (Math.sin(i * 1.7) * 0.04)); cone.setColorAt(i, tc);
+    const leafy = i % 3 === 1; dm0.position.set(x, y + (leafy ? 4.0 : 4.6) * s2, z); if (leafy) dm0.scale.set(2.2 * s2, 2.0 * s2, 2.2 * s2); else dm0.scale.set(1.9 * s2, 2.8 * s2, 1.9 * s2); dm0.rotation.y = i; dm0.updateMatrix(); cone.setMatrixAt(i, dm0.matrix);
+    tc.set(leafy ? ['#5a9a3a', '#6aaa44', '#c4602c', '#4a8a34', '#d8a03a'][i % 5] : ['#2f6a32', '#3a7a3a', '#2a5a30', '#2a6236'][i % 4]).offsetHSL(0, 0, (Math.sin(i * 1.7) * 0.04)); cone.setColorAt(i, tc);
     dm0.position.set(x, y + 1.5 * s2, z); dm0.scale.set(0.35 * s2, 3 * s2, 0.35 * s2); dm0.updateMatrix(); trunk.setMatrixAt(i, dm0.matrix); if (Math.hypot(x, z) < BOUND + 10) W.colliders.push({ x: x, z: z, r: 0.35 * s2 + 0.4, cr: 1.9 * s2, bot: y + 3.2 * s2, inst: i, mat: cone.instanceMatrix.array.slice(i * 16, i * 16 + 16) });
   }
+  /* swap the leafy ones to round crowns */
+  { const sphI = new T.InstancedMesh(LP.sph10, new T.MeshLambertMaterial({ color: '#ffffff' }), ringN), m4 = new T.Matrix4(), zero = new T.Matrix4().makeScale(0, 0, 0), cc2 = new T.Color();
+    for (let i = 0; i < ringN; i++) { cone.getMatrixAt(i, m4); cone.getColorAt(i, cc2); if (i % 3 === 1) { sphI.setMatrixAt(i, m4); sphI.setColorAt(i, cc2); cone.setMatrixAt(i, zero); } else sphI.setMatrixAt(i, zero); }
+    g.add(sphI); W.ringSph = sphI; }
   g.add(cone); g.add(trunk); W.ringCone = cone;
   /* birches along the paths and the orchard of apple trees */
   const birchM = C.emat('#f0ece0', '#2a2a28'), birchLeaf = C.emat('#8acb4a', '#142a08');
@@ -457,12 +572,39 @@ function build() {
     const x = a[0] + (b[0] - a[0]) * lu + 2.4, z = a[1] + (b[1] - a[1]) * lu; const mk = C.glow('#7be0ad', 2.2, 0.0); mk.position.set(x, H(x, z) + 0.6, z); g.add(mk);
     const pl = new T.Group(); for (let k = 0; k < 4; k++) { const leaf = new T.Mesh(G.cone, C.emat('#5fbf5a', '#0a2008')); leaf.scale.set(0.25, 0.7, 0.25); leaf.position.set(Math.cos(k) * 0.4, 0.6, Math.sin(k) * 0.4); pl.add(leaf); } pl.position.set(x, H(x, z), z); pl.visible = false; g.add(pl);
     W.plants.push({ x: x, z: z, mk: mk, pl: pl, i: i }); }
+  /* UNDER THE POND: pondweed, mussels, snails, tadpoles, rocks, sun rays and floating specks */
+  W.uw = new T.Group(); g.add(W.uw);
+  { const blades = [], bc = []; for (let i = 0; i < 150; i++) { const a = rnd(i + 40) * 6.283, rr = 2 + Math.sqrt(rnd(i + 90)) * 11, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr, y = H(x, z), hh = Math.min(WL0 - y - 0.6, 1.2 + rnd(i + 7) * 2.6); if (hh < 0.5) continue;
+      blades.push([x, y + hh / 2, z, 0.09, hh, 0.04, rnd(i) * 3]); bc.push(['#3a8a4a', '#4a9a3a', '#2f7a44', '#5aa04a'][i % 4]); }
+    W.weed = inst(new T.BoxGeometry(1, 1, 1), new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#0a2010' }), blades, bc); W.weedList = blades; g.add(W.weed); }
+  { const ms = []; for (let i = 0; i < 10; i++) { const a = 0.6 + i * 0.25, rr = 4 + (i % 3) * 1.2, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr; ms.push([x, H(x, z) + 0.08, z, 0.32, 0.16, 0.2, a]); }
+    W.uw.add(inst(LP.sph, C.emat('#3a3a52', '#0a0a18'), ms)); W.musselAt = [POND.x + Math.cos(1.6) * 5.2, POND.z + Math.sin(1.6) * 5.2]; }
+  { const sn = []; for (let i = 0; i < 8; i++) { const a = 3.3 + i * 0.4, rr = 7 + (i % 2) * 2, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr; sn.push([x, H(x, z) + 0.12, z, 0.16, 0.16, 0.16]); }
+    W.uw.add(inst(LP.sph, C.emat('#a07a4a', '#2a1a08'), sn)); }
+  for (let i = 0; i < 5; i++) { const a = 4.6 + i * 0.5, rr = 6 + (i % 2) * 2.5; rock(POND.x + Math.cos(a) * rr, POND.z + Math.sin(a) * rr, 0.8 + (i % 3) * 0.3); }
+  W.tads = []; for (let i = 0; i < 10; i++) { const t0 = new T.Group(), b0 = new T.Mesh(LP.sph, C.basic('#2a2a1a')); b0.scale.set(0.12, 0.1, 0.16); t0.add(b0); const tl = new T.Mesh(G.box, C.basic('#3a3a2a')); tl.scale.set(0.02, 0.07, 0.22); tl.position.z = -0.18; t0.add(tl); W.uw.add(t0); W.tads.push({ m: t0, tail: tl, ph: i * 0.7 }); }
+  W.tadAt = [POND.x - 9, POND.z + 6];
+  { const rc = document.createElement('canvas'); rc.width = 16; rc.height = 128; const rx = rc.getContext('2d'), grd = rx.createLinearGradient(0, 0, 0, 128); grd.addColorStop(0, 'rgba(255,255,230,0.55)'); grd.addColorStop(1, 'rgba(255,255,230,0)'); rx.fillStyle = grd; rx.fillRect(0, 0, 16, 128);
+    const rt = new T.CanvasTexture(rc); W.rays = []; for (let i = 0; i < 9; i++) { const m = new T.Mesh(new T.PlaneGeometry(1.4, 7), new T.MeshBasicMaterial({ map: rt, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide, fog: false })); const a = i * 0.7, rr = 2 + (i * 3.1 % 9);
+      m.position.set(POND.x + Math.cos(a) * rr, WL0 - 3.4, POND.z + Math.sin(a) * rr); m.rotation.set(0.15, a, 0.1); m.visible = false; g.add(m); W.rays.push({ m: m, ph: i }); } }
+  { const n = 220, pp = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const a = rnd(i + 300) * 6.283, rr = Math.sqrt(rnd(i + 600)) * 13, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr, bot = H(x, z); pp[i * 3] = x; pp[i * 3 + 1] = bot + rnd(i + 900) * Math.max(0.2, WL0 - bot); pp[i * 3 + 2] = z; }
+    const pg = new T.BufferGeometry(); pg.setAttribute('position', new T.BufferAttribute(pp, 3)); W.specks = new T.Points(pg, new T.PointsMaterial({ color: '#d8f0c0', size: 0.07, transparent: true, opacity: 0.7, depthWrite: false })); W.specks.visible = false; g.add(W.specks); }
+  /* little energy trail while flying */
+  W.trail = []; for (let i = 0; i < 10; i++) { const t0 = C.glow(['#9fe8ff', '#c59cff', '#ffd166'][i % 3], 0.8, 0.8); t0.visible = false; g.add(t0); W.trail.push(t0); }
   /* player */
   W.me = C.buildAlien(C.S.alien); g.add(W.me);
   const s = st(); W.px = s.pos ? s.pos[0] : STATION.x + 3; W.pz = s.pos ? s.pos[1] : STATION.z + 7; W.py = H(W.px, W.pz); W.vy = 0; W.ground = true; W.face = 0;
   /* sparkles mark things you can interact with */
   W.marks = []; spots().forEach(function (sp) { if (sp.noMark) return; const mk = C.glow('#ffffff', 1.1, 0.8); mk.position.set(sp.x, H(sp.x, sp.z) + (sp.my || 2), sp.z); g.add(mk); W.marks.push({ sp: sp, m: mk }); });
   applyFixed(true);
+  if (!S0low()) toonify(g);
+}
+/* cartoon 'stepped' shading like a picture book: every lit material gets 3 flat tones */
+function toonify(root) {
+  const grad = new T.DataTexture(new Uint8Array([88, 150, 215]), 3, 1, T.LuminanceFormat); grad.minFilter = grad.magFilter = T.NearestFilter; grad.needsUpdate = true; const cache = {};
+  root.traverse(function (o) { const m = o.material; if (!m || m.type !== 'MeshLambertMaterial') return;
+    if (!cache[m.uuid]) { cache[m.uuid] = new T.MeshToonMaterial({ color: m.color, emissive: m.emissive, map: m.map, vertexColors: m.vertexColors, transparent: m.transparent, opacity: m.opacity, side: m.side, fog: m.fog, depthWrite: m.depthWrite, gradientMap: grad }); }
+    o.material = cache[m.uuid]; });
 }
 
 /* ---------- INTERACTIONS ---------- */
@@ -473,7 +615,7 @@ function spots() {
     { id: 'log', x: 30, z: 28, verb: 'cz.observe', t: 'cz.t.log', use: function () { find('log'); } },
     { id: 'bee', x: 6, z: 44, verb: 'cz.observe', t: 'cz.t.bee', use: function () { find('bee'); } },
     { id: 'rabbit', x: 4, z: 40, verb: 'cz.observe', t: 'cz.t.rabbit', live: 'rabbit', use: function () { find('rabbit'); } },
-    { id: 'overlook', x: HILL.x, z: HILL.z, verb: 'cz.observe', t: 'cz.t.overlook', use: function () { find('overlook'); } },
+    { id: 'overlook', x: HILL.x, z: HILL.z, verb: 'cz.observe', t: 'cz.t.overlook', use: function () { find('overlook'); if (!s.f.fly) { s.f.fly = 1; saveSoon(); queueCard('cz.flyNew', 12); } } },
     { id: 'sun', x: 10, z: 47, verb: 'cz.observe', t: 'cz.t.sun', use: function () { find('sun'); compare(); } },
     { id: 'shade', x: 45.5, z: 53, verb: 'cz.observe', t: 'cz.t.shade', use: function () { find('shade'); compare(); } },
     { id: 'oak', x: 18, z: -14, r: 3.2, verb: 'cz.collect', t: 'cz.t.oak', use: function () { s.samples.leaf = 1; saveSoon(); say('cz.s.gotLeaf'); } },
@@ -495,12 +637,22 @@ function spots() {
     { id: 'ants', x: 14, z: 4, r: 2.6, verb: 'cz.observe', t: 'cz.t.ants', use: function () { find('ants'); } },
     { id: 'nest', x: ORCH.x + 3.15, z: ORCH.z + 0.9, r: 3, verb: 'cz.observe', t: 'cz.t.nest', my: 4.4, use: function () { find('nest'); } },
     { id: 'deer', x: -30, z: 50, r: 5, verb: 'cz.observe', t: 'cz.t.deer', live: 'deer', my: 3.2, use: function () { W.deerAlert = 3; find('deer'); } },
-    { id: 'worms', x: -50, z: -27, r: 3, verb: 'cz.observe', t: 'cz.t.worms', use: function () { find('worms'); } }
+    { id: 'worms', x: -50, z: -27, r: 3, verb: 'cz.observe', t: 'cz.t.worms', use: function () { find('worms'); } },
+    { id: 'whitepine', x: 25, z: -20, r: 3.6, verb: 'cz.observe', t: 'cz.t.whitepine', my: 6, use: function () { treeFind('whitepine'); } },
+    { id: 'hemlock', x: -24, z: -58.5, r: 3.6, verb: 'cz.observe', t: 'cz.t.hemlock', my: 5, use: function () { treeFind('hemlock'); } },
+    { id: 'redmaple', x: -5, z: 55, r: 3.6, verb: 'cz.observe', t: 'cz.t.redmaple', my: 6, use: function () { treeFind('redmaple'); } },
+    { id: 'sycamore', x: -41, z: -20, r: 3.6, verb: 'cz.observe', t: 'cz.t.sycamore', my: 6, use: function () { treeFind('sycamore'); } },
+    { id: 'willow', x: -36, z: 28, r: 3.8, verb: 'cz.observe', t: 'cz.t.willow', my: 5.5, use: function () { treeFind('willow'); } },
+    { id: 'dogwood', x: -12, z: 46, r: 3, verb: 'cz.observe', t: 'cz.t.dogwood', my: 3.5, use: function () { treeFind('dogwood'); } },
+    { id: 'hickory', x: 2, z: 50, r: 3.6, verb: 'cz.observe', t: 'cz.t.hickory', my: 6, use: function () { treeFind('hickory'); } },
+    { id: 'pondweed', x: POND.x + 3, z: POND.z - 4, r: 4.5, uw: true, verb: 'cz.observe', t: 'cz.t.pondweed', noMark: true, use: function () { find('pondweed'); } },
+    { id: 'mussel', x: POND.x + Math.cos(1.6) * 5.2, z: POND.z + Math.sin(1.6) * 5.2, r: 3.5, uw: true, verb: 'cz.observe', t: 'cz.t.mussel', noMark: true, use: function () { find('mussel'); } },
+    { id: 'tadpole', x: POND.x - 9, z: POND.z + 6, r: 4, uw: true, verb: 'cz.observe', t: 'cz.t.tadpole', noMark: true, use: function () { find('tadpole'); } }
   ].concat(W && W.plants ? W.plants.map(function (p) { return { id: 'plant' + p.i, x: p.x, z: p.z, r: 2, verb: 'cz.plant', t: 'cz.t.spot', noMark: true, when: function () { return s.f.solved && !s.f.fixed && !(s.f['p' + p.i]); }, use: function () { plant(p); } }; }) : []);
 }
 function nearest() {
   let best = null, bd = 1e9; const list = W.spotList || (W.spotList = spots());
-  list.forEach(function (sp) { if (sp.when && !sp.when()) return; let x = sp.x, z = sp.z; if (sp.live === 'rabbit') { x = W.rab.x; z = W.rab.z; } if (sp.live === 'deer') { x = W.dr.x; z = W.dr.z; } const d = Math.hypot(W.px - x, W.pz - z); if (d < (sp.r || 2.4) && d < bd) { bd = d; best = sp; } });
+  list.forEach(function (sp) { if (sp.when && !sp.when()) return; if (sp.uw && !W.under) return; if (W.under && !sp.uw) return; let x = sp.x, z = sp.z; if (sp.live === 'rabbit') { x = W.rab.x; z = W.rab.z; } if (sp.live === 'deer') { x = W.dr.x; z = W.dr.z; } const d = Math.hypot(W.px - x, W.pz - z); if (d < (sp.r || 2.4) && d < bd) { bd = d; best = sp; } });
   return best;
 }
 function find(id) {
@@ -508,6 +660,9 @@ function find(id) {
   showCard(id); C.beep(fresh ? 1000 : 800, 0.18, 'sine', fresh ? 'chirp, new discovery' : null);
   if (fresh) { C.award('cz-first'); if (FINDS.every(function (f) { return s.found[f.id]; })) C.award('cz-all'); }
 }
+function treeFind(id) { find(id); const s = st(), n = ['whitepine', 'hemlock', 'redmaple', 'sycamore', 'willow', 'dogwood', 'hickory'].filter(function (k) { return s.found[k]; }).length; if (n >= 5 && !s.f.biodiv) { s.f.biodiv = 1; saveSoon(); queueCard('cz.d.biodiv', 14); } }
+/* notes that wait until the card on screen has been read */
+function queueCard(key, secs) { (W.queue = W.queue || []).push([key, secs]); W.cardT = Math.min(W.cardT || 0, 6); }
 function compare() { const s = st(); if (s.found.sun && s.found.shade && !s.f.compared) { s.f.compared = 1; saveSoon(); setTimeout(function () { showCard('compare'); C.award('cz-compare'); }, 4500); } }
 function svgCells(kind) {
   if (kind === 'leafcell') { let r = ''; for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) { const x = 10 + i * 72, y = 10 + j * 68; r += '<rect x="' + x + '" y="' + y + '" width="66" height="62" rx="4" fill="#d8f0c0" stroke="#3a7a2a" stroke-width="4"/>'; for (let k = 0; k < 5; k++) r += '<ellipse cx="' + (x + 12 + (k * 13) % 44) + '" cy="' + (y + 12 + (k * 17) % 40) + '" rx="7" ry="4" fill="#3faa3a"/>'; r += '<circle cx="' + (x + 44) + '" cy="' + (y + 40) + '" r="8" fill="#a07ad0"/>'; } return '<svg viewBox="0 0 300 150" role="img" aria-label="Plant cells with cell walls and chloroplasts">' + r + '</svg>'; }
@@ -518,7 +673,7 @@ function svgCells(kind) {
 function showCard(id, extra) {
   W.card = { id: id, extra: extra }; W.cardT = 14;
   const isFind = FINDS.some(function (f) { return f.id === id; }) || id === 'compare';
-  const title = id === 'compare' ? '⚖️ ' + tx('cz.n.sun') + ' / ' + tx('cz.n.shade') : isFind ? tx('cz.n.' + id) : tx('cz.m.title');
+  const title = id === 'compare' ? '⚖️ ' + tx('cz.n.sun') + ' / ' + tx('cz.n.shade') : isFind ? tx('cz.n.' + id) : (extra && !/^cz\.(s|ev)\./.test(extra) ? '🌿 ' + tx('cz.note') : tx('cz.m.title'));
   const body = id === 'compare' ? tx('cz.d.compare') : isFind ? tx('cz.d.' + id) : tx(extra);
   $('czCard').innerHTML = '<h3>' + C.esc(title) + '</h3>' + (id === 'leafcell' || id === 'algae' ? svgCells(id) : '') + '<p>' + C.esc(body) + '</p>' + (isFind ? '<p class="rec">' + C.esc(tx('cz.recorded')) + '</p>' : '');
   $('czCard').hidden = false;
@@ -589,11 +744,13 @@ function objective() {
 function start() {
   ensureUI(); C.teardown(); C.show(null); C.setMode('cozy');
   ['hud', 'touch', 'toast', 'qpanel'].forEach(function (id) { const e = $(id); if (e) e.hidden = true; });
-  build(); $('cozyUI').hidden = false; refreshText(); C.Music.play('meadow');
+  build(); $('cozyUI').hidden = false; refreshText(); C.Music.stop(); W.moodNow = 'meadow'; amb('mood', 'meadow', 2);
+  { const s0 = st(); if (s0.found.overlook && !s0.f.fly) { s0.f.fly = 1; C.save(); } }
   const s = st(); if (!s.f.met) setTimeout(function () { if (W && !W.talk) talkAma(); }, 800);
 }
 function exit() {
-  const s = st(); s.pos = [W.px, W.pz]; C.save();
+  const s = st(); s.pos = [W.px, W.pz]; C.save(); if (W.camUnder && W.airFog) { C.scene.fog = W.airFog; C.scene.background = W.airBg; }
+  C.cam.fov = 42; C.cam.updateProjectionMatrix(); if (BQ.amb) BQ.amb.stop(1);
   C.scene.remove(W.g); C.disposeGroup(W.g); C.scene.background = W.bg; C.scene.fog = W.fog; C.HEMI.intensity = W.light[0]; C.KEYL.intensity = W.light[1]; C.KEYL.position.copy(W.light[2]); W = null;
   $('cozyUI').hidden = true; $('czPause').hidden = true; C.setMode('menu'); C.menuScene();
 }
@@ -601,6 +758,26 @@ function setPause(on) { if (!W) return; W.pause = on; $('czPause').hidden = !on;
 function openJ() { if (!W) return; W.k = {}; W.pause = true; $('cozyUI').hidden = true; C.openJournal('cozy'); C.journalTab('cozy'); }
 function resume() { if (!W) return; W.pause = false; $('czPause').hidden = true; $('cozyUI').hidden = false; refreshText(); }
 
+function groundAt(x, z) { let g0 = H(x, z); for (let i = 0; i < W.tops.length; i++) { const c = W.tops[i]; if (c.top > g0 && Math.hypot(x - c.x, z - c.z) < c.r * 0.85) g0 = c.top; } return g0; }
+function amb(fn, a, b) { if (BQ.amb && BQ.amb[fn]) BQ.amb[fn](a, b); }
+function underwaterLook(cam) {
+  const wb = waterAt(cam.position.x, cam.position.z), under = !!wb && cam.position.y < wb.y - 0.05, scene = C.scene, clear = st().f.fixed;
+  if (under !== W.camUnder) {
+    W.camUnder = under;
+    if (under) { W.airFog = scene.fog; W.airBg = scene.background; scene.fog = new T.FogExp2(clear ? '#1f6a80' : '#3a6a3a', clear ? 0.07 : 0.16); scene.background = new T.Color(clear ? '#1f6a80' : '#3a6a3a'); }
+    else if (W.airFog) { scene.fog = W.airFog; scene.background = W.airBg; }
+    W.specks.visible = under; W.rays.forEach(function (r) { r.m.visible = under; }); amb('underwater', under);
+    if (BQ.amb) BQ.amb.mood(under ? 'under' : (W.moodNow || 'meadow'), 2.5);
+  }
+  if (under) W.rays.forEach(function (r) { r.m.material.opacity = (clear ? 0.75 : 0.35) * (0.6 + 0.4 * Math.sin(W.t * 0.8 + r.ph)); r.m.rotation.z = 0.1 + Math.sin(W.t * 0.4 + r.ph) * 0.05; });
+}
+function toggleFly() {
+  const s = st(); if (!s.f.fly || W.talk || W.pause) return;
+  if (W.flying) { W.flying = false; return; }
+  if (W.flyE < 0.15) { showCard('msg', 'cz.flyLow'); W.cardT = 3; return; }
+  W.flying = true; W.swim = false; W.vy = 5; W.ground = false; amb('sfx', 'whoosh', 0.8); if (!W.toldFly) { W.toldFly = true; showCard('msg', 'cz.flyTip'); W.cardT = 7; }
+}
+function lookCloser() { if (W.dist > 4) { W.prevDist = W.distT; W.distT = 2.4; W.pitch = 0.15; if (!W.toldLook) { W.toldLook = true; showCard('msg', 'cz.lookTip'); W.cardT = 5; } } else W.distT = W.prevDist && W.prevDist > 4 ? W.prevDist : 10; }
 /* ---------- EVERY FRAME ---------- */
 function step(dt) {
   if (!W) return; W.t += dt; const cam = C.cam, s = st();
@@ -612,11 +789,13 @@ function step(dt) {
   r.x += Math.sign(r.tx - r.x) * Math.min(Math.abs(r.tx - r.x), dt * (flee ? 5 : 2)); r.z += Math.sign(r.tz - r.z) * Math.min(Math.abs(r.tz - r.z), dt * (flee ? 5 : 2));
   W.rabbit.position.set(r.x, H(r.x, r.z) + Math.abs(Math.sin(W.t * 7)) * 0.3, r.z);
   W.hawk.position.set(10 + Math.cos(W.t * 0.3) * 18, 26, 44 + Math.sin(W.t * 0.3) * 18); W.hawk.rotation.y = -W.t * 0.3; W.hawk.rotation.z = 0.25;
-  if (W.fish.visible) W.fish.children.forEach(function (f, i) { const a = W.t * 0.5 + i * 1.05, rr = 5 + (i % 3) * 2.5; f.position.set(POND.x + Math.cos(a) * rr, W.water.position.y - 0.25, POND.z + Math.sin(a) * rr); f.rotation.y = -a; });
+  W.tads.forEach(function (t0, i) { const a = W.t * 0.6 + t0.ph, x = W.tadAt[0] + Math.cos(a) * (1.2 + (i % 3) * 0.7), z = W.tadAt[1] + Math.sin(a * 1.3) * 1.4; t0.m.position.set(x, Math.max(H(x, z) + 0.3, WL0 - 0.6 - (i % 4) * 0.25), z); t0.m.rotation.y = -a; t0.tail.rotation.y = Math.sin(W.t * 18 + i) * 0.6; });
+  if (W.camUnder) { const o = W._wo || (W._wo = new T.Object3D()); W.weedList.forEach(function (b, i) { if (i % 2) return; o.position.set(b[0], b[1], b[2]); o.scale.set(b[3], b[4], b[5]); o.rotation.set(Math.sin(W.t * 1.3 + i) * 0.12, b[6], Math.cos(W.t * 1.1 + i) * 0.1); o.updateMatrix(); W.weed.setMatrixAt(i, o.matrix); }); W.weed.instanceMatrix.needsUpdate = true; }
+  if (W.fish.visible) W.fish.children.forEach(function (f, i) { const a = W.t * 0.5 + i * 1.05, rr = 5 + (i % 3) * 2.5; f.position.set(POND.x + Math.cos(a) * rr, W.water.position.y - 0.9 - (i % 3) * 1.1, POND.z + Math.sin(a) * rr); f.rotation.y = -a; });
   if (W.frogJump) { W.frogJump -= dt; const u = Math.max(0, W.frogJump); W.frog.position.set(-8 - (1 - u) * 4, H(-8, 30) + Math.sin((1 - u) * Math.PI) * 1.5, 30 - (1 - u) * 2); if (W.frogJump <= 0) { W.frogJump = 0; setTimeout(function () { if (W) W.frog.position.set(-8, H(-8, 30), 30); }, 6000); } }
   { const o = W._co || (W._co = new T.Object3D()); W.clouds.forEach(function (c, i) { c.x += dt * c.sp; if (c.x > 200) c.x = -200;
       for (let k = 0; k < 5; k++) { o.position.set(c.x + (k - 2) * 6, c.y + (k % 2) * 1.5, c.z + (k % 3) * 2); o.scale.set(7 + (k % 3) * 2, 3.5 + (k % 2), 5); o.updateMatrix(); W.cloudIM.setMatrixAt(i * 5 + k, o.matrix); } }); W.cloudIM.instanceMatrix.needsUpdate = true; }
-  W.wfTex.offset.y -= dt * 1.6; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
+  W.wfTex.offset.y -= dt * 1.6; if (W.creekTex) W.creekTex.offset.y -= dt * 0.35; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
   W.flies.forEach(function (f, i) { const a = W.t * 0.7 + f.ph, x = f.cx + Math.cos(a) * f.r, z = f.cz + Math.sin(a * 1.3) * f.r; f.m.position.set(x, H(x, z) + 1.4 + Math.sin(W.t * 2 + i) * 0.4, z); f.m.rotation.y = -a; f.m.children[0].rotation.z = Math.sin(W.t * 14 + i) * 0.8; f.m.children[1].rotation.z = -Math.sin(W.t * 14 + i) * 0.8; });
   W.dflies.forEach(function (d0, i) { const a = W.t * 0.9 + d0.ph, x = -31 + Math.cos(a) * 3 + Math.sin(W.t * 2.3 + i) * 0.8, z = 31 + Math.sin(a) * 2.5; d0.m.position.set(x, WL0 + 1 + Math.sin(W.t * 3 + i) * 0.3, z); d0.m.rotation.y = -a - Math.PI / 2; });
   { const dm1 = new T.Object3D(); for (let i = 0; i < 24; i++) { const a = W.t * 0.35 + i * 0.27, rr = 1.2 + (i % 2) * 0.12, x = 14 + Math.cos(a) * rr + (i > 12 ? Math.cos(a) * 1.4 : 0), z = 4 + Math.sin(a) * rr; dm1.position.set(x, H(x, z) + 0.06, z); dm1.scale.set(0.07, 0.05, 0.12); dm1.rotation.y = -a; dm1.updateMatrix(); W.ants.setMatrixAt(i, dm1.matrix); } W.ants.instanceMatrix.needsUpdate = true; }
@@ -631,39 +810,73 @@ function step(dt) {
   W.marks.forEach(function (mk) { const done = mk.sp.id && st().found[mk.sp.id]; mk.m.visible = !done && (!mk.sp.when || mk.sp.when()); mk.m.material.opacity = 0.5 + Math.sin(W.t * 4) * 0.3; mk.m.position.y = H(mk.sp.x, mk.sp.z) + (mk.sp.my || 2) + Math.sin(W.t * 2) * 0.15; });
   W.npcs.forEach(function (n) { n.mark.material.opacity = 0.6 + Math.sin(W.t * 5) * 0.3; n.m.rotation.y = Math.atan2(W.px - n.x, W.pz - n.z) * 0.6; });
   W.birdT -= dt; if (W.birdT <= 0) { W.birdT = 5 + Math.random() * 7; if (C.S.set.sound) { const f = 1800 + Math.random() * 900; C.beep(f, 0.07, 'sine'); setTimeout(function () { C.beep(f * 1.2, 0.06, 'sine'); }, 110); } }
-  /* player movement (no movement while talking or paused) */
-  const k = W.k, busy = W.pause || W.talk;
-  let mx = 0, mz = 0; if (!busy) { if (k.f) mz -= 1; if (k.b) mz += 1; if (k.l) mx -= 1; if (k.r) mx += 1; if (k.ql) W.yaw += dt * 1.8; if (k.qr) W.yaw -= dt * 1.8; }
-  const len = Math.hypot(mx, mz), inWater = Math.hypot(W.px - POND.x, W.pz - POND.z) < 15 && W.py < W.water.position.y;
-  if (len > 0) {
-    const sp = (k.run ? 13 : 6) * (inWater ? 0.55 : 1), cy = Math.cos(W.yaw), sy = Math.sin(W.yaw);
-    const dx = (mx * cy + mz * sy) / len, dz = (-mx * sy + mz * cy) / len;
-    W.px += dx * sp * dt; W.pz += dz * sp * dt; W.face = Math.atan2(dx, dz);
-    if (!W.drag) { const want = Math.atan2(-dx, -dz), d = ((want - W.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI; W.yaw += d * Math.min(1, dt * 0.9) * (mz < 0 ? 1 : 0.25); }
-  }
+  /* player movement (no movement while talking, paused or reading the map) */
+  const k = W.k, busy = W.pause || W.talk || W.ui, sens = C.S.set.camSens || 1;
+  let mx = 0, mz = 0; if (!busy) { if (k.f) mz -= 1; if (k.b) mz += 1; if (k.l) mx -= 1; if (k.r) mx += 1; if (k.ql) W.yaw += dt * 1.8 * sens; if (k.qr) W.yaw -= dt * 1.8 * sens; if (k.tu) W.pitch = Math.max(-0.35, W.pitch - dt * sens); if (k.td) W.pitch = Math.min(1.25, W.pitch + dt * sens); }
+  const len = Math.hypot(mx, mz), wb = waterAt(W.px, W.pz), wl = wb ? wb.y : -1e9, gyHere = groundAt(W.px, W.pz);
+  /* swimming starts when the water is deep enough to float in */
+  const wasSwim = W.swim; W.swim = !!wb && !W.flying && wl - gyHere > 1.0 && W.py < wl - 0.45;
+  if (W.swim && !wasSwim) { amb('sfx', 'splash'); W.vy *= 0.25; W.gliding = false; if (!W.toldSwim) { W.toldSwim = true; showCard('msg', 'cz.swimTip'); W.cardT = 9; } }
+  if (!W.swim && wasSwim) amb('sfx', 'splash', 0.6);
+  const sp = W.flying ? (k.run ? 22 : 13) : W.swim ? (k.run ? 6.5 : 4.2) : (k.run ? 13 : 6);
+  let tvx = 0, tvz = 0;
+  if (len > 0) { const cy = Math.cos(W.yaw), sy = Math.sin(W.yaw), dx = (mx * cy + mz * sy) / len, dz = (-mx * sy + mz * cy) / len; tvx = dx * sp; tvz = dz * sp; W.face = Math.atan2(dx, dz);
+    if (!W.drag) { const want = Math.atan2(-dx, -dz), d = ((want - W.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI; W.yaw += d * Math.min(1, dt * 0.9) * (mz < 0 ? 1 : 0.25); } }
+  const grip = W.ground || W.swim || W.flying ? 9 : 3.5; W.vx += (tvx - W.vx) * Math.min(1, dt * grip); W.vz += (tvz - W.vz) * Math.min(1, dt * grip);
+  W.px += W.vx * dt; W.pz += W.vz * dt;
   { const dd = Math.hypot(W.px, W.pz); if (dd > BOUND) { W.px *= BOUND / dd; W.pz *= BOUND / dd; } }
-  if (len > 0 && !k.run && !W.toldRun) { W.walkT = (W.walkT || 0) + dt; if (W.walkT > 6) { W.toldRun = true; showCard('msg', 'cz.runTip'); W.cardT = 4; } }
+  const moving = Math.hypot(W.vx, W.vz) > 0.5;
+  if (len > 0 && !k.run && !W.toldRun && !W.swim) { W.walkT = (W.walkT || 0) + dt; if (W.walkT > 6) { W.toldRun = true; showCard('msg', 'cz.runTip'); W.cardT = 4; } }
   if (k.run && len > 0) W.toldRun = true;
   if (k.run && len > 0 && W.ground && !busy) { W.dustT = (W.dustT || 0) - dt; if (W.dustT <= 0) { W.dustT = 0.09; const p0 = C.glow('#e8dcc0', 1.2, 0.6); p0.position.set(W.px, W.py + 0.2, W.pz); W.g.add(p0); (W.dust = W.dust || []).push({ m: p0, t: 0 }); } }
   if (W.dust) W.dust = W.dust.filter(function (d0) { d0.t += dt; d0.m.position.y += dt * 0.6; d0.m.material.opacity = Math.max(0, 0.6 - d0.t); d0.m.scale.setScalar(1.2 + d0.t * 2); if (d0.t > 0.6) { W.g.remove(d0.m); return false; } return true; });
-  W.colliders.forEach(function (c) { const dx = W.px - c.x, dz = W.pz - c.z, d = Math.hypot(dx, dz), mn = c.r + 0.45; if (d < mn && d > 0.001 && W.py < H(c.x, c.z) + 3.5) { W.px = c.x + dx / d * mn; W.pz = c.z + dz / d * mn; } });
-  const gy = H(W.px, W.pz);
-  if (!busy && k.jump && W.ground) { W.vy = 9; W.ground = false; C.beep(420, 0.06, 'triangle'); }
-  W.vy -= 24 * dt; if (!W.ground && k.jump && W.vy < -2.2) { W.vy = -2.2; W.gliding = true; } else W.gliding = false;
-  W.py += W.vy * dt; if (W.py <= gy) { W.py = gy; W.vy = 0; W.ground = true; } else if (W.py > gy + 0.05) W.ground = false;
+  W.colliders.forEach(function (c) { if (c.top != null && W.py >= c.top - 0.35) return; const dx = W.px - c.x, dz = W.pz - c.z, d = Math.hypot(dx, dz), mn = c.r + 0.45; if (d < mn && d > 0.001 && W.py < (c.top != null ? c.top : H(c.x, c.z) + 3.5)) { W.px = c.x + dx / d * mn; W.pz = c.z + dz / d * mn; } });
+  const gy = groundAt(W.px, W.pz);
+  /* flight energy: drains while flying, refills on the ground */
+  if (W.flying) { W.flyE = Math.max(0, W.flyE - dt / 24); if (W.flyE <= 0) { W.flying = false; showCard('msg', 'cz.flyLow'); W.cardT = 3; } }
+  else if (W.ground) W.flyE = Math.min(1, W.flyE + dt / 35);
+  if (W.flying) {
+    const up = !busy && k.jump ? 7 : !busy && k.dive ? -7 : 0; W.vy += (up + Math.sin(W.t * 2.5) * 0.4 - W.vy) * Math.min(1, dt * 4);
+    W.py += W.vy * dt; if (W.py > gy + 55) { W.py = gy + 55; W.vy = Math.min(0, W.vy); } if (W.py <= gy) { W.py = gy; W.vy = 0; W.ground = true; } else W.ground = false; W.gliding = false;
+    const tr = W.trail[Math.floor(W.t * 20) % W.trail.length]; tr.visible = true; tr.position.set(W.px - Math.sin(W.face) * 0.6, W.py + 0.7, W.pz - Math.cos(W.face) * 0.6); tr.material.opacity = 0.8;
+    if (!W.whooshT || W.t > W.whooshT) { W.whooshT = W.t + 2.5 + Math.random() * 2; if (moving) amb('sfx', 'whoosh', 0.5); }
+  } else if (W.swim) {
+    const surf = wl - 0.75;
+    if (!busy && k.dive) W.vy += (-3.4 - W.vy) * Math.min(1, dt * 4);
+    else if (!busy && k.jump) { if (W.py > surf - 0.25 && wl - gy < 2.2) { W.vy = 8; W.swim = false; amb('sfx', 'splash', 0.6); } else W.vy += (3.2 - W.vy) * Math.min(1, dt * 4); }
+    else W.vy += ((surf - W.py) * 2.2 - W.vy) * Math.min(1, dt * 3);
+    W.py += W.vy * dt; if (W.py > surf && !k.jump) { W.py = surf; W.vy = Math.min(0, W.vy); } if (W.py < gy + 0.25) { W.py = gy + 0.25; W.vy = Math.max(0, W.vy); }
+    W.ground = false; W.gliding = false;
+    if (moving && (!W.strokeT || W.t > W.strokeT)) { W.strokeT = W.t + 0.7; amb('sfx', W.under ? 'bubble' : 'swim', 0.8); }
+  } else {
+    if (!busy && k.jump && W.ground) { W.vy = 9; W.ground = false; C.beep(420, 0.06, 'triangle'); }
+    W.vy -= 24 * dt; if (!W.ground && k.jump && W.vy < -2.2) { W.vy = -2.2; W.gliding = true; } else W.gliding = false;
+    W.py += W.vy * dt; if (W.py <= gy) { if (!W.ground && W.vy < -6) amb('sfx', 'step', 1.4); W.py = gy; W.vy = 0; W.ground = true; } else if (W.py > gy + 0.05) W.ground = false;
+  }
+  W.trail.forEach(function (t0) { if (t0.visible) { t0.material.opacity -= dt * 1.6; if (t0.material.opacity <= 0) t0.visible = false; } });
+  W.under = W.swim && W.py < wl - 1.3;
+  if (W.under && !W.toldDive) { W.toldDive = true; showCard('msg', 'cz.diveTip'); W.cardT = 6; }
   W.me.position.set(W.px, W.py, W.pz); W.me.rotation.y += (((W.face - W.me.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 10);
-  const legs = W.me.userData.legs; if (legs) { W.stride = (W.stride || 0) + dt * len * (k.run ? 14 : 9); legs.forEach(function (h, i) { h.rotation.x = W.ground ? Math.sin(W.stride + i * Math.PI) * 0.7 * Math.min(1, len) : (W.gliding ? 0.6 : -0.5); }); }
-  W.me.rotation.z = W.gliding ? Math.sin(W.t * 6) * 0.08 : 0; W.me.rotation.x = (k.run && len > 0 && W.ground) ? 0.18 : 0;
-  /* camera follows behind */
-  const tgt = new T.Vector3(W.px, W.py + 1.6, W.pz), cp = Math.cos(W.pitch);
-  const want = new T.Vector3(tgt.x + Math.sin(W.yaw) * cp * W.dist, tgt.y + Math.sin(W.pitch) * W.dist, tgt.z + Math.cos(W.yaw) * cp * W.dist);
+  const legs = W.me.userData.legs, spd = Math.hypot(W.vx, W.vz);
+  if (legs) { const before = W.stride || 0; W.stride = before + dt * spd * (k.run ? 1.1 : 1.5);
+    legs.forEach(function (h, i) { h.rotation.x = W.swim ? Math.sin(W.t * 7 + i * Math.PI) * 0.6 : W.flying ? 0.9 : W.ground ? Math.sin(W.stride + i * Math.PI) * 0.7 * Math.min(1, spd / 4) : (W.gliding ? 0.6 : -0.5); });
+    if (W.ground && spd > 1 && Math.floor(before / Math.PI) !== Math.floor(W.stride / Math.PI)) amb('sfx', 'step', k.run ? 1 : 0.6); }
+  W.me.rotation.z = W.gliding ? Math.sin(W.t * 6) * 0.08 : W.flying ? Math.sin(W.t * 2) * 0.1 : 0;
+  W.me.rotation.x = W.swim ? (W.under || k.dive ? 0.9 : 0.55) : W.flying ? (moving ? 0.7 : 0.2) : (k.run && len > 0 && W.ground) ? 0.18 : 0;
+  /* camera follows behind: smooth zoom, look-closer mode, and it slips under the water with you when you dive */
+  W.dist += (W.distT - W.dist) * Math.min(1, dt * 5);
+  const eDist = W.under ? Math.min(W.dist, 6) : W.dist, ePitch = W.under ? Math.min(W.pitch, 0.18) : W.pitch;
+  const tgt = new T.Vector3(W.px, W.py + (W.dist < 4 ? 1.1 : 1.6), W.pz), cp = Math.cos(ePitch);
+  const want = new T.Vector3(tgt.x + Math.sin(W.yaw) * cp * eDist, tgt.y + Math.sin(ePitch) * eDist, tgt.z + Math.cos(W.yaw) * cp * eDist);
   { /* keep the camera out of trees and rocks: move it in front of anything between it and the player */
     const vx = want.x - tgt.x, vz = want.z - tgt.z, L2 = vx * vx + vz * vz; let best = 1;
     if (L2 > 0.01) W.colliders.forEach(function (c) { const rr = c.r + 0.6, u = ((c.x - tgt.x) * vx + (c.z - tgt.z) * vz) / L2; if (u <= 0 || u > 1.2) return;
       const px = tgt.x + vx * u - c.x, pz = tgt.z + vz * u - c.z; if (px * px + pz * pz < rr * rr) { const back = u - rr / Math.sqrt(L2); if (back < best) best = back; } });
     best = Math.max(0.28, best); if (best < 1) { want.x = tgt.x + vx * best; want.z = tgt.z + vz * best; want.y = tgt.y + (want.y - tgt.y) * best; } }
-  const gc = H(want.x, want.z) + 1.2; if (want.y < gc) want.y = gc;
+  const gc = H(want.x, want.z) + (W.under ? 0.6 : 1.2); if (want.y < gc) want.y = gc;
   cam.position.lerp(want, Math.min(1, dt * 6)); cam.lookAt(tgt);
+  { const fov = W.dist < 4 ? 28 + (W.dist - 2.2) / 1.8 * 14 : 42; if (Math.abs(cam.fov - fov) > 0.05) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 5); cam.updateProjectionMatrix(); } }
+  underwaterLook(cam); W.me.visible = W.dist > 3.2;
   { /* tree tops between the camera and the player fade out so you can always see yourself */
     const ax = tgt.x, az = tgt.z, bx = cam.position.x - ax, bz = cam.position.z - az, L2 = bx * bx + bz * bz, hy = Math.max(cam.position.y, tgt.y) + 0.4; let instDirty = false;
     W.colliders.forEach(function (c) { if (!c.cr) return; let hide = false;
@@ -677,6 +890,8 @@ function step(dt) {
     if (sig !== W.lastPrompt) { W.lastPrompt = sig; if (W.near) { $('czPrompt').textContent = 'E: ' + tx(W.near.verb) + ' ' + tx(W.near.t); $('czPrompt').hidden = false; } else $('czPrompt').hidden = true; } }
   else if (!$('czPrompt').hidden) { $('czPrompt').hidden = true; W.lastPrompt = null; }
   if (W.cardT > 0) { W.cardT -= dt; if (W.cardT <= 0) { $('czCard').hidden = true; W.card = null; } }
+  if (W.cardT <= 0 && W.queue && W.queue.length) { const q = W.queue.shift(); showCard('msg', q[0]); W.cardT = q[1]; amb('sfx', 'discover'); }
+  { const fb = $('czFly'), on = !!s.f.fly && (W.flying || W.flyE < 0.999); fb.hidden = !on; if (on) fb.firstChild.style.width = Math.round(W.flyE * 100) + '%'; }
   W.saveT -= dt; if (W.saveT <= 0 && W.saveT > -1) { W.saveT = -5; s.pos = [W.px, W.pz]; C.save(); }
   if (W.saveT < -9) W.saveT = 0.01;
 }
@@ -693,14 +908,18 @@ function key(e, down) {
   if (down && W.talk && W.talk.lines[W.talk.i].choices && /^[1-3]$/.test(kk)) { choose(+kk - 1); return; }
   if (down && (kk === 'e' || kk === 'Enter')) { if (e.target && e.target.tagName === 'BUTTON' && kk === 'Enter') return; act(); e.preventDefault(); return; }
   if (down && kk === 'j') { openJ(); return; }
-  const map = { w: 'f', ArrowUp: 'f', s: 'b', ArrowDown: 'b', a: 'l', ArrowLeft: 'l', d: 'r', ArrowRight: 'r', ' ': 'jump', Shift: 'run', q: 'ql', r: 'qr' };
+  if (down && kk === 'f' && !e.repeat) { toggleFly(); return; }
+  if (down && kk === 'v' && !e.repeat) { lookCloser(); return; }
+  if (down && (kk === '-' || kk === '_')) { W.distT = Math.min(30, W.distT * 1.2); return; }
+  if (down && (kk === '=' || kk === '+')) { W.distT = Math.max(2.2, W.distT / 1.2); return; }
+  const map = { w: 'f', ArrowUp: 'f', s: 'b', ArrowDown: 'b', a: 'l', ArrowLeft: 'l', d: 'r', ArrowRight: 'r', ' ': 'jump', Shift: 'run', q: 'ql', r: 'qr', c: 'dive', Control: 'dive', t: 'tu', g: 'td' };
   if (map[kk]) { W.k[map[kk]] = down; e.preventDefault(); }
 }
 function pointer(e, type) {
   if (!W || W.pause) return;
-  if (type === 'wheel') { W.dist = Math.max(5, Math.min(18, W.dist + Math.sign(e.deltaY) * 1)); e.preventDefault(); return; }
+  if (type === 'wheel') { W.distT = Math.max(2.2, Math.min(30, W.distT * (e.deltaY > 0 ? 1.12 : 1 / 1.12))); e.preventDefault(); return; }
   if (type === 'pointerdown') W.drag = { x: e.clientX, y: e.clientY, yaw: W.yaw, pitch: W.pitch };
-  else if (type === 'pointermove' && W.drag && e.buttons) { W.yaw = W.drag.yaw - (e.clientX - W.drag.x) * 0.008; W.pitch = Math.max(0.12, Math.min(1.2, W.drag.pitch + (e.clientY - W.drag.y) * 0.006)); }
+  else if (type === 'pointermove' && W.drag && e.buttons) { const sn = C.S.set.camSens || 1, inv = C.S.set.camInv ? -1 : 1; W.yaw = W.drag.yaw - (e.clientX - W.drag.x) * 0.008 * sn; W.pitch = Math.max(-0.35, Math.min(1.25, W.drag.pitch + (e.clientY - W.drag.y) * 0.006 * sn * inv)); }
   else if (type === 'pointerup') W.drag = null;
 }
 function journalHTML() {

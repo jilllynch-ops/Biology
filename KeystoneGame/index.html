@@ -292,6 +292,7 @@ ul.slots { list-style: none; padding-left: 0; }
       <label class="set" for="setMusic">Music (press M to switch on or off)<input type="checkbox" id="setMusic"></label>
       <label class="set" for="setVol">Music volume<input type="range" id="setVol" min="0" max="100" step="5"></label>
       <label class="set" for="setSound">Sound effects<input type="checkbox" id="setSound"></label>
+      <label class="set" for="setSvol">Sound effects and nature sounds volume<input type="range" id="setSvol" min="0" max="100" step="5"></label>
       <label class="set" for="setCap">Captions for sounds<input type="checkbox" id="setCap"></label>
       <label class="set" for="setUnlock" id="teacherRow" hidden>Teacher: unlock every level<input type="checkbox" id="setUnlock"></label>
       <button type="button" id="btnReset">Erase progress on this device</button>
@@ -323,6 +324,8 @@ ul.slots { list-style: none; padding-left: 0; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="engine.js"></script>
 <script src="cozy.js"></script>
+<script src="ambient.js"></script>
+<script src="intro.js"></script>
 <script>FieldGuide.loadWorlds(6);</script>
 </body>
 </html>
