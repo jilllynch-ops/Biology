@@ -133,6 +133,41 @@ Object.assign(C.I18N.es, {
   'cz.a.cz-all': 'Experto de la reserva', 'cz.a.cz-all.d': 'Registra todos los descubrimientos de la reserva.',
   'cz.j.tip': 'Descubrimientos del modo Exploración tranquila. Acércate a todo lo que brille y pulsa E.', 'cz.j.found': '{n} de {m} descubrimientos'
 });
+/* new discoveries (version 21) */
+Object.assign(C.I18N.en, {
+  'cz.runTip': 'Tip: hold Shift to run!',
+  'cz.t.spring': 'the waterfall', 'cz.t.lichen': 'the crusty rock', 'cz.t.owl': 'the owl', 'cz.t.monarch': 'the butterfly', 'cz.t.dragonfly': 'the dragonfly',
+  'cz.t.cattail': 'the cattails', 'cz.t.ants': 'the anthill', 'cz.t.nest': 'the nest', 'cz.t.deer': 'the deer', 'cz.t.worms': 'the compost pile',
+  'cz.n.spring': 'Spring and waterfall', 'cz.n.lichen': 'Lichen', 'cz.n.owl': 'Owl and owl pellet', 'cz.n.monarch': 'Monarch on milkweed', 'cz.n.dragonfly': 'Dragonfly',
+  'cz.n.cattail': 'Cattails', 'cz.n.ants': 'Ant colony', 'cz.n.nest': 'Robin nest', 'cz.n.deer': 'White-tailed deer', 'cz.n.worms': 'Earthworms in compost',
+  'cz.d.spring': 'Water bubbles out of the ground here. Rain soaks into the soil, flows underground, and comes back out as a spring. This is part of the WATER CYCLE: water evaporates, forms clouds, falls as rain, and flows back into streams and the ocean.',
+  'cz.d.lichen': 'That crusty yellow-green patch is a lichen: a FUNGUS and an ALGA living together. The alga makes food by photosynthesis, and the fungus holds water and grips the rock. Both benefit, so this is MUTUALISM. Lichens are often the first living things on bare rock.',
+  'cz.d.owl': 'An owl swallows mice whole, then coughs up the bones and fur it cannot digest as a pellet. The tiny skulls inside show what it ate. Owls are CONSUMERS near the top of the FOOD WEB: plants → mice → owl.',
+  'cz.d.monarch': 'A monarch butterfly lays its eggs only on milkweed. The caterpillar eats the leaves, makes a chrysalis, and comes out as a butterfly. This change in body form is called METAMORPHOSIS. While it sips nectar, it also carries pollen from flower to flower.',
+  'cz.d.dragonfly': 'Young dragonflies (nymphs) live underwater for months before they climb out and become adults. They need clean water with plenty of oxygen, so lots of dragonflies is a sign of a healthy pond. Scientists call this an INDICATOR SPECIES.',
+  'cz.d.cattail': 'Cattails grow where land meets water. Their roots slow down muddy water and soak up extra nutrients, like a natural water filter. They are PRODUCERS: they make food from sunlight, and many animals hide and nest among them.',
+  'cz.d.ants': 'Thousands of ants live here together. Each ant has a job: the queen lays eggs, and workers gather food, dig tunnels, and care for the young. Their tunnels let air and water into the soil. A group of the same kind of living thing in one place is a POPULATION.',
+  'cz.d.nest': 'A robin built this nest from twigs and mud and laid blue eggs. Birds REPRODUCE by laying eggs, and the parents keep them warm until they hatch. Babies look like their parents because the parents pass on their DNA.',
+  'cz.d.deer': 'The deer is eating fallen apples and grass. It is an HERBIVORE: a primary CONSUMER that eats producers. It lifts its head and turns its ears when you come near. Deer RESPOND to danger by raising their white tail and running.',
+  'cz.d.worms': 'Earthworms eat dead leaves and food scraps and turn them into rich soil. They are DECOMPOSERS: they return NUTRIENTS to the soil so plants can grow again. Without decomposers, dead things would pile up forever.'
+});
+Object.assign(C.I18N.es, {
+  'cz.runTip': 'Consejo: ¡mantén pulsada la tecla Shift para correr!',
+  'cz.t.spring': 'la cascada', 'cz.t.lichen': 'la roca costrosa', 'cz.t.owl': 'el búho', 'cz.t.monarch': 'la mariposa', 'cz.t.dragonfly': 'la libélula',
+  'cz.t.cattail': 'las espadañas', 'cz.t.ants': 'el hormiguero', 'cz.t.nest': 'el nido', 'cz.t.deer': 'el venado', 'cz.t.worms': 'la pila de compost',
+  'cz.n.spring': 'Manantial y cascada', 'cz.n.lichen': 'Liquen', 'cz.n.owl': 'Búho y egagrópila', 'cz.n.monarch': 'Monarca en algodoncillo', 'cz.n.dragonfly': 'Libélula',
+  'cz.n.cattail': 'Espadañas', 'cz.n.ants': 'Colonia de hormigas', 'cz.n.nest': 'Nido de petirrojo', 'cz.n.deer': 'Venado de cola blanca', 'cz.n.worms': 'Lombrices en el compost',
+  'cz.d.spring': 'El agua brota del suelo aquí. La lluvia se filtra en la tierra, corre bajo el suelo y vuelve a salir como un manantial. Esto es parte del CICLO DEL AGUA: el agua se evapora, forma nubes, cae como lluvia y vuelve a los arroyos y al océano.',
+  'cz.d.lichen': 'Esa mancha costrosa amarilla y verde es un liquen: un HONGO y un ALGA que viven juntos. El alga produce alimento por fotosíntesis, y el hongo guarda agua y se agarra a la roca. Los dos se benefician, así que esto es MUTUALISMO. Los líquenes suelen ser los primeros seres vivos sobre la roca desnuda.',
+  'cz.d.owl': 'Un búho se traga ratones enteros y luego escupe los huesos y el pelo que no puede digerir en una bolita llamada egagrópila. Los cráneos diminutos que hay dentro muestran lo que comió. Los búhos son CONSUMIDORES cerca de la cima de la RED ALIMENTARIA: plantas → ratones → búho.',
+  'cz.d.monarch': 'La mariposa monarca pone sus huevos solo en el algodoncillo. La oruga se come las hojas, forma una crisálida y sale convertida en mariposa. Este cambio en la forma del cuerpo se llama METAMORFOSIS. Mientras bebe néctar, también lleva polen de flor en flor.',
+  'cz.d.dragonfly': 'Las libélulas jóvenes (ninfas) viven bajo el agua durante meses antes de salir y convertirse en adultas. Necesitan agua limpia con mucho oxígeno, así que ver muchas libélulas es señal de un estanque sano. Los científicos lo llaman ESPECIE INDICADORA.',
+  'cz.d.cattail': 'Las espadañas crecen donde la tierra se junta con el agua. Sus raíces frenan el agua turbia y absorben los nutrientes de más, como un filtro natural. Son PRODUCTORES: fabrican alimento con la luz del sol, y muchos animales se esconden y anidan entre ellas.',
+  'cz.d.ants': 'Miles de hormigas viven aquí juntas. Cada hormiga tiene un trabajo: la reina pone huevos y las obreras buscan comida, cavan túneles y cuidan a las crías. Sus túneles dejan entrar aire y agua al suelo. Un grupo de seres vivos de la misma especie en un mismo lugar es una POBLACIÓN.',
+  'cz.d.nest': 'Un petirrojo construyó este nido con ramitas y barro y puso huevos azules. Las aves se REPRODUCEN poniendo huevos, y los padres los mantienen calientes hasta que nacen. Las crías se parecen a sus padres porque los padres les pasan su ADN.',
+  'cz.d.deer': 'El venado come manzanas caídas y hierba. Es un HERBÍVORO: un CONSUMIDOR primario que come productores. Levanta la cabeza y mueve las orejas cuando te acercas. Los venados RESPONDEN al peligro levantando su cola blanca y corriendo.',
+  'cz.d.worms': 'Las lombrices comen hojas muertas y restos de comida y los convierten en tierra rica. Son DESCOMPONEDORES: devuelven los NUTRIENTES al suelo para que las plantas vuelvan a crecer. Sin descomponedores, los seres muertos se amontonarían para siempre.'
+});
 /* achievements for this mode (their text uses the cz.a.* keys) */
 ['cz-first', 'cz-compare', 'cz-hollow', 'cz-detective', 'cz-all'].forEach(function (id, i) {
   C.ACH.push({ id: id, ic: ['🌿', '⚖️', '🍄', '🐟', '🦉'][i], tier: i < 2 ? 'short' : i < 4 ? 'medium' : 'long' });
@@ -144,10 +179,16 @@ Object.assign(C.I18N.es, {
 const FINDS = [
   { id: 'frog', look: 'frog', col: '#5fbf5a' }, { id: 'log', look: 'mushroom', col: '#c0503a' }, { id: 'bee', look: 'sprout', col: '#ffd166' }, { id: 'rabbit', look: 'critter', col: '#d8c8b0' },
   { id: 'overlook', look: 'grass', col: '#6ac04a' }, { id: 'sun', look: 'grass', col: '#7be06a' }, { id: 'shade', look: 'sprout', col: '#3f8a3a' }, { id: 'leafcell', look: 'cell', col: '#7be06a' },
-  { id: 'algae', look: 'drop', col: '#7be06a' }, { id: 'glow', look: 'mushroom', col: '#9fffd8' }, { id: 'fish', look: 'rod', col: '#ff9f6e' }];
+  { id: 'algae', look: 'drop', col: '#7be06a' }, { id: 'glow', look: 'mushroom', col: '#9fffd8' }, { id: 'fish', look: 'rod', col: '#ff9f6e' },
+  { id: 'spring', look: 'drop', col: '#7fd4ff' }, { id: 'lichen', look: 'rock', col: '#c8d070' }, { id: 'owl', look: 'critter', col: '#8a6a4a' }, { id: 'monarch', look: 'sprout', col: '#ff9f3a' },
+  { id: 'dragonfly', look: 'rod', col: '#5fb8ff' }, { id: 'cattail', look: 'grass', col: '#9a7a4a' }, { id: 'ants', look: 'eggs', col: '#6a4a3a' }, { id: 'nest', look: 'eggs', col: '#8fd0f0' },
+  { id: 'deer', look: 'critter', col: '#b07a4a' }, { id: 'worms', look: 'chain', col: '#e08a8a' }];
 
 /* ---------- WORLD SHAPE ---------- */
-const POND = { x: -20, z: 22 }, HILL = { x: 42, z: -42 }, FARM = { x: -52, z: -40 }, HOLLOW = { x: 56, z: 40 }, STATION = { x: 6, z: -6 }, STREAM = [[-44, -30], [-36, -12], [-30, 4], [-26, 12]];
+const POND = { x: -20, z: 22 }, HILL = { x: 42, z: -42 }, FARM = { x: -52, z: -40 }, HOLLOW = { x: 56, z: 40 }, STATION = { x: 6, z: -6 }, STREAM = [[-28, -60], [-36, -46], [-44, -30], [-36, -12], [-30, 4], [-26, 12]];
+const SPRING = { x: -28, z: -60 }, ORCH = { x: -40, z: 46 }, EDGE = 62, BOUND = 70;
+const PATHS = [[[6, -6], [-8, 8], [-12, 16]], [[6, -6], [-18, -20], [-40, -30]], [[6, -6], [24, -24], [34, -34]], [[-8, 8], [-24, 40], [-34, 44]], [[6, -6], [16, 12], [8, 34]], [[-40, -30], [-32, -52]], [[16, 12], [26, 24]]];
+function pathDist(x, z) { let d = 1e9; PATHS.forEach(function (pl) { for (let i = 0; i < pl.length - 1; i++) d = Math.min(d, segDist(x, z, pl[i], pl[i + 1])); }); return d; }
 function segDist(x, z, a, b) { const vx = b[0] - a[0], vz = b[1] - a[1], wx = x - a[0], wz = z - a[1], u = Math.max(0, Math.min(1, (wx * vx + wz * vz) / (vx * vx + vz * vz))); return Math.hypot(x - a[0] - u * vx, z - a[1] - u * vz); }
 function streamDist(x, z) { let d = 1e9; for (let i = 0; i < STREAM.length - 1; i++) d = Math.min(d, segDist(x, z, STREAM[i], STREAM[i + 1])); return d; }
 function H(x, z) {
@@ -158,13 +199,22 @@ function H(x, z) {
   blend(STATION.x, STATION.z, 8, 6, 0.8); blend(FARM.x, FARM.z, 11, 7, 1.6);
   const sd = streamDist(x, z); if (sd < 3) h -= 0.9 * (1 - sd / 3);
   const dh = Math.hypot(x - HOLLOW.x, z - HOLLOW.z); if (dh < 7) h = h * 0.3 + 0.2;
-  const r = Math.max(Math.abs(x), Math.abs(z)); if (r > 64) h += (r - 64) * (r - 64) * 0.12;
+  h += 12 * Math.exp(-((x + 28) * (x + 28)) / 140 - ((z + 70) * (z + 70)) / 34); /* the cliff with the waterfall */
+  const d = Math.hypot(x, z); if (d > EDGE) { const rise = d - EDGE, a = Math.atan2(z, x); /* gentle rolling hills all around the reserve */
+    h += 20 * (1 - Math.exp(-rise / 20)) * (0.72 + 0.28 * Math.sin(a * 5 + 1.3) * Math.cos(a * 2.2)) + 1.5 * Math.sin(a * 13) * Math.min(1, rise / 15); }
   return h;
 }
 const WL0 = H(POND.x, POND.z) + 2.6;
 
 /* ---------- STATE ---------- */
 let W = null; /* the running world */
+function rnd(i) { const v = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return v - Math.floor(v); }
+function inst(geo, mat, list, cols) { /* many copies of one shape drawn in a single call: list items are [x, y, z, sx, sy, sz, rotY] */
+  const im = new T.InstancedMesh(geo, mat, Math.max(1, list.length)), o = new T.Object3D(), c = new T.Color();
+  list.forEach(function (it, i) { o.position.set(it[0], it[1], it[2]); o.scale.set(it[3], it[4], it[5]); o.rotation.set(0, it[6] || 0, 0); o.updateMatrix(); im.setMatrixAt(i, o.matrix); if (cols) im.setColorAt(i, c.set(cols[i])); });
+  return im;
+}
+function S0low() { return !!(C.S.set && C.S.set.low); }
 function st() { const S = C.S; if (!S.cozy) S.cozy = { pos: null, f: {}, found: {}, ev: {}, planted: 0, inv: {}, samples: {}, seen: {} }; return S.cozy; }
 function saveSoon() { if (W) W.saveT = 0.5; }
 
@@ -222,34 +272,54 @@ function npcName(id) { return { ama: 'Dr. Ama', pip: 'Pip', lu: (C.S.set.lang ==
 /* ---------- BUILD THE RESERVE ---------- */
 function build() {
   const g = new T.Group(), G = C.G, scene = C.scene;
+  /* low-detail shapes for things drawn hundreds of times (keeps Chromebooks smooth) */
+  const LP = { sph: new T.SphereGeometry(1, 7, 5), cone: new T.ConeGeometry(1, 2, 5), cone8: new T.ConeGeometry(1, 2, 8), cyl: new T.CylinderGeometry(1, 1, 1, 5), sph10: new T.SphereGeometry(1, 10, 7) };
   W = { g: g, colliders: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 10, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
     bg: scene.background, fog: scene.fog, light: [C.HEMI.intensity, C.KEYL.intensity, C.KEYL.position.clone()] };
   scene.add(g);
-  scene.background = new T.Color('#9fd3f0'); scene.fog = new T.Fog('#bfe3f5', 45, 150);
-  C.HEMI.color.set('#dfefff'); C.HEMI.groundColor.set('#3a4a2a'); C.HEMI.intensity = 0.55; C.KEYL.color.set('#fff0d0'); C.KEYL.position.set(30, 50, 20); C.KEYL.intensity = 0.75;
+  scene.background = new T.Color('#cfe9f7'); scene.fog = new T.Fog('#d0eaf6', 70, 260);
+  C.HEMI.color.set('#dfefff'); C.HEMI.groundColor.set('#3a4a2a'); C.HEMI.intensity = 0.6; C.KEYL.color.set('#ffe8c0'); C.KEYL.position.set(40, 45, -30); C.KEYL.intensity = 0.8;
   /* terrain with colors by place */
-  const N = 110, geo = new T.PlaneGeometry(160, 160, N, N); geo.rotateX(-Math.PI / 2);
+  const N = S0low() ? 110 : 140, geo = new T.PlaneGeometry(320, 320, N, N); geo.rotateX(-Math.PI / 2);
   const pos = geo.attributes.position, cols = new Float32Array(pos.count * 3), cc = new T.Color();
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i), z = pos.getZ(i), y = H(x, z); pos.setY(i, y);
     const dp = Math.hypot(x - POND.x, z - POND.z), dh = Math.hypot(x - HILL.x, z - HILL.z), forest = x > 22 && z > 14, farm = Math.abs(x - FARM.x) < 11 && Math.abs(z - FARM.z) < 9;
-    if (dp < 19) cc.set('#a8956a'); else if (farm) cc.set(((Math.floor((x - FARM.x + 11) / 1.6)) % 2) ? '#7a5a3a' : '#8a6a3a'); else if (dh < 9 && y > 9) cc.set('#9a9a88'); else if (forest) cc.set('#2f5226'); else cc.set(y > 6 ? '#557a38' : '#5e8a3a');
+    const dd = Math.hypot(x, z), cliff = Math.abs(x + 28) < 9 && z < -61 && z > -74, pth = pathDist(x, z);
+    if (dp < 19) cc.set('#a8956a'); else if (farm) cc.set(((Math.floor((x - FARM.x + 11) / 1.6)) % 2) ? '#7a5a3a' : '#8a6a3a'); else if (cliff && y > 6) cc.set('#8a7a68'); else if (dh < 9 && y > 9) cc.set('#9a9a88'); else if (forest && dd < EDGE) cc.set('#2f5226');
+    else if (dd > EDGE + 2) cc.set('#4a7a34').lerp(new T.Color('#3a6a3a'), Math.min(1, (dd - EDGE) / 50)); else cc.set(y > 6 ? '#5a8a3a' : '#66983e');
+    if (pth < 1.6 && dd < EDGE && !farm && dp > 16.5) cc.lerp(new T.Color('#c2a874'), pth < 1 ? 0.85 : 0.45);
     cc.offsetHSL(0, 0, (Math.sin(x * 1.7 + z * 2.3) * 0.5) * 0.04); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b;
   }
   geo.setAttribute('color', new T.BufferAttribute(cols, 3)); geo.computeVertexNormals();
   g.add(new T.Mesh(geo, new T.MeshLambertMaterial({ vertexColors: true })));
+  /* sky dome with a soft gradient, sun, drifting clouds, faraway blue mountains */
+  const sky = new T.SphereGeometry(520, 24, 12), sp = sky.attributes.position, sc2 = new Float32Array(sp.count * 3), top = new T.Color('#4a9ee0'), hor = new T.Color('#d8eef8'), tmp = new T.Color();
+  for (let i = 0; i < sp.count; i++) { const u = Math.max(0, sp.getY(i) / 520); tmp.copy(hor).lerp(top, Math.pow(u, 0.6)); sc2[i * 3] = tmp.r; sc2[i * 3 + 1] = tmp.g; sc2[i * 3 + 2] = tmp.b; }
+  sky.setAttribute('color', new T.BufferAttribute(sc2, 3)); g.add(new T.Mesh(sky, new T.MeshBasicMaterial({ vertexColors: true, side: T.BackSide, fog: false, depthWrite: false })));
+  const sun = C.glow('#fff4c8', 90, 0.9); sun.material.fog = false; sun.position.set(180, 230, -300); g.add(sun);
+  W.clouds = []; const CN = S0low() ? 7 : 12; W.cloudIM = new T.InstancedMesh(LP.sph10, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#c8d8e8', fog: false }), CN * 5); g.add(W.cloudIM);
+  for (let i = 0; i < CN; i++) { const a = i * 0.53, r2 = 80 + (i * 37 % 90); W.clouds.push({ x: Math.cos(a) * r2, y: 62 + (i % 4) * 8, z: Math.sin(a) * r2, sp: 0.8 + (i % 3) * 0.3 }); }
+  const mts = [], caps = [], mcol = [];
+  for (let i = 0; i < 22; i++) { const a = i / 22 * Math.PI * 2 + Math.sin(i) * 0.1, r2 = 210 + (i * 23 % 50), sx = 30 + (i * 17 % 25), sy = 38 + (i * 29 % 40), sz = 30 + (i * 13 % 25), x = Math.cos(a) * r2, z = Math.sin(a) * r2;
+    mts.push([x, 0, z, sx, sy, sz, i]); mcol.push(i % 2 ? '#8fb0c8' : '#7f9fbf'); caps.push([x, sy * 0.36, z, sx * 0.3, sy * 0.3, sz * 0.3, i]); }
+  g.add(inst(LP.cone8, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#304050' }), mts, mcol)); g.add(inst(LP.cone8, C.emat('#f4f8ff', '#8090a0'), caps));
   /* pond water (green and cloudy until the mystery is solved) and the stream */
   W.water = new T.Mesh(new T.CircleGeometry(15.5, 48), new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10' }));
   W.water.rotation.x = -Math.PI / 2; W.water.position.set(POND.x, WL0, POND.z); g.add(W.water);
   W.scum = new T.Group(); for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 3 + (i * 7 % 11); const m = new T.Mesh(new T.CircleGeometry(1 + (i % 3) * 0.5, 10), C.basic('#6fae3a', 0.7)); m.rotation.x = -Math.PI / 2; m.position.set(POND.x + Math.cos(a) * r, WL0 + 0.03, POND.z + Math.sin(a) * r); W.scum.add(m); } g.add(W.scum);
-  for (let i = 0; i < STREAM.length - 1; i++) { const a = STREAM[i], b = STREAM[i + 1], len = Math.hypot(b[0] - a[0], b[1] - a[1]), m = new T.Mesh(new T.PlaneGeometry(len, 2), new T.MeshLambertMaterial({ color: '#6aa0c0', transparent: true, opacity: 0.8 }));
-    m.rotation.x = -Math.PI / 2; m.rotation.z = -Math.atan2(b[1] - a[1], b[0] - a[0]); const mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2; m.position.set(mx, H(mx, mz) + 0.35, mz); g.add(m); }
+  /* the stream follows the ground in short pieces so it never floats or sinks on slopes */
+  const strM = new T.MeshLambertMaterial({ color: '#6aa0c0', transparent: true, opacity: 0.8 }), strL = [], strJ = [];
+  for (let i = 0; i < STREAM.length - 1; i++) { const a = STREAM[i], b = STREAM[i + 1], len = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.ceil(len / 2), ang = -Math.atan2(b[1] - a[1], b[0] - a[0]);
+    for (let k = 0; k < n; k++) { const u = (k + 0.5) / n, mx = a[0] + (b[0] - a[0]) * u, mz = a[1] + (b[1] - a[1]) * u; strL.push([mx, Math.max(H(mx, mz), H(mx + 0.8, mz), H(mx - 0.8, mz), H(mx, mz + 0.8), H(mx, mz - 0.8)) + 0.12, mz, len / n + 0.9, 1, 2.3, ang]); } }
+  for (let i = 1; i < STREAM.length - 1; i++) { const p0 = STREAM[i]; strJ.push([p0[0], Math.max(H(p0[0], p0[1]), H(p0[0] + 0.8, p0[1]), H(p0[0] - 0.8, p0[1]), H(p0[0], p0[1] + 0.8), H(p0[0], p0[1] - 0.8)) + 0.13, p0[1], 1.15, 1, 1.15]); }
+  g.add(inst(new T.BoxGeometry(1, 0.02, 1), strM, strL)); g.add(inst(new T.CylinderGeometry(1, 1, 0.02, 16), strM, strJ));
   /* trees: forest in the north-east, a few scattered */
   const trunkM = C.emat('#6a4a2a', '#1a0e05'), leafM = [C.emat('#3f8a3a', '#0a1a08'), C.emat('#4f9a3a', '#0a1a08'), C.emat('#2f7a3a', '#081808')];
   const tree = function (x, z, s, oak) {
     const y = H(x, z), t1 = new T.Mesh(G.cyl, trunkM); t1.scale.set(0.35 * s, 3 * s, 0.35 * s); t1.position.set(x, y + 1.5 * s, z); g.add(t1);
     const c = new T.Mesh(oak ? G.sph : G.cone, leafM[Math.floor(Math.abs(x * 7 + z * 3)) % 3]); if (oak) { c.scale.set(2.6 * s, 2.2 * s, 2.6 * s); c.position.set(x, y + 4.2 * s, z); } else { c.scale.set(1.8 * s, 2.6 * s, 1.8 * s); c.position.set(x, y + 4.6 * s, z); } g.add(c);
-    W.colliders.push({ x: x, z: z, r: 0.6 * s + 0.3 }); W.anim.push({ m: c, ph: x + z, sway: true });
+    W.colliders.push({ x: x, z: z, r: 0.6 * s + 0.3, cr: (oak ? 2.6 : 1.9) * s, bot: y + (oak ? 2.0 : 3.3) * s, m: c }); W.anim.push({ m: c, ph: x + z, sway: true });
   };
   for (let i = 0; i < 70; i++) { const x = 24 + (i * 37 % 44), z = 16 + (i * 53 % 46); if (Math.hypot(x - HOLLOW.x, z - HOLLOW.z) < 11 || Math.hypot(x - 30, z - 28) < 4) continue; tree(x + Math.sin(i) * 1.5, z + Math.cos(i * 1.3) * 1.5, 0.9 + (i % 4) * 0.15, false); }
   [[-60, 10], [-45, 40], [-5, 55], [25, -20], [-30, -55], [55, -10], [-62, -10], [10, 62], [-50, 58]].forEach(function (p, i) { tree(p[0], p[1], 1 + (i % 3) * 0.2, i % 2 === 0); });
@@ -263,12 +333,91 @@ function build() {
   /* glowing mushrooms + fireflies in the hollow (the faint glow above the rocks is the clue) */
   W.glows = []; for (let i = 0; i < 9; i++) { const x = HOLLOW.x - 4 + (i % 3) * 3.5, z = HOLLOW.z - 4 + Math.floor(i / 3) * 3.5, m = C.specimen('mushroom', '#9fffd8'); m.position.set(x, H(x, z), z); m.traverse(function (o) { if (o.material && o.material.emissive) { o.material = o.material.clone(); o.material.emissive.set('#3affc0'); } }); g.add(m); }
   for (let i = 0; i < 14; i++) { const f = C.glow('#c8ff9a', 0.8, 0.9); f.position.set(HOLLOW.x + Math.sin(i) * 5, H(HOLLOW.x, HOLLOW.z) + 2 + (i % 4), HOLLOW.z + Math.cos(i * 1.7) * 5); g.add(f); W.anim.push({ m: f, ph: i, fly: true, y: f.position.y, x: f.position.x }); }
+  /* a ring of forest on the rolling hills around the reserve (instanced so it is cheap) */
+  const ringN = S0low() ? 160 : 260, cone = new T.InstancedMesh(LP.cone8, new T.MeshLambertMaterial({ color: '#ffffff' }), ringN), trunk = new T.InstancedMesh(LP.cyl, trunkM, ringN), dm0 = new T.Object3D(), tc = new T.Color();
+  for (let i = 0; i < ringN; i++) {
+    const a = i * 2.39996, r2 = EDGE + 4 + ((i * 37) % 60) * (i % 3 === 0 ? 1.4 : 0.9); let x = Math.cos(a) * r2, z = Math.sin(a) * r2;
+    if (Math.hypot(x - SPRING.x, z + 66) < 11) { x *= 1.5; z *= 1.5; }
+    const y = H(x, z), s2 = 1.1 + (i % 5) * 0.25;
+    dm0.position.set(x, y + 4.6 * s2, z); dm0.scale.set(1.9 * s2, 2.8 * s2, 1.9 * s2); dm0.rotation.y = i; dm0.updateMatrix(); cone.setMatrixAt(i, dm0.matrix);
+    tc.set(['#2f6a32', '#3a7a3a', '#2a5a30', '#4a8a3a'][i % 4]).offsetHSL(0, 0, (Math.sin(i * 1.7) * 0.04)); cone.setColorAt(i, tc);
+    dm0.position.set(x, y + 1.5 * s2, z); dm0.scale.set(0.35 * s2, 3 * s2, 0.35 * s2); dm0.updateMatrix(); trunk.setMatrixAt(i, dm0.matrix); if (Math.hypot(x, z) < BOUND + 10) W.colliders.push({ x: x, z: z, r: 0.35 * s2 + 0.4, cr: 1.9 * s2, bot: y + 3.2 * s2, inst: i, mat: cone.instanceMatrix.array.slice(i * 16, i * 16 + 16) });
+  }
+  g.add(cone); g.add(trunk); W.ringCone = cone;
+  /* birches along the paths and the orchard of apple trees */
+  const birchM = C.emat('#f0ece0', '#2a2a28'), birchLeaf = C.emat('#8acb4a', '#142a08');
+  [[12, 20], [20, 6], [-20, -14], [-2, 24], [24, -30], [-30, 0], [30, -6]].forEach(function (p) { const y = H(p[0], p[1]), t1 = new T.Mesh(G.cyl, birchM); t1.scale.set(0.22, 3.6, 0.22); t1.position.set(p[0], y + 1.8, p[1]); g.add(t1);
+    const c = new T.Mesh(G.sph, birchLeaf); c.scale.set(1.5, 2.3, 1.5); c.position.set(p[0], y + 4.4, p[1]); g.add(c); W.anim.push({ m: c, ph: p[0], sway: true }); W.colliders.push({ x: p[0], z: p[1], r: 0.45 }); });
+  const appleM = C.emat('#e0403a', '#3a0a08'), apples = []; W.orchard = [];
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) { const x = ORCH.x - 6.75 + c * 4.5, z = ORCH.z - 5 + r * 5, y = H(x, z); tree(x, z, 0.85, true);
+    for (let k = 0; k < 6; k++) apples.push([x + Math.cos(k * 1.1) * 1.9, y + 3.4 + (k % 3) * 0.6, z + Math.sin(k * 1.1) * 1.9, 0.22, 0.22, 0.22]);
+    W.orchard.push({ x: x, z: z }); }
+  for (let k = 0; k < 8; k++) { const x = ORCH.x - 4 + (k * 1.7) % 9, z = ORCH.z - 3 + (k * 2.3) % 7; apples.push([x, H(x, z) + 0.2, z, 0.22, 0.22, 0.22]); }
+  g.add(inst(LP.sph, appleM, apples));
+  /* robin nest with blue eggs in one apple tree */
+  const nx = ORCH.x + 2.25, nz = ORCH.z, ny = H(nx, nz) + 3.0; const nest = new T.Mesh(G.tor, C.emat('#7a5a3a', '#1a0e05')); nest.scale.set(0.55, 0.55, 0.35); nest.rotation.x = Math.PI / 2; nest.position.set(nx + 0.9, ny, nz + 0.9); g.add(nest);
+  for (let k = 0; k < 3; k++) { const e = new T.Mesh(G.sph, C.emat('#8fd0f0', '#203a4a')); e.scale.set(0.13, 0.17, 0.13); e.position.set(nx + 0.8 + k * 0.12, ny + 0.08, nz + 0.85 + (k % 2) * 0.12); g.add(e); }
+  /* the spring: cliff, waterfall, pool, mist */
+  const wfTop = H(SPRING.x, -67) + 0.4, wfBot = H(SPRING.x, -60.5) + 0.3, dz = -67 + 60.5, dy = wfTop - wfBot, Lw = Math.hypot(dz, dy);
+  const cv = document.createElement('canvas'); cv.width = 32; cv.height = 128; const cx = cv.getContext('2d'); cx.fillStyle = '#9fd8ff'; cx.fillRect(0, 0, 32, 128);
+  for (let i = 0; i < 40; i++) { cx.fillStyle = i % 2 ? 'rgba(255,255,255,.8)' : 'rgba(200,236,255,.7)'; cx.fillRect((i * 7) % 32, (i * 23) % 128, 2 + (i % 3), 10 + (i * 13) % 30); }
+  W.wfTex = new T.CanvasTexture(cv); W.wfTex.wrapS = W.wfTex.wrapT = T.RepeatWrapping; W.wfTex.repeat.set(1, 2);
+  const wf = new T.Mesh(new T.PlaneGeometry(3.2, Lw), new T.MeshBasicMaterial({ map: W.wfTex, transparent: true, opacity: 0.88, side: T.DoubleSide }));
+  wf.position.set(SPRING.x, (wfTop + wfBot) / 2 + 0.2, (-67 - 60.5) / 2 + 0.3); wf.rotation.x = Math.atan2(dz, dy); g.add(wf);
+  const pool = new T.Mesh(new T.CircleGeometry(3.4, 32), new T.MeshLambertMaterial({ color: '#4a9ad0', transparent: true, opacity: 0.85, emissive: '#0a2a40' })); pool.rotation.x = -Math.PI / 2; pool.position.set(SPRING.x, H(SPRING.x, SPRING.z) + 0.45, SPRING.z); g.add(pool);
+  W.mist = []; for (let i = 0; i < 6; i++) { const m = C.glow('#ffffff', 2.5, 0.35); m.position.set(SPRING.x + (i - 2.5) * 0.6, wfBot + 0.6, -61.2); g.add(m); W.mist.push({ m: m, y: m.position.y, ph: i }); }
+  for (let i = 0; i < 9; i++) { const a = i * 0.7 + 0.3, rr = 4.2 + (i % 2), x = SPRING.x + Math.cos(a) * rr, z = SPRING.z + Math.sin(a) * rr * 0.6 - 1.5; if (z < -63) continue; rock(x, z, 0.6 + (i % 3) * 0.25); }
+  [[-34, -66, 2.2], [-22, -66, 2], [-31, -70, 2.6], [-25, -70.5, 2.4]].forEach(function (r) { rock(r[0], r[1], r[2]); });
+  /* lichen-covered boulder near the hill */
+  rock(34, -36, 2.2);   const lc = [], lcc = []; for (let i = 0; i < 9; i++) { const a = i * 0.9; lc.push([34 + Math.cos(a) * 1.75, H(34, -36) + 1.1 + Math.sin(i * 2.1) * 0.6, -36 + Math.sin(a) * 1.75, 0.5, 0.14, 0.5, a]); lcc.push(i % 3 ? '#c8d070' : '#e0a040'); }
+  g.add(inst(G.sph, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#2a3008' }), lc, lcc));
+  /* owl on a big oak in the forest, with pellets below */
+  tree(34, 44, 1.5, true); W.owl = new T.Group(); const ob = new T.Mesh(G.sph, C.emat('#8a6a4a', '#1a1008')); ob.scale.set(0.45, 0.6, 0.42); W.owl.add(ob);
+  const face = new T.Mesh(G.sph, C.emat('#e8d8b8', '#3a3020')); face.scale.set(0.34, 0.3, 0.12); face.position.set(0, 0.2, 0.34); W.owl.add(face);
+  [-1, 1].forEach(function (sd) { const ey = new T.Mesh(G.sph, C.emat('#ffc83a', '#5a4000')); ey.scale.setScalar(0.09); ey.position.set(sd * 0.13, 0.24, 0.44); W.owl.add(ey); const pu = new T.Mesh(G.sph, C.basic('#10202c')); pu.scale.setScalar(0.045); pu.position.set(sd * 0.13, 0.24, 0.52); W.owl.add(pu);
+    const tuft = new T.Mesh(G.cone, C.emat('#7a5a3a', '#1a1008')); tuft.scale.set(0.08, 0.2, 0.08); tuft.position.set(sd * 0.25, 0.6, 0.1); tuft.rotation.z = -sd * 0.3; W.owl.add(tuft); });
+  const branch = new T.Mesh(G.cyl, trunkM); branch.scale.set(0.12, 1.4, 0.12); branch.rotation.z = Math.PI / 2; branch.position.set(34.6, H(34, 44) + 4.0, 44.9); g.add(branch);
+  W.owl.position.set(34.6, H(34, 44) + 4.6, 45.1); g.add(W.owl);
+  for (let i = 0; i < 3; i++) { const pe = new T.Mesh(G.sph, C.emat('#7a6a5a', '#1a1410')); pe.scale.set(0.22, 0.15, 0.32); pe.position.set(35.4 + i * 0.4, H(35.4, 46) + 0.12, 46 + (i % 2) * 0.3); g.add(pe); }
+  /* milkweed with monarch butterflies; more butterflies in the meadow */
+  const mw = C.emat('#7aa05a', '#14200a'), mwf = C.emat('#e8a0c8', '#3a1a2a'); for (let i = 0; i < 5; i++) { const x = 16 + (i % 3) * 0.9, z = 38 + Math.floor(i / 3) * 0.9, y = H(x, z); const st0 = new T.Mesh(G.cyl, mw); st0.scale.set(0.06, 1.2, 0.06); st0.position.set(x, y + 0.6, z); g.add(st0); const fl0 = new T.Mesh(G.sph, mwf); fl0.scale.set(0.3, 0.2, 0.3); fl0.position.set(x, y + 1.25, z); g.add(fl0); }
+  W.flies = []; const wingM = C.emat('#ff9f3a', '#5a2a00'), wingB = C.emat('#7fd4ff', '#103a5a'), wingY = C.emat('#ffe08a', '#5a4a10');
+  for (let i = 0; i < (S0low() ? 6 : 12); i++) { const b = new T.Group(), wm = i < 3 ? wingM : [wingM, wingB, wingY][i % 3]; [-1, 1].forEach(function (sd) { const w = new T.Mesh(G.box, wm); w.scale.set(0.32, 0.02, 0.26); w.position.x = sd * 0.17; b.add(w); }); g.add(b);
+    W.flies.push({ m: b, ph: i * 1.3, cx: i < 3 ? 16.9 : -6 + (i * 13 % 30), cz: i < 3 ? 38.5 : 34 + (i * 7 % 22), r: i < 3 ? 1.2 : 3 + (i % 3) }); }
+  /* cattails, lily pads, and dragonflies at the pond */
+  const ctS = C.emat('#6a8a3a', '#10200a'), ctH = C.emat('#6a4a2a', '#140a04');
+  const cts = [], cth = []; for (let i = 0; i < 26; i++) { const a = 2.2 + (i / 26) * 2.2, rr = 15.3 + (i % 3) * 0.5, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr, y = H(x, z); cts.push([x, y + 0.9, z, 0.05, 1.8, 0.05]); cth.push([x, y + 1.7, z, 0.12, 0.4, 0.12]); }
+  g.add(inst(LP.cyl, ctS, cts)); g.add(inst(LP.cyl, ctH, cth));
+  const padM = C.emat('#4a9a3a', '#0a2008'), lotus = C.emat('#ffb0d0', '#4a1a2a'), pads = [], lots = [], padG = new T.CylinderGeometry(0.8, 0.8, 0.04, 14, 1, false, 0.3, 5.8);
+  for (let i = 0; i < 12; i++) { const a = i * 2.1, rr = 4 + (i * 5 % 9), x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr; pads.push([x, WL0 + 0.05, z, 1, 1, 1, i]); if (i % 3 === 0) lots.push([x, WL0 + 0.2, z, 0.25, 0.18, 0.25]); }
+  W.padIM = inst(padG, padM, pads); g.add(W.padIM); g.add(inst(G.sph, lotus, lots));
+  W.dflies = []; for (let i = 0; i < 3; i++) { const d0 = new T.Group(), bd = new T.Mesh(G.cyl, C.emat('#3a8ad0', '#0a2a5a')); bd.scale.set(0.06, 0.55, 0.06); bd.rotation.x = Math.PI / 2; d0.add(bd);
+    [-1, 1].forEach(function (sd) { [0.1, -0.1].forEach(function (zz) { const w = new T.Mesh(G.box, C.basic('#dff4ff', 0.6)); w.scale.set(0.5, 0.01, 0.1); w.position.set(sd * 0.27, 0.02, zz); d0.add(w); }); }); g.add(d0); W.dflies.push({ m: d0, ph: i * 2.1 }); }
+  /* anthill near the station with a trail of ants */
+  const ah = new T.Mesh(G.cone, C.emat('#9a6a3a', '#2a1a08')); ah.scale.set(1.2, 0.7, 1.2); ah.position.set(14, H(14, 4) + 0.35, 4); g.add(ah); W.colliders.push({ x: 14, z: 4, r: 1 });
+  W.ants = new T.InstancedMesh(LP.sph, C.basic('#1a1008'), 24); g.add(W.ants);
+  /* compost pile with earthworms by the farm */
+  const cp = new T.Mesh(G.sph, C.emat('#4a3020', '#100804')); cp.scale.set(1.8, 0.8, 1.4); cp.position.set(-50, H(-50, -27) + 0.2, -27); g.add(cp); W.colliders.push({ x: -50, z: -27, r: 1.6 });
+  for (let i = 0; i < 6; i++) { const lf = new T.Mesh(G.box, C.emat(['#c08a3a', '#a06a2a', '#d0a04a'][i % 3], '#2a1a08')); lf.scale.set(0.5, 0.04, 0.3); lf.rotation.y = i; lf.position.set(-50 + Math.cos(i) * 1.1, H(-50, -27) + 0.85, -27 + Math.sin(i) * 0.8); g.add(lf); }
+  W.worms = []; for (let i = 0; i < 4; i++) { const w = new T.Mesh(G.cyl, C.emat('#e08a8a', '#4a1a1a')); w.scale.set(0.06, 0.35, 0.06); w.position.set(-50.6 + i * 0.4, H(-50, -27) + 0.85, -26.6 + (i % 2) * 0.3); g.add(w); W.worms.push({ m: w, ph: i }); }
+  /* a deer grazing at the orchard edge */
+  W.deer = new T.Group(); const dM = C.emat('#b07a4a', '#2a1808'), dB = new T.Mesh(G.sph, dM); dB.scale.set(0.55, 0.55, 1.1); dB.position.y = 1.35; W.deer.add(dB);
+  [[-0.3, 0.6], [0.3, 0.6], [-0.3, -0.6], [0.3, -0.6]].forEach(function (l) { const lg0 = new T.Mesh(G.cyl, dM); lg0.scale.set(0.07, 0.9, 0.07); lg0.position.set(l[0], 0.5, l[1]); W.deer.add(lg0); });
+  W.deerHead = new T.Group(); const nk = new T.Mesh(G.cyl, dM); nk.scale.set(0.15, 0.7, 0.15); nk.position.y = 0.35; W.deerHead.add(nk); const hd0 = new T.Mesh(G.sph, dM); hd0.scale.set(0.22, 0.24, 0.42); hd0.position.set(0, 0.75, 0.15); W.deerHead.add(hd0);
+  [-1, 1].forEach(function (sd) { const ear = new T.Mesh(G.cone, dM); ear.scale.set(0.08, 0.2, 0.05); ear.position.set(sd * 0.17, 0.98, 0.05); ear.rotation.z = -sd * 0.6; W.deerHead.add(ear); });
+  W.deerHead.position.set(0, 1.55, 0.95); W.deer.add(W.deerHead); const tail = new T.Mesh(G.sph, C.emat('#ffffff', '#3a3a3a')); tail.scale.set(0.12, 0.18, 0.1); tail.position.set(0, 1.6, -1.1); W.deer.add(tail); W.deerTail = tail;
+  W.dr = { x: -30, z: 50 }; W.deer.position.set(-30, H(-30, 50), 50); W.deer.rotation.y = 2.4; g.add(W.deer);
   /* meadow flowers and clover (instanced so they are cheap to draw) */
-  const fl = new T.InstancedMesh(G.sph, new T.MeshLambertMaterial({ color: '#ffffff' }), 160), dm = new T.Object3D(), fcol = ['#ff8fb1', '#ffd166', '#ffffff', '#c59cff'];
-  for (let i = 0; i < 160; i++) { const x = -6 + (i * 13 % 30), z = 34 + (i * 29 % 22); dm.position.set(x, H(x, z) + 0.45, z); dm.scale.setScalar(0.16); dm.updateMatrix(); fl.setMatrixAt(i, dm.matrix); fl.setColorAt(i, new T.Color(fcol[i % 4])); }
+  const FN = S0low() ? 400 : 900, fl = new T.InstancedMesh(LP.sph, new T.MeshLambertMaterial({ color: '#ffffff' }), FN), dm = new T.Object3D(), fcol = ['#ff8fb1', '#ffd166', '#ffffff', '#c59cff', '#ff9f6e', '#7fd4ff'], stems = new T.InstancedMesh(LP.cyl, C.emat('#4a8a2a', '#0a1a08'), FN);
+  for (let i = 0; i < FN; i++) { let x, z; if (i < 160) { x = -6 + rnd(i) * 30; z = 34 + rnd(i + 999) * 22; } else { const a = rnd(i) * 6.2832, r2 = 6 + Math.sqrt(rnd(i + 500)) * 56; x = Math.cos(a) * r2; z = Math.sin(a) * r2; }
+    const bad = Math.hypot(x - POND.x, z - POND.z) < 16.5 || (Math.abs(x - FARM.x) < 12 && Math.abs(z - FARM.z) < 10) || (x > 22 && z > 14) || pathDist(x, z) < 1.4 || Math.hypot(x - STATION.x, z - STATION.z) < 9 || streamDist(x, z) < 2.4 || Math.hypot(x, z) > EDGE + 3;
+    const fs = bad ? 0.0001 : 0.15 + (i % 3) * 0.03; dm.position.set(x, H(x, z) + 0.34, z); dm.scale.set(fs, fs * 0.5, fs); dm.updateMatrix(); fl.setMatrixAt(i, dm.matrix); fl.setColorAt(i, new T.Color(fcol[(i * 7) % 6]));
+    dm.position.set(x, H(x, z) + 0.15, z); dm.scale.set(bad ? 0.0001 : 0.025, bad ? 0.0001 : 0.32, bad ? 0.0001 : 0.025); dm.updateMatrix(); stems.setMatrixAt(i, dm.matrix); }
+  g.add(stems);
   g.add(fl);
-  const gr = new T.InstancedMesh(G.cone, C.emat('#5aa03a', '#0a1a08'), 380);
-  for (let i = 0; i < 380; i++) { const x = -70 + (i * 47 % 140), z = -70 + (i * 71 % 140); if (Math.hypot(x - POND.x, z - POND.z) < 17 || (x > 22 && z > 14)) { dm.scale.setScalar(0.0001); } else dm.scale.set(0.15, 0.35, 0.15); dm.position.set(x, H(x, z) + 0.3, z); dm.updateMatrix(); gr.setMatrixAt(i, dm.matrix); }
+  const GN = S0low() ? 500 : 1100, gr = new T.InstancedMesh(LP.cone, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#0a1a08' }), GN), gc = new T.Color();
+  for (let i = 0; i < GN; i++) { const a = rnd(i + 3000) * 6.2832, r2 = Math.sqrt(rnd(i + 7000)) * 80, x = Math.cos(a) * r2, z = Math.sin(a) * r2; if (Math.hypot(x - POND.x, z - POND.z) < 17 || (x > 22 && z > 14 && r2 < EDGE) || pathDist(x, z) < 1.3 || (Math.abs(x - FARM.x) < 12 && Math.abs(z - FARM.z) < 10)) { dm.scale.setScalar(0.0001); } else dm.scale.set(0.15, 0.3 + (i % 4) * 0.08, 0.15);
+    gc.set(['#5aa03a', '#6ab04a', '#4a9030'][i % 3]); gr.setColorAt(i, gc); dm.position.set(x, H(x, z) + 0.3, z); dm.updateMatrix(); gr.setMatrixAt(i, dm.matrix); }
   g.add(gr);
   /* sunny clover patch vs shady ferns (the comparison) */
   const clover = C.emat('#7be06a', '#103a08'); for (let i = 0; i < 30; i++) { const x = 8 + (i % 6) * 0.9, z = 46 + Math.floor(i / 6) * 0.9, m = new T.Mesh(G.sph, clover); m.scale.set(0.45, 0.6, 0.45); m.position.set(x, H(x, z) + 0.5, z); g.add(m); }
@@ -304,7 +453,7 @@ function build() {
   npc('pip', -8, 8, { shape: 0, color: 4, eyes: 2, ant: 1, gear: 0, estyle: 1, mouth: 2 });
   npc('lu', FARM.x + 6, FARM.z + 9, { shape: 2, color: 2, eyes: 1, ant: 2, gear: 0, estyle: 0, mouth: 1 });
   /* planting spots along the stream */
-  W.plants = []; for (let i = 0; i < 5; i++) { const u = (i + 0.5) / 5, seg = Math.min(STREAM.length - 2, Math.floor(u * (STREAM.length - 1))), lu = u * (STREAM.length - 1) - seg, a = STREAM[seg], b = STREAM[seg + 1];
+  const SL = STREAM.slice(2); W.plants = []; for (let i = 0; i < 5; i++) { const u = (i + 0.5) / 5, seg = Math.min(SL.length - 2, Math.floor(u * (SL.length - 1))), lu = u * (SL.length - 1) - seg, a = SL[seg], b = SL[seg + 1];
     const x = a[0] + (b[0] - a[0]) * lu + 2.4, z = a[1] + (b[1] - a[1]) * lu; const mk = C.glow('#7be0ad', 2.2, 0.0); mk.position.set(x, H(x, z) + 0.6, z); g.add(mk);
     const pl = new T.Group(); for (let k = 0; k < 4; k++) { const leaf = new T.Mesh(G.cone, C.emat('#5fbf5a', '#0a2008')); leaf.scale.set(0.25, 0.7, 0.25); leaf.position.set(Math.cos(k) * 0.4, 0.6, Math.sin(k) * 0.4); pl.add(leaf); } pl.position.set(x, H(x, z), z); pl.visible = false; g.add(pl);
     W.plants.push({ x: x, z: z, mk: mk, pl: pl, i: i }); }
@@ -336,12 +485,22 @@ function spots() {
     { id: 'fish', x: POND.x + 13, z: POND.z + 6, r: 4, verb: 'cz.observe', t: 'cz.t.fish', when: function () { return s.f.fixed; }, use: function () { find('fish'); } },
     { id: 'ama', x: STATION.x + 2, z: STATION.z + 1.5, r: 2.6, verb: 'cz.talk', t: 'cz.t.ama', noMark: true, use: talkAma },
     { id: 'pip', x: -8, z: 8, r: 2.6, verb: 'cz.talk', t: 'cz.t.pip', noMark: true, use: talkPip },
-    { id: 'lu', x: FARM.x + 6, z: FARM.z + 9, r: 2.6, verb: 'cz.talk', t: 'cz.t.lu', noMark: true, use: talkLu }
+    { id: 'lu', x: FARM.x + 6, z: FARM.z + 9, r: 2.6, verb: 'cz.talk', t: 'cz.t.lu', noMark: true, use: talkLu },
+    { id: 'spring', x: SPRING.x, z: SPRING.z - 0.5, r: 4.5, verb: 'cz.observe', t: 'cz.t.spring', my: 4, use: function () { find('spring'); } },
+    { id: 'lichen', x: 34, z: -36, r: 3.6, verb: 'cz.observe', t: 'cz.t.lichen', my: 3.4, use: function () { find('lichen'); } },
+    { id: 'owl', x: 35, z: 46, r: 3.4, verb: 'cz.observe', t: 'cz.t.owl', my: 6.2, use: function () { W.owlLook = 2; find('owl'); } },
+    { id: 'monarch', x: 16.9, z: 38.5, r: 2.8, verb: 'cz.observe', t: 'cz.t.monarch', use: function () { find('monarch'); } },
+    { id: 'dragonfly', x: -33, z: 33, r: 3.5, verb: 'cz.observe', t: 'cz.t.dragonfly', use: function () { find('dragonfly'); } },
+    { id: 'cattail', x: -36.5, z: 18, r: 3, verb: 'cz.observe', t: 'cz.t.cattail', my: 2.8, use: function () { find('cattail'); } },
+    { id: 'ants', x: 14, z: 4, r: 2.6, verb: 'cz.observe', t: 'cz.t.ants', use: function () { find('ants'); } },
+    { id: 'nest', x: ORCH.x + 3.15, z: ORCH.z + 0.9, r: 3, verb: 'cz.observe', t: 'cz.t.nest', my: 4.4, use: function () { find('nest'); } },
+    { id: 'deer', x: -30, z: 50, r: 5, verb: 'cz.observe', t: 'cz.t.deer', live: 'deer', my: 3.2, use: function () { W.deerAlert = 3; find('deer'); } },
+    { id: 'worms', x: -50, z: -27, r: 3, verb: 'cz.observe', t: 'cz.t.worms', use: function () { find('worms'); } }
   ].concat(W && W.plants ? W.plants.map(function (p) { return { id: 'plant' + p.i, x: p.x, z: p.z, r: 2, verb: 'cz.plant', t: 'cz.t.spot', noMark: true, when: function () { return s.f.solved && !s.f.fixed && !(s.f['p' + p.i]); }, use: function () { plant(p); } }; }) : []);
 }
 function nearest() {
   let best = null, bd = 1e9; const list = W.spotList || (W.spotList = spots());
-  list.forEach(function (sp) { if (sp.when && !sp.when()) return; let x = sp.x, z = sp.z; if (sp.live === 'rabbit') { x = W.rab.x; z = W.rab.z; } const d = Math.hypot(W.px - x, W.pz - z); if (d < (sp.r || 2.4) && d < bd) { bd = d; best = sp; } });
+  list.forEach(function (sp) { if (sp.when && !sp.when()) return; let x = sp.x, z = sp.z; if (sp.live === 'rabbit') { x = W.rab.x; z = W.rab.z; } if (sp.live === 'deer') { x = W.dr.x; z = W.dr.z; } const d = Math.hypot(W.px - x, W.pz - z); if (d < (sp.r || 2.4) && d < bd) { bd = d; best = sp; } });
   return best;
 }
 function find(id) {
@@ -455,6 +614,17 @@ function step(dt) {
   W.hawk.position.set(10 + Math.cos(W.t * 0.3) * 18, 26, 44 + Math.sin(W.t * 0.3) * 18); W.hawk.rotation.y = -W.t * 0.3; W.hawk.rotation.z = 0.25;
   if (W.fish.visible) W.fish.children.forEach(function (f, i) { const a = W.t * 0.5 + i * 1.05, rr = 5 + (i % 3) * 2.5; f.position.set(POND.x + Math.cos(a) * rr, W.water.position.y - 0.25, POND.z + Math.sin(a) * rr); f.rotation.y = -a; });
   if (W.frogJump) { W.frogJump -= dt; const u = Math.max(0, W.frogJump); W.frog.position.set(-8 - (1 - u) * 4, H(-8, 30) + Math.sin((1 - u) * Math.PI) * 1.5, 30 - (1 - u) * 2); if (W.frogJump <= 0) { W.frogJump = 0; setTimeout(function () { if (W) W.frog.position.set(-8, H(-8, 30), 30); }, 6000); } }
+  { const o = W._co || (W._co = new T.Object3D()); W.clouds.forEach(function (c, i) { c.x += dt * c.sp; if (c.x > 200) c.x = -200;
+      for (let k = 0; k < 5; k++) { o.position.set(c.x + (k - 2) * 6, c.y + (k % 2) * 1.5, c.z + (k % 3) * 2); o.scale.set(7 + (k % 3) * 2, 3.5 + (k % 2), 5); o.updateMatrix(); W.cloudIM.setMatrixAt(i * 5 + k, o.matrix); } }); W.cloudIM.instanceMatrix.needsUpdate = true; }
+  W.wfTex.offset.y -= dt * 1.6; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
+  W.flies.forEach(function (f, i) { const a = W.t * 0.7 + f.ph, x = f.cx + Math.cos(a) * f.r, z = f.cz + Math.sin(a * 1.3) * f.r; f.m.position.set(x, H(x, z) + 1.4 + Math.sin(W.t * 2 + i) * 0.4, z); f.m.rotation.y = -a; f.m.children[0].rotation.z = Math.sin(W.t * 14 + i) * 0.8; f.m.children[1].rotation.z = -Math.sin(W.t * 14 + i) * 0.8; });
+  W.dflies.forEach(function (d0, i) { const a = W.t * 0.9 + d0.ph, x = -31 + Math.cos(a) * 3 + Math.sin(W.t * 2.3 + i) * 0.8, z = 31 + Math.sin(a) * 2.5; d0.m.position.set(x, WL0 + 1 + Math.sin(W.t * 3 + i) * 0.3, z); d0.m.rotation.y = -a - Math.PI / 2; });
+  { const dm1 = new T.Object3D(); for (let i = 0; i < 24; i++) { const a = W.t * 0.35 + i * 0.27, rr = 1.2 + (i % 2) * 0.12, x = 14 + Math.cos(a) * rr + (i > 12 ? Math.cos(a) * 1.4 : 0), z = 4 + Math.sin(a) * rr; dm1.position.set(x, H(x, z) + 0.06, z); dm1.scale.set(0.07, 0.05, 0.12); dm1.rotation.y = -a; dm1.updateMatrix(); W.ants.setMatrixAt(i, dm1.matrix); } W.ants.instanceMatrix.needsUpdate = true; }
+  W.worms.forEach(function (w) { w.m.rotation.z = Math.sin(W.t * 3 + w.ph) * 0.6; w.m.scale.y = 0.3 + Math.abs(Math.sin(W.t * 2 + w.ph)) * 0.12; });
+  { const dd = Math.hypot(W.px - W.dr.x, W.pz - W.dr.z), alert = dd < 8 || W.deerAlert > 0; if (W.deerAlert > 0) W.deerAlert -= dt;
+    W.deerHead.rotation.x = alert ? -0.35 : 0.9 + Math.sin(W.t * 2) * 0.12; W.deerTail.position.y = alert ? 1.75 : 1.6;
+    if (alert) W.deer.rotation.y += (((Math.atan2(W.px - W.dr.x, W.pz - W.dr.z) - W.deer.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 2); }
+  if (W.owlLook > 0) { W.owlLook -= dt; W.owl.rotation.y = Math.sin(W.owlLook * 6) * 0.9; } else W.owl.rotation.y = Math.atan2(W.px - W.owl.position.x, W.pz - W.owl.position.z) * 0.7;
   if (W.grow) W.grow.forEach(function (p) { if (p.scale.x < 1) p.scale.setScalar(Math.min(1, p.scale.x + dt * 0.8)); });
   if (W.clearT != null) { W.clearT += dt; const u = Math.min(1, W.clearT / 6); W.water.material.color.set('#5a8a3a').lerp(new T.Color('#3a8ac0'), u); W.scum.children.forEach(function (m) { m.scale.setScalar(Math.max(0.01, 1 - u)); });
     if (u >= 1) { W.scum.visible = false; W.fish.visible = true; W.clearT = null; } }
@@ -466,12 +636,16 @@ function step(dt) {
   let mx = 0, mz = 0; if (!busy) { if (k.f) mz -= 1; if (k.b) mz += 1; if (k.l) mx -= 1; if (k.r) mx += 1; if (k.ql) W.yaw += dt * 1.8; if (k.qr) W.yaw -= dt * 1.8; }
   const len = Math.hypot(mx, mz), inWater = Math.hypot(W.px - POND.x, W.pz - POND.z) < 15 && W.py < W.water.position.y;
   if (len > 0) {
-    const sp = (k.run ? 10 : 6) * (inWater ? 0.55 : 1), cy = Math.cos(W.yaw), sy = Math.sin(W.yaw);
+    const sp = (k.run ? 13 : 6) * (inWater ? 0.55 : 1), cy = Math.cos(W.yaw), sy = Math.sin(W.yaw);
     const dx = (mx * cy + mz * sy) / len, dz = (-mx * sy + mz * cy) / len;
     W.px += dx * sp * dt; W.pz += dz * sp * dt; W.face = Math.atan2(dx, dz);
     if (!W.drag) { const want = Math.atan2(-dx, -dz), d = ((want - W.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI; W.yaw += d * Math.min(1, dt * 0.9) * (mz < 0 ? 1 : 0.25); }
   }
-  W.px = Math.max(-74, Math.min(74, W.px)); W.pz = Math.max(-74, Math.min(74, W.pz));
+  { const dd = Math.hypot(W.px, W.pz); if (dd > BOUND) { W.px *= BOUND / dd; W.pz *= BOUND / dd; } }
+  if (len > 0 && !k.run && !W.toldRun) { W.walkT = (W.walkT || 0) + dt; if (W.walkT > 6) { W.toldRun = true; showCard('msg', 'cz.runTip'); W.cardT = 4; } }
+  if (k.run && len > 0) W.toldRun = true;
+  if (k.run && len > 0 && W.ground && !busy) { W.dustT = (W.dustT || 0) - dt; if (W.dustT <= 0) { W.dustT = 0.09; const p0 = C.glow('#e8dcc0', 1.2, 0.6); p0.position.set(W.px, W.py + 0.2, W.pz); W.g.add(p0); (W.dust = W.dust || []).push({ m: p0, t: 0 }); } }
+  if (W.dust) W.dust = W.dust.filter(function (d0) { d0.t += dt; d0.m.position.y += dt * 0.6; d0.m.material.opacity = Math.max(0, 0.6 - d0.t); d0.m.scale.setScalar(1.2 + d0.t * 2); if (d0.t > 0.6) { W.g.remove(d0.m); return false; } return true; });
   W.colliders.forEach(function (c) { const dx = W.px - c.x, dz = W.pz - c.z, d = Math.hypot(dx, dz), mn = c.r + 0.45; if (d < mn && d > 0.001 && W.py < H(c.x, c.z) + 3.5) { W.px = c.x + dx / d * mn; W.pz = c.z + dz / d * mn; } });
   const gy = H(W.px, W.pz);
   if (!busy && k.jump && W.ground) { W.vy = 9; W.ground = false; C.beep(420, 0.06, 'triangle'); }
@@ -479,12 +653,25 @@ function step(dt) {
   W.py += W.vy * dt; if (W.py <= gy) { W.py = gy; W.vy = 0; W.ground = true; } else if (W.py > gy + 0.05) W.ground = false;
   W.me.position.set(W.px, W.py, W.pz); W.me.rotation.y += (((W.face - W.me.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 10);
   const legs = W.me.userData.legs; if (legs) { W.stride = (W.stride || 0) + dt * len * (k.run ? 14 : 9); legs.forEach(function (h, i) { h.rotation.x = W.ground ? Math.sin(W.stride + i * Math.PI) * 0.7 * Math.min(1, len) : (W.gliding ? 0.6 : -0.5); }); }
-  W.me.rotation.z = W.gliding ? Math.sin(W.t * 6) * 0.08 : 0;
+  W.me.rotation.z = W.gliding ? Math.sin(W.t * 6) * 0.08 : 0; W.me.rotation.x = (k.run && len > 0 && W.ground) ? 0.18 : 0;
   /* camera follows behind */
   const tgt = new T.Vector3(W.px, W.py + 1.6, W.pz), cp = Math.cos(W.pitch);
   const want = new T.Vector3(tgt.x + Math.sin(W.yaw) * cp * W.dist, tgt.y + Math.sin(W.pitch) * W.dist, tgt.z + Math.cos(W.yaw) * cp * W.dist);
+  { /* keep the camera out of trees and rocks: move it in front of anything between it and the player */
+    const vx = want.x - tgt.x, vz = want.z - tgt.z, L2 = vx * vx + vz * vz; let best = 1;
+    if (L2 > 0.01) W.colliders.forEach(function (c) { const rr = c.r + 0.6, u = ((c.x - tgt.x) * vx + (c.z - tgt.z) * vz) / L2; if (u <= 0 || u > 1.2) return;
+      const px = tgt.x + vx * u - c.x, pz = tgt.z + vz * u - c.z; if (px * px + pz * pz < rr * rr) { const back = u - rr / Math.sqrt(L2); if (back < best) best = back; } });
+    best = Math.max(0.28, best); if (best < 1) { want.x = tgt.x + vx * best; want.z = tgt.z + vz * best; want.y = tgt.y + (want.y - tgt.y) * best; } }
   const gc = H(want.x, want.z) + 1.2; if (want.y < gc) want.y = gc;
   cam.position.lerp(want, Math.min(1, dt * 6)); cam.lookAt(tgt);
+  { /* tree tops between the camera and the player fade out so you can always see yourself */
+    const ax = tgt.x, az = tgt.z, bx = cam.position.x - ax, bz = cam.position.z - az, L2 = bx * bx + bz * bz, hy = Math.max(cam.position.y, tgt.y) + 0.4; let instDirty = false;
+    W.colliders.forEach(function (c) { if (!c.cr) return; let hide = false;
+      if (L2 > 0.01 && c.bot < hy) { const u = Math.max(0, Math.min(1, ((c.x - ax) * bx + (c.z - az) * bz) / L2)), px = ax + bx * u - c.x, pz = az + bz * u - c.z; hide = px * px + pz * pz < (c.cr + 0.4) * (c.cr + 0.4) && u > 0.05; }
+      if (hide === !!c.hidden) return; c.hidden = hide;
+      if (c.m) c.m.visible = !hide;
+      else if (c.inst != null) { const arr = W.ringCone.instanceMatrix.array, o = c.inst * 16; if (hide) { for (let k = 0; k < 16; k++) arr[o + k] = 0; } else for (let k = 0; k < 16; k++) arr[o + k] = c.mat[k]; instDirty = true; } });
+    if (instDirty) W.ringCone.instanceMatrix.needsUpdate = true; }
   /* nearest interaction prompt */
   if (!busy) { W.near = nearest(); const sig = W.near ? W.near.id + (C.S.set.lang || 'en') : '';
     if (sig !== W.lastPrompt) { W.lastPrompt = sig; if (W.near) { $('czPrompt').textContent = 'E: ' + tx(W.near.verb) + ' ' + tx(W.near.t); $('czPrompt').hidden = false; } else $('czPrompt').hidden = true; } }

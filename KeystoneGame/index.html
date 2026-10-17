@@ -195,6 +195,21 @@ ul.slots { list-style: none; padding-left: 0; }
   .bar { grid-template-columns: 1fr 5.5em; } .bar .track { grid-column: 1 / -1; order: 3; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+#miniPick button.hint { box-shadow: 0 0 0 3px #ffd166, 0 0 18px #ffd166; animation: hintPulse 1s infinite alternate; }
+@keyframes hintPulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+#miniPick button[data-base] { font-size: 30px; min-width: 64px; justify-content: center; font-family: var(--display); }
+#dnaRule { position: absolute; left: 12px; top: 64px; background: rgba(11, 29, 42, .9); border: 2px solid #7be0ad; border-radius: 14px; padding: 10px 14px; font-size: 22px; line-height: 1.45; text-align: center; min-width: 140px; }
+#dnaRule[hidden] { display: none; }
+#dnaRule .codon { font-family: var(--display); font-size: 40px; letter-spacing: 6px; margin: 2px 0 4px; }
+#dnaRule .codon span { display: inline-block; padding: 0 3px; border-bottom: 4px solid transparent; }
+#dnaRule .codon .now { border-bottom-color: #ffd166; }
+#dnaRule .codon .did { opacity: .55; }
+#dnaWheel { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; touch-action: none; filter: drop-shadow(0 4px 14px rgba(0,0,0,.5)); }
+#dnaWheel[hidden] { display: none; }
+#miniCard p.big { font-size: 1.3em; text-align: center; }
+.dnaWord { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
+.dnaWord span { display: flex; flex-direction: column; align-items: center; border: 3px solid var(--c); border-radius: 12px; padding: 4px 10px; font-family: var(--display); font-size: 40px; line-height: 1; color: var(--c); background: rgba(11, 29, 42, .6); }
+.dnaWord small { font-size: 15px; color: #e8f4ff; margin-bottom: 4px; }
 </style>
 </head>
 <body>

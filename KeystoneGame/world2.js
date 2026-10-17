@@ -22,7 +22,7 @@ FieldGuide.registerWorld({
           .scan(3, 's2-carbon').scan(8, 's2-chain').ground(11)
           .station(['w2q06', 'w2q07'])
           .bridge(11).hazard(4, 1.2, { ax: 1.6, sp: 1.3 }).ground(10)
-          .mixed(2, ['BIO.A.1.1.1', 'BIO.A.1.2.1', 'BIO.A.4.1.2', 'BIO.A.2.1.1'])
+          .crumbleBridge(4, 'mix').mixed(2, ['BIO.A.1.1.1', 'BIO.A.1.2.1', 'BIO.A.4.1.2', 'BIO.A.2.1.1'])
           .virus(5, 2.4, 1.2).sparks(2, 3.2, 4).ground(12)
           .station(['w2q01', 'w2q03'])
           .goal();
@@ -42,7 +42,7 @@ FieldGuide.registerWorld({
           .station([{ sort: 'macro', n: 4 }])
           .bridge(11).virus(4, 2.5, 1.2).spikes(9, 1.8).qblock(13, 3.4, 'shield').ground(16)
           .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
-          .mixed(2, ['BIO.A.1.2.1', 'BIO.B.2.2.1', 'BIO.A.2.2.1', 'BIO.A.2.2.2'])
+          .crumbleBridge(4, 'mix').mixed(2, ['BIO.A.1.2.1', 'BIO.B.2.2.1', 'BIO.A.2.2.1', 'BIO.A.2.2.2'])
           .station(['w2q16', 'w2q19'])
           .goal();
       } },
@@ -63,7 +63,7 @@ FieldGuide.registerWorld({
           .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .balance('bal-enzyme')
           .clue(3, 'w2q22').ground(6).hint(1, 6.6, 'Portal! Its code is the letters of your 3 clue answers.').portal(6, 'golf').ground(11)
-          .mixed(2, ['BIO.A.4.2.1', 'BIO.A.2.2.3', 'BIO.A.2.3.1', 'BIO.A.2.3.2'])
+          .crumbleBridge(5, 'mix').mixed(2, ['BIO.A.4.2.1', 'BIO.A.2.2.3', 'BIO.A.2.3.1', 'BIO.A.2.3.2'])
           .bridge(12, { ay: 1.4, sp: 1.1 }).ground(5)
           .goal();
       } },
@@ -86,7 +86,7 @@ FieldGuide.registerWorld({
           .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
           .station([{ sort: 'photo-resp', n: 4 }])
           .sequence('s-energy-path')
-          .mixed(2, ['BIO.A.1.2.1', 'BIO.A.4.1.2', 'BIO.A.3.1.1', 'BIO.A.3.2.1', 'BIO.A.3.2.2'])
+          .crumbleBridge(5, 'mix').mixed(2, ['BIO.A.1.2.1', 'BIO.A.4.1.2', 'BIO.A.3.1.1', 'BIO.A.3.2.1', 'BIO.A.3.2.2'])
           .bridge(11).ground(5)
           .goal();
       } },
@@ -108,7 +108,7 @@ FieldGuide.registerWorld({
           .sparks(0.5, 8.5, 4).ground(6)
           .wordbank('wb-cycles')
           .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
-          .mixed(2, ['BIO.A.3.2.1', 'BIO.A.2.3.2', 'BIO.A.4.2.1', 'BIO.B.4.2.1', 'BIO.B.4.2.3'])
+          .crumbleBridge(5, 'boom').mixed(2, ['BIO.A.3.2.1', 'BIO.A.2.3.2', 'BIO.A.4.2.1', 'BIO.B.4.2.1', 'BIO.B.4.2.3'])
           .qblock(3, 3.4, 'shield').hazard(8, 1.2, { ax: 2, sp: 1.3 }).ground(14)
           .hint(-3, 4.6, 'Boss ahead: The Carbon Imbalance')
           .balance('bal-carbon')

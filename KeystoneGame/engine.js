@@ -110,6 +110,7 @@ BQ.Leaderboard = {
    tx('key') or tx('key', { n: 3 }) replaces {n} in the text. Language lives in S.set.lang ('en' or 'es'). */
 const I18N = {
   en: {
+    'h.ghost': 'That faint shape is a hidden platform. Lab goggles make it solid. Earn them with 3 stars or buy them at the station shop.', 'h.crumble': 'Crumbly platform! It breaks if you stand on it too long. Keep moving!', 'h.boom': 'Unstable platform! It will pop if you stay on it. Hop off fast!',
     'j.title': 'Field Journal', 'j.found': '{n} of {m} discovered', 'j.where': 'Found in level {lv}', 'j.unknown': 'Not discovered yet',
     'j.collection': 'Collection complete!', 'j.colReward': 'Collection complete: {lv}! +{p} points', 'j.rare': 'Rare Specimen', 'j.rareYes': 'Found', 'j.rareNo': 'Still hidden',
     'j.achTab': 'Achievements', 'j.world': 'World {n}', 'j.short': 'Quick wins', 'j.medium': 'Bigger goals', 'j.long': 'Grand goals', 'j.earned': '{n} of {m} earned',
@@ -128,6 +129,7 @@ const I18N = {
     'a.speedy': 'Speedy Scientist', 'a.speedy.d': 'Finish a level in under 3 minutes.',
     'a.immune': 'Immune Hero', 'a.immune.d': 'Tag 15 germs in Immune Defense.',
     'a.golf': 'Perfect Fit', 'a.golf.d': 'Sink an enzyme golf hole in one putt.',
+    'a.dna-lab': 'Gene Machine', 'a.dna-lab.d': 'Decode the secret message in the Code Lab.',
     'a.practice': 'Practice Pays', 'a.practice.d': 'Get 5 Practice Bay questions right on the first try.',
     'a.second-look': 'Second Look', 'a.second-look.d': 'Go back to a finished level and discover something you missed.',
     'a.persist': 'Never Give Up', 'a.persist.d': 'Solve a challenge after the gold hint appears.',
@@ -139,6 +141,7 @@ const I18N = {
     'r.time': 'Time', 'r.bestTime': 'best {t}', 'r.newBestTime': 'new personal best!'
   },
   es: {
+    'h.ghost': 'Esa forma tenue es una plataforma escondida. Las gafas de laboratorio la vuelven sólida. Gánalas con 3 estrellas o cómpralas en la tienda de la estación.', 'h.crumble': '¡Plataforma frágil! Se rompe si te quedas encima mucho tiempo. ¡Sigue moviéndote!', 'h.boom': '¡Plataforma inestable! Va a estallar si te quedas encima. ¡Salta rápido!',
     'j.title': 'Diario de campo', 'j.found': '{n} de {m} descubiertos', 'j.where': 'Se encuentra en el nivel {lv}', 'j.unknown': 'Aún no descubierto',
     'j.collection': '¡Colección completa!', 'j.colReward': '¡Colección completa: {lv}! +{p} puntos', 'j.rare': 'Espécimen raro', 'j.rareYes': 'Encontrado', 'j.rareNo': 'Aún escondido',
     'j.achTab': 'Logros', 'j.world': 'Mundo {n}', 'j.short': 'Logros rápidos', 'j.medium': 'Metas mayores', 'j.long': 'Grandes metas', 'j.earned': '{n} de {m} conseguidos',
@@ -157,6 +160,7 @@ const I18N = {
     'a.speedy': 'Científico veloz', 'a.speedy.d': 'Termina un nivel en menos de 3 minutos.',
     'a.immune': 'Héroe inmunitario', 'a.immune.d': 'Marca 15 microbios en Defensa Inmunitaria.',
     'a.golf': 'Encaje perfecto', 'a.golf.d': 'Mete un hoyo del minigolf de enzimas en un solo golpe.',
+    'a.dna-lab': 'Máquina de genes', 'a.dna-lab.d': 'Descifra el mensaje secreto en el Laboratorio del Código.',
     'a.practice': 'La práctica vale', 'a.practice.d': 'Acierta 5 preguntas de la Sala de Práctica al primer intento.',
     'a.second-look': 'Segunda mirada', 'a.second-look.d': 'Vuelve a un nivel terminado y descubre algo que te perdiste.',
     'a.persist': 'Nunca me rindo', 'a.persist.d': 'Resuelve un reto después de que aparezca la pista dorada.',
@@ -284,7 +288,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
 const VERSION = 'Version 17 · October 15, 2026';
-const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6']];
+const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
   'Lab goggles: see hidden platforms and secret paths that other players cannot see.',
@@ -638,7 +642,7 @@ const ACH = [
   { id: 'first-scan', ic: '🔍', tier: 'short' }, { id: 'first-rare', ic: '💎', tier: 'short' }, { id: 'hidden-10', ic: '✨', tier: 'short' }, { id: 'shopper', ic: '🛒', tier: 'short' },
   { id: 'stylist', ic: '👕', tier: 'short' }, { id: 'cell', ic: '🧫', tier: 'short' }, { id: 'code', ic: '🔐', tier: 'short' }, { id: 'persist', ic: '💪', tier: 'short' },
   { id: 'scan-25', ic: '📓', tier: 'medium' }, { id: 'collection', ic: '📚', tier: 'medium' }, { id: 'no-help', ic: '🎯', tier: 'medium' }, { id: 'speedy', ic: '⏱️', tier: 'medium' },
-  { id: 'immune', ic: '🛡️', tier: 'medium' }, { id: 'golf', ic: '⛳', tier: 'medium' }, { id: 'practice', ic: '🎓', tier: 'medium' }, { id: 'second-look', ic: '🔁', tier: 'medium' },
+  { id: 'immune', ic: '🛡️', tier: 'medium' }, { id: 'golf', ic: '⛳', tier: 'medium' }, { id: 'dna-lab', ic: '🧬', tier: 'medium' }, { id: 'practice', ic: '🎓', tier: 'medium' }, { id: 'second-look', ic: '🔁', tier: 'medium' },
   { id: 'world1', ic: '🧫', tier: 'long' }, { id: 'world2', ic: '🌿', tier: 'long' }, { id: 'scan-all', ic: '🏆', tier: 'long' }, { id: 'rare-all', ic: '💠', tier: 'long' }, { id: 'stars-30', ic: '⭐', tier: 'long' }];
 let achQ = [], achBusy = false;
 function award(id) {
@@ -737,11 +741,35 @@ function builder() {
       const lb = label('🔒 Portal: needs a code', 3.6, { bd: '#c59cff' }); lb.position.set(x, y + 5.4, 0); L.group.add(lb);
       L.portal = { x: x, y: y, g: g, swirl: swirl, ring: ring, lb: lb, open: false, tries: 0, game: game || 'immune' }; return b;
     },
-    /* HIDDEN PLATFORM: solid for everyone, but only Lab goggles make it visible */
+    /* HIDDEN PLATFORM: only Lab goggles make it visible AND solid. Without goggles it is a faint ghost you fall through. */
     hplat: function (dx, dy, w) {
-      const s2 = addSolid(b.x + dx, b.x + dx + w, b.y + dy - 0.4, b.y + dy), see = S.alien.gear === 1, m = box(s2.x0, s2.x1, s2.y0, s2.y1, 3, see ? '#c59cff' : L.th.top, see ? 0.85 : 0.07);
+      const see = S.alien.gear === 1, s2 = addSolid(b.x + dx, b.x + dx + w, b.y + dy - 0.4, b.y + dy, { off: !see }), m = box(s2.x0, s2.x1, s2.y0, s2.y1, 3, see ? '#c59cff' : L.th.top, see ? 0.85 : 0.07);
+      if (!see) L.ghosts.push({ x: (s2.x0 + s2.x1) / 2, y: s2.y1 });
       if (see) { const gl = glow('#c59cff', w + 1.5, 0.45); gl.position.set((s2.x0 + s2.x1) / 2, s2.y1 - 0.2, 0.5); L.group.add(gl); }
       L.group.add(m); L.secrets.push({ x: (s2.x0 + s2.x1) / 2, y: s2.y1 }); return b;
+    },
+    /* CRUMBLE / BOOM PLATFORM: breaks if you stand on it too long, then grows back after a few seconds.
+       kind 'boom' pops with a harmless blast that bounces you up a little. */
+    crumble: function (dx, dy, w, kind) {
+      const boom = kind === 'boom', x0 = b.x + dx, x1 = x0 + w, y1 = b.y + dy, s = addSolid(x0, x1, y1 - 0.4, y1);
+      const col = boom ? '#e05a3a' : '#9a7a52', em = boom ? '#4a1208' : '#1a1006';
+      const g = new T.Group(), mt = new T.MeshLambertMaterial({ color: col, emissive: em }), blk = new T.Mesh(G.box, mt);
+      blk.scale.set(w, 0.4, 3); g.add(blk);
+      const crack = basic(boom ? '#ffd166' : '#3a2410');
+      for (let i = 1; i < Math.max(2, Math.round(w)); i++) { const c = new T.Mesh(G.box, crack); c.scale.set(0.1, 0.34, 0.05); c.position.set(-w / 2 + i * (w / Math.max(2, Math.round(w))), 0, 1.52); c.rotation.z = (i % 2 ? 0.4 : -0.35); g.add(c); }
+      if (boom) { const dark = basic('#10202c'), yel = basic('#ffd166'), k = Math.round(w / 0.5); /* hazard stripes on top */
+        for (let i = 0; i < k; i++) { const st = new T.Mesh(G.box, i % 2 ? dark : yel); st.scale.set(w / k, 0.03, 0.5); st.position.set(-w / 2 + (i + 0.5) * w / k, 0.215, 1.1); g.add(st); } }
+      else { const dk = basic('#3a2410'); for (let i = 0; i < 3; i++) { const c = new T.Mesh(G.box, dk); c.scale.set(0.09, 0.03, 1.6 + i * 0.3); c.position.set(-w / 3 + i * w / 3, 0.215, 0); c.rotation.y = (i - 1) * 0.5; g.add(c); } }
+      g.position.set((x0 + x1) / 2, y1 - 0.2, 0); L.group.add(g);
+      L.crumbs.push({ s: s, g: g, mt: mt, col: new T.Color(col), hot: new T.Color(boom ? '#ff2a10' : '#5a3a1a'), boom: boom, bx: g.position.x, by: g.position.y, t: 0, gone: 0, bits: [], lim: boom ? 1.3 : 1.0 });
+      return b;
+    },
+    /* CRUMBLE BRIDGE: n breakable stepping stones over a shallow pit. Falling only costs time: a step leads back up. */
+    crumbleBridge: function (n, kind) {
+      const x = b.x, y = b.y, gapW = 1.5, w = 2.4, len = n * (w + gapW) + gapW;
+      addGround(x, x + len, y - 4); const st = addSolid(x + len - 2.4, x + len, y - 2.1, y - 1.7); L.group.add(box(st.x0, st.x1, st.y0, st.y1, 3, L.th.top));
+      for (let i = 0; i < n; i++) b.crumble(gapW + i * (w + gapW), i % 2 ? 0.7 : 0, w, kind === 'mix' ? (i % 2 ? 'boom' : 'crumble') : kind);
+      b.x += len; return b;
     },
     hint: function (dx, dy, text) { const sp = label(text, 5, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }); sp.position.set(b.x + dx, b.y + dy, -1.5); L.group.add(sp); return b; },
     sparks: function (dx, dy, n) {
@@ -1556,7 +1584,7 @@ function doorText(d) {
 function startLevel(w, lv) {
   teardown();
   const th = THEMES[lv.theme] || THEMES.cell;
-  L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [], models: [], flies: [], secrets: [], temps: [], clues: [], portal: null,
+  L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [], models: [], flies: [], secrets: [], ghosts: [], crumbs: [], told: {}, temps: [], clues: [], portal: null,
     score: 0, streak: 0, hp: 5, time: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
   scene.add(L.group);
   const b = builder(); lv.build(b); L.len = b.x;
@@ -1721,6 +1749,33 @@ function moveY(dy) {
     else if (dy <= 0) { P.y = s.y1; P.vy = 0; P.ground = s; } else { P.y = s.y0 - PH; P.vy = 0; if (s.qb && !s.qb.used) bumpBlock(s.qb); }
   });
 }
+function crumbStep(dt) {
+  L.crumbs.forEach(function (c) {
+    c.bits = c.bits.filter(function (k) { k.vy -= GRAV * 0.6 * dt; k.m.position.x += k.vx * dt; k.m.position.y += k.vy * dt; k.m.rotation.z += k.vr * dt; k.life -= dt; if (k.life > 0) return true; L.group.remove(k.m); return false; });
+    if (c.gone > 0) { /* broken: grow back once the space is clear */
+      c.gone -= dt;
+      if (c.gone <= 0) { if (hit(c.s)) { c.gone = 0.3; return; } c.s.off = false; c.g.visible = true; c.t = 0; c.g.scale.setScalar(0.2); c.mt.color.copy(c.col); }
+      return;
+    }
+    if (c.g.scale.x < 1) c.g.scale.setScalar(Math.min(1, c.g.scale.x + dt * 3));
+    const on = P.ground === c.s;
+    if (on) { if (!c.told && !L.told[c.boom ? 'boom' : 'crumble']) { L.told[c.boom ? 'boom' : 'crumble'] = c.told = true; toast(tx(c.boom ? 'h.boom' : 'h.crumble'), 4); }
+      const before = c.t; c.t += dt; if (Math.floor(before * 4) !== Math.floor(c.t * 4)) beep(c.boom ? 900 + c.t * 400 : 180 + c.t * 60, 0.05, c.boom ? 'square' : 'sawtooth'); }
+    else c.t = Math.max(0, c.t - dt * 0.6);
+    const r = Math.min(1, c.t / c.lim);
+    c.g.position.x = c.bx + (r > 0 ? Math.sin(P.t * 55) * 0.07 * r : 0); c.g.position.y = c.by;
+    c.mt.color.copy(c.col).lerp(c.hot, r); if (c.boom) c.mt.emissive.setRGB(0.3 * r * (0.6 + 0.4 * Math.sin(P.t * (10 + r * 30))), 0.05 * r, 0);
+    if (c.t >= c.lim) { /* break */
+      c.s.off = true; c.g.visible = false; c.gone = 3.5; c.t = 0; if (P.ground === c.s) P.ground = null;
+      const w = c.s.x1 - c.s.x0, n = Math.max(3, Math.round(w * 2));
+      for (let i = 0; i < n; i++) { const m = new T.Mesh(G.box, basic(c.boom ? (i % 2 ? '#ffd166' : '#e0743a') : '#8a6a40')); m.scale.set(0.35, 0.3, 0.6); m.position.set(c.s.x0 + (i + 0.5) * w / n, c.by, 0.4); L.group.add(m);
+        c.bits.push({ m: m, vx: (Math.random() - 0.5) * (c.boom ? 9 : 2), vy: c.boom ? 4 + Math.random() * 6 : Math.random() * 1.5, vr: (Math.random() - 0.5) * 10, life: 1.4 }); }
+      if (c.boom) { burst(c.bx, c.by + 0.3, '#ffb070'); L.shake = Math.max(L.shake || 0, 0.25); beep(110, 0.35, 'sawtooth', 'pop! the platform burst');
+        if (Math.abs(P.x - c.bx) < w / 2 + 1 && P.y - c.by < 2.5 && P.y >= c.by - 0.5) P.vy = Math.max(P.vy, 11); }
+      else beep(140, 0.3, 'sawtooth', 'crumble, the platform fell apart');
+    }
+  });
+}
 function beamUp() {
   L.over = true; L.beamT = 0; closeQ(); P.vx = P.vy = 0; Music.stop(); beep(300, 1.4, 'sine', 'rising hum, beamed up to the mothership');
   [400, 500, 650, 850].forEach(function (f, k) { setTimeout(function () { beep(f, 0.25, 'sine'); }, 250 + k * 260); });
@@ -1746,6 +1801,7 @@ function step(dt) {
     mv.s.x0 += dx; mv.s.x1 += dx; mv.s.y0 += dy; mv.s.y1 += dy; mv.m.position.x += dx; mv.m.position.y += dy;
     if (P.ground === mv.s) { P.x += dx; P.y += dy; }
   });
+  crumbStep(dt);
   /* duck: crouch low while on the ground; stay crouched under a low ceiling */
   const wantDuck = keys.duck && !L.active && P.ground && !(jumpBuf > 0);
   if (wantDuck) P.duck = true;
@@ -1874,6 +1930,7 @@ function step(dt) {
     const nr = nearScan() === k; k.nm.scale.set(nr ? 3.6 : 3, nr ? 1.8 : 1.5, 1);
     if (nr && !k.done && !k.told && !L.active) { k.told = true; toast('Press E to scan the ' + k.sc.name + '.', 3); }
   });
+  if (S.alien.gear !== 1 && !L.toldGhost && L.ghosts.some(function (q) { return Math.abs(q.x - P.x) < 3 && Math.abs(q.y - P.y) < 5; })) { L.toldGhost = true; toast(tx('h.ghost'), 6); }
   if (S.alien.gear === 1 && !L.toldSecret && L.secrets.some(function (q) { return Math.abs(q.x - P.x) < 6; })) { L.toldSecret = true; toast('Your Lab goggles reveal a hidden path! Look for the glowing purple platforms.', 4); }
   if (L.portal) { const p = L.portal; p.swirl.rotation.z += dt * (p.open ? 3 : 0.8); p.swirl.material.opacity = 0.35 + Math.sin(P.t * 3) * 0.12;
     if (nearPortal() && !L.active && !p.told) { p.told = true; toast(p.open ? 'Press E to enter the portal.' : 'A locked portal! Press E to see the code it needs.', 3); } else if (!nearPortal()) p.told = false; }
@@ -1943,6 +2000,7 @@ const ANTIGENS = [{ name: 'Triangle', geo: 'cone', col: '#ff6b6b', sym: '▲' },
 let M = null;
 function enterMini(p) {
   if (p.game === 'golf') return enterGolf(p);
+  if (p.game === 'dna') return enterDNA(p);
   closeQ(); mode = 'mini'; Object.keys(keys).forEach(function (k) { keys[k] = false; });
   M = { p: p, grp: new T.Group(), germs: [], shots: [], fx: [], t: 0, hearts: 3, score: 0, tagged: 0, wrong: 0, sel: 0, cx: 0, cy: -0.05, spawn: 1.2, dur: 50, cool: 0, k: {}, intro: true, over: false, boost: false,
     bg: scene.background, fog: scene.fog };
@@ -2027,19 +2085,20 @@ function miniEnd() {
 }
 function exitMini() {
   scene.remove(M.grp); disposeGroup(M.grp); scene.background = M.bg; scene.fog = M.fog; scene.add(L.group);
-  L.score += M.score; (M.kind === 'golf' ? ['Enzyme', 'Active site', 'Substrate', 'Denature'] : ['Antibody', 'Antigen']).forEach(function (w) { S.words[w] = 1; }); save(); $('miniAim').hidden = false; $('miniPow').hidden = true;
+  ['dnaRule', 'dnaWheel'].forEach(function (id) { const el = $(id); if (el) el.remove(); });
+  L.score += M.score; (M.kind === 'golf' ? ['Enzyme', 'Active site', 'Substrate', 'Denature'] : M.kind === 'dna' ? ['Replication', 'Transcription', 'Translation', 'Codon'] : ['Antibody', 'Antigen']).forEach(function (w) { S.words[w] = 1; }); save(); $('miniAim').hidden = false; $('miniPow').hidden = true;
   $('mini').hidden = true; $('hud').hidden = false; $('touch').hidden = !touchMode; mode = 'play'; P.x = M.p.x + 2.2; P.y = M.p.y; P.vx = P.vy = 0; P.inv = 1.5;
   cam.position.set(P.x + 2.5, P.y + 5.2, camZ); toast('Back from the portal with +' + M.score + ' points!', 4); hud(); M = null; Object.keys(keys).forEach(function (k) { keys[k] = false; });
 }
 function miniKey(e, down) {
-  if (!M) return; if (M.kind === 'golf') return golfKey(e, down); const k = e.key;
+  if (!M) return; if (M.kind === 'golf') return golfKey(e, down); if (M.kind === 'dna') return dnaKey(e, down); const k = e.key;
   if (down && M.intro && (k === 'Enter' || k === ' ')) { e.preventDefault(); miniStart(); return; }
   if (down && M.over && (k === 'Enter' || k === ' ' || k === 'e' || k === 'E')) { e.preventDefault(); exitMini(); return; }
   if (/^[1-4]$/.test(k) && down) { miniSel(+k - 1); return; }
   const map = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down', ' ': 'fire', Enter: 'fire' };
   if (map[k]) { M.k[map[k]] = down; e.preventDefault(); }
 }
-function miniStart() { M.intro = false; miniPanel(''); beep(600, 0.2, 'triangle', 'go'); if (M.kind === 'golf') golfHole(0); else miniHud(); }
+function miniStart() { M.intro = false; miniPanel(''); beep(600, 0.2, 'triangle', 'go'); if (M.kind === 'golf') golfHole(0); else if (M.kind === 'dna') dnaCard(1); else miniHud(); }
 /* ---------- PORTAL MINI-GAME: ENZYME MINI GOLF ----------
    Putt the substrate (the ball) into the enzyme whose ACTIVE SITE has the same shape. Wrong shapes, and
    enzymes whose shape was changed by heat or the wrong pH (denatured), will not hold the substrate. */
@@ -2160,6 +2219,330 @@ function golfPointer(e, type) {
   if (type === 'down' && golfStill()) { M.charging = true; M.chargeT = 0; }
   if (type === 'up' && M.charging) golfShoot();
 }
+/* ---------- PORTAL MINI-GAME: THE CODE LAB (DNA -> mRNA -> protein) ----------
+   Step 1 replication: build the matching DNA strand (A-T, G-C).
+   Step 2 transcription: build mRNA from the template strand (A-U, T-A, G-C, C-G).
+   Step 3 translation: trace each codon on the codon wheel; a tRNA brings each amino acid.
+   Special bonus: the finished protein's one-letter amino acid codes spell a secret word. */
+const BASECOL = { A: '#ff6b6b', T: '#ffd166', G: '#7be0ad', C: '#5fb8ff', U: '#c59cff' };
+const DNAPAIR = { A: 'T', T: 'A', G: 'C', C: 'G' }, RNAPAIR = { A: 'U', T: 'A', G: 'C', C: 'G' };
+const GCODE = 'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG', WB = 'UCAG';
+const AA3 = { F: 'Phe', L: 'Leu', I: 'Ile', M: 'Met', V: 'Val', S: 'Ser', P: 'Pro', T: 'Thr', A: 'Ala', Y: 'Tyr', H: 'His', Q: 'Gln', N: 'Asn', K: 'Lys', D: 'Asp', E: 'Glu', C: 'Cys', W: 'Trp', R: 'Arg', G: 'Gly', '*': 'Stop' };
+const AACOL = ['#ff8fb1', '#ffd166', '#7be0ad', '#7fd4ff', '#c59cff', '#ffb070'];
+const SECRETS = ['MAGIC', 'MEGA', 'MATCH', 'MEDAL', 'MIGHT'];
+const DNA_PLAY = 9; /* bases the player places before the polymerase speeds up and finishes */
+function aaOf(c) { return GCODE[16 * WB.indexOf(c[0]) + 4 * WB.indexOf(c[1]) + WB.indexOf(c[2])]; }
+function codonsFor(a) { const out = []; for (let i = 0; i < 64; i++) if (GCODE[i] === a) out.push(WB[i >> 4] + WB[(i >> 2) & 3] + WB[i & 3]); return out; }
+function dnaPick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function dnaGene() {
+  if (!S.dnaSeen) S.dnaSeen = {};
+  const fresh = SECRETS.filter(function (w) { return !S.dnaSeen[w]; }), word = dnaPick(fresh.length ? fresh : SECRETS);
+  const cod = word.split('').map(function (ch, i) { return i === 0 ? 'AUG' : dnaPick(codonsFor(ch)); }); cod.push(dnaPick(['UAA', 'UAG', 'UGA']));
+  const mrna = cod.join(''), top = mrna.replace(/U/g, 'T'), bot = top.split('').map(function (b) { return DNAPAIR[b]; }).join('');
+  return { word: word, cod: cod, mrna: mrna, top: top, bot: bot };
+}
+function dnaNt(b, up, rna) {
+  const g = new T.Group(), col = BASECOL[b], s = up ? 1 : -1;
+  const blk = new T.Mesh(G.box, emat(col, '#222222')); blk.scale.set(0.8, 0.92, 0.5); blk.position.y = s * 0.5; g.add(blk);
+  const bb = new T.Mesh(G.box, emat(rna ? '#e3ccff' : '#dfe8f0', '#222222')); bb.scale.set(1.06, 0.16, 0.36); bb.position.y = s * 1.06; g.add(bb);
+  const lb = label(b, 1.25, { bd: col, big: true }); lb.position.set(0, s * 0.5, 0.5); g.add(lb);
+  return g;
+}
+function dnaX(i) { return i * 1.05; }
+function trX(i) { return i * 1.0 + Math.floor(i / 3) * 0.45; }
+function dnaLater(sec, fn) { M.wait.push({ t: sec, fn: fn }); }
+function dnaTw(o, x, y, dur, cb) { M.tw.push({ o: o, fx: o.position.x, fy: o.position.y, x: x, y: y, t: 0, dur: dur, cb: cb }); }
+function enterDNA(p) {
+  closeQ(); mode = 'mini'; Object.keys(keys).forEach(function (k) { keys[k] = false; });
+  M = { kind: 'dna', p: p, grp: new T.Group(), gene: dnaGene(), phase: 0, i: 0, miss: 0, score: 0, slips: 0, cleanCodons: 0, intro: true, over: false, card: 0, busy: false, k: {}, t: 0,
+    tw: [], wait: [], beads: [], step: 0, ci: 0, path: [], camX: 0, camY: 0.4, bg: scene.background, fog: scene.fog };
+  scene.remove(L.group); scene.add(M.grp); scene.background = new T.Color('#140a2a'); scene.fog = new T.FogExp2('#1a0e36', 0.016);
+  M.shell = new T.Mesh(new T.SphereGeometry(45, 32, 16), new T.MeshLambertMaterial({ color: '#3a2a6a', emissive: '#120a2a', side: T.BackSide })); M.grp.add(M.shell);
+  for (let i = 0; i < (S.set.low ? 20 : 45); i++) { const s = glow(dnaPick(['#c59cff', '#7fd4ff', '#7be0ad']), 1 + Math.random() * 2, 0.35); s.position.set(-10 + Math.random() * 45, (Math.random() - 0.5) * 26, -8 - Math.random() * 20); M.grp.add(s); }
+  const gn = M.gene, n = gn.top.length;
+  M.top = new T.Group(); M.bot = new T.Group(); M.rna = new T.Group(); M.grp.add(M.top); M.grp.add(M.bot); M.grp.add(M.rna);
+  for (let i = 0; i < n; i++) { const nt = dnaNt(gn.top[i], true); nt.position.x = dnaX(i); M.top.add(nt); }
+  M.topLb = label('Original strand', 3, { bd: '#dfe8f0' }); M.topLb.position.set(-3, 0.6, 0); M.top.add(M.topLb);
+  M.botLb = label('New strand', 3, { bd: '#ffd166' }); M.botLb.position.set(-3, -0.6, 0); M.bot.add(M.botLb);
+  M.slot = new T.Mesh(G.box, new T.MeshBasicMaterial({ color: '#ffffff', wireframe: true, transparent: true, opacity: 0.9 })); M.slot.scale.set(0.84, 0.96, 0.56); M.grp.add(M.slot);
+  M.poly = new T.Group(); const blob = new T.Mesh(G.sph, new T.MeshLambertMaterial({ color: '#7fd4ff', emissive: '#103a5a', transparent: true, opacity: 0.35, depthWrite: false })); blob.scale.set(1.5, 1.9, 1); blob.position.z = -0.9; M.poly.add(blob); M.polyBlob = blob;
+  M.polyLb = label('DNA polymerase', 2.8, { bd: '#7fd4ff' }); M.polyLb.position.set(0, -2.35, 0.3); M.poly.add(M.polyLb); M.grp.add(M.poly);
+  $('hud').hidden = true; $('touch').hidden = true; $('toast').hidden = true; $('note').hidden = true; $('mini').hidden = false; $('miniAim').hidden = true; $('miniPow').hidden = true; $('miniPick').innerHTML = '';
+  const rule = document.createElement('div'); rule.id = 'dnaRule'; rule.hidden = true; $('mini').appendChild(rule);
+  const wh = document.createElement('canvas'); wh.id = 'dnaWheel'; wh.hidden = true; wh.setAttribute('aria-label', 'Codon wheel'); $('mini').appendChild(wh);
+  wh.addEventListener('pointerdown', wheelClick);
+  miniPanel('<h2>🧬 The Code Lab</h2><p>The portal shrank you down <b>inside a nucleus</b>. This gene holds a <b>secret message</b>, written in DNA.</p>' +
+    '<p>Decode it in 3 steps, just like a real cell:</p><ol><li><b>Copy the DNA</b> (replication)</li><li><b>Make an mRNA copy</b> of the gene (transcription)</li><li><b>Read the codons</b> and build the protein (translation)</li></ol>' +
+    '<p>Finish all 3 to reveal the secret message and win a <b>special bonus</b>.</p><p class="dim">Press the letter keys (A, T, G, C, U) or click the buttons.</p>' +
+    '<button type="button" id="miniGo" class="primary">Start</button>');
+  dnaCam(true); setTimeout(function () { const b = $('miniGo'); if (b) b.focus(); }, 50);
+}
+function dnaPickBtns(letters) {
+  $('miniPick').innerHTML = letters.split('').map(function (b) { return '<button type="button" data-base="' + b + '" style="--c:' + BASECOL[b] + '"><span style="color:' + BASECOL[b] + ';font-weight:800">' + b + '</span></button>'; }).join('');
+}
+function dnaHintBtn(b) { document.querySelectorAll('#miniPick [data-base]').forEach(function (x) { x.classList.toggle('hint', x.dataset.base === b); }); }
+function bl(b) { return '<b style="color:' + BASECOL[b] + '">' + b + '</b>'; }
+function dnaRule(html) { const r = $('dnaRule'); if (!r) return; r.innerHTML = html; r.hidden = !html; }
+function dnaTop(t) { $('miniTop').textContent = t + '   Score: ' + M.score; }
+function dnaCard(n) {
+  M.card = n; M.busy = true; $('miniPick').innerHTML = ''; dnaRule('');
+  const cards = {
+    1: '<h2>Step 1: Copy the DNA</h2><p>DNA is shaped like a twisted ladder. Each rung is two <b>bases</b> stuck together, and they always pair the same way:</p>' +
+      '<p class="big">' + bl('A') + ' pairs with ' + bl('T') + ' &nbsp;·&nbsp; ' + bl('G') + ' pairs with ' + bl('C') + '</p>' +
+      '<p>Before a cell divides, it copies its DNA. This is called <b>DNA replication</b>. Build the new strand: for each base on top, press its partner.</p>',
+    2: '<h2>Step 2: Make mRNA (transcription)</h2><p>DNA never leaves the nucleus. To build a protein, the cell copies one gene into a messenger: <b>mRNA</b>.</p>' +
+      '<p><b>RNA polymerase</b> unzips the DNA and reads the strand you just built (the <b>template strand</b>). RNA has no T. It uses <b>U</b> (uracil) instead:</p>' +
+      '<p class="big">' + bl('A') + '→' + bl('U') + ' &nbsp; ' + bl('T') + '→' + bl('A') + ' &nbsp; ' + bl('G') + '→' + bl('C') + ' &nbsp; ' + bl('C') + '→' + bl('G') + '</p>',
+    3: '<h2>Step 3: Build the protein (translation)</h2><p>Your mRNA left the nucleus and found a <b>ribosome</b>. The ribosome reads mRNA <b>3 bases at a time</b>. Each group of 3 is a <b>codon</b>, and each codon stands for one <b>amino acid</b>.</p>' +
+      '<p>Use the <b>codon wheel</b>: start in the <b>center</b> with the codon\'s 1st letter, move out to the 2nd letter, then the 3rd. The outside ring names the amino acid.</p>' +
+      '<p class="dim">Click the wheel or press U, C, A, G. A <b>tRNA</b> will carry each amino acid to the ribosome.</p>' };
+  miniPanel(cards[n] + '<button type="button" id="dnaNext" class="primary">' + (n === 1 ? 'Start copying' : n === 2 ? 'Start transcribing' : 'Start translating') + '</button>');
+  setTimeout(function () { const b = $('dnaNext'); if (b) b.focus(); }, 50);
+}
+function dnaNext() {
+  if (!M || !M.card) return; const n = M.card; M.card = 0; miniPanel(''); M.busy = false; M.i = 0; M.miss = 0;
+  if (n === 1) { M.phase = 1; dnaPickBtns('ATGCU'); dnaShowRule(); dnaTop('Step 1 of 3 · Copy the DNA'); }
+  if (n === 2) { M.phase = 2; dnaPickBtns('AUGCT'); dnaShowRule(); dnaTop('Step 2 of 3 · Transcription'); }
+  if (n === 3) { M.phase = 3; M.ci = 0; M.step = 0; M.path = []; dnaPickBtns('UCAG'); $('dnaWheel').hidden = false; wheelSize(); dnaShowRule(); wheelDraw(); dnaTop('Step 3 of 3 · Translation · codon 1 of ' + M.gene.cod.length);
+    miniFlash('The first codon is always the START codon. Follow the gold glow on the wheel.', '#ffd166', 5); }
+}
+function dnaShowRule() {
+  if (M.phase === 1) dnaRule('<b>DNA pairs</b><br>' + bl('A') + ' ↔ ' + bl('T') + '<br>' + bl('G') + ' ↔ ' + bl('C'));
+  else if (M.phase === 2) dnaRule('<b>DNA → RNA</b><br>' + bl('A') + ' → ' + bl('U') + '<br>' + bl('T') + ' → ' + bl('A') + '<br>' + bl('G') + ' → ' + bl('C') + '<br>' + bl('C') + ' → ' + bl('G'));
+  else if (M.phase === 3) {
+    const c = M.gene.cod[M.ci] || '', ring = ['center circle', 'middle ring', 'outer ring'][M.step];
+    dnaRule('<b>Codon ' + (M.ci + 1) + '</b><div class="codon">' + c.split('').map(function (b, k) { return '<span class="' + (k === M.step ? 'now' : k < M.step ? 'did' : '') + '" style="color:' + BASECOL[b] + '">' + b + '</span>'; }).join('') + '</div>' +
+      (M.step < 3 ? 'Find <b style="color:' + BASECOL[c[M.step]] + '">' + c[M.step] + '</b> in the<br>' + ring : ''));
+  }
+}
+function dnaNeed() {
+  const g = M.gene;
+  if (M.phase === 1) return DNAPAIR[g.top[M.i]];
+  if (M.phase === 2) return RNAPAIR[g.bot[M.i]];
+  if (M.phase === 3) return g.cod[M.ci][M.step];
+}
+function dnaInput(b) {
+  if (!M || M.kind !== 'dna' || M.busy || M.over || !M.phase) return;
+  b = String(b).toUpperCase(); const need = dnaNeed(); if (!need) return;
+  if (M.phase === 3) return wheelPick(b);
+  if (b === need) {
+    const g = M.gene, i = M.i, pts = M.miss ? 5 : 20; M.score += pts; dnaHintBtn(null);
+    dnaPlace(i, b, true); M.miss = 0; M.i++;
+    if (M.i >= g.top.length) dnaPhaseDone();
+    else if (M.i >= DNA_PLAY) dnaAuto();
+    dnaTop(M.phase === 1 ? 'Step 1 of 3 · Copy the DNA' : 'Step 2 of 3 · Transcription');
+    return;
+  }
+  M.miss++; M.slips++; beep(200, 0.2, 'sawtooth', 'boing, not a match'); M.slotShake = 0.4;
+  const across = M.phase === 1 ? M.gene.top[M.i] : M.gene.bot[M.i];
+  let msg;
+  if (M.phase === 1 && b === 'U') msg = 'U is only found in RNA. DNA uses T instead.';
+  else if (M.phase === 2 && b === 'T') msg = 'RNA has no T! It uses U (uracil). An A on the DNA pairs with U on the RNA.';
+  else if (M.miss === 1) msg = M.phase === 1 ? 'Not a match. In DNA, A pairs with T, and G pairs with C.' : 'Not a match. Look at the DNA base below the glowing box and check the DNA → RNA chart.';
+  else msg = across + ' pairs with ' + need + '. Press ' + need + '.';
+  if (M.miss >= 2) dnaHintBtn(need);
+  miniFlash(msg, '#ffb09c', 3.5);
+}
+function dnaPlace(i, b, sound) {
+  const rna = M.phase === 2, nt = dnaNt(b, rna, rna), x = dnaX(i);
+  if (rna) { nt.position.set(x, -3, 0.25); M.rna.add(nt); dnaTw(nt, x, 0, 0.22); }
+  else { nt.position.set(x, -4, 0); M.bot.add(nt); dnaTw(nt, x, 0, 0.22); }
+  if (sound) beep({ A: 523, T: 587, U: 587, G: 659, C: 784 }[b] || 600, 0.09, 'triangle');
+  burstAt(x, rna ? 0.5 : -0.5, BASECOL[b]);
+}
+function burstAt(x, y, col) { const gl = glow(col, 2.2, 0.8); gl.position.set(x, y, 0.6); M.grp.add(gl); dnaLater(0.25, function () { M.grp.remove(gl); }); }
+function dnaAuto() {
+  M.busy = true; dnaHintBtn(null);
+  miniFlash(M.phase === 1 ? 'You\'ve got it! DNA polymerase speeds up and copies the rest.' : 'Nice work! RNA polymerase speeds up and finishes the mRNA.', '#7be0ad', 3);
+  const go = function () {
+    if (!M || M.over) return; const g = M.gene;
+    if (M.i >= g.top.length) { dnaPhaseDone(); return; }
+    dnaPlace(M.i, M.phase === 1 ? DNAPAIR[g.top[M.i]] : RNAPAIR[g.bot[M.i]], M.i % 2 === 0); M.i++; dnaLater(0.13, go);
+  };
+  dnaLater(0.9, go);
+}
+function dnaPhaseDone() {
+  M.busy = true; dnaHintBtn(null); dnaRule('');
+  [523, 659, 784].forEach(function (f, k) { dnaLater(k * 0.11, function () { beep(f, 0.15, 'triangle', k === 0 ? 'chime, step complete' : null); }); });
+  if (M.phase === 1) {
+    miniFlash('✓ Copied! Now there are two matching DNA molecules, one for each new cell.', '#7be0ad', 4); M.score += 100;
+    dnaLater(2.2, function () {
+      /* unzip: the original strand lifts away so RNA polymerase can read the strand the player built */
+      dnaTw(M.top, 0, 2.6, 1.0); M.botLb.material.map = labelTex('Template strand', { bd: '#ffd166' }); M.botLb.material.needsUpdate = true;
+      M.polyBlob.material.color.set('#ffb070'); M.polyBlob.material.emissive.set('#5a2a08'); M.polyLb.material.map = labelTex('RNA polymerase', { bd: '#ffb070' }); M.polyLb.material.needsUpdate = true;
+      const rl = label('mRNA', 3, { bd: '#c59cff' }); rl.position.set(-3, 0.6, 0.25); M.rna.add(rl);
+      dnaLater(1.1, function () { dnaCard(2); });
+    });
+  } else if (M.phase === 2) {
+    miniFlash('✓ mRNA made! It matches the top DNA strand, but with U wherever DNA had T.', '#7be0ad', 4.5); M.score += 100;
+    dnaLater(3, function () { miniFlash('The mRNA leaves the nucleus through a nuclear pore…', '#c59cff', 2.5); dnaTw(M.rna, 6, 14, 1.6, function () { dnaTrSetup(); dnaCard(3); }); });
+  }
+}
+/* translation scene: the cytoplasm, a ribosome sitting on the mRNA, a growing amino acid chain */
+function dnaTrSetup() {
+  M.top.visible = M.bot.visible = M.rna.visible = false; M.poly.visible = false; M.slot.visible = false;
+  scene.background = new T.Color('#0b2230'); scene.fog = new T.FogExp2('#0e2a36', 0.016); M.shell.material.color.set('#1e4a5a'); M.shell.material.emissive.set('#08202a');
+  const g = M.gene, tr = new T.Group(); M.tr = tr; M.grp.add(tr);
+  for (let i = 0; i < g.mrna.length; i++) { const nt = dnaNt(g.mrna[i], false, true); nt.position.set(trX(i), -0.6, 0); tr.add(nt); }
+  const ml = label('mRNA', 2.6, { bd: '#c59cff' }); ml.position.set(-2.2, -1.1, 0); tr.add(ml);
+  M.rib = new T.Group();
+  const small = new T.Mesh(G.sph, new T.MeshLambertMaterial({ color: '#9a7ae0', emissive: '#2a1a5a', transparent: true, opacity: 0.6, depthWrite: false })); small.scale.set(2.3, 0.8, 1.2); small.position.y = -2.45; M.rib.add(small);
+  const big = new T.Mesh(G.sph, new T.MeshLambertMaterial({ color: '#9a7ae0', emissive: '#2a1a5a', transparent: true, opacity: 0.28, depthWrite: false })); big.scale.set(2.6, 1.5, 1.3); big.position.set(0, 1.1, -0.4); M.rib.add(big);
+  const rl = label('Ribosome', 2.8, { bd: '#c59cff' }); rl.position.set(-3.1, -2.5, 0.5); M.rib.add(rl);
+  M.frame = new T.Mesh(G.box, new T.MeshBasicMaterial({ color: '#ffd166', wireframe: true, transparent: true, opacity: 0.95 })); M.frame.scale.set(3.1, 1.1, 0.7); M.frame.position.y = -1.1; M.rib.add(M.frame);
+  M.rib.position.x = trX(1); tr.add(M.rib); M.ribX = trX(1);
+}
+function trCodonX(ci) { return trX(ci * 3 + 1); }
+/* ----- codon wheel ----- */
+const WR = [0, 0.2, 0.4, 0.62, 0.99];
+function wheelSize() {
+  const cv = $('dnaWheel'), st = $('stage'), sz = Math.max(260, Math.min(460, st.clientHeight - 150, st.clientWidth * 0.46)), dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.style.width = cv.style.height = sz + 'px'; cv.width = cv.height = Math.round(sz * dpr); M.wsz = sz;
+}
+function wheelDraw() {
+  const cv = $('dnaWheel'); if (!cv || cv.hidden) return; const g = cv.getContext('2d'), D = cv.width, R = D / 2, c = D / 2, TAU = Math.PI * 2;
+  const cod = M.gene.cod[M.ci] || '', path = M.path, done = M.step >= 3, need = M.step < 3 ? cod[M.step] : null;
+  const hintOn = M.ci === 0 || M.miss >= 2, codIdx = cod ? (WB.indexOf(cod[0]) << 4) | (WB.indexOf(cod[1]) << 2) | WB.indexOf(cod[2]) : -1;
+  g.clearRect(0, 0, D, D);
+  const sector = function (ri, a0, a1) { g.beginPath(); g.arc(c, c, WR[ri + 1] * R, a0, a1); if (WR[ri] > 0) g.arc(c, c, WR[ri] * R, a1, a0, true); else g.lineTo(c, c); g.closePath(); };
+  const inPath = function (lv, idx) { for (let k = 0; k < Math.min(lv, path.length); k++) { if (((idx >> (2 * (lv - k))) & 3) !== path[k]) return false; } return true; };
+  const ang = function (idx, n) { return -Math.PI / 2 + idx * TAU / n; };
+  /* amino acid ring: runs of the same amino acid */
+  let s = 0;
+  for (let i = 1; i <= 64; i++) {
+    if (i < 64 && GCODE[i] === GCODE[s] && (i >> 2) === (s >> 2)) continue;
+    const a0 = ang(s, 64), a1 = ang(i, 64), aa = GCODE[s], mine = done && codIdx >= s && codIdx < i;
+    const live = path.length === 0 || ((s >> 4) === path[0] && (path.length < 2 || ((s >> 2) & 3) === path[1]));
+    sector(3, a0, a1); g.fillStyle = mine ? '#ffd166' : ((s >> 2) % 2 ? '#1c3446' : '#24425a'); g.globalAlpha = live ? 1 : 0.3; g.fill(); g.strokeStyle = '#0b1d2a'; g.lineWidth = D * 0.004; g.stroke();
+    const mid = (a0 + a1) / 2, rr = (WR[3] + WR[4]) / 2 * R, flip = Math.cos(mid) < 0;
+    g.save(); g.translate(c + Math.cos(mid) * rr, c + Math.sin(mid) * rr); g.rotate(flip ? mid + Math.PI : mid);
+    g.fillStyle = mine ? '#10202c' : aa === '*' ? '#ff9c9c' : aa === 'M' ? '#7be0ad' : '#ffffff'; g.font = 'bold ' + Math.round(D * 0.034) + 'px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(aa === '*' ? 'STOP' : aa === 'M' ? 'Met ▶' : AA3[aa], 0, 0); g.restore(); g.globalAlpha = 1;
+    s = i;
+  }
+  /* letter rings */
+  [[0, 4], [1, 16], [2, 64]].forEach(function (rg) {
+    const lv = rg[0], n = rg[1];
+    for (let idx = 0; idx < n; idx++) {
+      const b = WB[idx & 3], a0 = ang(idx, n), a1 = ang(idx + 1, n), live = inPath(lv, idx), chosen = path.length > lv && live && (idx & 3) === path[lv];
+      const hint = hintOn && !done && lv === M.step && live && b === need;
+      sector(lv, a0, a1); g.globalAlpha = live ? 1 : 0.22; g.fillStyle = BASECOL[b]; g.fill(); g.globalAlpha = 1;
+      if (live && !chosen) { g.fillStyle = 'rgba(11,29,42,' + (lv === 0 ? 0.15 : lv === 1 ? 0.35 : 0.5) + ')'; g.fill(); }
+      g.strokeStyle = '#0b1d2a'; g.lineWidth = D * 0.004; g.stroke();
+      if (chosen || hint) { g.lineWidth = D * (hint ? 0.012 : 0.009); g.strokeStyle = hint ? '#ffd166' : '#ffffff'; g.stroke(); }
+      const mid = (a0 + a1) / 2, rr = lv === 0 ? WR[1] * R * 0.55 : (WR[lv] + WR[lv + 1]) / 2 * R;
+      g.globalAlpha = live ? 1 : 0.35; g.fillStyle = '#10202c'; g.font = 'bold ' + Math.round(D * [0.075, 0.045, 0.026][lv]) + 'px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(b, c + Math.cos(mid) * rr, c + Math.sin(mid) * rr); g.globalAlpha = 1;
+    }
+  });
+}
+function wheelClick(e) {
+  if (!M || M.kind !== 'dna' || M.phase !== 3 || M.busy || M.over) return; e.preventDefault(); e.stopPropagation();
+  const r = e.currentTarget.getBoundingClientRect(), x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2, rad = Math.hypot(x, y) / (r.width / 2);
+  let a = Math.atan2(y, x) + Math.PI / 2; if (a < 0) a += Math.PI * 2;
+  const ring = rad < WR[1] ? 0 : rad < WR[2] ? 1 : rad < WR[3] ? 2 : rad < WR[4] ? 3 : -1; if (ring < 0) return;
+  const names = ['center circle', 'middle ring', 'outer ring'];
+  if (ring === 3) { miniFlash(M.step < 3 ? 'Follow the letters first: find ' + M.gene.cod[M.ci][M.step] + ' in the ' + names[M.step] + '.' : '', '#ffd166', 3); return; }
+  if (ring !== M.step) { miniFlash('Next, find ' + M.gene.cod[M.ci][M.step] + ' in the ' + names[M.step] + '.', '#ffd166', 3); return; }
+  const n = [4, 16, 64][ring], idx = Math.floor(a / (Math.PI * 2 / n));
+  for (let k = 0; k < ring; k++) if (((idx >> (2 * (ring - k))) & 3) !== M.path[k]) { miniFlash('Stay inside the part of the wheel you already picked (the bright part).', '#ffd166', 3); return; }
+  wheelPick(WB[idx & 3]);
+}
+function wheelPick(b) {
+  const cod = M.gene.cod[M.ci], need = cod[M.step];
+  if (WB.indexOf(b) < 0) { miniFlash('Codons are written in RNA letters: U, C, A, G.', '#ffd166', 3); return; }
+  if (b !== need) {
+    M.miss++; M.slips++; M.codonMiss = true; beep(200, 0.2, 'sawtooth', 'boing, not that letter');
+    const ord = ['1st', '2nd', '3rd'][M.step], names = ['center circle', 'middle ring', 'outer ring'];
+    miniFlash(M.miss === 1 ? 'Look at the codon: its ' + ord + ' letter is ' + need + '. Find ' + need + ' in the ' + names[M.step] + '.' : 'The gold outline shows where ' + need + ' is.', '#ffb09c', 3.5);
+    if (M.miss >= 2) dnaHintBtn(need); wheelDraw(); return;
+  }
+  M.path.push(WB.indexOf(b)); M.step++; M.miss = 0; dnaHintBtn(null); beep({ U: 587, C: 784, A: 523, G: 659 }[b], 0.09, 'triangle');
+  if (M.step >= 3) { wheelDraw(); dnaShowRule(); codonDone(); } else { wheelDraw(); dnaShowRule(); }
+}
+function codonDone() {
+  const cod = M.gene.cod[M.ci], aa = aaOf(cod), x = trCodonX(M.ci); M.busy = true;
+  if (!M.codonMiss) { M.score += 80; M.cleanCodons++; } else M.score += 30; M.codonMiss = false;
+  if (aa === '*') {
+    miniFlash(cod + ' is a STOP codon. No tRNA fits it, so the ribosome lets go and the protein is finished!', '#ff9c9c', 5); beep(330, 0.4, 'sine', 'stop codon');
+    dnaLater(1.2, function () { dnaTw(M.rib, M.rib.position.x + 2, -6, 1.2); M.beads.forEach(function (bd) { bd.free = true; }); });
+    dnaLater(3.2, dnaFinal); return;
+  }
+  const first = M.ci === 0;
+  miniFlash((first ? 'AUG = Met, the START codon. Every protein begins here. ' : cod + ' = ' + AA3[aa] + '. ') + 'A tRNA brings ' + AA3[aa] + ' to the ribosome.', '#7be0ad', 4);
+  /* tRNA: body, anticodon (3 bases that pair with the codon), and the amino acid on top */
+  const t = new T.Group(), body = new T.Mesh(G.box, emat('#e8d9b0', '#3a2a10')); body.scale.set(1.6, 1.5, 0.4); body.position.y = 1.2; t.add(body);
+  const arm = new T.Mesh(G.cyl, emat('#e8d9b0', '#3a2a10')); arm.scale.set(0.12, 0.7, 0.12); arm.position.y = 2.25; t.add(arm);
+  cod.split('').forEach(function (b, k) { const ab = { A: 'U', U: 'A', G: 'C', C: 'G' }[b], nb = new T.Mesh(G.box, emat(BASECOL[ab], '#222222')); nb.scale.set(0.8, 0.6, 0.45); nb.position.set((k - 1) * 1.0, 0.25, 0); t.add(nb); });
+  const tl = label('tRNA', 2.6, { bd: '#e8d9b0' }); tl.position.set(-2.3, 1.2, 0.3); t.add(tl);
+  const bead = dnaBead(aa, M.beads.length); bead.position.set(0, 2.9, 0.2); t.add(bead);
+  t.position.set(x, 9, 0.35); M.tr.add(t); beep(700, 0.2, 'sine', 'whoosh, tRNA arriving');
+  dnaTw(t, x, -0.6, 1.0, function () {
+    beep(880, 0.15, 'triangle', 'click, amino acid joins the chain');
+    t.remove(bead); bead.position.set(x, 2.3, 0.2); M.tr.add(bead); M.beads.push(bead);
+    dnaLater(0.5, function () { dnaTw(t, x - 3, 10, 1.0, function () { M.tr.remove(t); }); });
+    dnaLater(0.8, function () {
+      M.ci++; M.step = 0; M.path = []; M.miss = 0; M.busy = false;
+      dnaTw(M.rib, trCodonX(M.ci), 0, 0.6); wheelDraw(); dnaShowRule(); dnaTop('Step 3 of 3 · Translation · codon ' + (M.ci + 1) + ' of ' + M.gene.cod.length);
+    });
+  });
+}
+function dnaBead(aa, j) {
+  const g = new T.Group(), col = AACOL[j % AACOL.length], s = new T.Mesh(G.sph, emat(col, '#333333')); s.scale.setScalar(0.55); g.add(s); g.add(glow(col, 2, 0.4));
+  const lb = label(AA3[aa], 1.9, { bd: col, big: true }); lb.position.set(1.55, 0, 0.3); g.add(lb); return g;
+}
+function dnaFinal() {
+  M.over = true; M.busy = true; dnaRule(''); $('dnaWheel').hidden = true; $('miniPick').innerHTML = '';
+  if (!S.owned) S.owned = {}; const g = M.gene, aas = g.cod.slice(0, -1).map(aaOf), newColor = !S.owned.helix;
+  S.dnaSeen[g.word] = 1; S.owned.helix = 1; M.score += 300 + 500; save(); award('dna-lab');
+  [523, 659, 784, 1047, 1319].forEach(function (f, k) { dnaLater(k * 0.12, function () { beep(f, k === 4 ? 0.6 : 0.16, 'triangle', k === 0 ? 'fanfare, secret message decoded' : null); }); });
+  miniPanel('<h2>🧬 Secret message decoded!</h2><p>Every amino acid also has a <b>one-letter nickname</b>. Read your protein from start to stop:</p>' +
+    '<div class="dnaWord">' + aas.map(function (a, j) { return '<span style="--c:' + AACOL[j % AACOL.length] + '"><small>' + AA3[a] + '</small>' + a + '</span>'; }).join('') + '</div>' +
+    '<p class="big">Your protein spells <b>' + g.word + '</b>! &nbsp;+500 secret bonus</p>' +
+    (newColor ? '<p class="unlock">✨ Special bonus: secret alien color <b>Helix gold</b> unlocked. Try it on in the Wardrobe!</p>' : '<p class="dim">Each trip through the portal hides a different secret word. Can you find all ' + SECRETS.length + '? (' + Object.keys(S.dnaSeen).length + ' found)</p>') +
+    '<p><b>What you did:</b> <b>Replication</b> copied the DNA (A–T, G–C). <b>Transcription</b> copied the gene into <b>mRNA</b> (U instead of T). In <b>translation</b>, the <b>ribosome</b> read the mRNA one <b>codon</b> at a time, <b>tRNA</b> brought the matching amino acids, and a <b>stop codon</b> ended the protein.</p>' +
+    '<p class="dim">Every living thing uses this same genetic code. Score: <b>' + M.score + '</b> · Clean codons: ' + M.cleanCodons + ' of ' + (g.cod.length) + '</p>' +
+    '<button type="button" id="miniBack" class="primary">Return through the portal</button>');
+  setTimeout(function () { const b = $('miniBack'); if (b) b.focus(); }, 50);
+}
+function dnaCam(snap) {
+  let tx2 = 0, ty = 0.4;
+  if (M.phase === 0 || M.phase === 1 || M.phase === 2) { tx2 = dnaX(Math.min(M.i, M.gene.top.length - 1)); ty = M.phase === 2 ? 0.5 : -0.5; if (M.phase === 0) tx2 = 3; }
+  if (M.phase === 3 || M.tr) { tx2 = (M.rib ? M.rib.position.x : 0) + 3.4; ty = 1.3; }
+  if (M.over && M.tr) tx2 = (M.beads.length ? M.beads[Math.floor(M.beads.length / 2)].position.x : 0) + 1;
+  const k = snap ? 1 : 0.08; M.camX += (tx2 - M.camX) * k; M.camY += (ty - M.camY) * k;
+  const z = cam.aspect < 1.3 ? 16 : 12.5; cam.position.set(M.camX, M.camY + 0.6, z); cam.lookAt(M.camX, M.camY, 0);
+}
+function dnaStep(dt) {
+  M.t += dt; if (M.flashT > 0) { M.flashT -= dt; if (M.flashT <= 0) $('miniMsg').hidden = true; }
+  const done = []; M.tw = M.tw.filter(function (tw) { tw.t += dt; const u = Math.min(1, tw.t / tw.dur), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+    tw.o.position.x = tw.fx + (tw.x - tw.fx) * e; tw.o.position.y = tw.fy + (tw.y - tw.fy) * e; if (u >= 1) { if (tw.cb) done.push(tw.cb); return false; } return true; });
+  const due = []; M.wait = M.wait.filter(function (w) { w.t -= dt; if (w.t <= 0) { due.push(w.fn); return false; } return true; });
+  done.concat(due).forEach(function (fn) { if (M) fn(); }); if (!M) return;
+  if (M.phase === 1 || M.phase === 2 || M.phase === 0) {
+    const i = Math.min(M.i, M.gene.top.length - 1), x = dnaX(i), sy = M.phase === 2 ? 0.5 : -0.5;
+    M.slot.visible = !M.busy && M.phase > 0; M.slot.position.set(x + (M.slotShake > 0 ? Math.sin(M.t * 60) * 0.12 : 0), sy, 0.1); M.slotShake = (M.slotShake || 0) - dt;
+    M.slot.material.opacity = 0.55 + Math.sin(M.t * 6) * 0.35;
+    M.poly.position.x += (x - M.poly.position.x) * Math.min(1, dt * 8); M.poly.position.y = M.phase === 2 ? 0 : -0.4;
+  }
+  if (M.tr) {
+    M.frame.material.opacity = 0.6 + Math.sin(M.t * 5) * 0.35;
+    /* the chain grows to the left of the ribosome, newest amino acid next to it */
+    const n = M.beads.length, rx = M.rib.position.x;
+    M.beads.forEach(function (bd, j) {
+      const k = n - 1 - j, tx3 = bd.free ? trCodonX(0) + (j + 0.5) * 1.35 : rx - 0.5 - k * 0.45, ty3 = bd.free ? 3.3 + Math.sin(M.t * 2 + j) * 0.15 : 1.8 + k * 0.95;
+      bd.position.x += (tx3 - bd.position.x) * Math.min(1, dt * 5); bd.position.y += (ty3 - bd.position.y) * Math.min(1, dt * 5);
+    });
+  }
+  dnaCam(false);
+}
+function dnaKey(e, down) {
+  const k = e.key;
+  if (down && M.intro && (k === 'Enter' || k === ' ')) { e.preventDefault(); miniStart(); return; }
+  if (down && M.card && (k === 'Enter' || k === ' ')) { e.preventDefault(); dnaNext(); return; }
+  if (down && M.over && (k === 'Enter' || k === ' ' || k === 'e' || k === 'E')) { e.preventDefault(); exitMini(); return; }
+  if (down && /^[atgcuATGCU]$/.test(k) && !e.repeat) { e.preventDefault(); dnaInput(k); }
+}
 /* ---------- MOTHERSHIP STATION: report, supply shop, practice bay, wardrobe ---------- */
 const SHOP = [
   { id: 'life', icon: '💗', name: 'Extra life', cost: 600, desc: 'Start your next level with one more life.' },
@@ -2267,12 +2650,12 @@ function menuScene() {
 function refreshAlien() { if (!menuGrp) return; if (menuAlien) menuGrp.remove(menuAlien); menuAlien = buildAlien(S.alien); menuAlien.scale.setScalar(1.5); menuGrp.add(menuAlien); }
 function custHTML() {
   const stars = totalStars();
-  const rows = [['Body', 'shape', ['Round', 'Tall', 'Wide', 'Jelly', 'Cube']], ['Color', 'color', COLORS.map(function (c) { return c[0]; })], ['Eyes', 'eyes', ['1', '2', '3'], 1], ['Eye style', 'estyle', ['Classic', 'Anime', 'Sleepy']],
+  const rows = [['Body', 'shape', ['Round', 'Tall', 'Wide', 'Jelly', 'Cube']], ['Color', 'color', COLORS.map(function (c) { return c[2] && !(S.owned && S.owned[c[2]]) ? '🔒 Secret' : c[0]; })], ['Eyes', 'eyes', ['1', '2', '3'], 1], ['Eye style', 'estyle', ['Classic', 'Anime', 'Sleepy']],
     ['Mouth', 'mouth', ['None', 'Smile', 'Open', 'Cat', 'Fangs', 'Tongue']], ['Antennae', 'ant', ['0', '1', '2']],
     ['Gear', 'gear', GEAR.map(function (g, i) { return !gearOpen(i) ? g[0] + ' (' + g[1] + ' stars)' : g[0]; })]];
   return rows.map(function (r) {
     return '<div class="row"><span class="rl">' + r[0] + '</span><span class="rb">' + r[2].map(function (name, i) {
-      const v = i + (r[3] || 0), lock = r[1] === 'gear' && !gearOpen(i);
+      const v = i + (r[3] || 0), lock = (r[1] === 'gear' && !gearOpen(i)) || (r[1] === 'color' && COLORS[i][2] && !(S.owned && S.owned[COLORS[i][2]]));
       return '<button type="button" class="chip" data-k="' + r[1] + '" data-v="' + v + '"' + (S.alien[r[1]] === v ? ' aria-pressed="true"' : ' aria-pressed="false"') + (lock ? ' disabled' : '') +
         (r[1] === 'color' ? ' style="--sw:' + COLORS[i][1] + '"><i class="sw"></i>' : '>') + esc(name) + '</button>';
     }).join('') + '</span></div>';
@@ -2438,7 +2821,7 @@ function tick(t) {
   requestAnimationFrame(tick);
   const dt = Math.min((t - last) / 1000 || 0, 1 / 30); last = t;
   if (mode === 'cozy' && BQ.cozy) BQ.cozy.step(dt);
-  else if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else miniStep(dt); }
+  else if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else if (M.kind === 'dna') dnaStep(dt); else miniStep(dt); }
   else if (mode === 'play' && !paused) {
     step(dt);
     if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').hidden = true; }
@@ -2543,11 +2926,11 @@ function wire() {
   $('btnQuit').onclick = menuScene; $('btnMenu').onclick = menuScene;
   $('btnReplay').onclick = function () { startLevel(LAST.w, LAST.lv); };
   $('btnNext').onclick = function () { const list = allLevels(), i = list.findIndex(function (e) { return e.lv === LAST.lv; }); startLevel(list[i + 1].w, list[i + 1].lv); };
-  const aimAt = function (e) { if (mode !== 'mini' || !M) return; if (M.kind === 'golf') return golfPointer(e, 'move'); const r = $('stage').getBoundingClientRect(); M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
+  const aimAt = function (e) { if (mode !== 'mini' || !M || M.kind === 'dna') return; if (M.kind === 'golf') return golfPointer(e, 'move'); const r = $('stage').getBoundingClientRect(); M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
   $('stage').addEventListener('pointermove', aimAt);
-  $('stage').addEventListener('pointerdown', function (e) { if (mode !== 'mini' || !M) return; if (M.kind === 'golf') return golfPointer(e, 'down'); aimAt(e); miniFire(); });
+  $('stage').addEventListener('pointerdown', function (e) { if (mode !== 'mini' || !M || M.kind === 'dna') return; if (M.kind === 'golf') return golfPointer(e, 'down'); aimAt(e); miniFire(); });
   window.addEventListener('pointerup', function (e) { if (mode === 'mini' && M && M.kind === 'golf') golfPointer(e, 'up'); });
-  $('mini').addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !M) return; if (b.id === 'miniGo') miniStart(); else if (b.id === 'miniBack') exitMini(); else if (b.dataset.ab != null) { miniSel(+b.dataset.ab); b.blur(); } });
+  $('mini').addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !M) return; if (b.id === 'miniGo') miniStart(); else if (b.id === 'miniBack') exitMini(); else if (b.id === 'dnaNext') dnaNext(); else if (b.dataset.base) { dnaInput(b.dataset.base); b.blur(); } else if (b.dataset.ab != null) { miniSel(+b.dataset.ab); b.blur(); } });
   $('hudInv').addEventListener('click', function (e) { const b = e.target.closest('[data-use]'); if (!b) return; b.blur(); if (b.dataset.use === 'fly') useFly(); else useLens(); });
   $('stTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-tab]'); if (!b) return; if (b.dataset.tab === 'journal') { openJournal('done'); return; } stationTab(b.dataset.tab); });
   $('stBody').addEventListener('click', stationClick);
