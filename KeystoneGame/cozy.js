@@ -13,7 +13,7 @@ const C = BQ.core, T = C.T, tx = C.tx;
 /* ---------- TEXT: English and Spanish ---------- */
 Object.assign(C.I18N.en, {
   'cz.reserve': 'Willow Creek Reserve', 'cz.mode': 'Cozy Exploration',
-  'cz.controls': 'Move: WASD or arrows · Run: Shift · Jump: Space (hold in the air to glide) · Swim down: C · Interact: E · Look around: drag the mouse, Q / R, T / G · Zoom: mouse wheel or − / + · Look closer: V · Journal: J · Menu: Esc',
+  'cz.controls': 'Move: WASD or arrows · Run: Shift · Jump: Space (hold in the air to glide) · Swim down: C · Interact: E · Listen: L · Map: M · Hint: H · Look around: drag the mouse, Q / R, T / G · Zoom: mouse wheel or − / + · Look closer: V · Journal: J · Menu: Esc',
   'cz.swimTip': 'You are swimming! Hold C to dive under the water. Hold Space to rise. Press Space at the surface near the shore to climb out.',
   'cz.diveTip': 'Underwater! Look around with the mouse. You float back up on your own whenever you let go of C.',
   'cz.flyTip': 'Flying! Space: go up · C: go down · Shift: faster. Watch your energy bar. When it runs out you glide down gently.',
@@ -30,6 +30,20 @@ Object.assign(C.I18N.en, {
   'cz.d.dogwood': 'A small tree that grows in the shade of bigger trees. In spring its white blossoms feed POLLINATORS. In fall birds eat its red berries and spread the seeds in their droppings.',
   'cz.d.hickory': 'Its nuts feed squirrels, chipmunks and deer. Squirrels bury nuts and forget some of them, so they help plant new hickory trees. The leaves turn golden in fall.',
   'cz.d.biodiv': 'BIODIVERSITY: you found 5 different kinds of trees! Each kind has its own shape, leaves, seeds and job in the ecosystem. A forest with many species is more stable: if a disease harms one kind of tree, the others still give food and shelter.',
+  'cz.lookout': 'Look through the viewer at', 'cz.t.seaview': 'the sea', 'cz.t.valleyview': 'the valley', 'cz.t.canyonview': 'the canyon',
+  'cz.n.seaview': 'Sea cliff lookout', 'cz.n.valleyview': 'Valley lookout', 'cz.n.canyonview': 'Canyon lookout',
+  'cz.d.seaview': 'The ocean! Tiny drifting algae called PHYTOPLANKTON live in the sunlit top layer of the sea. Together they make roughly half of the oxygen on Earth. The striped rock in the cliff is made of layers of sediment laid down long ago.',
+  'cz.d.valleyview': 'Look: the pond spills over the cliff, and that water joins the river past the farms, the town and the wetland. All the land that drains into one river is a WATERSHED. Whatever washes into the water up here travels down there too.',
+  'cz.d.canyonview': 'The river at the bottom carved this canyon by EROSION, grain by grain, over a very long time. Each colored stripe in the wall is a rock layer; deeper layers are older. (Press V to zoom back out.)',
+  'cz.musicVol': 'Music volume', 'cz.soundVol': 'Nature sounds and effects',
+  'cz.m.ears': 'Animals may have noticed something too. Press L near them to listen.',
+  'cz.fill': 'Fill your jar with',
+  'cz.m.o2': 'Gather evidence ({n} of 4):',
+  'cz.m.k.water': 'Pond water: walk out on the wooden dock and press E to look closely and fill your jar.',
+  'cz.m.k.oxygen': 'Oxygen: use the test kit on the south shore of the pond (sparkle).',
+  'cz.m.k.micro': 'Microscope: take your jar to the table outside the research station cabin.',
+  'cz.m.k.farm': 'Source: follow the stream uphill from the pond and see what is beside it.',
+  'cz.s.gotPond': 'Your jar is full of green pond water! Take it to the microscope on the table outside the research station cabin.',
   'cz.note': 'Field note', 'cz.camSpeed': 'Camera speed', 'cz.camInv': 'Invert up and down', 'cz.energy': 'Flight energy',
   'cz.t.mussel': 'the freshwater mussels', 'cz.t.tadpole': 'the tadpoles', 'cz.t.pondweed': 'the pondweed',
   'cz.n.mussel': 'Freshwater mussels', 'cz.n.tadpole': 'Tadpoles', 'cz.n.pondweed': 'Pondweed (underwater plant)',
@@ -61,7 +75,7 @@ Object.assign(C.I18N.en, {
   'cz.ev.micro': 'Microscope: far too many algae cells, plus bacteria breaking down the dead ones.',
   'cz.ev.farm': 'Fertilizer (nitrogen and phosphorus) washes from the farm into the stream when it rains, and the stream flows into the pond.',
   'cz.m.title': 'The Quiet Pond', 'cz.m.o0': 'Explore the reserve. Someone by the pond looks worried.', 'cz.m.o1': 'Ask Dr. Ama at the research station for help.',
-  'cz.m.o2': 'Gather evidence ({n} of 4): look at the pond water, test its oxygen, look at a water sample under the microscope, and follow the stream uphill.',
+
   'cz.m.o3': 'You have enough evidence. Tell Dr. Ama your explanation.', 'cz.m.o4': 'Plant seedlings along the stream ({n} of 5) at the glowing spots.', 'cz.m.o5': 'Mystery solved! Keep exploring: there are more secrets in the reserve.',
   'cz.m.evidence': 'Evidence', 'cz.m.need': 'Still to find', 'cz.m.solved': 'Solved',
   'cz.s.ama1': 'Welcome to Willow Creek Reserve! Explore wherever you like. When something sparkles, walk up and press E to observe it.',
@@ -85,7 +99,7 @@ Object.assign(C.I18N.en, {
   'cz.s.needJar': 'You need a sample jar. Dr. Ama at the research station has one.', 'cz.s.needKit': 'You need an oxygen test kit. Dr. Ama at the research station has one.',
   'cz.s.scopeEmpty': 'The microscope is ready. Collect a sample first: a leaf from the oak tree, or water from the pond.',
   'cz.s.scopeDone': 'You looked at all your samples.', 'cz.s.gotLeaf': 'You collected a leaf sample. Take it to the microscope at the research station.',
-  'cz.s.gotPond': 'You collected a pond water sample. Take it to the microscope at the research station.',
+  
   'cz.s.planted': 'You planted a seedling. Its roots will soak up nutrients from the runoff.', 'cz.s.clearing': 'The pond is starting to clear...',
   'cz.a.cz-first': 'Field Scientist', 'cz.a.cz-first.d': 'Make your first observation in Willow Creek Reserve.',
   'cz.a.cz-detective': 'Pond Detective', 'cz.a.cz-detective.d': 'Solve the mystery of the quiet pond.',
@@ -96,7 +110,7 @@ Object.assign(C.I18N.en, {
 });
 Object.assign(C.I18N.es, {
   'cz.reserve': 'Reserva Arroyo de los Sauces', 'cz.mode': 'Exploración tranquila',
-  'cz.controls': 'Moverse: WASD o flechas · Correr: Shift · Saltar: Espacio (mantenlo en el aire para planear) · Bucear: C · Interactuar: E · Mirar alrededor: arrastra el ratón, Q / R, T / G · Zoom: rueda del ratón o − / + · Mirar de cerca: V · Diario: J · Menú: Esc',
+  'cz.controls': 'Moverse: WASD o flechas · Correr: Shift · Saltar: Espacio (mantenlo en el aire para planear) · Bucear: C · Interactuar: E · Escuchar: L · Mapa: M · Pista: H · Mirar alrededor: arrastra el ratón, Q / R, T / G · Zoom: rueda del ratón o − / + · Mirar de cerca: V · Diario: J · Menú: Esc',
   'cz.swimTip': '¡Estás nadando! Mantén C para bucear bajo el agua. Mantén Espacio para subir. Pulsa Espacio en la superficie cerca de la orilla para salir.',
   'cz.diveTip': '¡Bajo el agua! Mira alrededor con el ratón. Vuelves a flotar solo cuando sueltas C.',
   'cz.flyTip': '¡Volando! Espacio: subir · C: bajar · Shift: más rápido. Mira tu barra de energía. Cuando se acaba, bajas planeando con suavidad.',
@@ -113,6 +127,20 @@ Object.assign(C.I18N.es, {
   'cz.d.dogwood': 'Un árbol pequeño que crece a la sombra de árboles más grandes. En primavera sus flores blancas alimentan a los POLINIZADORES. En otoño las aves comen sus bayas rojas y esparcen las semillas con sus excrementos.',
   'cz.d.hickory': 'Sus nueces alimentan a ardillas, ardillas listadas y venados. Las ardillas entierran nueces y olvidan algunas, así que ayudan a plantar nuevos nogales. Sus hojas se vuelven doradas en otoño.',
   'cz.d.biodiv': 'BIODIVERSIDAD: ¡encontraste 5 tipos diferentes de árboles! Cada tipo tiene su propia forma, hojas, semillas y función en el ecosistema. Un bosque con muchas especies es más estable: si una enfermedad daña a un tipo de árbol, los demás siguen dando alimento y refugio.',
+  'cz.lookout': 'Mira por el visor hacia', 'cz.t.seaview': 'el mar', 'cz.t.valleyview': 'el valle', 'cz.t.canyonview': 'el cañón',
+  'cz.n.seaview': 'Mirador del acantilado', 'cz.n.valleyview': 'Mirador del valle', 'cz.n.canyonview': 'Mirador del cañón',
+  'cz.d.seaview': '¡El océano! Unas algas diminutas llamadas FITOPLANCTON flotan en la capa iluminada del mar. Juntas producen más o menos la mitad del oxígeno de la Tierra. Las franjas de la roca del acantilado son capas de sedimento depositadas hace mucho tiempo.',
+  'cz.d.valleyview': 'Mira: el estanque cae por el acantilado y esa agua se une al río que pasa por las granjas, el pueblo y el humedal. Todo el terreno que drena hacia un mismo río es una CUENCA HIDROGRÁFICA. Lo que llega al agua aquí arriba también viaja hasta allá abajo.',
+  'cz.d.canyonview': 'El río del fondo excavó este cañón por EROSIÓN, grano a grano, durante muchísimo tiempo. Cada franja de color de la pared es una capa de roca; las capas más profundas son más antiguas. (Pulsa V para alejar la cámara.)',
+  'cz.musicVol': 'Volumen de la música', 'cz.soundVol': 'Sonidos de la naturaleza y efectos',
+  'cz.m.ears': 'Puede que los animales también hayan notado algo. Pulsa L cerca de ellos para escuchar.',
+  'cz.fill': 'Llena tu frasco con',
+  'cz.m.o2': 'Reúne evidencia ({n} de 4):',
+  'cz.m.k.water': 'Agua del estanque: camina por el muelle de madera y pulsa E para mirarla de cerca y llenar tu frasco.',
+  'cz.m.k.oxygen': 'Oxígeno: usa el kit de medición en la orilla sur del estanque (destello).',
+  'cz.m.k.micro': 'Microscopio: lleva tu frasco a la mesa que está afuera de la cabaña de la estación de investigación.',
+  'cz.m.k.farm': 'Origen: sigue el arroyo cuesta arriba desde el estanque y mira qué hay a su lado.',
+  'cz.s.gotPond': '¡Tu frasco está lleno de agua verde del estanque! Llévalo al microscopio de la mesa que está afuera de la cabaña de la estación de investigación.',
   'cz.note': 'Nota de campo', 'cz.camSpeed': 'Velocidad de la cámara', 'cz.camInv': 'Invertir arriba y abajo', 'cz.energy': 'Energía de vuelo',
   'cz.t.mussel': 'los mejillones de agua dulce', 'cz.t.tadpole': 'los renacuajos', 'cz.t.pondweed': 'la planta acuática',
   'cz.n.mussel': 'Mejillones de agua dulce', 'cz.n.tadpole': 'Renacuajos', 'cz.n.pondweed': 'Planta acuática sumergida',
@@ -144,7 +172,7 @@ Object.assign(C.I18N.es, {
   'cz.ev.micro': 'Microscopio: demasiadas células de algas, y bacterias que descomponen las algas muertas.',
   'cz.ev.farm': 'Cuando llueve, el fertilizante (nitrógeno y fósforo) de la granja llega al arroyo, y el arroyo desemboca en el estanque.',
   'cz.m.title': 'El estanque silencioso', 'cz.m.o0': 'Explora la reserva. Alguien junto al estanque parece preocupado.', 'cz.m.o1': 'Pide ayuda a la Dra. Ama en la estación de investigación.',
-  'cz.m.o2': 'Reúne evidencia ({n} de 4): mira el agua del estanque, mide su oxígeno, observa una muestra de agua al microscopio y sigue el arroyo cuesta arriba.',
+
   'cz.m.o3': 'Tienes suficiente evidencia. Cuéntale tu explicación a la Dra. Ama.', 'cz.m.o4': 'Planta brotes a lo largo del arroyo ({n} de 5) en los puntos que brillan.', 'cz.m.o5': '¡Misterio resuelto! Sigue explorando: hay más secretos en la reserva.',
   'cz.m.evidence': 'Evidencia', 'cz.m.need': 'Por encontrar', 'cz.m.solved': 'Resuelto',
   'cz.s.ama1': '¡Bienvenido a la Reserva Arroyo de los Sauces! Explora donde quieras. Cuando algo brille, acércate y pulsa E para observarlo.',
@@ -168,7 +196,7 @@ Object.assign(C.I18N.es, {
   'cz.s.needJar': 'Necesitas un frasco para muestras. La Dra. Ama, en la estación de investigación, tiene uno.', 'cz.s.needKit': 'Necesitas un kit para medir oxígeno. La Dra. Ama, en la estación de investigación, tiene uno.',
   'cz.s.scopeEmpty': 'El microscopio está listo. Primero toma una muestra: una hoja del roble o agua del estanque.',
   'cz.s.scopeDone': 'Ya observaste todas tus muestras.', 'cz.s.gotLeaf': 'Tomaste una muestra de hoja. Llévala al microscopio de la estación de investigación.',
-  'cz.s.gotPond': 'Tomaste una muestra de agua del estanque. Llévala al microscopio de la estación de investigación.',
+  
   'cz.s.planted': 'Plantaste un brote. Sus raíces absorberán los nutrientes que escurren.', 'cz.s.clearing': 'El estanque empieza a aclararse...',
   'cz.a.cz-first': 'Científico de campo', 'cz.a.cz-first.d': 'Haz tu primera observación en la Reserva Arroyo de los Sauces.',
   'cz.a.cz-detective': 'Detective del estanque', 'cz.a.cz-detective.d': 'Resuelve el misterio del estanque silencioso.',
@@ -212,6 +240,239 @@ Object.assign(C.I18N.es, {
   'cz.d.deer': 'El venado come manzanas caídas y hierba. Es un HERBÍVORO: un CONSUMIDOR primario que come productores. Levanta la cabeza y mueve las orejas cuando te acercas. Los venados RESPONDEN al peligro levantando su cola blanca y corriendo.',
   'cz.d.worms': 'Las lombrices comen hojas muertas y restos de comida y los convierten en tierra rica. Son DESCOMPONEDORES: devuelven los NUTRIENTES al suelo para que las plantas vuelvan a crecer. Sin descomponedores, los seres muertos se amontonarían para siempre.'
 });
+/* LEARNING TO LISTEN: animal voices, human characters, the alien's log */
+Object.assign(C.I18N.en, {
+  'cz.listen': 'Listen to', 'cz.listenKey': 'L: 👂 Listen', 'cz.listening': 'listening with your antennae',
+  'cz.an.frog': '🐸 Frog', 'cz.an.heron': '🪶 Great blue heron', 'cz.an.fish': '🐟 Sunfish', 'cz.an.robin': '🐦 Robin', 'cz.an.deer': '🦌 Deer', 'cz.an.worms': '🪱 Earthworms', 'cz.an.bees': '🐝 Bumblebee', 'cz.an.owl': '🦉 Owl',
+  'cz.lt.frog': 'the frog', 'cz.lt.heron': 'the heron', 'cz.lt.fish': 'the fish', 'cz.lt.robin': 'the robin', 'cz.lt.deer': 'the deer', 'cz.lt.worms': 'the earthworms', 'cz.lt.bees': 'the bumblebee', 'cz.lt.owl': 'the owl',
+  'cz.v.frog1': 'Ribbit. Wait... you can HEAR me? Nobody hears me. I have been complaining for weeks!',
+  'cz.v.frog2': 'The little wiggly bugs I eat used to be everywhere along the edge. Now the water is thick and green, like pea soup, and the bugs are hard to find.',
+  'cz.v.frog3': 'My cousins hopped off to the puddles by the orchard. I am staying. I am stubborn. And, honestly, a little tired.',
+  'cz.v.heron1': 'Shh. I am fishing. I have been fishing since sunrise. Patience is my whole personality.',
+  'cz.v.heron2': 'But nothing comes up to the shallows anymore. And the water is so cloudy I could not see a fish if one swam right past my toes.',
+  'cz.v.heron3': 'I might try the river down in the valley. Do not tell the pond. It will take it personally.',
+  'cz.v.fishS1': 'Blub! Up here! Hiding! It is cold here, and the water tastes fizzy and fresh.',
+  'cz.v.fishS2': 'Down in the pond, breathing got so hard. Like swimming uphill. With a rock on my head. We all swam up the stream to find cooler water.',
+  'cz.v.fishS3': 'We will go home when the pond feels right again. You will know. We will know first, though.',
+  'cz.v.fishP1': 'Blub blub! The pond tastes right again! You can actually breathe in here now. Thank you, big-eyed land fish!',
+  'cz.v.robin1': 'Cheerily! Cheer-up! Oh, a visitor. Mind the eggs, please. They are very important eggs.',
+  'cz.v.robin2': 'I used to snap up tons of insects over the pond. Now? Hardly any. So I fly all the way to the orchard for caterpillars. Exhausting.',
+  'cz.v.deer1': 'Oh! You startled me. I startle easily. It is kind of my thing.',
+  'cz.v.deer2': 'Want a tip? The grass right next to the farm ditch is the greenest, tallest grass anywhere. Grows like crazy. I do not ask questions. I just eat.',
+  'cz.v.worms1': 'We eat dead stuff. Leaves, peels, old roots. You are welcome, by the way.',
+  'cz.v.worms2': 'Here is a secret: when lots of things die all at once, tiny eaters show up by the billions. And every single one of them needs to breathe. It gets crowded down there.',
+  'cz.v.bees1': 'Bzz! Busy, busy! Clover, aster, clover, goldenrod... so many flowers, so little time.',
+  'cz.v.bees2': 'The corn field? Nothing there for me. Corn lets the wind carry its pollen. I need flowers, lots of different kinds, all summer long.',
+  'cz.v.owl1': 'Hoo... it is the middle of the DAY. I am nocturnal. Come back at night and we can talk. Zzz.',
+  'cz.vc.frog': 'Frog: the bugs it eats are hard to find, and the water turned thick and green.',
+  'cz.vc.heron': 'Heron: no fish come up to the shallows, and the water is too cloudy to see into.',
+  'cz.vc.fish': 'Fish: breathing in the pond got hard, so they swam up to the cold spring.',
+  'cz.vc.robin': 'Robin: far fewer insects over the pond than before.',
+  'cz.vc.deer': 'Deer: the grass beside the farm ditch grows extra tall and green.',
+  'cz.vc.worms': 'Earthworms: when lots of things die, tiny decomposers show up, and they all need to breathe.',
+  'cz.vc.bees': 'Bumblebee: needs many kinds of flowers; corn is pollinated by the wind.',
+  'cz.j.voices': 'What the animals noticed', 'cz.j.voiceTip': 'Animals tell you what they experience in their own habitat. They do not always know the cause, so check their stories against your evidence.',
+  'cz.j.log': 'My log', 'cz.logT': '🛸 My log', 'cz.listenTip': 'Your antennae are tingling... this animal has something to say. Press L (or the 👂 button) to listen.',
+  'cz.log1': 'Day 1. I came to Earth to study its life. Then I discovered something strange: my antennae can pick up the voices of Earth\'s animals! The humans here cannot hear them. (Press L near an animal to listen.)',
+  'cz.log2': 'The frog did not know words like "nutrient" or "oxygen." But it knew its food was disappearing. Each animal knows its own small piece of the story.',
+  'cz.log3': 'I came to study life on Earth. But the frog, the heron and the fish knew something was wrong long before my tests showed it. To understand Earth, I first have to learn to listen to it.',
+  'cz.t.sam': 'Ranger Sam',
+  'cz.s.ama1': 'Oh! You must be the visiting scientist... from very far away, I am guessing. I am Dr. Ama Mensah, the reserve\'s field biologist. Welcome to Willow Creek!',
+  'cz.s.ama2': 'Explore wherever you like. When something sparkles, walk up and press E to observe it. Everything you discover goes into your Field Journal (press J).',
+  'cz.s.ama3': 'Missing fish? Let\'s investigate like scientists: gather evidence first, then explain. And watch the animals, too. Where they go and what they do is data. They often notice changes before we do, but they cannot tell us why.',
+  'cz.s.pip1': 'Whoa, a real alien! Cool. I\'m Pip. I fish here every day, but I haven\'t caught a single fish in weeks. And the water used to be so clear...',
+  'cz.s.pip2': 'My grandpa says this pond was clear as glass when he was a kid. It only started turning green the last couple of summers. Could you find out why? Dr. Ama at the research station might help.',
+  'cz.s.lu1': 'Well, howdy! Never met anybody with antennae before. I\'m Lu. My family has farmed this land for three generations. I spread fertilizer so my corn grows big and fast.',
+  'cz.s.lu2': 'Corn needs a lot of nitrogen, so folks spread extra to be safe, right before the spring rains. When it rains, some of it washes down this ditch into the stream. I never thought much about where it ends up...',
+  'cz.s.sam1': 'Hi there! I\'m Ranger Sam. I take care of the trails and keep the lookouts safe, so please stay behind the fence.',
+  'cz.s.sam2': 'My grandmother grew up in that valley. She said the river flooded every spring, and the wetlands soaked it up like a sponge. A lot of those wetlands were drained for farms and roads.',
+  'cz.s.sam3': 'Everything up here flows down there eventually: the pond, the creek, even the rain on this trail. That\'s why I care so much about what goes into the water.',
+});
+Object.assign(C.I18N.es, {
+  'cz.listen': 'Escuchar a', 'cz.listenKey': 'L: 👂 Escuchar', 'cz.listening': 'escuchando con tus antenas',
+  'cz.an.frog': '🐸 Rana', 'cz.an.heron': '🪶 Garza azulada', 'cz.an.fish': '🐟 Pez sol', 'cz.an.robin': '🐦 Petirrojo', 'cz.an.deer': '🦌 Venado', 'cz.an.worms': '🪱 Lombrices', 'cz.an.bees': '🐝 Abejorro', 'cz.an.owl': '🦉 Búho',
+  'cz.lt.frog': 'la rana', 'cz.lt.heron': 'la garza', 'cz.lt.fish': 'el pez', 'cz.lt.robin': 'el petirrojo', 'cz.lt.deer': 'el venado', 'cz.lt.worms': 'las lombrices', 'cz.lt.bees': 'el abejorro', 'cz.lt.owl': 'el búho',
+  'cz.v.frog1': 'Croac. Un momento... ¿me OYES? Nadie me oye. ¡Llevo semanas quejándome!',
+  'cz.v.frog2': 'Los bichitos que me como estaban por toda la orilla. Ahora el agua está espesa y verde, como sopa de chícharos, y casi no encuentro bichos.',
+  'cz.v.frog3': 'Mis primas se fueron saltando a los charcos del huerto. Yo me quedo. Soy terca. Y, la verdad, estoy un poco cansada.',
+  'cz.v.heron1': 'Shh. Estoy pescando. Llevo pescando desde que salió el sol. La paciencia es toda mi personalidad.',
+  'cz.v.heron2': 'Pero ya no sube nada a la parte poco profunda. Y el agua está tan turbia que no vería un pez aunque me pasara entre los dedos.',
+  'cz.v.heron3': 'Quizá pruebe en el río del valle. No se lo digas al estanque. Se lo tomaría muy a pecho.',
+  'cz.v.fishS1': '¡Blub! ¡Aquí arriba! ¡Escondidos! Aquí el agua está fría y sabe fresquita y burbujeante.',
+  'cz.v.fishS2': 'Allá abajo, en el estanque, respirar se volvió tan difícil. Como nadar cuesta arriba. Con una piedra en la cabeza. Todos subimos por el arroyo buscando agua más fría.',
+  'cz.v.fishS3': 'Volveremos a casa cuando el estanque se sienta bien otra vez. Tú lo notarás. Pero nosotros lo notaremos primero.',
+  'cz.v.fishP1': '¡Blub blub! ¡El estanque vuelve a saber bien! Por fin se puede respirar aquí. ¡Gracias, pez terrestre de ojos grandes!',
+  'cz.v.robin1': '¡Pío, pío! ¡Ánimo! Ah, una visita. Cuidado con los huevos, por favor. Son huevos muy importantes.',
+  'cz.v.robin2': 'Antes atrapaba montones de insectos sobre el estanque. ¿Ahora? Casi ninguno. Así que vuelo hasta el huerto a buscar orugas. Agotador.',
+  'cz.v.deer1': '¡Ay! Me asustaste. Me asusto con facilidad. Es lo mío.',
+  'cz.v.deer2': '¿Quieres un consejo? La hierba junto a la zanja de la granja es la más verde y alta de todas. Crece como loca. Yo no hago preguntas. Solo como.',
+  'cz.v.worms1': 'Comemos cosas muertas. Hojas, cáscaras, raíces viejas. De nada, por cierto.',
+  'cz.v.worms2': 'Te contamos un secreto: cuando muchas cosas mueren a la vez, aparecen miles de millones de comedores diminutos. Y todos necesitan respirar. Allá abajo se llena de gente.',
+  'cz.v.bees1': '¡Bzz! ¡Qué ajetreo! Trébol, áster, trébol, vara de oro... tantas flores y tan poco tiempo.',
+  'cz.v.bees2': '¿El maizal? Ahí no hay nada para mí. El maíz deja que el viento lleve su polen. Yo necesito flores, de muchos tipos, todo el verano.',
+  'cz.v.owl1': 'Uuh... es pleno DÍA. Soy nocturno. Vuelve de noche y hablamos. Zzz.',
+  'cz.vc.frog': 'Rana: casi no encuentra los bichos que come, y el agua se volvió espesa y verde.',
+  'cz.vc.heron': 'Garza: ya no suben peces a la parte poco profunda, y el agua está demasiado turbia para ver.',
+  'cz.vc.fish': 'Peces: respirar en el estanque se volvió difícil, así que subieron al manantial frío.',
+  'cz.vc.robin': 'Petirrojo: hay muchos menos insectos sobre el estanque que antes.',
+  'cz.vc.deer': 'Venado: la hierba junto a la zanja de la granja crece muy alta y verde.',
+  'cz.vc.worms': 'Lombrices: cuando mueren muchas cosas, aparecen descomponedores diminutos, y todos necesitan respirar.',
+  'cz.vc.bees': 'Abejorro: necesita muchos tipos de flores; el maíz se poliniza con el viento.',
+  'cz.j.voices': 'Lo que notaron los animales', 'cz.j.voiceTip': 'Los animales te cuentan lo que viven en su propio hábitat. No siempre saben la causa, así que compara sus historias con tu evidencia.',
+  'cz.j.log': 'Mi bitácora', 'cz.logT': '🛸 Mi bitácora', 'cz.listenTip': 'Te hormiguean las antenas... este animal tiene algo que decir. Pulsa L (o el botón 👂) para escuchar.',
+  'cz.log1': 'Día 1. Vine a la Tierra a estudiar su vida. Y descubrí algo extraño: ¡mis antenas captan las voces de los animales de la Tierra! Los humanos de aquí no pueden oírlas. (Pulsa L cerca de un animal para escuchar.)',
+  'cz.log2': 'La rana no conocía palabras como "nutriente" u "oxígeno". Pero sabía que su comida estaba desapareciendo. Cada animal conoce su propio pedacito de la historia.',
+  'cz.log3': 'Vine a estudiar la vida de la Tierra. Pero la rana, la garza y los peces sabían que algo andaba mal mucho antes que mis pruebas. Para entender la Tierra, primero tengo que aprender a escucharla.',
+  'cz.t.sam': 'con el guardabosques Sam',
+  'cz.s.ama1': '¡Oh! Tú debes ser el científico visitante... de muy, muy lejos, supongo. Soy la Dra. Ama Mensah, la bióloga de campo de la reserva. ¡Bienvenido a Arroyo de los Sauces!',
+  'cz.s.ama2': 'Explora donde quieras. Cuando algo brille, acércate y pulsa E para observarlo. Todo lo que descubras se guarda en tu diario de campo (pulsa J).',
+  'cz.s.ama3': '¿Faltan peces? Investiguemos como científicos: primero reunimos evidencia y después explicamos. Y observa también a los animales. Adónde van y qué hacen también son datos. Muchas veces notan los cambios antes que nosotros, pero no pueden decirnos por qué.',
+  'cz.s.pip1': '¡Guau, un extraterrestre de verdad! Qué genial. Soy Pip. Pesco aquí todos los días, pero hace semanas que no atrapo ni un pez. Y el agua antes era tan clara...',
+  'cz.s.pip2': 'Mi abuelo dice que este estanque era transparente como el vidrio cuando él era niño. Empezó a ponerse verde hace solo un par de veranos. ¿Puedes averiguar por qué? La Dra. Ama, en la estación de investigación, quizá pueda ayudar.',
+  'cz.s.lu1': '¡Hola, hola! Nunca había conocido a nadie con antenas. Soy Lu. Mi familia cultiva esta tierra desde hace tres generaciones. Echo fertilizante para que mi maíz crezca grande y rápido.',
+  'cz.s.lu2': 'El maíz necesita mucho nitrógeno, así que la gente echa de más por si acaso, justo antes de las lluvias de primavera. Cuando llueve, una parte baja por esta zanja hasta el arroyo. Nunca pensé mucho en adónde va a parar...',
+  'cz.s.sam1': '¡Hola! Soy Sam, guardabosques. Cuido los senderos y los miradores, así que, por favor, quédate detrás de la cerca.',
+  'cz.s.sam2': 'Mi abuela creció en ese valle. Decía que el río se desbordaba cada primavera y que los humedales absorbían el agua como una esponja. Muchos de esos humedales se secaron para hacer granjas y carreteras.',
+  'cz.s.sam3': 'Todo lo de aquí arriba termina bajando hasta allá: el estanque, el arroyo, hasta la lluvia de este sendero. Por eso me importa tanto lo que llega al agua.',
+});
+/* MAP AND HINTS */
+Object.assign(C.I18N.en, {
+  'cz.map': 'Map', 'cz.hint': 'Hint', 'cz.close': 'Close', 'cz.mapTitle': 'Map of Willow Creek Reserve', 'cz.mapHelp': 'Drag to move · wheel or + / − to zoom · click a mark to read about it · M or Esc to close',
+  'cz.mapMe': 'Center on me', 'cz.mapLegend': 'Legend', 'cz.unexplored': 'Not explored yet',
+  'cz.lg.you': 'You', 'cz.lg.find': 'Your discoveries', 'cz.lg.person': 'People', 'cz.lg.view': 'Lookouts', 'cz.lg.water': 'Water', 'cz.lg.forest': 'Forest', 'cz.lg.meadow': 'Meadow', 'cz.lg.farm': 'Farm', 'cz.lg.path': 'Trail', 'cz.lg.target': 'Hint target',
+  'cz.ar.pond': 'Willow Pond', 'cz.ar.station': 'Research Station', 'cz.ar.farm': 'Lu\'s Farm', 'cz.ar.spring': 'Spring and Waterfall', 'cz.ar.hill': 'Hilltop Overlook', 'cz.ar.hollow': 'Hidden Hollow', 'cz.ar.orchard': 'Orchard', 'cz.ar.forest': 'Old Forest', 'cz.ar.meadow': 'Wildflower Meadow',
+  'cz.ar.sea': 'Sea Cliffs', 'cz.ar.valley': 'Valley Lookout', 'cz.ar.canyon': 'Canyon Lookout', 'cz.ar.stream': 'Willow Creek', 'cz.ar.dock': 'Dock',
+  'cz.hb.pond': 'the pond', 'cz.hb.stream': 'the creek', 'cz.hb.forest': 'the forest', 'cz.hb.farm': 'the farm', 'cz.hb.hill': 'the hilltop', 'cz.hb.orchard': 'the orchard', 'cz.hb.spring': 'the spring', 'cz.hb.lookout': 'the cliff edge', 'cz.hb.meadow': 'the meadow', 'cz.hb.hollow': 'the hollow',
+  'cz.mi.habitat': 'Habitat', 'cz.mi.notYet': 'You have not recorded this yet.',
+  'cz.dir.n': 'north', 'cz.dir.ne': 'north-east', 'cz.dir.e': 'east', 'cz.dir.se': 'south-east', 'cz.dir.s': 'south', 'cz.dir.sw': 'south-west', 'cz.dir.w': 'west', 'cz.dir.nw': 'north-west', 'cz.dir.here': 'right here',
+  'cz.h.title': 'Hint', 'cz.h.more': 'Press Hint again for a bigger clue.', 'cz.h.last': 'That is the biggest clue. You can always explore somewhere else instead!',
+  'cz.h.under': 'You are underwater. Let go of C and you float up. Hold Space to rise faster. Swim toward the shore and press Space to climb out.',
+  'cz.h.lost': 'Feeling lost? Open the map (M). It shows where you have been, the trails, and everything you have discovered.',
+  'cz.h.find1': 'Look around {hab} to the {dir}. Something there is worth a closer look.',
+  'cz.h.find2': 'Head {dir} about {n} steps, toward {area}. Watch for a white sparkle.',
+  'cz.h.find3': 'I marked it on your map and with a beam of light. Walk to the beam and press E.',
+  'cz.h.voice1': 'An animal nearby seems to have something on its mind. Your antennae might pick it up.',
+  'cz.h.voice2': 'Walk {dir} about {n} steps to {who}, then press L (or the 👂 button) to listen.',
+  'cz.h.voice3': 'It is marked on your map and with a beam of light. Stand close and press L.',
+  'cz.h.done': 'You have found everything in this part of the reserve! Try the lookouts at the edges, swim to the bottom of the pond, or fly from the hilltop.',
+  'cz.h.m0a': 'Someone near the pond looks worried. People often notice when something has changed.', 'cz.h.m0b': 'Pip is standing on the trail just east of the pond. Look for a yellow glow above a person.', 'cz.h.m0c': 'Pip is marked on your map. Walk up to Pip and press E to talk.',
+  'cz.h.m1a': 'Pip mentioned someone who could help. Scientists usually work at a research station.', 'cz.h.m1b': 'The research station is the cabin with the red roof, near the middle of the reserve.', 'cz.h.m1c': 'Dr. Ama is marked on your map, next to the microscope table. Walk up and press E.',
+  'cz.h.m2a': 'A good scientist collects more than one kind of evidence. Which item on your checklist is still empty?', 'cz.h.m2b': 'Your checklist (top left) says where each piece of evidence is. The next one is: {item}', 'cz.h.m2c': 'The next piece of evidence is marked on your map and with a beam of light.',
+  'cz.h.m3a': 'You have enough evidence. What could connect fertilizer, green water and low oxygen?', 'cz.h.m3b': 'Go back to Dr. Ama at the research station and tell her your explanation.', 'cz.h.m3c': 'Dr. Ama is marked on your map. Choose the explanation that uses ALL your evidence.',
+  'cz.h.m4a': 'Plants along a stream can catch runoff before it reaches the pond. Where could new plants help?', 'cz.h.m4b': 'Follow the creek uphill from the pond. Glowing green spots show where to plant.', 'cz.h.m4c': 'The next planting spot is marked on your map and with a beam of light. Stand on it and press E.',
+});
+Object.assign(C.I18N.es, {
+  'cz.map': 'Mapa', 'cz.hint': 'Pista', 'cz.close': 'Cerrar', 'cz.mapTitle': 'Mapa de la Reserva Arroyo de los Sauces', 'cz.mapHelp': 'Arrastra para mover · rueda o + / − para el zoom · haz clic en una marca para leer sobre ella · M o Esc para cerrar',
+  'cz.mapMe': 'Centrar en mí', 'cz.mapLegend': 'Leyenda', 'cz.unexplored': 'Sin explorar',
+  'cz.lg.you': 'Tú', 'cz.lg.find': 'Tus descubrimientos', 'cz.lg.person': 'Personas', 'cz.lg.view': 'Miradores', 'cz.lg.water': 'Agua', 'cz.lg.forest': 'Bosque', 'cz.lg.meadow': 'Pradera', 'cz.lg.farm': 'Granja', 'cz.lg.path': 'Sendero', 'cz.lg.target': 'Objetivo de la pista',
+  'cz.ar.pond': 'Estanque de los Sauces', 'cz.ar.station': 'Estación de investigación', 'cz.ar.farm': 'Granja de Lu', 'cz.ar.spring': 'Manantial y cascada', 'cz.ar.hill': 'Mirador de la colina', 'cz.ar.hollow': 'Hondonada escondida', 'cz.ar.orchard': 'Huerto', 'cz.ar.forest': 'Bosque viejo', 'cz.ar.meadow': 'Pradera de flores',
+  'cz.ar.sea': 'Acantilados del mar', 'cz.ar.valley': 'Mirador del valle', 'cz.ar.canyon': 'Mirador del cañón', 'cz.ar.stream': 'Arroyo de los Sauces', 'cz.ar.dock': 'Muelle',
+  'cz.hb.pond': 'el estanque', 'cz.hb.stream': 'el arroyo', 'cz.hb.forest': 'el bosque', 'cz.hb.farm': 'la granja', 'cz.hb.hill': 'la colina', 'cz.hb.orchard': 'el huerto', 'cz.hb.spring': 'el manantial', 'cz.hb.lookout': 'el borde del acantilado', 'cz.hb.meadow': 'la pradera', 'cz.hb.hollow': 'la hondonada',
+  'cz.mi.habitat': 'Hábitat', 'cz.mi.notYet': 'Todavía no lo has registrado.',
+  'cz.dir.n': 'norte', 'cz.dir.ne': 'noreste', 'cz.dir.e': 'este', 'cz.dir.se': 'sureste', 'cz.dir.s': 'sur', 'cz.dir.sw': 'suroeste', 'cz.dir.w': 'oeste', 'cz.dir.nw': 'noroeste', 'cz.dir.here': 'aquí mismo',
+  'cz.h.title': 'Pista', 'cz.h.more': 'Pulsa Pista otra vez para una pista más clara.', 'cz.h.last': 'Esa es la pista más clara. ¡También puedes explorar otro lugar!',
+  'cz.h.under': 'Estás bajo el agua. Suelta C y subirás flotando. Mantén Espacio para subir más rápido. Nada hacia la orilla y pulsa Espacio para salir.',
+  'cz.h.lost': '¿Te sientes perdido? Abre el mapa (M). Muestra dónde has estado, los senderos y todo lo que has descubierto.',
+  'cz.h.find1': 'Mira alrededor de {hab}, hacia el {dir}. Ahí hay algo que vale la pena observar de cerca.',
+  'cz.h.find2': 'Ve hacia el {dir} unos {n} pasos, hacia {area}. Busca un destello blanco.',
+  'cz.h.find3': 'Lo marqué en tu mapa y con un rayo de luz. Camina hasta el rayo y pulsa E.',
+  'cz.h.voice1': 'Un animal cercano parece tener algo en mente. Tus antenas podrían captarlo.',
+  'cz.h.voice2': 'Camina hacia el {dir} unos {n} pasos hasta {who} y pulsa L (o el botón 👂) para escuchar.',
+  'cz.h.voice3': 'Está marcado en tu mapa y con un rayo de luz. Acércate y pulsa L.',
+  'cz.h.done': '¡Encontraste todo en esta parte de la reserva! Prueba los miradores de los bordes, nada hasta el fondo del estanque o vuela desde la colina.',
+  'cz.h.m0a': 'Alguien junto al estanque parece preocupado. La gente suele notar cuando algo ha cambiado.', 'cz.h.m0b': 'Pip está en el sendero, justo al este del estanque. Busca un brillo amarillo sobre una persona.', 'cz.h.m0c': 'Pip está marcado en tu mapa. Acércate y pulsa E para hablar.',
+  'cz.h.m1a': 'Pip mencionó a alguien que podría ayudar. Los científicos suelen trabajar en una estación de investigación.', 'cz.h.m1b': 'La estación de investigación es la cabaña de techo rojo, cerca del centro de la reserva.', 'cz.h.m1c': 'La Dra. Ama está marcada en tu mapa, junto a la mesa del microscopio. Acércate y pulsa E.',
+  'cz.h.m2a': 'Un buen científico reúne más de un tipo de evidencia. ¿Qué parte de tu lista sigue vacía?', 'cz.h.m2b': 'Tu lista (arriba a la izquierda) dice dónde está cada evidencia. La siguiente es: {item}', 'cz.h.m2c': 'La siguiente evidencia está marcada en tu mapa y con un rayo de luz.',
+  'cz.h.m3a': 'Ya tienes suficiente evidencia. ¿Qué podría unir el fertilizante, el agua verde y el poco oxígeno?', 'cz.h.m3b': 'Vuelve con la Dra. Ama a la estación de investigación y cuéntale tu explicación.', 'cz.h.m3c': 'La Dra. Ama está marcada en tu mapa. Elige la explicación que usa TODA tu evidencia.',
+  'cz.h.m4a': 'Las plantas junto a un arroyo pueden atrapar el agua de escorrentía antes de que llegue al estanque. ¿Dónde podrían ayudar plantas nuevas?', 'cz.h.m4b': 'Sigue el arroyo cuesta arriba desde el estanque. Los puntos verdes brillantes muestran dónde plantar.', 'cz.h.m4c': 'El siguiente punto para plantar está marcado en tu mapa y con un rayo de luz. Párate encima y pulsa E.',
+});
+/* DAY, NIGHT AND THE CAMPFIRE */
+Object.assign(C.I18N.en, {
+  'cz.tod.dawn': 'Dawn', 'cz.tod.morning': 'Morning', 'cz.tod.noon': 'Midday', 'cz.tod.afternoon': 'Afternoon', 'cz.tod.golden': 'Golden hour', 'cz.tod.sunset': 'Sunset', 'cz.tod.twilight': 'Twilight', 'cz.tod.night': 'Night',
+  'cz.t.fire': 'the campfire', 'cz.light': 'Light', 'cz.sit': 'Sit by', 'cz.ar.camp': 'Ranger campsite',
+  'cz.rest.title': '🔥 Resting by the campfire', 'cz.rest.text': 'The fire crackles. Watch the sky change and listen to the reserve. Time passes quickly while you rest.',
+  'cz.rest.sunset': 'Rest until sunset', 'cz.rest.night': 'Rest until night', 'cz.rest.morning': 'Rest until morning', 'cz.rest.sit': 'Just sit for a while', 'cz.rest.up': 'Stand up', 'cz.rest.journal': 'Read my journal',
+  'cz.s.fireLit': 'You lit the campfire. Fire turns the chemical energy stored in wood into heat and light. (The wood\'s energy first came from the Sun, captured by the tree in photosynthesis.)',
+  'cz.t.fireflies': 'the blinking lights', 'cz.t.lunamoth': 'the big green moth',
+  'cz.n.fireflies': 'Fireflies', 'cz.n.lunamoth': 'Luna moth',
+  'cz.d.fireflies': 'Fireflies are beetles that make their own light! A chemical reaction in their bodies gives off light with almost no heat. This is BIOLUMINESCENCE. Each kind of firefly blinks its own pattern to find a mate. You only see them after dark.',
+  'cz.d.lunamoth': 'A luna moth, drawn to the porch light. Adult luna moths have no mouths and live only about a week, just long enough to mate and lay eggs. Bright lights at night can confuse moths and pull them away from their habitat.',
+  'cz.v.owlN1': 'Hoo! Night shift! Now we can talk. I see everything in the dark. Big eyes, quiet wings.',
+  'cz.v.owlN2': 'The mice by the farm used to hide in the hedgerows. Fewer hedges now, so fewer mice there... and fewer hiding places for everyone.',
+  'cz.vc.owl': 'Owl: fewer hedgerows by the farm means fewer mice and fewer places to hide.',
+  'cz.nightTip': 'Night is falling. Some animals are just waking up! Look for blinking lights in the meadow, and listen for the owl.',
+});
+Object.assign(C.I18N.es, {
+  'cz.tod.dawn': 'Amanecer', 'cz.tod.morning': 'Mañana', 'cz.tod.noon': 'Mediodía', 'cz.tod.afternoon': 'Tarde', 'cz.tod.golden': 'Hora dorada', 'cz.tod.sunset': 'Atardecer', 'cz.tod.twilight': 'Crepúsculo', 'cz.tod.night': 'Noche',
+  'cz.t.fire': 'la fogata', 'cz.light': 'Encender', 'cz.sit': 'Sentarte junto a', 'cz.ar.camp': 'Campamento del guardabosques',
+  'cz.rest.title': '🔥 Descansando junto a la fogata', 'cz.rest.text': 'El fuego chisporrotea. Mira cómo cambia el cielo y escucha la reserva. El tiempo pasa rápido mientras descansas.',
+  'cz.rest.sunset': 'Descansar hasta el atardecer', 'cz.rest.night': 'Descansar hasta la noche', 'cz.rest.morning': 'Descansar hasta la mañana', 'cz.rest.sit': 'Solo sentarme un rato', 'cz.rest.up': 'Levantarme', 'cz.rest.journal': 'Leer mi diario',
+  'cz.s.fireLit': 'Encendiste la fogata. El fuego convierte la energía química guardada en la madera en calor y luz. (La energía de la madera vino primero del Sol, capturada por el árbol en la fotosíntesis.)',
+  'cz.t.fireflies': 'las lucecitas que parpadean', 'cz.t.lunamoth': 'la gran polilla verde',
+  'cz.n.fireflies': 'Luciérnagas', 'cz.n.lunamoth': 'Polilla luna',
+  'cz.d.fireflies': '¡Las luciérnagas son escarabajos que producen su propia luz! Una reacción química en su cuerpo da luz casi sin calor. Esto es BIOLUMINISCENCIA. Cada tipo de luciérnaga parpadea con su propio patrón para encontrar pareja. Solo se ven cuando oscurece.',
+  'cz.d.lunamoth': 'Una polilla luna, atraída por la luz del porche. Las polillas luna adultas no tienen boca y viven solo una semana, lo justo para aparearse y poner huevos. Las luces brillantes de noche pueden confundir a las polillas y alejarlas de su hábitat.',
+  'cz.v.owlN1': '¡Uuh! ¡Turno de noche! Ahora sí podemos hablar. Veo todo en la oscuridad. Ojos grandes, alas silenciosas.',
+  'cz.v.owlN2': 'Los ratones de la granja se escondían en los setos. Ahora hay menos setos, así que hay menos ratones ahí... y menos escondites para todos.',
+  'cz.vc.owl': 'Búho: menos setos junto a la granja significa menos ratones y menos lugares para esconderse.',
+  'cz.nightTip': 'Está cayendo la noche. ¡Algunos animales apenas se están despertando! Busca lucecitas que parpadean en la pradera y escucha al búho.',
+});
+/* WILDLIFE SURVEYS */
+Object.assign(C.I18N.en, {
+  'cz.sv': 'Survey', 'cz.svStart': 'Start a survey at', 'cz.svPost': 'the survey post',
+  'cz.sv.tally': 'Tally +1 (Space)', 'cz.sv.count': 'Your count', 'cz.sv.time': 'Time left', 'cz.sv.go': 'Start (30 seconds)', 'cz.sv.done': 'Record in my journal', 'cz.sv.cancel': 'Stop survey', 'cz.sv.again': 'Survey again later to compare.',
+  'cz.sv.pollT': 'Pollinator count', 'cz.sv.pollI': 'Watch the flowers near the post. Every time a bee or butterfly lands on a flower, press Space (or Tally). Count each visit once.',
+  'cz.sv.frogT': 'Frog count', 'cz.sv.frogI': 'Watch and listen at the pond edge. Every time a frog pops up or calls, press Space (or Tally). Count each frog you notice once.',
+  'cz.sv.poll.meadow': 'Wildflower meadow', 'cz.sv.poll.farm': 'Corn field edge', 'cz.sv.frog.day': 'Pond edge in daytime', 'cz.sv.frog.night': 'Pond edge at night',
+  'cz.sv.res': 'You counted {n}. Visits you could have seen: {m}.',
+  'cz.sv.resPerfect': 'Sharp eyes! You noticed every one.',
+  'cz.sv.resMiss': 'Missing a few is normal: animals hide, move fast, or show up while you are looking elsewhere. Scientists call this DETECTABILITY. A count is a sample, not the whole population.',
+  'cz.sv.poll.meadowR': 'Lots of flower visits. Many kinds of flowers bloom here at different times, so pollinators find food all season.',
+  'cz.sv.poll.farmR': 'Very few visits. A corn field is one kind of plant, and corn is pollinated by the wind, so bees and butterflies find little food here.',
+  'cz.sv.frog.dayR': 'Few frogs by day. Most were hiding under leaves and mud, staying cool and safe from herons.',
+  'cz.sv.frog.nightR': 'Many more frogs at night! Did more frogs move in? Probably not: the same frogs were here all along. At night they come out and call, so they are easier to DETECT. Survey time changes what you count.',
+  'cz.sv.compare': 'Compare your surveys in the journal: what changed between the two sites (or times)? What else could explain the difference?',
+  'cz.sv.kickT': 'Stream bug sample', 'cz.sv.kickI': 'You swept a net through the streambed. Sort each animal: does it NEED clean, oxygen-rich water, or can it TOLERATE pollution? Use the field guide below.',
+  'cz.sv.kick.up': 'Upstream, near the spring', 'cz.sv.kick.down': 'Downstream, beside the farm',
+  'cz.sv.need': 'Needs clean water', 'cz.sv.tol': 'Tolerates pollution', 'cz.sv.guide': 'Field guide: mayflies, stoneflies, caddisflies and water pennies need clean water with plenty of oxygen. Midge larvae, aquatic worms, leeches and pouch snails can live where oxygen is low.',
+  'cz.sv.right': '✓', 'cz.sv.wrong': '✗ Check the field guide.',
+  'cz.sv.kickRes': '{s} of {t} animals need clean water. Water quality here looks {q}.', 'cz.sv.q.good': 'GOOD', 'cz.sv.q.fair': 'FAIR', 'cz.sv.q.poor': 'POOR',
+  'cz.sv.kick.upR': 'Shady, cold, fast water with lots of oxygen: the sensitive insects thrive here. Water insects are BIOLOGICAL INDICATORS: they tell you about the water over weeks, not just today.',
+  'cz.sv.kick.downR': 'Mostly tolerant animals. Something here is stressing the stream. Clear-looking water is not always healthy water: use more than one indicator.',
+  'cz.bug.mayfly': 'Mayfly nymph', 'cz.bug.stonefly': 'Stonefly nymph', 'cz.bug.caddis': 'Caddisfly larva', 'cz.bug.penny': 'Water penny', 'cz.bug.midge': 'Midge larva', 'cz.bug.worm': 'Aquatic worm', 'cz.bug.leech': 'Leech', 'cz.bug.snail': 'Pouch snail',
+  'cz.bugd.mayfly': '3 tails, gills along its sides', 'cz.bugd.stonefly': '2 tails, no gills on its belly', 'cz.bugd.caddis': 'lives in a case of tiny pebbles', 'cz.bugd.penny': 'flat, round, stuck to rocks', 'cz.bugd.midge': 'tiny red wiggly worm', 'cz.bugd.worm': 'long, thin, many segments', 'cz.bugd.leech': 'flat, stretchy, suckers at both ends', 'cz.bugd.snail': 'shell opens on the left',
+  'cz.j.surveys': 'Surveys', 'cz.j.svTip': 'Observations are what you counted. Interpretations are what you think it means. Compare sites and times before deciding.',
+  'cz.j.sv.at': 'at', 'cz.j.sv.counted': 'counted',
+  'a.cz-survey': 'Field Surveyor', 'a.cz-survey.d': 'Complete 3 wildlife surveys in the reserve.'
+});
+Object.assign(C.I18N.es, {
+  'cz.sv': 'Muestreo', 'cz.svStart': 'Empezar un muestreo en', 'cz.svPost': 'el poste de muestreo',
+  'cz.sv.tally': 'Contar +1 (Espacio)', 'cz.sv.count': 'Tu conteo', 'cz.sv.time': 'Tiempo', 'cz.sv.go': 'Empezar (30 segundos)', 'cz.sv.done': 'Anotar en mi diario', 'cz.sv.cancel': 'Detener', 'cz.sv.again': 'Repite el muestreo más tarde para comparar.',
+  'cz.sv.pollT': 'Conteo de polinizadores', 'cz.sv.pollI': 'Observa las flores cerca del poste. Cada vez que una abeja o mariposa se posa en una flor, pulsa Espacio (o Contar). Cuenta cada visita una vez.',
+  'cz.sv.frogT': 'Conteo de ranas', 'cz.sv.frogI': 'Mira y escucha en la orilla del estanque. Cada vez que una rana se asoma o canta, pulsa Espacio (o Contar). Cuenta una vez cada rana que notes.',
+  'cz.sv.poll.meadow': 'Pradera de flores', 'cz.sv.poll.farm': 'Borde del maizal', 'cz.sv.frog.day': 'Orilla del estanque de día', 'cz.sv.frog.night': 'Orilla del estanque de noche',
+  'cz.sv.res': 'Contaste {n}. Visitas que podías ver: {m}.',
+  'cz.sv.resPerfect': '¡Qué buena vista! Las notaste todas.',
+  'cz.sv.resMiss': 'Es normal que se te escapen algunas: los animales se esconden, se mueven rápido o aparecen cuando miras a otro lado. Los científicos llaman a esto DETECTABILIDAD. Un conteo es una muestra, no toda la población.',
+  'cz.sv.poll.meadowR': 'Muchas visitas a las flores. Aquí florecen muchos tipos de flores en distintos momentos, así que los polinizadores encuentran comida toda la temporada.',
+  'cz.sv.poll.farmR': 'Muy pocas visitas. Un maizal es un solo tipo de planta, y el maíz se poliniza con el viento, así que las abejas y mariposas encuentran poca comida aquí.',
+  'cz.sv.frog.dayR': 'Pocas ranas de día. La mayoría estaba escondida bajo hojas y barro, fresca y a salvo de las garzas.',
+  'cz.sv.frog.nightR': '¡Muchas más ranas de noche! ¿Llegaron más ranas? Probablemente no: eran las mismas ranas todo el tiempo. De noche salen y cantan, así que son más fáciles de DETECTAR. La hora del muestreo cambia lo que cuentas.',
+  'cz.sv.compare': 'Compara tus muestreos en el diario: ¿qué cambió entre los dos sitios (u horas)? ¿Qué otra cosa podría explicar la diferencia?',
+  'cz.sv.kickT': 'Muestra de bichos del arroyo', 'cz.sv.kickI': 'Pasaste una red por el fondo del arroyo. Clasifica cada animal: ¿NECESITA agua limpia con mucho oxígeno o puede TOLERAR la contaminación? Usa la guía de campo de abajo.',
+  'cz.sv.kick.up': 'Río arriba, cerca del manantial', 'cz.sv.kick.down': 'Río abajo, junto a la granja',
+  'cz.sv.need': 'Necesita agua limpia', 'cz.sv.tol': 'Tolera la contaminación', 'cz.sv.guide': 'Guía de campo: las efímeras, las moscas de las piedras, los tricópteros y los "centavos de agua" necesitan agua limpia con mucho oxígeno. Las larvas de mosquito, los gusanos acuáticos, las sanguijuelas y los caracoles de concha izquierda pueden vivir donde hay poco oxígeno.',
+  'cz.sv.right': '✓', 'cz.sv.wrong': '✗ Revisa la guía de campo.',
+  'cz.sv.kickRes': '{s} de {t} animales necesitan agua limpia. La calidad del agua aquí parece {q}.', 'cz.sv.q.good': 'BUENA', 'cz.sv.q.fair': 'REGULAR', 'cz.sv.q.poor': 'MALA',
+  'cz.sv.kick.upR': 'Agua fría, rápida y con sombra, con mucho oxígeno: los insectos sensibles prosperan aquí. Los insectos acuáticos son INDICADORES BIOLÓGICOS: cuentan cómo ha estado el agua durante semanas, no solo hoy.',
+  'cz.sv.kick.downR': 'Casi todos son animales tolerantes. Algo aquí está estresando el arroyo. El agua que se ve clara no siempre es agua sana: usa más de un indicador.',
+  'cz.bug.mayfly': 'Ninfa de efímera', 'cz.bug.stonefly': 'Ninfa de mosca de las piedras', 'cz.bug.caddis': 'Larva de tricóptero', 'cz.bug.penny': 'Centavo de agua', 'cz.bug.midge': 'Larva de mosquito', 'cz.bug.worm': 'Gusano acuático', 'cz.bug.leech': 'Sanguijuela', 'cz.bug.snail': 'Caracol de concha izquierda',
+  'cz.bugd.mayfly': '3 colas, branquias a los lados', 'cz.bugd.stonefly': '2 colas, sin branquias en la panza', 'cz.bugd.caddis': 'vive en un estuche de piedritas', 'cz.bugd.penny': 'plano, redondo, pegado a las rocas', 'cz.bugd.midge': 'gusanito rojo que se retuerce', 'cz.bugd.worm': 'largo, delgado, muchos segmentos', 'cz.bugd.leech': 'plano, elástico, ventosas en los extremos', 'cz.bugd.snail': 'la concha abre hacia la izquierda',
+  'cz.j.surveys': 'Muestreos', 'cz.j.svTip': 'Las observaciones son lo que contaste. Las interpretaciones son lo que crees que significa. Compara sitios y horas antes de decidir.',
+  'cz.j.sv.at': 'en', 'cz.j.sv.counted': 'contado',
+  'a.cz-survey': 'Muestreador de campo', 'a.cz-survey.d': 'Completa 3 muestreos de vida silvestre en la reserva.'
+});
+C.ACH.push({ id: 'cz-survey', ic: '📋', tier: 'medium' });
 /* achievements for this mode (their text uses the cz.a.* keys) */
 ['cz-first', 'cz-compare', 'cz-hollow', 'cz-detective', 'cz-all'].forEach(function (id, i) {
   C.ACH.push({ id: id, ic: ['🌿', '⚖️', '🍄', '🐟', '🦉'][i], tier: i < 2 ? 'short' : i < 4 ? 'medium' : 'long' });
@@ -229,6 +490,8 @@ const FINDS = [
   { id: 'deer', look: 'critter', col: '#b07a4a' }, { id: 'worms', look: 'chain', col: '#e08a8a' },
   { id: 'whitepine', look: 'sprout', col: '#2f6a3a' }, { id: 'hemlock', look: 'sprout', col: '#2a5a46' }, { id: 'redmaple', look: 'sprout', col: '#c4462c' }, { id: 'sycamore', look: 'sprout', col: '#7ab04a' },
   { id: 'willow', look: 'grass', col: '#8aba5a' }, { id: 'dogwood', look: 'sprout', col: '#fff0f4' }, { id: 'hickory', look: 'sprout', col: '#e0b03a' },
+  { id: 'seaview', look: 'drop', col: '#2a9ab0' }, { id: 'valleyview', look: 'grass', col: '#c8b858' }, { id: 'canyonview', look: 'rock', col: '#c8805a' },
+  { id: 'fireflies', look: 'sun', col: '#d8ff7a' }, { id: 'lunamoth', look: 'sprout', col: '#9ae08a' },
   { id: 'pondweed', look: 'grass', col: '#3a9a5a' }, { id: 'mussel', look: 'rock', col: '#4a4a6a' }, { id: 'tadpole', look: 'frog', col: '#4a5a3a' }];
 
 /* ---------- WORLD SHAPE ---------- */
@@ -239,8 +502,19 @@ function pathDist(x, z) { let d = 1e9; PATHS.forEach(function (pl) { for (let i 
 function segDist(x, z, a, b) { const vx = b[0] - a[0], vz = b[1] - a[1], wx = x - a[0], wz = z - a[1], u = Math.max(0, Math.min(1, (wx * vx + wz * vz) / (vx * vx + vz * vz))); return Math.hypot(x - a[0] - u * vx, z - a[1] - u * vz); }
 /* creeks are smooth curves: a few control points become a dense, gently bending line */
 function smoothLine(pts, n) { return new T.CatmullRomCurve3(pts.map(function (p) { return new T.Vector3(p[0], 0, p[1]); }), false, 'centripetal').getSpacedPoints(n).map(function (v) { return [v.x, v.z]; }); }
-const CREEKS = [{ id: 'stream', pts: smoothLine(STREAM, 90), w0: 1.5, w1: 2.6 }];
-function streamDist(x, z) { let d = 1e9; CREEKS.forEach(function (c) { const P = c.pts; for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > 12 || Math.abs(a[1] - z) > 12) continue; d = Math.min(d, segDist(x, z, a, P[i + 1])); } }); return d; }
+/* THE EDGES OF THE RESERVE: three scenic drop-offs (sea cliffs, a farm valley, a river canyon); the rest are wooded hills */
+const EDGES = [{ id: 'sea', a0: -28, a1: 22 }, { id: 'valley', a0: 55, a1: 122 }, { id: 'canyon', a0: 150, a1: 205 }];
+const SEA_Y = -22, VALLEY_Y = -19, CANYON_Y = -15;
+function edgeW(x, z, id) { let a = Math.atan2(z, x) * 180 / Math.PI, best = 0, which = null;
+  EDGES.forEach(function (e) { if (id && e.id !== id) return; let b = a; const mid = (e.a0 + e.a1) / 2; while (b < mid - 180) b += 360; while (b > mid + 180) b -= 360; const w = Math.max(0, Math.min(1, (Math.min(b - e.a0, e.a1 - b) + 6) / 12)); if (w > best) { best = w; which = e.id; } });
+  return id ? best : { w: best, id: which }; }
+const OUTLET = [[-14, 34], [-12, 44], [-8, 53], [-4, 61], [-2.5, 66.2]];
+const RIVER = [[-2, 73], [6, 92], [-6, 116], [10, 140], [40, 160], [70, 190], [90, 240]];
+const CANYONR = [[-104, -46], [-112, -12], [-106, 22], [-114, 60]];
+const CREEKS = [{ id: 'stream', pts: smoothLine(STREAM, 90), w0: 1.5, w1: 2.6 }, { id: 'outlet', pts: smoothLine(OUTLET, 40), w0: 2.2, w1: 1.8 },
+  { id: 'river', pts: smoothLine(RIVER, 90), w0: 3, w1: 7, far: true }, { id: 'canyon', pts: smoothLine(CANYONR, 80), w0: 5, w1: 6, far: true }];
+function farRiverDist(x, z) { let d = 1e9; CREEKS.forEach(function (c) { if (!c.far) return; const P = c.pts; for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > 30 || Math.abs(a[1] - z) > 30) continue; d = Math.min(d, segDist(x, z, a, P[i + 1])); } }); return d; }
+function streamDist(x, z) { let d = 1e9; CREEKS.forEach(function (c) { if (c.far) return; const P = c.pts; for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > 12 || Math.abs(a[1] - z) > 12) continue; d = Math.min(d, segDist(x, z, a, P[i + 1])); } }); return d; }
 function H(x, z) {
   let h = 1.4 * Math.sin(x * 0.05) * Math.cos(z * 0.045) + 1.0 * Math.sin((x - z) * 0.032) + 0.5 * Math.sin(x * 0.13 + 1) * Math.sin(z * 0.11);
   h += 13 * Math.exp(-((x - HILL.x) ** 2 + (z - HILL.z) ** 2) / 520);
@@ -248,10 +522,19 @@ function H(x, z) {
   const blend = function (cx, cz, r, fall, lvl) { const d = Math.hypot(x - cx, z - cz); if (d < r) h = lvl; else if (d < r + fall) { const u = (d - r) / fall; h = lvl * (1 - u) + h * u; } };
   blend(STATION.x, STATION.z, 8, 6, 0.8); blend(FARM.x, FARM.z, 11, 7, 1.6);
   const sd = streamDist(x, z); if (sd < 4.5) h -= 1.1 * (1 - (sd / 4.5) * (sd / 4.5));
+  if (Math.abs(x) > 60 || Math.abs(z) > 60) { const sd2 = farRiverDist(x, z); if (sd2 < 10) h -= 1.2 * (1 - sd2 / 10); }
   const dh = Math.hypot(x - HOLLOW.x, z - HOLLOW.z); if (dh < 7) h = h * 0.3 + 0.2;
   h += 12 * Math.exp(-((x + 28) * (x + 28)) / 140 - ((z + 70) * (z + 70)) / 34); /* the cliff with the waterfall */
-  const d = Math.hypot(x, z); if (d > EDGE) { const rise = d - EDGE, a = Math.atan2(z, x); /* gentle rolling hills all around the reserve */
-    h += 20 * (1 - Math.exp(-rise / 20)) * (0.72 + 0.28 * Math.sin(a * 5 + 1.3) * Math.cos(a * 2.2)) + 1.5 * Math.sin(a * 13) * Math.min(1, rise / 15); }
+  const d = Math.hypot(x, z); if (d > EDGE - 1) { const rise = d - EDGE, a = Math.atan2(z, x), ew = edgeW(x, z);
+    const hills = rise > 0 ? 20 * (1 - Math.exp(-rise / 20)) * (0.72 + 0.28 * Math.sin(a * 5 + 1.3) * Math.cos(a * 2.2)) + 1.5 * Math.sin(a * 13) * Math.min(1, rise / 15) : 0;
+    if (ew.w <= 0) h += hills;
+    else { /* a flat lookout lip, then a steep cliff down to the sea, valley or canyon floor */
+      let floor = 0; const u = Math.max(0, Math.min(1, (rise - 3.6) / 3.2)), cl = u * u * (3 - 2 * u);
+      if (ew.id === 'sea') floor = -30 + Math.sin(x * 0.05) * 2;
+      else if (ew.id === 'valley') { floor = VALLEY_Y + 1.2 * Math.sin(x * 0.06) * Math.cos(z * 0.05); const far = Math.max(0, Math.min(1, (rise - 120) / 50)); floor += far * far * 34; }
+      else { floor = CANYON_Y + Math.sin(z * 0.08) * 0.8; const wall = Math.max(0, Math.min(1, (rise - 95) / 9)); floor += wall * wall * (3 - 2 * wall) * 36 + (rise > 104 ? Math.sin(x * 0.07 + z * 0.05) * 3 : 0); }
+      const cliffH = (rise < 3.6 ? h + Math.max(0, rise) * 0.08 : h * (1 - cl) + floor * cl);
+      h = (h + hills) * (1 - ew.w) + cliffH * ew.w; } }
   return h;
 }
 const WL0 = H(POND.x, POND.z) + 6;
@@ -259,6 +542,20 @@ const WL0 = H(POND.x, POND.z) + 6;
 const WATERS = [{ id: 'pond', x: POND.x, z: POND.z, r: 15.6, y: WL0 }];
 function waterAt(x, z) { for (let i = 0; i < WATERS.length; i++) { const w = WATERS[i]; if (Math.hypot(x - w.x, z - w.z) < w.r && H(x, z) < w.y - 0.05) return w; } return null; }
 
+const ROCKBANDS = ['#cdbfa6', '#a99a82', '#d9cfba', '#b8a88e', '#9a8a74'], CANYONBANDS = ['#c8805a', '#d9a070', '#b86a4a', '#e0b888', '#a85a40'], FIELDS = ['#9ab84a', '#c8b858', '#7aa840', '#d6c070', '#6a9a3a', '#b0c860', '#8a6a40'];
+function edgeColor(x, z, y, cc) {
+  const d = Math.hypot(x, z); if (d < EDGE + 3) return; const e = edgeW(x, z); if (e.w < 0.5) return; const rise = d - EDGE;
+  if (e.id === 'sea') { if (y < -24) cc.set('#3a7a8a'); else if (rise > 3.4) cc.set(ROCKBANDS[Math.floor((y + 40) / 1.7) % 5]); return; }
+  if (e.id === 'valley') {
+    if (rise > 3.4 && y > VALLEY_Y + 2.2 && rise < 14) { cc.set(ROCKBANDS[Math.floor((y + 40) / 1.7) % 5]); return; }
+    if (farRiverDist(x, z) < 9) { cc.set('#5a8a3a'); return; }
+    const wet = Math.hypot(x + 30, z - 120) < 22; if (wet) { cc.set((Math.floor(x / 5) + Math.floor(z / 4)) % 3 ? '#3f6a34' : '#4a7a5a'); return; }
+    const k = Math.abs(Math.floor(x / 15) * 7 + Math.floor(z / 11) * 13) % FIELDS.length; cc.set(FIELDS[k]); if ((Math.floor(z / 1.6)) % 2 && k % 2) cc.offsetHSL(0, 0, -0.04); return; }
+  if (e.id === 'canyon') { if (y > CANYON_Y + 1.5 && rise > 3.4) cc.set(CANYONBANDS[Math.floor((y + 40) / 2.1) % 5]); else cc.set(farRiverDist(x, z) < 12 ? '#7a9a4a' : '#c8a878'); if (y > 24) cc.set('#8aa04a'); }
+}
+function fallTex() { if (W.fall2) return W.fall2; const cv = document.createElement('canvas'); cv.width = 32; cv.height = 128; const cx = cv.getContext('2d'); cx.fillStyle = '#9fd8ff'; cx.fillRect(0, 0, 32, 128);
+  for (let i = 0; i < 40; i++) { cx.fillStyle = i % 2 ? 'rgba(255,255,255,.8)' : 'rgba(200,236,255,.7)'; cx.fillRect((i * 7) % 32, (i * 23) % 128, 2 + (i % 3), 10 + (i * 13) % 30); }
+  W.fall2 = new T.CanvasTexture(cv); W.fall2.wrapS = W.fall2.wrapT = T.RepeatWrapping; W.fall2.repeat.set(1, 3); return W.fall2; }
 /* ---------- STATE ---------- */
 let W = null; /* the running world */
 function rnd(i) { const v = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return v - Math.floor(v); }
@@ -279,11 +576,13 @@ function ensureUI() {
 #cozyUI > * { pointer-events: auto; }
 #czTop { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 8px; align-items: flex-start; pointer-events: none; }
 #czObj { pointer-events: auto; background: rgba(11, 29, 42, .82); border: 2px solid #7be0ad; border-radius: 12px; padding: 6px 10px; max-width: min(460px, 60%); }
+#czObj .czChk { margin: 4px 0 0; padding-left: 4px; list-style: none; font-size: .92em; } #czObj .czChk li { margin: 1px 0; }
 #czObj small { display: block; color: #7be0ad; text-transform: uppercase; font-size: .72em; letter-spacing: .05em; }
 #czBtns { margin-left: auto; display: flex; gap: 6px; pointer-events: auto; flex-wrap: wrap; justify-content: flex-end; }
 #czBtns button { padding: 5px 10px; }
 .czLang button[aria-pressed="true"] { border-color: var(--signal, #ffd166); background: var(--deep, #0b1d2a); box-shadow: inset 0 0 0 1px var(--signal, #ffd166); }
 #czPrompt { position: absolute; bottom: 76px; left: 50%; transform: translateX(-50%); background: rgba(11, 29, 42, .9); border: 2px solid #ffd166; border-radius: 999px; padding: 6px 16px; font-weight: 700; white-space: nowrap; }
+#czPrompt .czL { padding: 2px 10px; border-color: #9fe8ff; }
 #czCard { position: absolute; left: 12px; bottom: 12px; width: min(420px, calc(100% - 24px)); background: rgba(11, 29, 42, .94); border: 2px solid #9fe0ff; border-radius: 14px; padding: 10px 12px; }
 #czCard h3 { margin: 0 0 4px; } #czCard p { margin: 4px 0; line-height: 1.4; } #czCard .rec { color: #7be0ad; font-size: .85em; } #czCard svg { width: 100%; max-height: 160px; background: #e8f0e0; border-radius: 10px; }
 #czTalk { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); width: min(640px, calc(100% - 24px)); background: rgba(11, 29, 42, .96); border: 2px solid #ffd166; border-radius: 14px; padding: 10px 14px; }
@@ -292,6 +591,27 @@ function ensureUI() {
 #czHelp { position: absolute; bottom: 8px; right: 8px; max-width: 46%; font-size: .78em; background: rgba(11, 29, 42, .7); border-radius: 10px; padding: 4px 8px; opacity: .85; }
 #czPause { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(11, 29, 42, .7); }
 #czPause .card { max-width: 380px; }
+#cozyUI.talking #czHelp, #cozyUI.mapping #czHelp, #cozyUI.mapping #czHint { display: none; }
+#czClock { align-self: center; background: rgba(11, 29, 42, .7); border-radius: 999px; padding: 4px 10px; font-size: .9em; white-space: nowrap; }
+#czRest { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); width: min(720px, calc(100% - 24px)); background: rgba(40, 20, 8, .88); border: 2px solid #ffb03a; border-radius: 14px; padding: 6px 12px; font-size: .92em; }
+#czRest h3 { margin: 2px 0; font-size: 1em; } #czRest p { margin: 3px 0; }
+#czRest .ch { display: flex; flex-wrap: wrap; gap: 5px; } #czRest .ch button { padding: 4px 9px; } #czRest[hidden] { display: none; }
+#czSurvey { position: absolute; right: 12px; top: 64px; width: min(470px, calc(100% - 24px)); max-height: calc(100% - 90px); overflow-y: auto; background: rgba(11, 29, 42, .95); border: 2px solid #7be0ad; border-radius: 14px; padding: 8px 12px; }
+#czSurvey[hidden] { display: none; } #czSurvey h3 { margin: 2px 0 4px; } #czSurvey p { margin: 4px 0; line-height: 1.35; } #czSurvey .big { font-size: 1.2em; padding: 8px 16px; }
+#czSurvey .svbar { height: 10px; border-radius: 6px; background: #1a3a4a; overflow: hidden; } #czSurvey .svbar i { display: block; height: 100%; background: #7be0ad; }
+#czSurvey .bugs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; } #czSurvey .bug { background: #e8f0e0; color: #10202c; border-radius: 10px; padding: 4px 6px; display: flex; flex-direction: column; gap: 2px; font-size: .85em; }
+#czSurvey .bug.ok { background: #c8f0d0; } #czSurvey .bug.no { outline: 2px solid #e0603a; } #czSurvey .bug .bb { display: flex; flex-direction: column; gap: 3px; } #czSurvey .bug .bb button { font-size: .85em; padding: 2px 4px; } #czSurvey .bug .bad { color: #b03a1a; } #czSurvey .bug svg { align-self: center; }
+#czHint { position: absolute; right: 12px; top: 64px; width: min(360px, calc(100% - 24px)); background: rgba(11, 29, 42, .95); border: 2px solid #ffd166; border-radius: 14px; padding: 8px 12px; }
+#czHint h3 { margin: 0 0 4px; } #czHint p { margin: 4px 0; line-height: 1.4; }
+#czMapP { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(11, 29, 42, .55); }
+#czMapP[hidden] { display: none; }
+#czMapP .mapcard { width: min(920px, calc(100% - 20px)); max-width: none; height: min(680px, calc(100% - 20px)); display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; }
+#czMapP .mh { display: flex; align-items: center; gap: 8px; } #czMapP .mh h2 { margin: 0; font-size: 1.1em; flex: 1; } #czMapP .mz { display: flex; gap: 4px; } #czMapP .mz button { padding: 4px 10px; }
+#czMapC { flex: 1; width: 100%; min-height: 0; border-radius: 10px; border: 3px solid #8a6a3a; cursor: grab; touch-action: none; background: #d8ccb0; }
+#czMapP .mf { display: flex; gap: 10px; align-items: flex-start; } #czMapInfo { flex: 1; min-height: 2.6em; } #czMapInfo p { margin: 2px 0; font-size: .92em; }
+#czMapLeg { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: .82em; max-width: 46%; } #czMapLeg span i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; border: 1px solid #3a2a1a; }
+#czMapH { margin: 0; font-size: .8em; }
+#cozyUI.talking #czCard { bottom: auto; top: 96px; }
 #czFly { position: absolute; left: 50%; bottom: 44px; transform: translateX(-50%); width: 180px; height: 12px; border-radius: 8px; background: rgba(11, 29, 42, .8); border: 2px solid #9fe8ff; overflow: hidden; }
 #czFly i { display: block; height: 100%; background: linear-gradient(90deg, #9fe8ff, #c59cff); }
 #czFly[hidden] { display: none; }
@@ -300,9 +620,15 @@ function ensureUI() {
   document.head.appendChild(css);
   const ui = document.createElement('div'); ui.id = 'cozyUI'; ui.hidden = true;
   ui.innerHTML = '<div id="czTop"><div id="czObj" aria-live="polite"></div><div id="czBtns"><span class="czLang btns" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></span>' +
-    '<button type="button" id="czJ"></button><button type="button" id="czM"></button></div></div><div id="czPrompt" hidden></div><div id="czCard" role="status" aria-live="polite" hidden></div>' +
-    '<div id="czTalk" hidden></div><div id="czHelp"></div><div id="czPause" hidden><div class="card"><h2 id="czPT"></h2><button type="button" id="czRes" class="primary"></button><button type="button" id="czPJ"></button><span class="czLang btns" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></span><label><span id="czSensL"></span><input type="range" id="czSens" min="0.4" max="2" step="0.1"></label><label><span id="czInvL"></span><input type="checkbox" id="czInv"></label><button type="button" id="czQuit"></button></div></div><div id="czFly" hidden aria-hidden="true"><i></i></div>';
+    '<span id="czClock" aria-live="off"></span><button type="button" id="czMapB"></button><button type="button" id="czHintB"></button><button type="button" id="czJ"></button><button type="button" id="czM"></button></div></div><div id="czHint" role="status" aria-live="polite" hidden></div><div id="czRest" hidden></div><div id="czSurvey" hidden></div>' +
+    '<div id="czMapP" hidden><div class="card mapcard"><div class="mh"><h2 id="czMapT"></h2><span class="mz"><button type="button" data-mz="in">+</button><button type="button" data-mz="out">−</button><button type="button" data-mz="me" id="czMapMe"></button><button type="button" id="czMapClose"></button></span></div>' +
+    '<canvas id="czMapC" aria-label="Map"></canvas><div class="mf"><div id="czMapInfo" aria-live="polite"></div><div id="czMapLeg"></div></div><p class="dim" id="czMapH"></p></div></div><div id="czPrompt" hidden></div><div id="czCard" role="status" aria-live="polite" hidden></div>' +
+    '<div id="czTalk" hidden></div><div id="czHelp"></div><div id="czPause" hidden><div class="card"><h2 id="czPT"></h2><button type="button" id="czRes" class="primary"></button><button type="button" id="czPJ"></button><span class="czLang btns" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></span><label><span id="czMvL"></span><input type="range" id="czMv" min="0" max="100" step="5"></label><label><span id="czSvL"></span><input type="range" id="czSv" min="0" max="100" step="5"></label><label><span id="czSensL"></span><input type="range" id="czSens" min="0.4" max="2" step="0.1"></label><label><span id="czInvL"></span><input type="checkbox" id="czInv"></label><button type="button" id="czQuit"></button></div></div><div id="czFly" hidden aria-hidden="true"><i></i></div>';
   document.getElementById('toast').parentNode.appendChild(ui);
+  const mc = ui.querySelector('#czMapC'); mc.addEventListener('pointerdown', function (e) { if (W) mapPointer(e, 'down'); }); mc.addEventListener('pointermove', function (e) { if (W) mapPointer(e, 'move'); }); mc.addEventListener('pointerup', function (e) { if (W) mapPointer(e, 'up'); });
+  mc.addEventListener('wheel', function (e) { if (!W) return; e.preventDefault(); e.stopPropagation(); mapZoom(e.deltaY > 0 ? 1 / 1.15 : 1.15); }, { passive: false });
+  ui.querySelector('#czMv').addEventListener('input', function (e) { C.S.set.vol = +e.target.value; C.S.set.music = C.S.set.vol > 0; C.save(); if (BQ.amb) BQ.amb.refresh(); });
+  ui.querySelector('#czSv').addEventListener('input', function (e) { C.S.set.svol = +e.target.value; C.S.set.sound = C.S.set.svol > 0; C.save(); if (BQ.amb) BQ.amb.refresh(); });
   ui.querySelector('#czSens').addEventListener('input', function (e) { C.S.set.camSens = +e.target.value; C.save(); });
   ui.querySelector('#czInv').addEventListener('change', function (e) { C.S.set.camInv = e.target.checked; C.save(); });
   ui.addEventListener('click', function (e) {
@@ -314,6 +640,12 @@ function ensureUI() {
     if (b.id === 'czQuit') { exit(); return; }
     if (b.dataset.ch != null) { choose(+b.dataset.ch); return; }
     if (b.dataset.next) { talkNext(); }
+    if (b.dataset.listen) { listen(W.voice); }
+    if (b.dataset.rest) { restChoice(b.dataset.rest); return; }
+    if (b.dataset.sv) { if (b.dataset.sv === 'go') { W.sv.on = true; svPanel(); } else if (b.dataset.sv === 'tally') svTally(); else svStop(); return; }
+    if (b.dataset.bug != null) { kickSort(+b.dataset.bug, +b.dataset.v); return; }
+    if (b.id === 'czMapB') { openMap(); return; } if (b.id === 'czMapClose') { closeMap(); return; } if (b.id === 'czHintB') { giveHint(); return; } if (b.dataset.hclose) { $('czHint').hidden = true; return; }
+    if (b.dataset.mz) { if (b.dataset.mz === 'in') mapZoom(1.3); else if (b.dataset.mz === 'out') mapZoom(1 / 1.3); else { W.mapCx = W.px; W.mapCz = W.pz; drawMap(); } return; }
   });
 }
 function $(id) { return document.getElementById(id); }
@@ -323,18 +655,48 @@ function refreshText() {
   document.querySelectorAll('.czLang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === (C.S.set.lang || 'en'))); });
   $('czJ').textContent = '📓 ' + tx('cz.journal'); $('czM').textContent = '☰ ' + tx('cz.menu'); $('czPT').textContent = tx('cz.paused');
   $('czRes').textContent = tx('cz.resume'); $('czPJ').textContent = '📓 ' + tx('cz.journal'); $('czQuit').textContent = tx('cz.toMenu'); $('czHelp').textContent = tx('cz.controls');
+  W.clock = $('czClock'); W.todLast = null; W.lightT = 0;
+  $('czMapB').textContent = '🗺️ ' + tx('cz.map'); $('czHintB').textContent = '💡 ' + tx('cz.hint'); $('czMapT').textContent = '🗺️ ' + tx('cz.mapTitle'); $('czMapClose').textContent = tx('cz.close') + ' (M)'; $('czMapMe').textContent = '⌖ ' + tx('cz.mapMe'); $('czMapH').textContent = tx('cz.mapHelp');
+  $('czMapLeg').innerHTML = [['#e0403a', 'cz.lg.you'], ['#ffd166', 'cz.lg.find'], ['#5fb8ff', 'cz.lg.person'], ['#c59cff', 'cz.lg.view'], ['#3aa8c0', 'cz.lg.water'], ['#4a7a3a', 'cz.lg.forest'], ['#8cbc52', 'cz.lg.meadow'], ['#c8a050', 'cz.lg.farm'], ['#d8a060', 'cz.lg.path'], ['#e9dfc4', 'cz.unexplored']].map(function (l) { return '<span><i style="background:' + l[0] + '"></i>' + C.esc(tx(l[1])) + '</span>'; }).join('');
+  if (W.ui === 'map') drawMap();
+  $('czMvL').textContent = '🎵 ' + tx('cz.musicVol'); $('czSvL').textContent = '🐦 ' + tx('cz.soundVol'); $('czMv').value = C.S.set.music ? C.S.set.vol : 0; $('czSv').value = C.S.set.sound ? (C.S.set.svol == null ? 100 : C.S.set.svol) : 0;
   $('czSensL').textContent = tx('cz.camSpeed'); $('czInvL').textContent = tx('cz.camInv'); $('czSens').value = C.S.set.camSens || 1; $('czInv').checked = !!C.S.set.camInv; $('czFly').title = tx('cz.energy');
   objective(); if (W.card) showCard(W.card.id, W.card.extra); if (W.talk) drawTalk(); W.lastPrompt = null;
   W.npcs.forEach(function (n) { n.tag.material.map = C.labelTex(npcName(n.id), { bd: '#ffd166' }); n.tag.material.needsUpdate = true; });
 }
-function npcName(id) { return { ama: 'Dr. Ama', pip: 'Pip', lu: (C.S.set.lang === 'es' ? 'Granjera Lu' : 'Farmer Lu') }[id]; }
+function npcName(id) { const es = C.S.set.lang === 'es', n = { ama: es ? 'Dra. Ama' : 'Dr. Ama', pip: 'Pip', lu: es ? 'Granjera Lu' : 'Farmer Lu', sam: es ? 'Guardabosques Sam' : 'Ranger Sam' }[id]; return n || tx('cz.an.' + id); }
+/* a simple storybook person: legs, body, arms, head, hair and a hat; the humans of Willow Creek */
+function buildHuman(o) {
+  const g = new T.Group(), G = C.G, M = function (c) { return C.emat(c, '#140c08'); };
+  [-1, 1].forEach(function (sd) { const lg = new T.Mesh(G.cyl, M(o.pants)); lg.scale.set(0.12, 0.85, 0.12); lg.position.set(sd * 0.14, 0.43, 0); g.add(lg); const sh = new T.Mesh(G.box, M(o.shoes || '#3a2a20')); sh.scale.set(0.17, 0.1, 0.3); sh.position.set(sd * 0.14, 0.05, 0.05); g.add(sh); });
+  const body = new T.Mesh(G.cyl, M(o.shirt)); body.scale.set(0.3, 0.78, 0.24); body.position.y = 1.22; g.add(body);
+  if (o.vest) { const v = new T.Mesh(G.box, M(o.vest)); v.scale.set(0.5, 0.6, 0.06); v.position.set(0, 1.22, 0.23); g.add(v); [-1, 1].forEach(function (sd) { const pk = new T.Mesh(G.box, M('#6a5a30')); pk.scale.set(0.14, 0.12, 0.03); pk.position.set(sd * 0.13, 1.12, 0.27); g.add(pk); }); }
+  if (o.bib) { const b = new T.Mesh(G.box, M(o.pants)); b.scale.set(0.42, 0.42, 0.05); b.position.set(0, 1.08, 0.23); g.add(b); [-1, 1].forEach(function (sd) { const st0 = new T.Mesh(G.box, M(o.pants)); st0.scale.set(0.07, 0.42, 0.04); st0.position.set(sd * 0.15, 1.42, 0.22); g.add(st0); }); }
+  [-1, 1].forEach(function (sd) { const ar = new T.Mesh(G.cyl, M(o.shirt)); ar.scale.set(0.085, 0.66, 0.085); ar.position.set(sd * 0.38, 1.2, 0); ar.rotation.z = sd * 0.12; g.add(ar); const hd = new T.Mesh(G.sph, M(o.skin)); hd.scale.setScalar(0.09); hd.position.set(sd * 0.42, 0.85, 0.02); g.add(hd); });
+  const head = new T.Mesh(G.sph, M(o.skin)); head.scale.set(0.26, 0.28, 0.25); head.position.y = 1.86; g.add(head);
+  [-1, 1].forEach(function (sd) { const e = new T.Mesh(G.sph, C.basic('#1a1410')); e.scale.set(0.035, 0.045, 0.02); e.position.set(sd * 0.09, 1.9, 0.235); g.add(e); const ck = new T.Mesh(G.sph, C.basic('#e88a8a', 0.6)); ck.scale.set(0.045, 0.025, 0.01); ck.position.set(sd * 0.15, 1.82, 0.225); g.add(ck); });
+  const sm = new T.Mesh(new T.TorusGeometry(0.06, 0.012, 6, 10, Math.PI), C.basic('#5a2a20')); sm.rotation.z = Math.PI; sm.position.set(0, 1.79, 0.245); g.add(sm);
+  const hair = new T.Mesh(G.sph, M(o.hair)); hair.scale.set(0.275, 0.2, 0.27); hair.position.set(0, 1.98, -0.03); g.add(hair);
+  if (o.hairStyle === 'bun') { const bn = new T.Mesh(G.sph, M(o.hair)); bn.scale.setScalar(0.12); bn.position.set(0, 2.08, -0.2); g.add(bn); }
+  if (o.hairStyle === 'long') { const ln = new T.Mesh(G.box, M(o.hair)); ln.scale.set(0.46, 0.42, 0.12); ln.position.set(0, 1.72, -0.2); g.add(ln); }
+  if (o.hairStyle === 'curly') for (let k = 0; k < 7; k++) { const c = new T.Mesh(G.sph, M(o.hair)); c.scale.setScalar(0.1); c.position.set(Math.cos(k * 0.9) * 0.22, 2.0 + Math.sin(k * 1.7) * 0.05, Math.sin(k * 0.9) * 0.18 - 0.04); g.add(c); }
+  const brim = function (r, col, h) { const b = new T.Mesh(G.cyl, M(col)); b.scale.set(r, 0.03, r); b.position.y = 2.08; g.add(b); const cr = new T.Mesh(G.cyl, M(col)); cr.scale.set(0.24, h, 0.24); cr.position.y = 2.1 + h / 2; g.add(cr); return cr; };
+  if (o.hat === 'field') { brim(0.42, o.hatCol, 0.18); const band = new T.Mesh(G.cyl, M('#6a4a2a')); band.scale.set(0.245, 0.05, 0.245); band.position.y = 2.14; g.add(band); }
+  if (o.hat === 'straw') { brim(0.55, '#e6c86a', 0.16); }
+  if (o.hat === 'ranger') { brim(0.44, o.hatCol, 0.2); }
+  if (o.hat === 'cap') { const cp = new T.Mesh(G.sph, M(o.hatCol)); cp.scale.set(0.28, 0.16, 0.28); cp.position.y = 2.03; g.add(cp); const vs = new T.Mesh(G.box, M(o.hatCol)); vs.scale.set(0.3, 0.03, 0.2); vs.position.set(0, 2.02, 0.3); g.add(vs); }
+  if (o.prop === 'clipboard') { const cb = new T.Mesh(G.box, M('#8a6a3a')); cb.scale.set(0.24, 0.32, 0.03); cb.position.set(0.36, 1.05, 0.22); cb.rotation.x = -0.4; g.add(cb); const pp = new T.Mesh(G.box, C.basic('#f4f0e6')); pp.scale.set(0.2, 0.26, 0.01); pp.position.set(0.36, 1.06, 0.24); pp.rotation.x = -0.4; g.add(pp); }
+  if (o.prop === 'rod') { const rd = new T.Mesh(G.cyl, M('#6a4a2a')); rd.scale.set(0.02, 2.2, 0.02); rd.position.set(0.5, 1.6, 0.5); rd.rotation.x = 0.9; g.add(rd); }
+  if (o.prop === 'binoculars') { [-1, 1].forEach(function (sd) { const bn = new T.Mesh(G.cyl, M('#2a2a2a')); bn.scale.set(0.05, 0.12, 0.05); bn.rotation.x = Math.PI / 2; bn.position.set(sd * 0.06, 1.5, 0.26); g.add(bn); }); }
+  return g;
+}
 
 /* ---------- BUILD THE RESERVE ---------- */
 function build() {
   const g = new T.Group(), G = C.G, scene = C.scene;
   /* low-detail shapes for things drawn hundreds of times (keeps Chromebooks smooth) */
   const LP = { sph: new T.SphereGeometry(1, 7, 5), cone: new T.ConeGeometry(1, 2, 5), cone8: new T.ConeGeometry(1, 2, 8), cyl: new T.CylinderGeometry(1, 1, 1, 5), sph10: new T.SphereGeometry(1, 10, 7) };
-  W = { g: g, colliders: [], tops: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 10, distT: 10, vx: 0, vz: 0, flyE: 1, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
+  W = { g: g, tod: st().tod != null ? st().tod : 9, colliders: [], tops: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 10, distT: 10, vx: 0, vz: 0, flyE: 1, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
     bg: scene.background, fog: scene.fog, light: [C.HEMI.intensity, C.KEYL.intensity, C.KEYL.position.clone()] };
   scene.add(g);
   scene.background = new T.Color('#cfe9f7'); scene.fog = new T.Fog('#d0eaf6', 70, 260);
@@ -349,20 +711,71 @@ function build() {
     if (dp < 19) cc.set(y < WL0 - 0.3 ? '#6a7a4a' : '#e0c890'); else if (farm) cc.set(((Math.floor((x - FARM.x + 11) / 1.6)) % 2) ? '#7a5a3a' : '#8a6a3a'); else if (cliff && y > 6) cc.set('#8a7a68'); else if (dh < 9 && y > 9) cc.set('#9a9a88'); else if (forest && dd < EDGE) cc.set('#2f5226');
     else if (dd > EDGE + 2) cc.set('#5a8a34').lerp(new T.Color('#3f6a34'), Math.min(1, (dd - EDGE) / 50)); else { const nn = Math.sin(x * 0.11 + Math.cos(z * 0.07) * 2) * Math.cos(z * 0.09 - x * 0.03); cc.set(y > 6 ? '#6f9a34' : '#5f9a38').lerp(new T.Color(nn > 0.35 ? '#94a83c' : nn < -0.4 ? '#3f7a30' : '#5f9a38'), 0.6); }
     if (pth < 1.6 && dd < EDGE && !farm && dp > 16.5) cc.lerp(new T.Color('#c0844e'), pth < 1 ? 0.8 : 0.3);
+    edgeColor(x, z, y, cc);
     cc.offsetHSL(0, 0, (Math.sin(x * 1.7 + z * 2.3) * 0.5) * 0.04); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b;
   }
   geo.setAttribute('color', new T.BufferAttribute(cols, 3)); geo.computeVertexNormals();
   g.add(new T.Mesh(geo, new T.MeshLambertMaterial({ vertexColors: true })));
+  /* far ground beyond the reserve (coarser), with a hole where the detailed ground already is */
+  { const FG = new T.PlaneGeometry(900, 900, 90, 90); FG.rotateX(-Math.PI / 2); const fp = FG.attributes.position, fcl = new Float32Array(fp.count * 3);
+    for (let i = 0; i < fp.count; i++) { const x = fp.getX(i), z = fp.getZ(i), inside = Math.abs(x) < 159.9 && Math.abs(z) < 159.9, y = H(x, z); fp.setY(i, inside ? -60 : y - 0.15);
+      cc.set(y > 6 ? '#5a8a3a' : '#5f9a38'); edgeColor(x, z, y, cc); fcl[i * 3] = cc.r; fcl[i * 3 + 1] = cc.g; fcl[i * 3 + 2] = cc.b; }
+    FG.setAttribute('color', new T.BufferAttribute(fcl, 3)); FG.computeVertexNormals(); g.add(new T.Mesh(FG, new T.MeshLambertMaterial({ vertexColors: true }))); }
+  /* the sea: teal water with ripple rings, foam at the cliff foot, islands, sea stacks and gulls */
+  { const sc0 = document.createElement('canvas'); sc0.width = sc0.height = 128; const sx = sc0.getContext('2d'); sx.fillStyle = '#2a9ab0'; sx.fillRect(0, 0, 128, 128); sx.strokeStyle = 'rgba(200,245,255,0.45)'; sx.lineWidth = 2;
+    for (let k = 0; k < 7; k++) { sx.beginPath(); sx.ellipse((k * 37) % 128, (k * 53) % 128, 10 + (k % 3) * 6, 5 + (k % 2) * 4, 0, 0, Math.PI * 2); sx.stroke(); }
+    W.seaTex = new T.CanvasTexture(sc0); W.seaTex.wrapS = W.seaTex.wrapT = T.RepeatWrapping; W.seaTex.repeat.set(60, 60);
+    const sea = new T.Mesh(new T.CircleGeometry(900, 64), new T.MeshLambertMaterial({ map: W.seaTex, emissive: '#06303a', transparent: true, opacity: 0.95 })); sea.rotation.x = -Math.PI / 2; sea.position.y = SEA_Y; g.add(sea);
+    const foam = new T.Mesh(new T.RingGeometry(EDGE + 6.8, EDGE + 9.5, 64, 1, (-24) * Math.PI / 180, 54 * Math.PI / 180), C.basic('#e8fbff', 0.55)); foam.rotation.x = -Math.PI / 2; foam.rotation.z = 0; foam.position.y = SEA_Y + 0.05; g.add(foam); W.foam = foam;
+    const isl = [[150, -30, 18], [200, 40, 26], [120, 60, 9], [260, -90, 30], [110, -60, 7]];
+    isl.forEach(function (q, k) { const m = new T.Mesh(new T.CylinderGeometry(q[2] * 0.8, q[2], 14 + q[2] * 0.3, 10), C.emat(ROCKBANDS[k % 5], '#1a1a10')); m.position.set(q[0], SEA_Y + 3, q[1]); g.add(m);
+      const top = new T.Mesh(new T.CylinderGeometry(q[2] * 0.82, q[2] * 0.8, 1.2, 10), C.emat('#6aa040', '#0a1a06')); top.position.set(q[0], SEA_Y + 10.6 + q[2] * 0.15, q[1]); g.add(top);
+      for (let t = 0; t < Math.max(2, q[2] / 4); t++) { const pc = new T.Mesh(LP.cone8, C.emat('#2f6a3a', '#081808')); const s3 = 1.5 + (t % 3); pc.scale.set(s3, s3 * 1.8, s3); pc.position.set(q[0] + Math.cos(t * 2.3) * q[2] * 0.5, SEA_Y + 12 + q[2] * 0.15 + s3 * 1.6, q[1] + Math.sin(t * 2.3) * q[2] * 0.5); g.add(pc); } });
+    W.gulls = []; for (let k = 0; k < 5; k++) { const b = new T.Group(); [-1, 1].forEach(function (sd) { const w = new T.Mesh(G.box, C.basic('#ffffff')); w.scale.set(1.1, 0.05, 0.3); w.position.x = sd * 0.55; w.rotation.z = sd * 0.25; b.add(w); }); g.add(b); W.gulls.push({ m: b, ph: k * 1.3, r: 30 + k * 9 }); } }
+  /* the valley below the south lookout: patchwork farms, a little town, a wetland and the river */
+  { const town = [[30, 120], [36, 126], [24, 128], [42, 116], [34, 134], [46, 128], [28, 140]], roofs = ['#c4462c', '#d0703a', '#8a3a2a', '#e09a4a'];
+    town.forEach(function (t0, k) { const y = H(t0[0], t0[1]), hs = new T.Mesh(G.box, C.emat(k % 2 ? '#f0e6d0' : '#e8d8b8', '#2a2418')); hs.scale.set(3.2, 2.6, 3.6); hs.position.set(t0[0], y + 1.3, t0[1]); hs.rotation.y = k * 0.4; g.add(hs);
+      const rf = new T.Mesh(G.cone, C.emat(roofs[k % 4], '#200a05')); rf.scale.set(2.8, 1, 2.8); rf.rotation.y = Math.PI / 4 + k * 0.4; rf.position.set(t0[0], y + 3.4, t0[1]); g.add(rf); });
+    const barn = new T.Mesh(G.box, C.emat('#b03a2a', '#200805')); barn.scale.set(6, 4.5, 8); barn.position.set(-30, H(-30, 96) + 2.2, 96); g.add(barn);
+    const silo = new T.Mesh(G.cyl, C.emat('#c8c8c0', '#202020')); silo.scale.set(1.6, 8, 1.6); silo.position.set(-24, H(-24, 96) + 4, 96); g.add(silo);
+    const road = []; for (let k = 0; k < 30; k++) { const x = -60 + k * 6, z = 128 + Math.sin(k * 0.3) * 10; road.push([x, H(x, z) + 0.12, z, 6.4, 1, 3, -Math.atan2(Math.cos(k * 0.3) * 3, 6)]); }
+    g.add(inst(new T.BoxGeometry(1, 0.05, 1), C.emat('#5a5048', '#101010'), road));
+    const pools = []; for (let k = 0; k < 9; k++) { const x = -30 + Math.cos(k * 2.1) * 14, z = 120 + Math.sin(k * 1.7) * 12; pools.push([x, H(x, z) + 0.1, z, 2 + (k % 3), 1, 1.6 + (k % 2)]); }
+    g.add(inst(new T.CylinderGeometry(1, 1, 0.05, 12), C.emat('#4a9ab0', '#0a2a3a'), pools));
+    const vt = []; for (let k = 0; k < 70; k++) { const x = -60 + rnd(k + 8000) * 140, z = 80 + rnd(k + 8100) * 90; if (farRiverDist(x, z) > 8 && farRiverDist(x, z) < 16 || k % 4 === 0) vt.push([x, H(x, z) + 2.5, z, 1.8, 2.6, 1.8, k]); }
+    g.add(inst(LP.sph10, C.emat('#4f8a34', '#0a1806'), vt)); }
+  /* the canyon to the west: striped walls, a mesa, and a green river at the bottom */
+  { const ms = [[-135, -20, 9], [-128, 40, 7]]; ms.forEach(function (q, k) { const m = new T.Mesh(new T.CylinderGeometry(q[2] * 0.85, q[2], 34, 9), C.emat(CANYONBANDS[k], '#200a05')); m.position.set(q[0], CANYON_Y + 17, q[1]); g.add(m); }); }
+  /* lookouts: a wooden fence along each cliff edge, a bench and a viewer to look far away */
+  W.views = [];
+  EDGES.forEach(function (e) { const mid = (e.a0 + e.a1) / 2 * Math.PI / 180, posts = [], rails = [];
+    for (let a = e.a0 - 2; a <= e.a1 + 2; a += 2.4) { const r0 = a * Math.PI / 180, x = Math.cos(r0) * (EDGE + 2.4), z = Math.sin(r0) * (EDGE + 2.4), y = H(x, z); posts.push([x, y + 0.6, z, 0.16, 1.2, 0.16]);
+      const r1 = (a + 2.4) * Math.PI / 180, x1 = Math.cos(r1) * (EDGE + 2.4), z1 = Math.sin(r1) * (EDGE + 2.4), L1 = Math.hypot(x1 - x, z1 - z); if (a + 2.4 <= e.a1 + 2) { [0.55, 1.0].forEach(function (hh) { rails.push([(x + x1) / 2, y + hh, (z + z1) / 2, L1, 0.1, 0.1, -Math.atan2(z1 - z, x1 - x)]); }); } }
+    g.add(inst(G.box, C.emat('#9a6a3a', '#1a0e05'), posts)); g.add(inst(G.box, C.emat('#b07a44', '#1a0e05'), rails));
+    const vx = Math.cos(mid) * (EDGE + 0.9), vz = Math.sin(mid) * (EDGE + 0.9), vy = H(vx, vz), vw = new T.Group(); const st0 = new T.Mesh(G.cyl, C.emat('#4a5a6a', '#0a1018')); st0.scale.set(0.12, 1.1, 0.12); st0.position.y = 0.55; vw.add(st0);
+    const hd = new T.Mesh(G.box, C.emat('#3a7ab0', '#0a1a2a')); hd.scale.set(0.45, 0.32, 0.6); hd.position.y = 1.25; vw.add(hd); [-1, 1].forEach(function (sd) { const ey = new T.Mesh(G.cyl, C.basic('#1a2a3a')); ey.scale.set(0.09, 0.2, 0.09); ey.rotation.x = Math.PI / 2; ey.position.set(sd * 0.11, 1.28, -0.35); vw.add(ey); });
+    vw.position.set(vx, vy, vz); vw.rotation.y = -mid + Math.PI / 2; g.add(vw); W.colliders.push({ x: vx, z: vz, r: 0.4 });
+    const bx = Math.cos(mid + 0.08) * (EDGE - 1), bz = Math.sin(mid + 0.08) * (EDGE - 1), bn = new T.Mesh(G.box, C.emat('#9a6a3a', '#1a0e05')); bn.scale.set(2.2, 0.25, 0.6); bn.position.set(bx, H(bx, bz) + 0.5, bz); bn.rotation.y = -mid + Math.PI / 2; g.add(bn);
+    W.views.push({ id: e.id, x: vx, z: vz, yaw: -(mid) - Math.PI / 2 }); });
+  /* the pond's outlet creek tumbles over the valley cliff as a waterfall */
+  { const top = OUTLET[OUTLET.length - 1], tx2 = top[0], tz2 = top[1], ty = H(tx2, tz2) + 0.25, bz2 = tz2 + 6.2, by = VALLEY_Y + 0.3;
+    const wf2 = new T.Mesh(new T.PlaneGeometry(2.6, Math.hypot(ty - by, bz2 - tz2)), new T.MeshBasicMaterial({ map: fallTex(), color: '#ffffff', transparent: true, opacity: 0.85, side: T.DoubleSide }));
+    wf2.position.set(tx2, (ty + by) / 2, (tz2 + bz2) / 2); wf2.rotation.x = -Math.atan2(bz2 - tz2, ty - by); g.add(wf2); W.wf2 = wf2;
+    for (let k = 0; k < 4; k++) { const m = C.glow('#ffffff', 3, 0.35); m.position.set(tx2 + (k - 1.5) * 0.8, by + 1, bz2); g.add(m); W.mist2 = (W.mist2 || []).concat([{ m: m, y: by + 1, ph: k }]); } }
   /* sky dome with a soft gradient, sun, drifting clouds, faraway blue mountains */
   const sky = new T.SphereGeometry(520, 24, 12), sp = sky.attributes.position, sc2 = new Float32Array(sp.count * 3), top = new T.Color('#4a9ee0'), hor = new T.Color('#d8eef8'), tmp = new T.Color();
   for (let i = 0; i < sp.count; i++) { const u = Math.max(0, sp.getY(i) / 520); tmp.copy(hor).lerp(top, Math.pow(u, 0.6)); sc2[i * 3] = tmp.r; sc2[i * 3 + 1] = tmp.g; sc2[i * 3 + 2] = tmp.b; }
-  sky.setAttribute('color', new T.BufferAttribute(sc2, 3)); g.add(new T.Mesh(sky, new T.MeshBasicMaterial({ vertexColors: true, side: T.BackSide, fog: false, depthWrite: false })));
-  const sun = C.glow('#fff4c8', 90, 0.9); sun.material.fog = false; sun.position.set(180, 230, -300); g.add(sun);
+  sky.setAttribute('color', new T.BufferAttribute(sc2, 3)); g.add(new T.Mesh(sky, new T.MeshBasicMaterial({ vertexColors: true, side: T.BackSide, fog: false, depthWrite: false }))); W.skyG = sky;
+  const sun = C.glow('#fff4c8', 90, 0.9); sun.material.fog = false; sun.position.set(180, 230, -300); g.add(sun); W.sun = sun;
+  W.moon = new T.Group(); { const mb = new T.Mesh(new T.SphereGeometry(9, 20, 14), new T.MeshBasicMaterial({ color: '#f4f0e0', fog: false })); W.moon.add(mb); const mg = C.glow('#c8d8ff', 70, 0.55); mg.material.fog = false; W.moon.add(mg); } g.add(W.moon);
+  { const n = S0low() ? 500 : 1100, pp = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const u = rnd(i + 11000) * 0.95 + 0.05, a = rnd(i + 12000) * 6.283, r = 470, c0 = Math.sqrt(1 - u * u); pp[i * 3] = Math.cos(a) * c0 * r; pp[i * 3 + 1] = u * r; pp[i * 3 + 2] = Math.sin(a) * c0 * r; }
+    const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(pp, 3)); W.stars = new T.Points(sg, new T.PointsMaterial({ color: '#ffffff', size: 1.8, sizeAttenuation: false, transparent: true, opacity: 0, fog: false, depthWrite: false })); g.add(W.stars); }
+  W.shoot = C.glow('#ffffff', 3, 0); W.shoot.material.fog = false; W.shoot.scale.set(26, 0.7, 1); g.add(W.shoot);
   W.clouds = []; const CN = S0low() ? 7 : 12; W.cloudIM = new T.InstancedMesh(LP.sph10, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#c8d8e8', fog: false }), CN * 5); g.add(W.cloudIM);
   for (let i = 0; i < CN; i++) { const a = i * 0.53, r2 = 80 + (i * 37 % 90); W.clouds.push({ x: Math.cos(a) * r2, y: 62 + (i % 4) * 8, z: Math.sin(a) * r2, sp: 0.8 + (i % 3) * 0.3 }); }
   const mts = [], caps = [], mcol = [];
   for (let i = 0; i < 22; i++) { const a = i / 22 * Math.PI * 2 + Math.sin(i) * 0.1, r2 = 210 + (i * 23 % 50), sx = 30 + (i * 17 % 25), sy = 38 + (i * 29 % 40), sz = 30 + (i * 13 % 25), x = Math.cos(a) * r2, z = Math.sin(a) * r2;
-    mts.push([x, 0, z, sx, sy, sz, i]); mcol.push(i % 2 ? '#8fb0c8' : '#7f9fbf'); caps.push([x, sy * 0.36, z, sx * 0.3, sy * 0.3, sz * 0.3, i]); }
+    if (edgeW(x, z, 'sea') > 0) continue; mts.push([x, 0, z, sx, sy, sz, i]); mcol.push(i % 2 ? '#8fb0c8' : '#7f9fbf'); caps.push([x, sy * 0.36, z, sx * 0.3, sy * 0.3, sz * 0.3, i]); }
   g.add(inst(LP.cone8, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#304050' }), mts, mcol)); g.add(inst(LP.cone8, C.emat('#f4f8ff', '#8090a0'), caps));
   /* pond water (green and cloudy until the mystery is solved) and the stream */
   W.water = new T.Mesh(new T.CircleGeometry(15.8, 56), new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10', side: T.DoubleSide }));
@@ -377,7 +790,7 @@ function build() {
     CREEKS.forEach(function (c) {
       const P = c.pts, n = P.length, pos = new Float32Array(n * 2 * 3), uv = new Float32Array(n * 2 * 2), idx = []; let along = 0; const ys = [];
       /* the ground is drawn as a grid of triangles: find how high the drawn ground is, so the water never hides under it */
-      const GN = S0low() ? 110 : 140, cell = 320 / GN, gH = function (x, z) { const gx = Math.floor((x + 160) / cell), gz = Math.floor((z + 160) / cell); let m = -1e9; for (let a = 0; a <= 1; a++) for (let b = 0; b <= 1; b++) m = Math.max(m, H(-160 + (gx + a) * cell, -160 + (gz + b) * cell)); return m; };
+      const GN = S0low() ? 110 : 140, gH = function (x, z) { const inn = Math.abs(x) < 159 && Math.abs(z) < 159, cell = inn ? 320 / GN : 10, org = inn ? 160 : 450, gx = Math.floor((x + org) / cell), gz = Math.floor((z + org) / cell); let m = -1e9; for (let a = 0; a <= 1; a++) for (let b = 0; b <= 1; b++) m = Math.max(m, H(-org + (gx + a) * cell, -org + (gz + b) * cell)); return m; };
       const floor0 = [];
       for (let i = 0; i < n; i++) { const a = P[Math.max(0, i - 1)], b = P[Math.min(n - 1, i + 1)], L0 = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, nx = -(b[1] - a[1]) / L0, nz = (b[0] - a[0]) / L0, w = (c.w0 + (c.w1 - c.w0) * i / (n - 1)) / 2;
         const lo = Math.max(gH(P[i][0], P[i][1]), Math.min(gH(P[i][0] + nx * w, P[i][1] + nz * w), gH(P[i][0] - nx * w, P[i][1] - nz * w))) + 0.08; floor0.push(lo); ys.push(lo + 0.06); }
@@ -449,6 +862,7 @@ function build() {
   for (let i = 0; i < ringN; i++) {
     const a = i * 2.39996, r2 = EDGE + 4 + ((i * 37) % 60) * (i % 3 === 0 ? 1.4 : 0.9); let x = Math.cos(a) * r2, z = Math.sin(a) * r2;
     if (Math.hypot(x - SPRING.x, z + 66) < 11) { x *= 1.5; z *= 1.5; }
+    if (edgeW(x, z).w > 0.02) { x = 0; z = -400; }
     const y = H(x, z), s2 = 1.1 + (i % 5) * 0.25;
     const leafy = i % 3 === 1; dm0.position.set(x, y + (leafy ? 4.0 : 4.6) * s2, z); if (leafy) dm0.scale.set(2.2 * s2, 2.0 * s2, 2.2 * s2); else dm0.scale.set(1.9 * s2, 2.8 * s2, 1.9 * s2); dm0.rotation.y = i; dm0.updateMatrix(); cone.setMatrixAt(i, dm0.matrix);
     tc.set(leafy ? ['#5a9a3a', '#6aaa44', '#c4602c', '#4a8a34', '#d8a03a'][i % 5] : ['#2f6a32', '#3a7a3a', '#2a5a30', '#2a6236'][i % 4]).offsetHSL(0, 0, (Math.sin(i * 1.7) * 0.04)); cone.setColorAt(i, tc);
@@ -561,17 +975,55 @@ function build() {
   W.hawk = new T.Group(); const hb = new T.Mesh(G.sph, C.emat('#6a4a2a', '#100a04')); hb.scale.set(0.5, 0.3, 1.1); W.hawk.add(hb); [-1, 1].forEach(function (sd) { const wgm = new T.Mesh(G.box, C.emat('#7a5a3a', '#100a04')); wgm.scale.set(2.4, 0.08, 0.7); wgm.position.x = sd * 1.3; W.hawk.add(wgm); }); g.add(W.hawk);
   W.bees = []; for (let i = 0; i < 4; i++) { const b = new T.Mesh(G.sph, C.emat('#ffd166', '#5a4010')); b.scale.set(0.18, 0.15, 0.24); g.add(b); W.bees.push({ m: b, ph: i * 1.7 }); }
   W.fish = new T.Group(); for (let i = 0; i < 6; i++) { const f = new T.Mesh(G.sph, C.emat('#ff9f6e', '#5a2a10')); f.scale.set(0.5, 0.22, 0.2); f.userData.ph = i; W.fish.add(f); } W.fish.visible = false; g.add(W.fish);
-  /* people (fellow alien scientists) */
-  const npc = function (id, x, z, look) { const m = C.buildAlien(look); m.position.set(x, H(x, z), z); m.scale.setScalar(1.15); g.add(m); const tag = C.label(npcName(id), 2.6, { bd: '#ffd166' }); tag.scale.multiplyScalar(0.7); tag.position.set(x, H(x, z) + 3.1, z); g.add(tag);
-    const mk = C.glow('#ffd166', 1.4, 0.9); mk.position.set(x, H(x, z) + 3.9, z); g.add(mk); W.npcs.push({ id: id, x: x, z: z, m: m, tag: tag, mark: mk }); W.colliders.push({ x: x, z: z, r: 0.9 }); };
-  npc('ama', STATION.x + 2, STATION.z + 1.5, { shape: 1, color: 7, eyes: 2, ant: 2, gear: 1, estyle: 0, mouth: 1 });
-  npc('pip', -8, 8, { shape: 0, color: 4, eyes: 2, ant: 1, gear: 0, estyle: 1, mouth: 2 });
-  npc('lu', FARM.x + 6, FARM.z + 9, { shape: 2, color: 2, eyes: 1, ant: 2, gear: 0, estyle: 0, mouth: 1 });
+  /* the people of Willow Creek: a field biologist, a local kid who fishes, a farmer, and a park ranger (all human) */
+  const npc = function (id, x, z, look, sc) { sc = sc || 1; const m = buildHuman(look); m.position.set(x, H(x, z), z); m.scale.setScalar(sc); g.add(m); const tag = C.label(npcName(id), 2.6, { bd: '#ffd166' }); tag.scale.multiplyScalar(0.7); tag.position.set(x, H(x, z) + 2.75 * sc + 0.2, z); g.add(tag);
+    const mk = C.glow('#ffd166', 1.4, 0.9); mk.position.set(x, H(x, z) + 2.75 * sc + 0.9, z); g.add(mk); W.npcs.push({ id: id, x: x, z: z, m: m, tag: tag, mark: mk }); W.colliders.push({ x: x, z: z, r: 0.7 }); };
+  npc('ama', STATION.x + 2, STATION.z + 1.5, { skin: '#8a5a3c', hair: '#1a1210', hairStyle: 'bun', shirt: '#ece4cc', vest: '#9a8a52', pants: '#4a5a6a', hat: 'field', hatCol: '#c8b88a', prop: 'clipboard' });
+  npc('pip', -8, 8, { skin: '#e8b890', hair: '#6a3a1a', hairStyle: 'short', shirt: '#3a8ad0', pants: '#3a4a7a', hat: 'cap', hatCol: '#d04a3a', prop: 'rod', shoes: '#e8e8e8' }, 0.78);
+  npc('lu', FARM.x + 6, FARM.z + 9, { skin: '#c89070', hair: '#a8a8a8', hairStyle: 'long', shirt: '#b84a3a', pants: '#3a5a8a', bib: true, hat: 'straw' });
+  npc('sam', 7, 55.5, { skin: '#f0c8a8', hair: '#c8783a', hairStyle: 'curly', shirt: '#9aa06a', pants: '#5a4a3a', hat: 'ranger', hatCol: '#5a6a3a', prop: 'binoculars' });
+  /* animals you can listen to: a heron on the pond shore and fish hiding in the cold spring */
+  W.heron = new T.Group(); { const hm = C.emat('#7a8ca8', '#141a24'), hb = new T.Mesh(G.sph, hm); hb.scale.set(0.42, 0.45, 0.8); hb.position.y = 1.6; W.heron.add(hb);
+    const nk = new T.Mesh(G.cyl, hm); nk.scale.set(0.09, 0.8, 0.09); nk.position.set(0, 2.15, 0.45); nk.rotation.x = 0.35; W.heron.add(nk);
+    W.heronHead = new T.Group(); const hd = new T.Mesh(G.sph, C.emat('#e8ecf0', '#2a2a30')); hd.scale.set(0.16, 0.15, 0.24); W.heronHead.add(hd); const bk = new T.Mesh(G.cone, C.emat('#e8b03a', '#3a2a08')); bk.scale.set(0.05, 0.22, 0.05); bk.rotation.x = Math.PI / 2; bk.position.z = 0.36; W.heronHead.add(bk);
+    const pl = new T.Mesh(G.box, C.basic('#1a1a24')); pl.scale.set(0.3, 0.03, 0.02); pl.position.set(0, 0.06, -0.12); W.heronHead.add(pl); W.heronHead.position.set(0, 2.55, 0.6); W.heron.add(W.heronHead);
+    [-1, 1].forEach(function (sd) { const lg = new T.Mesh(G.cyl, C.emat('#c8a050', '#2a2008')); lg.scale.set(0.035, 1.3, 0.035); lg.position.set(sd * 0.12, 0.65, 0); W.heron.add(lg); }); }
+  W.heron.position.set(-6.5, H(-6.5, 18.5), 18.5); W.heron.rotation.y = -1.6; g.add(W.heron);
+  W.springFish = []; for (let i = 0; i < 3; i++) { const f = new T.Mesh(G.sph, C.emat('#ffb06e', '#5a2a10')); f.scale.set(0.35, 0.16, 0.14); g.add(f); W.springFish.push(f); }
+  W.beacon = new T.Mesh(new T.CylinderGeometry(0.5, 0.5, 30, 12, 1, true), new T.MeshBasicMaterial({ color: '#ffd166', transparent: true, opacity: 0.35, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false })); W.beacon.visible = false; g.add(W.beacon);
+  /* night lights: fireflies over the meadow and pond edge, a porch lamp with a luna moth */
+  W.ffly = []; for (let i = 0; i < (S0low() ? 18 : 40); i++) { const f = C.glow('#d8ff7a', 0.9, 0); f.userData = { cx: -6 + rnd(i + 13000) * 34, cz: 24 + rnd(i + 13100) * 26, ph: rnd(i + 13200) * 6.28 }; g.add(f); W.ffly.push(f); }
+  W.porch = C.glow('#ffd88a', 4, 0); W.porch.position.set(STATION.x, H(STATION.x, STATION.z) + 2.6, STATION.z - 1.3); g.add(W.porch);
+  W.moth = new T.Group(); [-1, 1].forEach(function (sd) { const w = new T.Mesh(G.box, C.emat('#9ae08a', '#2a4a1a')); w.scale.set(0.34, 0.02, 0.3); w.position.x = sd * 0.18; W.moth.add(w); }); W.moth.visible = false; g.add(W.moth);
+  /* sunbeams slanting through the forest canopy, and pollen drifting over the meadow */
+  { const rc = document.createElement('canvas'); rc.width = 16; rc.height = 128; const rx = rc.getContext('2d'), grd = rx.createLinearGradient(0, 0, 0, 128); grd.addColorStop(0, 'rgba(255,240,200,0)'); grd.addColorStop(0.3, 'rgba(255,240,200,0.5)'); grd.addColorStop(1, 'rgba(255,240,200,0)'); rx.fillStyle = grd; rx.fillRect(0, 0, 16, 128);
+    const rt = new T.CanvasTexture(rc); W.beams = []; for (let i = 0; i < 10; i++) { const m = new T.Mesh(new T.PlaneGeometry(2.2, 16), new T.MeshBasicMaterial({ map: rt, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide, fog: false, opacity: 0 })); const x = 28 + (i * 13 % 34), z = 20 + (i * 7 % 30);
+      m.position.set(x, H(x, z) + 7, z); m.rotation.set(0, i * 0.7, 0.45); g.add(m); W.beams.push({ m: m, ph: i }); } }
+  { const n = 160, pp = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const x = -20 + rnd(i + 14000) * 50, z = 20 + rnd(i + 14100) * 40; pp[i * 3] = x; pp[i * 3 + 1] = H(x, z) + 0.5 + rnd(i + 14200) * 3; pp[i * 3 + 2] = z; }
+    const pg2 = new T.BufferGeometry(); pg2.setAttribute('position', new T.BufferAttribute(pp, 3)); W.pollen = new T.Points(pg2, new T.PointsMaterial({ color: '#fff4c0', size: 0.09, transparent: true, opacity: 0.7, depthWrite: false })); g.add(W.pollen); }
+  /* the ranger campsite: a fire ring, log benches and a tent, near the valley lookout */
+  { const fx = 16.5, fz = 53.5, fy = H(fx, fz); W.fire = { x: fx, z: fz, lit: !!st().f.fire };
+    const st0 = []; for (let k = 0; k < 10; k++) { const a = k / 10 * 6.283; st0.push([fx + Math.cos(a) * 0.95, fy + 0.15, fz + Math.sin(a) * 0.95, 0.28, 0.22, 0.28, a]); } g.add(inst(G.ico, C.emat('#8a8a80', '#1a1a18'), st0));
+    for (let k = 0; k < 3; k++) { const lg = new T.Mesh(G.cyl, C.emat('#6a4a2a', '#140a04')); lg.scale.set(0.12, 1.1, 0.12); lg.rotation.z = Math.PI / 2; lg.rotation.y = k * 2.1; lg.position.set(fx, fy + 0.2, fz); g.add(lg); }
+    W.flames = new T.Group(); [['#ff7a2a', 0.45, 1.1], ['#ffb03a', 0.32, 0.85], ['#ffe08a', 0.18, 0.6]].forEach(function (f0, k) { const c0 = new T.Mesh(G.cone, C.basic(f0[0])); c0.scale.set(f0[1], f0[2] / 2, f0[1]); c0.position.y = 0.3 + f0[2] / 4; W.flames.add(c0); });
+    const fg = C.glow('#ffa040', 7, 0.8); fg.position.y = 0.8; W.flames.add(fg); W.flames.position.set(fx, fy, fz); W.flames.visible = W.fire.lit; g.add(W.flames);
+    W.benches = [[fx - 2.4, fz, Math.PI / 2], [fx + 2.4, fz, -Math.PI / 2], [fx, fz - 2.4, 0]].map(function (b) { const m = new T.Mesh(G.cyl, C.emat('#7a5230', '#140a04')); m.scale.set(0.3, 2, 0.3); m.rotation.z = Math.PI / 2; m.rotation.y = b[2] + Math.PI / 2; m.position.set(b[0], H(b[0], b[1]) + 0.3, b[1]); g.add(m); return { x: b[0], z: b[1] }; });
+    const tent = new T.Mesh(new T.ConeGeometry(1.8, 2.2, 4), C.emat('#4a8a5a', '#0a1a0a')); tent.rotation.y = Math.PI / 4; tent.position.set(fx + 3.5, H(fx + 3.5, fz + 3) + 1.1, fz + 3); g.add(tent); W.colliders.push({ x: fx + 3.5, z: fz + 3, r: 1.5 }, { x: fx, z: fz, r: 1.1 }); }
+  /* survey posts: a wooden post with a clipboard sign */
+  SVSITES.forEach(function (sv) { const y = H(sv.x, sv.z), po = new T.Mesh(G.cyl, C.emat('#8a6a3a', '#1a0e05')); po.scale.set(0.1, 1.4, 0.1); po.position.set(sv.x, y + 0.7, sv.z); g.add(po);
+    const bd = new T.Mesh(G.box, C.emat('#f0e8d0', '#2a2418')); bd.scale.set(0.7, 0.5, 0.06); bd.position.set(sv.x, y + 1.45, sv.z); bd.rotation.y = Math.atan2(STATION.x - sv.x, STATION.z - sv.z); g.add(bd);
+    const lb = C.label(sv.kind === 'kick' ? '🪣' : '📋', 1.2, { big: true, bd: '#7be0ad' }); lb.position.set(sv.x, y + 2.1, sv.z); g.add(lb); W.colliders.push({ x: sv.x, z: sv.z, r: 0.3 }); });
+  W.listenFx = C.glow('#9fe8ff', 3.2, 0); W.listenFx.material.opacity = 0; g.add(W.listenFx);
   /* planting spots along the stream */
-  const SL = STREAM.slice(2); W.plants = []; for (let i = 0; i < 5; i++) { const u = (i + 0.5) / 5, seg = Math.min(SL.length - 2, Math.floor(u * (SL.length - 1))), lu = u * (SL.length - 1) - seg, a = SL[seg], b = SL[seg + 1];
-    const x = a[0] + (b[0] - a[0]) * lu + 2.4, z = a[1] + (b[1] - a[1]) * lu; const mk = C.glow('#7be0ad', 2.2, 0.0); mk.position.set(x, H(x, z) + 0.6, z); g.add(mk);
+  const CP = CREEKS[0].pts.filter(function (q, k) { return k > 25 && Math.hypot(q[0] - POND.x, q[1] - POND.z) > 18.5; }); W.plants = []; for (let i = 0; i < 5; i++) { const q = CP[Math.floor((i + 0.5) / 5 * CP.length)], q2 = CP[Math.min(CP.length - 1, Math.floor((i + 0.5) / 5 * CP.length) + 1)], L0 = Math.hypot(q2[0] - q[0], q2[1] - q[1]) || 1;
+    const x = q[0] - (q2[1] - q[1]) / L0 * 2.6, z = q[1] + (q2[0] - q[0]) / L0 * 2.6; const mk = C.glow('#7be0ad', 2.2, 0.0); mk.position.set(x, H(x, z) + 0.6, z); g.add(mk);
     const pl = new T.Group(); for (let k = 0; k < 4; k++) { const leaf = new T.Mesh(G.cone, C.emat('#5fbf5a', '#0a2008')); leaf.scale.set(0.25, 0.7, 0.25); leaf.position.set(Math.cos(k) * 0.4, 0.6, Math.sin(k) * 0.4); pl.add(leaf); } pl.position.set(x, H(x, z), z); pl.visible = false; g.add(pl);
     W.plants.push({ x: x, z: z, mk: mk, pl: pl, i: i }); }
+  /* a little wooden dock on the east shore: the place to fill your sample jar */
+  { const d0 = [-5.5, 15.2], d1 = [-10.4, 17.4], L0 = Math.hypot(d1[0] - d0[0], d1[1] - d0[1]), ang = Math.atan2(d1[1] - d0[1], d1[0] - d0[0]), top = WL0 + 0.45, plankM = C.emat('#b07a44', '#1a0e05'), postM = C.emat('#7a5230', '#140a04');
+    for (let k = 0; k < 9; k++) { const u = (k + 0.5) / 9, x = d0[0] + (d1[0] - d0[0]) * u, z = d0[1] + (d1[1] - d0[1]) * u, pl = new T.Mesh(G.box, k % 2 ? plankM : postM === plankM ? plankM : plankM); pl.scale.set(L0 / 9 - 0.06, 0.12, 1.7); pl.position.set(x, top - 0.06, z); pl.rotation.y = -ang; g.add(pl); }
+    [0, 0.5, 1].forEach(function (u) { [-1, 1].forEach(function (sd) { const x = d0[0] + (d1[0] - d0[0]) * u - Math.sin(ang) * sd * 0.8, z = d0[1] + (d1[1] - d0[1]) * u + Math.cos(ang) * sd * 0.8, po = new T.Mesh(G.cyl, postM); po.scale.set(0.12, top - H(x, z) + 0.5, 0.12); po.position.set(x, (top + H(x, z)) / 2 + 0.2, z); g.add(po); }); });
+    for (let k = 0; k <= 4; k++) { const u = k / 4; W.tops.push({ x: d0[0] + (d1[0] - d0[0]) * u, z: d0[1] + (d1[1] - d0[1]) * u, r: 1.15, top: top }); } }
   /* UNDER THE POND: pondweed, mussels, snails, tadpoles, rocks, sun rays and floating specks */
   W.uw = new T.Group(); g.add(W.uw);
   { const blades = [], bc = []; for (let i = 0; i < 150; i++) { const a = rnd(i + 40) * 6.283, rr = 2 + Math.sqrt(rnd(i + 90)) * 11, x = POND.x + Math.cos(a) * rr, z = POND.z + Math.sin(a) * rr, y = H(x, z), hh = Math.min(WL0 - y - 0.6, 1.2 + rnd(i + 7) * 2.6); if (hh < 0.5) continue;
@@ -619,7 +1071,7 @@ function spots() {
     { id: 'sun', x: 10, z: 47, verb: 'cz.observe', t: 'cz.t.sun', use: function () { find('sun'); compare(); } },
     { id: 'shade', x: 45.5, z: 53, verb: 'cz.observe', t: 'cz.t.shade', use: function () { find('shade'); compare(); } },
     { id: 'oak', x: 18, z: -14, r: 3.2, verb: 'cz.collect', t: 'cz.t.oak', use: function () { s.samples.leaf = 1; saveSoon(); say('cz.s.gotLeaf'); } },
-    { id: 'pond', x: POND.x + 13, z: POND.z - 6, r: 4, verb: 'cz.investigate', t: 'cz.t.pond', use: pondUse },
+    { id: 'pond', x: -9.6, z: 17, r: 2.6, verb: function () { return s.inv.jar && !s.samples.pond ? 'cz.fill' : 'cz.investigate'; }, t: 'cz.t.pond', my: 1.6, use: pondUse },
     { id: 'kit', x: POND.x - 2, z: POND.z - 15, r: 4, verb: 'cz.test', t: 'cz.t.kit', use: kitUse },
     { id: 'scope', x: STATION.x + 4, z: STATION.z + 1, r: 2.6, verb: 'cz.examine', t: 'cz.t.scope', use: scopeUse },
     { id: 'bags', x: FARM.x + 10, z: FARM.z + 9, r: 3, verb: 'cz.investigate', t: 'cz.t.bags', use: function () { evidence('farm'); } },
@@ -628,6 +1080,7 @@ function spots() {
     { id: 'ama', x: STATION.x + 2, z: STATION.z + 1.5, r: 2.6, verb: 'cz.talk', t: 'cz.t.ama', noMark: true, use: talkAma },
     { id: 'pip', x: -8, z: 8, r: 2.6, verb: 'cz.talk', t: 'cz.t.pip', noMark: true, use: talkPip },
     { id: 'lu', x: FARM.x + 6, z: FARM.z + 9, r: 2.6, verb: 'cz.talk', t: 'cz.t.lu', noMark: true, use: talkLu },
+    { id: 'sam', x: 7, z: 55.5, r: 2.6, verb: 'cz.talk', t: 'cz.t.sam', noMark: true, use: talkSam },
     { id: 'spring', x: SPRING.x, z: SPRING.z - 0.5, r: 4.5, verb: 'cz.observe', t: 'cz.t.spring', my: 4, use: function () { find('spring'); } },
     { id: 'lichen', x: 34, z: -36, r: 3.6, verb: 'cz.observe', t: 'cz.t.lichen', my: 3.4, use: function () { find('lichen'); } },
     { id: 'owl', x: 35, z: 46, r: 3.4, verb: 'cz.observe', t: 'cz.t.owl', my: 6.2, use: function () { W.owlLook = 2; find('owl'); } },
@@ -645,6 +1098,17 @@ function spots() {
     { id: 'willow', x: -36, z: 28, r: 3.8, verb: 'cz.observe', t: 'cz.t.willow', my: 5.5, use: function () { treeFind('willow'); } },
     { id: 'dogwood', x: -12, z: 46, r: 3, verb: 'cz.observe', t: 'cz.t.dogwood', my: 3.5, use: function () { treeFind('dogwood'); } },
     { id: 'hickory', x: 2, z: 50, r: 3.6, verb: 'cz.observe', t: 'cz.t.hickory', my: 6, use: function () { treeFind('hickory'); } },
+    { id: 'seaview', x: Math.cos(-3 * Math.PI / 180) * (EDGE + 0.2), z: Math.sin(-3 * Math.PI / 180) * (EDGE + 0.2), r: 3.4, verb: 'cz.lookout', t: 'cz.t.seaview', my: 2.6, use: function () { viewer('sea'); find('seaview'); } },
+    { id: 'valleyview', x: Math.cos(88.5 * Math.PI / 180) * (EDGE + 0.2), z: Math.sin(88.5 * Math.PI / 180) * (EDGE + 0.2), r: 3.4, verb: 'cz.lookout', t: 'cz.t.valleyview', my: 2.6, use: function () { viewer('valley'); find('valleyview'); } },
+    { id: 'canyonview', x: Math.cos(177.5 * Math.PI / 180) * (EDGE + 0.2), z: Math.sin(177.5 * Math.PI / 180) * (EDGE + 0.2), r: 3.4, verb: 'cz.lookout', t: 'cz.t.canyonview', my: 2.6, use: function () { viewer('canyon'); find('canyonview'); } },
+    { id: 'fire', x: 16.5, z: 53.5, r: 3.2, verb: function () { return W.fire && W.fire.lit ? 'cz.sit' : 'cz.light'; }, t: 'cz.t.fire', noMark: true, use: fireUse },
+    { id: 'fireflies', x: 8, z: 38, r: 9, verb: 'cz.observe', t: 'cz.t.fireflies', noMark: true, when: function () { return isNight(); }, use: function () { find('fireflies'); } },
+    { id: 'lunamoth', x: STATION.x, z: STATION.z - 0.5, r: 3, verb: 'cz.observe', t: 'cz.t.lunamoth', noMark: true, when: function () { return isNight(); }, use: function () { find('lunamoth'); } },
+    { id: 'sv-poll.meadow', x: -1, z: 44, r: 2.4, verb: 'cz.svStart', t: 'cz.svPost', noMark: true, use: function () { svStart('poll.meadow'); } },
+    { id: 'sv-poll.farm', x: -40.5, z: -36, r: 2.4, verb: 'cz.svStart', t: 'cz.svPost', noMark: true, use: function () { svStart('poll.farm'); } },
+    { id: 'sv-frog', x: -4, z: 27.5, r: 2.2, verb: 'cz.svStart', t: 'cz.svPost', noMark: true, use: function () { svStart('frog'); } },
+    { id: 'sv-kick.up', x: -31.5, z: -51, r: 2.4, verb: 'cz.svStart', t: 'cz.svPost', noMark: true, use: function () { svStart('kick.up'); } },
+    { id: 'sv-kick.down', x: -38.5, z: -25, r: 2.4, verb: 'cz.svStart', t: 'cz.svPost', noMark: true, use: function () { svStart('kick.down'); } },
     { id: 'pondweed', x: POND.x + 3, z: POND.z - 4, r: 4.5, uw: true, verb: 'cz.observe', t: 'cz.t.pondweed', noMark: true, use: function () { find('pondweed'); } },
     { id: 'mussel', x: POND.x + Math.cos(1.6) * 5.2, z: POND.z + Math.sin(1.6) * 5.2, r: 3.5, uw: true, verb: 'cz.observe', t: 'cz.t.mussel', noMark: true, use: function () { find('mussel'); } },
     { id: 'tadpole', x: POND.x - 9, z: POND.z + 6, r: 4, uw: true, verb: 'cz.observe', t: 'cz.t.tadpole', noMark: true, use: function () { find('tadpole'); } }
@@ -657,10 +1121,40 @@ function nearest() {
 }
 function find(id) {
   const s = st(), fresh = !s.found[id]; s.found[id] = Date.now(); saveSoon();
-  showCard(id); C.beep(fresh ? 1000 : 800, 0.18, 'sine', fresh ? 'chirp, new discovery' : null);
+  showCard(id); if (fresh && BQ.amb) { amb('sfx', 'discover'); if (C.S.set.cap && C.caption) C.caption('sound: chime, new discovery'); } else C.beep(fresh ? 1000 : 800, 0.18, 'sine', fresh ? 'chirp, new discovery' : null);
   if (fresh) { C.award('cz-first'); if (FINDS.every(function (f) { return s.found[f.id]; })) C.award('cz-all'); }
 }
 function treeFind(id) { find(id); const s = st(), n = ['whitepine', 'hemlock', 'redmaple', 'sycamore', 'willow', 'dogwood', 'hickory'].filter(function (k) { return s.found[k]; }).length; if (n >= 5 && !s.f.biodiv) { s.f.biodiv = 1; saveSoon(); queueCard('cz.d.biodiv', 14); } }
+/* LISTENING: the alien's antennae pick up what animals say. Each animal knows only its own piece of the story. */
+function voices() {
+  const s = st(); return [
+    { id: 'frog', x: -8, z: 30, r: 3.2, lines: ['cz.v.frog1', 'cz.v.frog2', 'cz.v.frog3'], clue: 'cz.vc.frog', myst: 1 },
+    { id: 'heron', x: -6.5, z: 18.5, r: 3.4, lines: ['cz.v.heron1', 'cz.v.heron2', 'cz.v.heron3'], clue: 'cz.vc.heron', myst: 1, when: function () { return !s.f.fixed; } },
+    { id: 'fish', x: SPRING.x, z: SPRING.z, r: 5, lines: ['cz.v.fishS1', 'cz.v.fishS2', 'cz.v.fishS3'], clue: 'cz.vc.fish', myst: 1, when: function () { return !s.f.fixed; } },
+    { id: 'fish', key: 'fishP', x: POND.x + 13, z: POND.z + 6, r: 4.5, lines: ['cz.v.fishP1'], when: function () { return s.f.fixed; } },
+    { id: 'robin', x: ORCH.x + 3.15, z: ORCH.z + 0.9, r: 3.2, lines: ['cz.v.robin1', 'cz.v.robin2'], clue: 'cz.vc.robin', myst: 1 },
+    { id: 'deer', live: 'deer', r: 5.5, lines: ['cz.v.deer1', 'cz.v.deer2'], clue: 'cz.vc.deer', myst: 1 },
+    { id: 'worms', x: -50, z: -27, r: 3.2, lines: ['cz.v.worms1', 'cz.v.worms2'], clue: 'cz.vc.worms', myst: 1 },
+    { id: 'bees', x: 6, z: 44, r: 3.6, lines: ['cz.v.bees1', 'cz.v.bees2'], clue: 'cz.vc.bees' },
+    { id: 'owl', x: 35, z: 46, r: 3.6, lines: ['cz.v.owl1'], when: function () { return !isNight(); } },
+    { id: 'owl', key: 'owlN', x: 35, z: 46, r: 4, lines: ['cz.v.owlN1', 'cz.v.owlN2'], clue: 'cz.vc.owl', when: function () { return isNight(); } }];
+}
+function nearestVoice() {
+  let best = null, bd = 1e9; (W.voiceList || (W.voiceList = voices())).forEach(function (v) { if (v.when && !v.when()) return; let x = v.x, z = v.z; if (v.live === 'deer') { x = W.dr.x; z = W.dr.z; }
+    const d = Math.hypot(W.px - x, W.pz - z); if (d < v.r && d < bd && !W.under) { bd = d; best = v; } }); return best;
+}
+function listen(v) {
+  if (!v || W.talk) return; const s = st(); if (!s.voices) s.voices = {};
+  W.listenT = 2.5; amb('sfx', 'chime');
+  if (v.id === 'deer') W.deerAlert = 4; if (v.id === 'owl') W.owlLook = 2; if (v.id === 'frog') W.frogJump = 0;
+  talk(v.lines.map(function (k) { return { who: v.id, key: k, animal: true }; }), function () {
+    const fresh = v.clue && !s.voices[v.key || v.id]; s.voices[v.key || v.id] = Date.now(); saveSoon();
+    if (fresh) { showCard('msg', v.clue); W.cardT = 7; }
+    if (v.myst && !(s.log && s.log.log2)) logEntry('log2');
+    objective();
+  });
+}
+function logEntry(id) { const s = st(); if (!s.log) s.log = {}; if (s.log[id]) return; s.log[id] = Date.now(); saveSoon(); queueCard('cz.' + id, 14); W.logPending = true; }
 /* notes that wait until the card on screen has been read */
 function queueCard(key, secs) { (W.queue = W.queue || []).push([key, secs]); W.cardT = Math.min(W.cardT || 0, 6); }
 function compare() { const s = st(); if (s.found.sun && s.found.shade && !s.f.compared) { s.f.compared = 1; saveSoon(); setTimeout(function () { showCard('compare'); C.award('cz-compare'); }, 4500); } }
@@ -673,7 +1167,7 @@ function svgCells(kind) {
 function showCard(id, extra) {
   W.card = { id: id, extra: extra }; W.cardT = 14;
   const isFind = FINDS.some(function (f) { return f.id === id; }) || id === 'compare';
-  const title = id === 'compare' ? '⚖️ ' + tx('cz.n.sun') + ' / ' + tx('cz.n.shade') : isFind ? tx('cz.n.' + id) : (extra && !/^cz\.(s|ev)\./.test(extra) ? '🌿 ' + tx('cz.note') : tx('cz.m.title'));
+  const title = id === 'compare' ? '⚖️ ' + tx('cz.n.sun') + ' / ' + tx('cz.n.shade') : isFind ? tx('cz.n.' + id) : (extra && /^cz\.log/.test(extra) ? tx('cz.logT') : extra && /^cz\.vc\./.test(extra) ? '👂 ' + tx('cz.j.voices') : extra && !/^cz\.(s|ev)\./.test(extra) ? '🌿 ' + tx('cz.note') : tx('cz.m.title'));
   const body = id === 'compare' ? tx('cz.d.compare') : isFind ? tx('cz.d.' + id) : tx(extra);
   $('czCard').innerHTML = '<h3>' + C.esc(title) + '</h3>' + (id === 'leafcell' || id === 'algae' ? svgCells(id) : '') + '<p>' + C.esc(body) + '</p>' + (isFind ? '<p class="rec">' + C.esc(tx('cz.recorded')) + '</p>' : '');
   $('czCard').hidden = false;
@@ -683,7 +1177,7 @@ function evidence(k) {
   const s = st(); if (!s.f.tools && k !== 'farm' && k !== 'water') { /* still record what was seen */ }
   const fresh = !s.ev[k]; s.ev[k] = 1; saveSoon(); showCard('ev', 'cz.ev.' + k); if (fresh) C.beep(900, 0.2, 'triangle', 'chime, evidence found'); objective();
 }
-function pondUse() { const s = st(); evidence('water'); if (s.inv.jar && !s.samples.pond) { s.samples.pond = 1; saveSoon(); setTimeout(function () { say('cz.s.gotPond'); }, 3500); } else if (!s.inv.jar) setTimeout(function () { say('cz.s.needJar'); }, 3500); }
+function pondUse() { const s = st(); evidence('water'); if (s.inv.jar && !s.samples.pond) { s.samples.pond = 1; saveSoon(); amb('sfx', 'splash', 0.5); queueCard('cz.s.gotPond', 9); } else if (!s.inv.jar) setTimeout(function () { say('cz.s.needJar'); }, 3500); }
 function kitUse() { const s = st(); if (!s.inv.kit) { say('cz.s.needKit'); return; } evidence('oxygen'); }
 function scopeUse() {
   const s = st(), todo = [];
@@ -694,7 +1188,7 @@ function scopeUse() {
 function plant(p) {
   const s = st(); s.f['p' + p.i] = 1; s.planted = (s.planted || 0) + 1; saveSoon(); p.pl.visible = true; p.pl.scale.setScalar(0.1); W.grow = W.grow || []; W.grow.push(p.pl);
   say('cz.s.planted'); C.beep(700, 0.2, 'triangle', 'rustle, seedling planted'); objective();
-  if (s.planted >= 5) { s.f.fixed = 1; saveSoon(); W.clearT = 0; setTimeout(function () { say('cz.s.clearing'); }, 1500); C.award('cz-detective'); objective(); }
+  if (s.planted >= 5) { s.f.fixed = 1; W.mapBase = null; saveSoon(); W.clearT = 0; setTimeout(function () { say('cz.s.clearing'); }, 1500); C.award('cz-detective'); objective(); }
 }
 function applyFixed(instant) {
   const s = st();
@@ -702,13 +1196,18 @@ function applyFixed(instant) {
   if (s.f.fixed && instant) { W.water.material.color.set('#3a8ac0'); W.water.material.emissive.set('#0a1a2a'); W.scum.visible = false; W.fish.visible = true; }
 }
 /* ---------- CONVERSATIONS ---------- */
-function talk(lines, done) { W.talk = { lines: lines, i: 0, done: done, fb: '' }; drawTalk(); }
+function talk(lines, done) { W.talk = { lines: lines, i: 0, done: done, fb: '' }; drawTalk();
+  /* the camera turns to frame you and whoever you are talking with */
+  const who = lines[0] && lines[0].who, n = W.npcs.find(function (q) { return q.id === who; });
+  if (n) W.talkFocus = { x: n.x, z: n.z, y: H(n.x, n.z) + (n.id === 'pip' ? 1.3 : 1.6) };
+  else if (W.voice) { const v = W.voice, x = v.live === 'deer' ? W.dr.x : v.x, z = v.live === 'deer' ? W.dr.z : v.z; W.talkFocus = { x: x, z: z, y: H(x, z) + ({ heron: 2, owl: 4.4, robin: 3.2, deer: 1.4 }[v.id] || 0.6) }; }
+  else W.talkFocus = null; }
 function drawTalk() {
   const tk = W.talk, ln = tk.lines[tk.i];
   if (ln.choices) {
     $('czTalk').innerHTML = '<b>' + C.esc(npcName(ln.who)) + '</b><p>' + C.esc(tx(ln.key)) + '</p><div class="ch">' + ln.choices.map(function (c, i) { return '<button type="button" data-ch="' + i + '">' + (i + 1) + '. ' + C.esc(tx(c.key)) + '</button>'; }).join('') + '</div>' +
       (tk.fb ? '<p class="fb">' + C.esc(tx(tk.fb)) + '</p>' : '') + '<small>' + C.esc(tx('cz.choose')) + '</small>';
-  } else $('czTalk').innerHTML = '<b>' + C.esc(npcName(ln.who)) + '</b><p>' + C.esc(tx(ln.key, ln.vars)) + '</p><button type="button" data-next="1">' + C.esc(tx('cz.next')) + '</button>';
+  } else $('czTalk').innerHTML = '<b>' + C.esc(npcName(ln.who)) + '</b>' + (ln.animal ? ' <small>👂 ' + C.esc(tx('cz.listening')) + '</small>' : '') + '<p>' + C.esc(tx(ln.key, ln.vars)) + '</p><button type="button" data-next="1">' + C.esc(tx('cz.next')) + '</button>';
   $('czTalk').hidden = false;
 }
 function talkNext() { const tk = W.talk; if (!tk || tk.lines[tk.i].choices) return; tk.i++; if (tk.i >= tk.lines.length) { W.talk = null; $('czTalk').hidden = true; if (tk.done) tk.done(); } else drawTalk(); }
@@ -718,12 +1217,12 @@ function choose(i) { const tk = W.talk; if (!tk) return; const ln = tk.lines[tk.
 function evCount() { const e = st().ev; return ['water', 'oxygen', 'micro', 'farm'].filter(function (k) { return e[k]; }).length; }
 function talkAma() {
   const s = st();
-  if (!s.f.met) { talk([{ who: 'ama', key: 'cz.s.ama1' }, { who: 'ama', key: 'cz.s.ama2' }], function () { s.f.met = 1; saveSoon(); objective(); }); return; }
+  if (!s.f.met) { talk([{ who: 'ama', key: 'cz.s.ama1' }, { who: 'ama', key: 'cz.s.ama2' }], function () { s.f.met = 1; saveSoon(); objective(); logEntry('log1'); }); return; }
   if (s.f.pip && !s.f.tools) { talk([{ who: 'ama', key: 'cz.s.ama3' }, { who: 'ama', key: 'cz.s.ama4' }], function () { s.f.tools = 1; s.inv.jar = 1; s.inv.kit = 1; saveSoon(); objective(); }); return; }
   if (s.f.tools && !s.f.solved) {
     if (evCount() < 3) { talk([{ who: 'ama', key: 'cz.s.amaW', vars: { n: evCount() } }]); return; }
     talk([{ who: 'ama', key: 'cz.s.ama5', choices: [{ key: 'cz.c.b', fb: 'cz.f.b' }, { key: 'cz.c.a', ok: true }, { key: 'cz.c.c', fb: 'cz.f.c' }] }, { who: 'ama', key: 'cz.s.ama6' }, { who: 'ama', key: 'cz.s.ama7' }],
-      function () { s.f.solved = 1; s.found.eutro = Date.now(); C.S.words['Eutrophication'] = 1; saveSoon(); objective(); }); return;
+      function () { s.f.solved = 1; s.found.eutro = Date.now(); C.S.words['Eutrophication'] = 1; saveSoon(); objective(); logEntry('log3'); }); return;
   }
   if (s.f.fixed) { talk([{ who: 'ama', key: 'cz.s.amaDone' }]); return; }
   if (s.f.solved) { talk([{ who: 'ama', key: 'cz.s.ama7' }]); return; }
@@ -731,11 +1230,13 @@ function talkAma() {
 }
 function talkPip() { const s = st(); if (s.f.fixed) { talk([{ who: 'pip', key: 'cz.s.pipDone' }]); return; } if (s.f.pip) { talk([{ who: 'pip', key: 'cz.s.pipW' }]); return; }
   talk([{ who: 'pip', key: 'cz.s.pip1' }, { who: 'pip', key: 'cz.s.pip2' }], function () { s.f.pip = 1; saveSoon(); objective(); }); }
+function talkSam() { talk([{ who: 'sam', key: 'cz.s.sam1' }, { who: 'sam', key: 'cz.s.sam2' }, { who: 'sam', key: 'cz.s.sam3' }], function () { st().f.sam = 1; saveSoon(); }); }
 function talkLu() { const s = st(); if (s.f.fixed) { talk([{ who: 'lu', key: 'cz.s.luDone' }]); return; } talk([{ who: 'lu', key: 'cz.s.lu1' }, { who: 'lu', key: 'cz.s.lu2' }], function () { evidence('farm'); }); }
 function objective() {
   const s = st(); let key, vars;
   if (s.f.fixed) key = 'cz.m.o5'; else if (s.f.solved) { key = 'cz.m.o4'; vars = { n: s.planted || 0 }; } else if (s.f.tools) { if (evCount() >= 3) key = 'cz.m.o3'; else { key = 'cz.m.o2'; vars = { n: evCount() }; } } else if (s.f.pip) key = 'cz.m.o1'; else key = 'cz.m.o0';
-  $('czObj').innerHTML = '<small>🔎 ' + C.esc(tx('cz.m.title')) + '</small>' + C.esc(tx(key, vars));
+  const chk = key === 'cz.m.o2' || key === 'cz.m.o3' ? '<ul class="czChk">' + ['water', 'oxygen', 'micro', 'farm'].map(function (k) { return '<li>' + (s.ev[k] ? '✓ ' : '○ ') + C.esc(tx('cz.m.k.' + k)) + '</li>'; }).join('') + '</ul>' : '';
+  $('czObj').innerHTML = '<small>🔎 ' + C.esc(tx('cz.m.title')) + '</small>' + C.esc(tx(key, vars)) + chk + (key === 'cz.m.o2' ? '<br><span class="dim">👂 ' + C.esc(tx('cz.m.ears')) + '</span>' : '');
   if (W) W.npcs.forEach(function (n) { n.mark.visible = (n.id === 'pip' && !s.f.pip) || (n.id === 'ama' && (!s.f.met || (s.f.pip && !s.f.tools) || (s.f.tools && !s.f.solved && evCount() >= 3))); });
   if (W) W.plants.forEach(function (p) { p.mk.material.opacity = s.f.solved && !s.f.fixed && !s.f['p' + p.i] ? 0.9 : 0; });
 }
@@ -744,14 +1245,14 @@ function objective() {
 function start() {
   ensureUI(); C.teardown(); C.show(null); C.setMode('cozy');
   ['hud', 'touch', 'toast', 'qpanel'].forEach(function (id) { const e = $(id); if (e) e.hidden = true; });
-  build(); $('cozyUI').hidden = false; refreshText(); C.Music.stop(); W.moodNow = 'meadow'; amb('mood', 'meadow', 2);
+  build(); $('cozyUI').hidden = false; refreshText(); C.Music.stop(); dayLight(); W.moodNow = moodNow(); amb('mood', W.moodNow, 2);
   { const s0 = st(); if (s0.found.overlook && !s0.f.fly) { s0.f.fly = 1; C.save(); } }
   const s = st(); if (!s.f.met) setTimeout(function () { if (W && !W.talk) talkAma(); }, 800);
 }
 function exit() {
   const s = st(); s.pos = [W.px, W.pz]; C.save(); if (W.camUnder && W.airFog) { C.scene.fog = W.airFog; C.scene.background = W.airBg; }
   C.cam.fov = 42; C.cam.updateProjectionMatrix(); if (BQ.amb) BQ.amb.stop(1);
-  C.scene.remove(W.g); C.disposeGroup(W.g); C.scene.background = W.bg; C.scene.fog = W.fog; C.HEMI.intensity = W.light[0]; C.KEYL.intensity = W.light[1]; C.KEYL.position.copy(W.light[2]); W = null;
+  C.scene.remove(W.g); C.disposeGroup(W.g); C.scene.background = W.bg; C.scene.fog = W.fog; C.HEMI.intensity = W.light[0]; C.KEYL.intensity = W.light[1]; C.KEYL.position.copy(W.light[2]); C.HEMI.color.set('#ffffff'); C.HEMI.groundColor.set('#334455'); C.KEYL.color.set('#ffffff'); W = null;
   $('cozyUI').hidden = true; $('czPause').hidden = true; C.setMode('menu'); C.menuScene();
 }
 function setPause(on) { if (!W) return; W.pause = on; $('czPause').hidden = !on; if (on) { W.k = {}; $('czRes').focus(); } }
@@ -777,7 +1278,276 @@ function toggleFly() {
   if (W.flyE < 0.15) { showCard('msg', 'cz.flyLow'); W.cardT = 3; return; }
   W.flying = true; W.swim = false; W.vy = 5; W.ground = false; amb('sfx', 'whoosh', 0.8); if (!W.toldFly) { W.toldFly = true; showCard('msg', 'cz.flyTip'); W.cardT = 7; }
 }
+function viewer(id) { const v = W.views.find(function (q) { return q.id === id; }); if (!v) return; W.prevDist = W.distT > 4 ? W.distT : 10; W.distT = 2.3; W.dist = 3; W.pitch = id === 'valley' ? 0.32 : 0.12; W.yaw = Math.atan2(-v.x, -v.z); }
 function lookCloser() { if (W.dist > 4) { W.prevDist = W.distT; W.distT = 2.4; W.pitch = 0.15; if (!W.toldLook) { W.toldLook = true; showCard('msg', 'cz.lookTip'); W.cardT = 5; } } else W.distT = W.prevDist && W.prevDist > 4 ? W.prevDist : 10; }
+
+/* ---------- THE MAP: drawn from the real ground, filled in as you explore ---------- */
+const MX0 = -96, MX1 = 96, MZ0 = -96, MZ1 = 100, MCELL = 6, MCOLS = Math.ceil((MX1 - MX0) / MCELL), MROWS = Math.ceil((MZ1 - MZ0) / MCELL);
+const AREAS = [['pond', POND.x, POND.z], ['station', STATION.x, STATION.z - 7], ['farm', FARM.x, FARM.z - 2], ['spring', SPRING.x, SPRING.z - 5], ['hill', HILL.x, HILL.z - 7], ['hollow', HOLLOW.x, HOLLOW.z, 'glow'], ['orchard', ORCH.x, ORCH.z - 8],
+  ['forest', 42, 24], ['meadow', 6, 42], ['sea', 72, -3], ['valley', 2, 72], ['canyon', -72, 3], ['stream', -44, -30], ['dock', -5, 12], ['camp', 16.5, 49.5]];
+function habitatAt(x, z) {
+  const d = Math.hypot(x, z); if (waterAt(x, z)) return 'pond'; if (streamDist(x, z) < 3) return 'stream'; if (Math.hypot(x - HOLLOW.x, z - HOLLOW.z) < 10) return 'hollow';
+  if (Math.hypot(x - SPRING.x, z - SPRING.z) < 12) return 'spring'; if (x > 22 && z > 14 && d < EDGE) return 'forest'; if (Math.abs(x - FARM.x) < 13 && Math.abs(z - FARM.z) < 11) return 'farm';
+  if (Math.hypot(x - HILL.x, z - HILL.z) < 15) return 'hill'; if (Math.abs(x - ORCH.x) < 10 && Math.abs(z - ORCH.z) < 9) return 'orchard'; if (d > EDGE - 4 && edgeW(x, z).w > 0.5) return 'lookout'; return 'meadow';
+}
+function mapBase() {
+  if (W.mapBase) return W.mapBase;
+  const w = MX1 - MX0, h = MZ1 - MZ0, cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'), im = g.createImageData(w, h), c = new T.Color(), fixed = st().f.fixed;
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const x = MX0 + i + 0.5, z = MZ0 + j + 0.5, y = H(x, z), d = Math.hypot(x, z), ew = edgeW(x, z);
+    if (waterAt(x, z)) { c.set(fixed ? '#3aa8c0' : '#4f8f72'); if ((i + j * 3) % 11 === 0) c.offsetHSL(0, 0, 0.06); }
+    else if (streamDist(x, z) < 1.3) c.set('#4ab8d0');
+    else if (ew.id === 'sea' && ew.w > 0.5 && y < SEA_Y + 0.3) c.set('#2a9ab0');
+    else if (d > EDGE + 3 && ew.w > 0.5) { c.set('#8ab84a'); edgeColor(x, z, y, c); }
+    else if (d > EDGE + 2) c.set('#3f6a34');
+    else if (Math.abs(x - FARM.x) < 11 && Math.abs(z - FARM.z) < 9) c.set(Math.floor(x / 2) % 2 ? '#c8a050' : '#b88a40');
+    else if (pathDist(x, z) < 1.3) c.set('#d8a060');
+    else if (x > 22 && z > 14) c.set('#4a7a3a');
+    else c.set(y > 6 ? '#9ab850' : '#8cbc52');
+    const sl = (H(x + 1, z - 1) - H(x - 1, z + 1)) * 0.06; c.offsetHSL(0, 0, Math.max(-0.12, Math.min(0.12, sl)));
+    const k = (j * w + i) * 4; im.data[k] = c.r * 255; im.data[k + 1] = c.g * 255; im.data[k + 2] = c.b * 255; im.data[k + 3] = 255;
+  }
+  g.putImageData(im, 0, 0);
+  g.fillStyle = 'rgba(30,70,30,0.55)'; W.colliders.forEach(function (q) { if (!q.cr || q.x < MX0 || q.x > MX1 || q.z < MZ0 || q.z > MZ1) return; g.beginPath(); g.arc(q.x - MX0, q.z - MZ0, Math.min(2.6, q.cr * 0.8), 0, 6.283); g.fill(); });
+  g.fillStyle = '#c4462c'; g.fillRect(STATION.x - 3 - MX0, STATION.z - 6.5 - MZ0, 6, 5);
+  W.mapBase = cv; return cv;
+}
+function seenGrid() { const s = st(); if (!s.mapSeen || s.mapSeen.length !== MCOLS * MROWS) s.mapSeen = '0'.repeat(MCOLS * MROWS); return s.mapSeen; }
+function isSeen(x, z) { const i = Math.floor((x - MX0) / MCELL), j = Math.floor((z - MZ0) / MCELL); if (i < 0 || j < 0 || i >= MCOLS || j >= MROWS) return false; return seenGrid()[j * MCOLS + i] === '1'; }
+function markSeen() {
+  const s = st(), g0 = seenGrid().split(''), R = W.flying || W.py > H(W.px, W.pz) + 4 || Math.hypot(W.px - HILL.x, W.pz - HILL.z) < 8 ? 42 : 20; let ch = false;
+  for (let j = 0; j < MROWS; j++) for (let i = 0; i < MCOLS; i++) { const cx = MX0 + (i + 0.5) * MCELL, cz = MZ0 + (j + 0.5) * MCELL; if (g0[j * MCOLS + i] === '0' && Math.hypot(cx - W.px, cz - W.pz) < R) { g0[j * MCOLS + i] = '1'; ch = true; } }
+  if (ch) { s.mapSeen = g0.join(''); W.fogDirty = true; saveSoon(); }
+}
+function fogCanvas() {
+  if (W.fog0 && !W.fogDirty) return W.fog0; W.fogDirty = false;
+  const cv = W.fog0 || document.createElement('canvas'); cv.width = MX1 - MX0; cv.height = MZ1 - MZ0; const g = cv.getContext('2d'); g.globalCompositeOperation = 'source-over'; g.fillStyle = '#e9dfc4'; g.fillRect(0, 0, cv.width, cv.height);
+  g.strokeStyle = 'rgba(160,140,100,0.25)'; for (let k = 0; k < cv.width; k += 8) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k + 40, cv.height); g.stroke(); }
+  g.globalCompositeOperation = 'destination-out'; const sg = seenGrid();
+  for (let j = 0; j < MROWS; j++) for (let i = 0; i < MCOLS; i++) { if (sg[j * MCOLS + i] !== '1') continue; const cx = (i + 0.5) * MCELL, cz = (j + 0.5) * MCELL, gr = g.createRadialGradient(cx, cz, 0, cx, cz, MCELL * 1.15); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.65, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(cx - MCELL * 1.2, cz - MCELL * 1.2, MCELL * 2.4, MCELL * 2.4); }
+  W.fog0 = cv; return cv;
+}
+function openMap() {
+  if (!W || W.talk) return; W.k = {}; W.ui = 'map'; $('czMapP').hidden = false; W.mapZ = W.mapZ || 3; W.mapCx = W.px; W.mapCz = W.pz; markSeen(); sizeMap(); drawMap(); $('czMapClose').focus();
+}
+function closeMap() { if (!W) return; W.ui = null; $('czMapP').hidden = true; $('czMapInfo').innerHTML = ''; }
+function sizeMap() { const cv = $('czMapC'), r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); cv.width = Math.max(200, Math.round(r.width * dpr)); cv.height = Math.max(200, Math.round(r.height * dpr)); W.mapDpr = dpr; }
+function mapS(x, z) { const cv = $('czMapC'), sc = W.mapZ * W.mapDpr; return [(x - W.mapCx) * sc + cv.width / 2, (z - W.mapCz) * sc + cv.height / 2]; }
+function mapMarks() {
+  const s = st(), out = [];
+  spots().forEach(function (sp) { if (!FINDS.some(function (f) { return f.id === sp.id; }) || !s.found[sp.id]) return; out.push({ kind: 'find', id: sp.id, x: sp.x, z: sp.z }); });
+  W.npcs.forEach(function (n) { out.push({ kind: 'person', id: n.id, x: n.x, z: n.z }); });
+  (W.views || []).forEach(function (v) { out.push({ kind: 'view', id: v.id + 'view', x: v.x, z: v.z }); });
+  return out.filter(function (m) { return isSeen(m.x, m.z); });
+}
+function drawMap() {
+  const cv = $('czMapC'); if (!cv || $('czMapP').hidden) return; const g = cv.getContext('2d'), sc = W.mapZ * W.mapDpr, dpr = W.mapDpr;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#d8ccb0'; g.fillRect(0, 0, cv.width, cv.height);
+  g.save(); g.translate(cv.width / 2, cv.height / 2); g.scale(sc, sc); g.translate(-W.mapCx, -W.mapCz); g.imageSmoothingEnabled = true;
+  g.drawImage(mapBase(), MX0, MZ0, MX1 - MX0, MZ1 - MZ0); g.drawImage(fogCanvas(), MX0, MZ0, MX1 - MX0, MZ1 - MZ0); g.restore();
+  /* area names */
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
+  AREAS.forEach(function (a) { if (a[3] && !st().found[a[3]]) return; if (!isSeen(a[1], a[2])) return; const p0 = mapS(a[1], a[2]); g.font = '700 ' + Math.round(13 * dpr) + 'px sans-serif'; g.strokeStyle = 'rgba(255,250,235,0.9)'; g.lineWidth = 4 * dpr; const t0 = tx('cz.ar.' + a[0]); g.strokeText(t0, p0[0], p0[1]); g.fillStyle = '#3a2a1a'; g.fillText(t0, p0[0], p0[1]); });
+  /* marks */
+  W.mapHits = [];
+  mapMarks().forEach(function (m) { const p0 = mapS(m.x, m.z), r = 9 * dpr;
+    g.beginPath(); g.arc(p0[0], p0[1], r, 0, 6.283); g.fillStyle = m.kind === 'find' ? '#ffd166' : m.kind === 'person' ? '#5fb8ff' : '#c59cff'; g.fill(); g.lineWidth = 2 * dpr; g.strokeStyle = '#3a2a1a'; g.stroke();
+    g.fillStyle = '#10202c'; g.font = '700 ' + Math.round(11 * dpr) + 'px sans-serif'; g.fillText(m.kind === 'find' ? '★' : m.kind === 'person' ? '☺' : '◎', p0[0], p0[1] + dpr);
+    W.mapHits.push({ m: m, x: p0[0], y: p0[1] }); });
+  /* hint target */
+  if (W.hintTarget && W.hintTarget.t > 0) { const p0 = mapS(W.hintTarget.x, W.hintTarget.z), pr = (10 + 4 * Math.sin(W.t * 5)) * dpr; g.beginPath(); g.arc(p0[0], p0[1], pr, 0, 6.283); g.lineWidth = 3 * dpr; g.strokeStyle = '#e0403a'; g.stroke(); g.beginPath(); g.arc(p0[0], p0[1], pr * 1.7, 0, 6.283); g.lineWidth = 1.5 * dpr; g.stroke(); }
+  /* you: an arrow pointing the way you face */
+  const me = mapS(W.px, W.pz), f = W.face; g.save(); g.translate(me[0], me[1]); g.rotate(-f + Math.PI); g.beginPath(); g.moveTo(0, -12 * dpr); g.lineTo(8 * dpr, 9 * dpr); g.lineTo(0, 4 * dpr); g.lineTo(-8 * dpr, 9 * dpr); g.closePath(); g.fillStyle = '#e0403a'; g.fill(); g.lineWidth = 2 * dpr; g.strokeStyle = '#ffffff'; g.stroke(); g.restore();
+  /* compass */
+  g.fillStyle = '#3a2a1a'; g.font = '700 ' + Math.round(14 * dpr) + 'px sans-serif'; g.fillText('N ▲', cv.width - 28 * dpr, 18 * dpr);
+}
+function mapInfo(m) {
+  const s = st(); let title, body = '';
+  if (m.kind === 'person') { title = npcName(m.id); }
+  else { title = tx('cz.n.' + m.id); body = s.found[m.id] ? tx('cz.d.' + m.id) : tx('cz.mi.notYet'); }
+  $('czMapInfo').innerHTML = '<b>' + C.esc(title) + '</b> <span class="dim">· ' + C.esc(tx('cz.mi.habitat')) + ': ' + C.esc(tx('cz.hb.' + habitatAt(m.x, m.z))) + '</span>' + (body ? '<p>' + C.esc(body) + '</p>' : '');
+}
+function mapPointer(e, type) {
+  const cv = $('czMapC'), r = cv.getBoundingClientRect(), dpr = W.mapDpr, px = (e.clientX - r.left) * dpr, py = (e.clientY - r.top) * dpr;
+  if (type === 'down') { W.mapDrag = { x: px, y: py, cx: W.mapCx, cz: W.mapCz, moved: 0 }; cv.setPointerCapture && cv.setPointerCapture(e.pointerId); }
+  else if (type === 'move' && W.mapDrag) { const sc = W.mapZ * dpr, dx = px - W.mapDrag.x, dy = py - W.mapDrag.y; W.mapDrag.moved = Math.max(W.mapDrag.moved, Math.hypot(dx, dy)); W.mapCx = W.mapDrag.cx - dx / sc; W.mapCz = W.mapDrag.cz - dy / sc; drawMap(); }
+  else if (type === 'up' && W.mapDrag) { if (W.mapDrag.moved < 6 * dpr) { let best = null, bd = 18 * dpr; (W.mapHits || []).forEach(function (h) { const d = Math.hypot(h.x - px, h.y - py); if (d < bd) { bd = d; best = h.m; } }); if (best) mapInfo(best); } W.mapDrag = null; }
+}
+function mapZoom(f) { W.mapZ = Math.max(1.2, Math.min(9, W.mapZ * f)); drawMap(); }
+
+/* ---------- GIVE HINT: gentle clue first, then direction, then a marker and a light beam ---------- */
+function dirWord(dx, dz) { const d = Math.hypot(dx, dz); if (d < 4) return tx('cz.dir.here'); const a = (Math.atan2(-dz, dx) * 180 / Math.PI + 360) % 360, k = Math.round(a / 45) % 8; return tx('cz.dir.' + ['e', 'ne', 'n', 'nw', 'w', 'sw', 's', 'se'][k]); }
+function nearestArea(x, z) { let best = null, bd = 1e9; AREAS.forEach(function (a) { if (a[3] && !st().found[a[3]]) return; const d = Math.hypot(a[1] - x, a[2] - z); if (d < bd) { bd = d; best = a[0]; } }); return tx('cz.ar.' + best); }
+function hintPlan() {
+  const s = st(), npcAt = function (id) { const n = W.npcs.find(function (q) { return q.id === id; }); return { x: n.x, z: n.z }; };
+  if (W.under) return { id: 'under', keys: ['cz.h.under', 'cz.h.under', 'cz.h.under'] };
+  if (!s.f.pip) return Object.assign({ id: 'm0', keys: ['cz.h.m0a', 'cz.h.m0b', 'cz.h.m0c'] }, npcAt('pip'));
+  if (!s.f.tools) return Object.assign({ id: 'm1', keys: ['cz.h.m1a', 'cz.h.m1b', 'cz.h.m1c'] }, npcAt('ama'));
+  if (!s.f.solved && evCount() < 3) {
+    const order = ['water', 'oxygen', 'micro', 'farm'], k = order.find(function (q) { return !s.ev[q] && !(q === 'micro' && !s.samples.pond); }) || 'water';
+    const sp = spots().find(function (q) { return q.id === { water: 'pond', oxygen: 'kit', micro: 'scope', farm: 'bags' }[k]; });
+    return { id: 'm2' + k, keys: ['cz.h.m2a', 'cz.h.m2b', 'cz.h.m2c'], x: sp.x, z: sp.z, vars: { item: tx('cz.m.k.' + k) } };
+  }
+  if (!s.f.solved) return Object.assign({ id: 'm3', keys: ['cz.h.m3a', 'cz.h.m3b', 'cz.h.m3c'] }, npcAt('ama'));
+  if (!s.f.fixed) { const p0 = W.plants.find(function (q) { return !s.f['p' + q.i]; }); if (p0) return { id: 'm4' + p0.i, keys: ['cz.h.m4a', 'cz.h.m4b', 'cz.h.m4c'], x: p0.x, z: p0.z }; }
+  /* free exploring: an animal with something to say, or the nearest discovery not found yet */
+  let best = null, bd = 1e9;
+  voices().forEach(function (v) { if (!v.clue || (s.voices && s.voices[v.key || v.id]) || (v.when && !v.when())) return; const x = v.live === 'deer' ? W.dr.x : v.x, z = v.live === 'deer' ? W.dr.z : v.z, d = Math.hypot(x - W.px, z - W.pz); if (d < 45 && d < bd) { bd = d; best = { id: 'v' + v.id, keys: ['cz.h.voice1', 'cz.h.voice2', 'cz.h.voice3'], x: x, z: z, vars: { who: tx('cz.lt.' + v.id) } }; } });
+  if (best) return best;
+  spots().forEach(function (sp) { if (!FINDS.some(function (f) { return f.id === sp.id; }) || s.found[sp.id] || (sp.when && !sp.when())) return; const d = Math.hypot(sp.x - W.px, sp.z - W.pz); if (d < bd) { bd = d; best = { id: 'f' + sp.id, keys: ['cz.h.find1', 'cz.h.find2', 'cz.h.find3'], x: sp.x, z: sp.z, vars: { hab: tx('cz.hb.' + habitatAt(sp.x, sp.z)) } }; } });
+  return best || { id: 'done', keys: ['cz.h.done', 'cz.h.done', 'cz.h.done'] };
+}
+function giveHint() {
+  if (!W || W.talk) return; const h = hintPlan();
+  if (W.hintId === h.id) W.hintLv = Math.min(3, (W.hintLv || 1) + 1); else { W.hintId = h.id; W.hintLv = 1; }
+  const lv = W.hintLv, vars = Object.assign({}, h.vars || {});
+  if (h.x != null) { const dx = h.x - W.px, dz = h.z - W.pz; vars.dir = dirWord(dx, dz); vars.n = Math.max(5, Math.round(Math.hypot(dx, dz) / 5) * 5); vars.area = nearestArea(h.x, h.z); }
+  let text = tx(h.keys[lv - 1], vars); if (lv === 1 && h.x != null && Math.hypot(h.x - W.px, h.z - W.pz) > 70) text += ' ' + tx('cz.h.lost');
+  if (lv === 3 && h.x != null) { W.hintTarget = { x: h.x, z: h.z, t: 45 }; W.beacon.position.set(h.x, H(h.x, h.z) + 15, h.z); W.beacon.visible = true; }
+  const dots = '●'.repeat(lv) + '○'.repeat(3 - lv);
+  $('czHint').innerHTML = '<h3>💡 ' + C.esc(tx('cz.h.title')) + ' <span class="dim">' + dots + '</span></h3><p>' + C.esc(text) + '</p><p class="dim">' + C.esc(tx(lv < 3 && h.x != null ? 'cz.h.more' : 'cz.h.last')) + '</p><button type="button" data-hclose="1">' + C.esc(tx('cz.close')) + '</button>';
+  $('czHint').hidden = false; W.hintT = 18; amb('sfx', 'chime', 0.6);
+}
+
+/* ---------- DAY AND NIGHT: one full day takes about 20 minutes ---------- */
+const SKYK = [[0, '#060a1e', '#121a36'], [4.6, '#0a1230', '#1c2448'], [5.6, '#3a4a8a', '#d08a7a'], [6.6, '#5a8ad0', '#ffd0a0'], [8.2, '#4a9ee0', '#d8eef8'], [16.2, '#4a9ee0', '#d8eef8'], [17.6, '#5a80c4', '#ffd090'], [18.6, '#4a4a90', '#ff9060'], [19.4, '#2a2a68', '#c06a6a'], [20.4, '#101640', '#3a3a62'], [21.4, '#070c24', '#141c3a'], [24, '#060a1e', '#121a36']];
+function isNight() { const t = W ? W.tod : 12; return t < 5.4 || t > 20.2; }
+function todName(t) { return t < 5.4 || t >= 21 ? 'night' : t < 7 ? 'dawn' : t < 11 ? 'morning' : t < 13.5 ? 'noon' : t < 16.5 ? 'afternoon' : t < 18.3 ? 'golden' : t < 19.6 ? 'sunset' : 'twilight'; }
+function skyAt(t) { for (let i = 0; i < SKYK.length - 1; i++) { const a = SKYK[i], b = SKYK[i + 1]; if (t >= a[0] && t <= b[0]) { const u = (t - a[0]) / (b[0] - a[0]); return [new T.Color(a[1]).lerp(new T.Color(b[1]), u), new T.Color(a[2]).lerp(new T.Color(b[2]), u)]; } } return [new T.Color(SKYK[0][1]), new T.Color(SKYK[0][2])]; }
+function dayLight() {
+  const t = W.tod, a = (t - 6) / 12 * Math.PI, el = Math.sin(a), sky = skyAt(t), top = sky[0], hor = sky[1], scene = C.scene, day = Math.max(0, Math.min(1, el * 2.4 + 0.15)), dusk = Math.max(0, 1 - Math.abs(el) * 4);
+  const sp = W.skyG.attributes.position, col = W.skyG.attributes.color, tmp = new T.Color();
+  for (let i = 0; i < sp.count; i++) { const u = Math.max(0, sp.getY(i) / 520); tmp.copy(hor).lerp(top, Math.pow(u, 0.6)); col.setXYZ(i, tmp.r, tmp.g, tmp.b); } col.needsUpdate = true;
+  if (!W.camUnder) { scene.fog.color.copy(hor).lerp(top, 0.25); scene.background.copy(hor); }
+  W.sun.position.set(Math.cos(a) * 400, Math.max(-60, el * 300), 160); W.sun.material.opacity = el > -0.05 ? 0.9 : 0; W.sun.material.color.set(el < 0.25 ? '#ffb070' : '#fff4c8');
+  W.moon.position.set(-Math.cos(a) * 380, Math.max(-60, -el * 280 + 40), -140); W.moon.visible = el < 0.15;
+  W.stars.material.opacity = Math.max(0, Math.min(0.95, -el * 3));
+  const sunCol = new T.Color('#ffeccc').lerp(new T.Color('#ff9a5a'), dusk * 0.8);
+  if (el > -0.08) { C.KEYL.color.copy(sunCol); C.KEYL.intensity = 0.3 + 0.55 * day + 0.25 * dusk; C.KEYL.position.set(Math.cos(a) * 80, Math.max(8, el * 80), 40); }
+  else { C.KEYL.color.set('#9ab0ff'); C.KEYL.intensity = 0.32; C.KEYL.position.set(-Math.cos(a) * 60, 50, -40); }
+  C.HEMI.intensity = 0.4 + 0.12 * day + 0.05 * dusk; C.HEMI.color.copy(new T.Color('#3a4a8a').lerp(new T.Color('#fff2d8'), day)); C.HEMI.groundColor.copy(new T.Color('#141a2a').lerp(new T.Color('#4a5a2a'), day));
+  if (W.cloudIM) { const cm = W.cloudIM.material; cm.color.copy(new T.Color('#3a4060').lerp(new T.Color('#ffffff'), day)).lerp(new T.Color('#ffb08a'), dusk * 0.5); cm.emissive.copy(new T.Color('#10142a').lerp(new T.Color('#c8d8e8'), day)).lerp(new T.Color('#c0705a'), dusk * 0.4); }
+  const night = isNight(); W.ffly.forEach(function (f) { f.visible = night || t > 19.6; }); W.porch.material.opacity = el < 0.05 ? 0.9 : 0; W.moth.visible = night;
+  W.beams.forEach(function (b) { b.m.material.opacity = (el > 0.1 ? 0.18 + 0.2 * (1 - el) : 0) * (0.7 + 0.3 * Math.sin(W.t * 0.6 + b.ph)); });
+  W.pollen.visible = day > 0.4;
+  const nm = todName(t); if (nm !== W.todLast) { W.todLast = nm; if (W.clock) W.clock.textContent = (night ? '🌙 ' : el < 0.25 ? '🌅 ' : '☀️ ') + tx('cz.tod.' + nm); if (nm === 'twilight' && !st().f.toldNight) { st().f.toldNight = 1; queueCard('cz.nightTip', 8); } }
+}
+function fireUse() {
+  const s = st();
+  if (!W.fire.lit) { W.fire.lit = true; s.f.fire = 1; saveSoon(); W.flames.visible = true; amb('sfx', 'whoosh', 0.5); say('cz.s.fireLit'); return; }
+  sitDown();
+}
+function sitDown() {
+  const b = W.benches.reduce(function (a, q) { return Math.hypot(q.x - W.px, q.z - W.pz) < Math.hypot(a.x - W.px, a.z - W.pz) ? q : a; });
+  W.px = b.x; W.pz = b.z; W.py = H(b.x, b.z) + 0.25; W.vx = W.vz = 0; W.face = Math.atan2(W.fire.x - b.x, W.fire.z - b.z); W.sitting = true; W.ui = 'rest'; W.k = {}; W.talkFocus = { x: W.fire.x, z: W.fire.z, y: H(W.fire.x, W.fire.z) + 0.6 };
+  $('czRest').innerHTML = '<h3>' + C.esc(tx('cz.rest.title')) + '</h3><p>' + C.esc(tx('cz.rest.text')) + '</p><div class="ch">' + [['sunset', 18.4], ['night', 22], ['morning', 7.5], ['sit', -1]].map(function (o, i) { return '<button type="button" data-rest="' + o[1] + '">' + (i + 1) + '. ' + C.esc(tx('cz.rest.' + o[0])) + '</button>'; }).join('') +
+    '</div><p><button type="button" data-rest="journal">📓 ' + C.esc(tx('cz.rest.journal')) + '</button> <button type="button" class="primary" data-rest="up">' + C.esc(tx('cz.rest.up')) + '</button></p>';
+  $('czRest').hidden = false; amb('mood', 'rest', 3);
+}
+function standUp() { W.sitting = false; W.ui = null; W.restTo = null; $('czRest').hidden = true; W.moodT = 0; }
+function restChoice(v) { if (v === 'up') { standUp(); return; } if (v === 'journal') { openJ(); return; } const n = +v; if (n > 0) W.restTo = n; }
+/* the music follows where you are and the time of day; nature sounds follow what is near you */
+function moodNow() {
+  if (W.camUnder) return 'under'; if (W.sitting) return 'rest'; const t = W.tod;
+  if (isNight()) return 'night';
+  const d = Math.hypot(W.px, W.pz), hab = habitatAt(W.px, W.pz);
+  if (W.flying && W.py > H(W.px, W.pz) + 8 || hab === 'hill' || (d > EDGE - 6 && edgeW(W.px, W.pz).w > 0.4)) return 'vista';
+  if (hab === 'forest' || hab === 'hollow') return 'forest'; if (hab === 'pond' || hab === 'stream' || hab === 'spring' || Math.hypot(W.px - POND.x, W.pz - POND.z) < 20) return 'water';
+  return 'meadow';
+}
+function soundscape(dt) {
+  W.moodT = (W.moodT || 0) - dt; if (W.moodT <= 0) { W.moodT = 1; const m = moodNow(); if (m !== W.moodNow && (!W.moodHold || W.t > W.moodHold || m === 'under' || m === 'rest')) { W.moodNow = m; W.moodHold = W.t + 10; if (!W.camUnder) amb('mood', m, 4); } }
+  W.envT = (W.envT || 0) - dt; if (W.envT > 0) return; W.envT = 0.5;
+  const night = isNight(), el = Math.sin((W.tod - 6) / 12 * Math.PI), dS = streamDist(W.px, W.pz), dP = Math.max(0, Math.hypot(W.px - POND.x, W.pz - POND.z) - 14), dF = Math.min(Math.hypot(W.px - SPRING.x, W.pz + 64), Math.hypot(W.px + 2.5, W.pz - 70));
+  const near = function (d, r) { return Math.max(0, 1 - d / r); };
+  amb('env', 'water', Math.min(0.9, near(dS, 18) * 0.8 + near(dP, 16) * 0.25));
+  amb('env', 'falls', near(dF, 30) * 0.9);
+  amb('env', 'wind', 0.12 + (W.flying ? 0.35 : 0) + (habitatAt(W.px, W.pz) === 'hill' || Math.hypot(W.px, W.pz) > EDGE - 6 ? 0.25 : 0));
+  amb('env', 'birds', night ? 0 : el > 0 ? 0.55 : 0.2);
+  amb('env', 'crickets', night ? 0.5 : el < 0.15 ? 0.25 : 0);
+  amb('env', 'frogs', (night || el < 0.2) ? near(dP, 30) * 0.8 : 0);
+  amb('env', 'owl', night ? near(Math.hypot(W.px - 35, W.pz - 46), 60) * 0.8 : 0);
+  amb('env', 'fire', W.fire && W.fire.lit ? near(Math.hypot(W.px - W.fire.x, W.pz - W.fire.z), 14) * 0.9 : 0);
+}
+
+/* ---------- WILDLIFE SURVEYS: count, sample, compare ---------- */
+const SVSITES = [
+  { id: 'poll.meadow', kind: 'tally', what: 'poll', x: -1, z: 44, cx: 1, cz: 41, rate: [1.4, 2.8] },
+  { id: 'poll.farm', kind: 'tally', what: 'poll', x: -40.5, z: -36, cx: -43, cz: -36, rate: [6, 10] },
+  { id: 'frog', kind: 'tally', what: 'frog', x: -4, z: 27.5, cx: -8, cz: 27 },
+  { id: 'kick.up', kind: 'kick', x: -31.5, z: -51 },
+  { id: 'kick.down', kind: 'kick', x: -38.5, z: -25 }];
+const BUGS = { mayfly: 1, stonefly: 1, caddis: 1, penny: 1, midge: 0, worm: 0, leech: 0, snail: 0 };
+const KICKS = { 'kick.up': ['mayfly', 'stonefly', 'mayfly', 'caddis', 'midge', 'penny', 'mayfly', 'stonefly', 'worm', 'midge'], 'kick.down': ['midge', 'worm', 'leech', 'midge', 'caddis', 'snail', 'worm', 'midge', 'midge', 'worm'] };
+function bugSVG(k) {
+  const W0 = 90, H0 = 50; let b = '';
+  if (k === 'mayfly') b = '<ellipse cx="38" cy="25" rx="20" ry="7" fill="#8a6a3a"/><circle cx="16" cy="25" r="6" fill="#7a5a2a"/>' + [0, 1, 2, 3].map(function (i) { return '<ellipse cx="' + (32 + i * 7) + '" cy="16" rx="3" ry="4" fill="#c8a86a"/><ellipse cx="' + (32 + i * 7) + '" cy="34" rx="3" ry="4" fill="#c8a86a"/>'; }).join('') + '<path d="M58 25 L84 16 M58 25 L86 25 M58 25 L84 34" stroke="#6a4a2a" stroke-width="2"/>';
+  if (k === 'stonefly') b = '<ellipse cx="42" cy="25" rx="24" ry="6" fill="#6a5a3a"/><circle cx="14" cy="25" r="6" fill="#5a4a2a"/><path d="M10 20 L2 10 M10 30 L2 40 M66 25 L86 18 M66 25 L86 32" stroke="#4a3a1a" stroke-width="2"/>' + [0, 1, 2].map(function (i) { return '<path d="M' + (30 + i * 10) + ' 20 L' + (26 + i * 10) + ' 10 M' + (30 + i * 10) + ' 30 L' + (26 + i * 10) + ' 40" stroke="#4a3a1a" stroke-width="2"/>'; }).join('');
+  if (k === 'caddis') b = [0, 1, 2, 3, 4, 5, 6].map(function (i) { return '<circle cx="' + (24 + i * 8) + '" cy="' + (25 + (i % 2 ? 3 : -3)) + '" r="6" fill="' + ['#a89a80', '#8a7a60', '#c8b898'][i % 3] + '"/>'; }).join('') + '<circle cx="14" cy="25" r="6" fill="#e8d8a8"/><path d="M10 25 L4 18 M10 25 L4 32" stroke="#6a4a2a" stroke-width="2"/>';
+  if (k === 'penny') b = '<ellipse cx="45" cy="25" rx="22" ry="18" fill="#b8742a"/>' + [0, 1, 2, 3].map(function (i) { return '<path d="M' + (27 + i * 2) + ' ' + (15 + i * 5) + ' Q45 ' + (10 + i * 7) + ' ' + (63 - i * 2) + ' ' + (15 + i * 5) + '" stroke="#7a4a1a" fill="none" stroke-width="2"/>'; }).join('');
+  if (k === 'midge') b = '<path d="M14 30 Q30 10 45 28 T80 22" stroke="#d03a3a" stroke-width="6" fill="none" stroke-linecap="round"/>';
+  if (k === 'worm') b = '<path d="M8 28 Q25 18 45 26 T86 24" stroke="#c88a8a" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="4 2"/>';
+  if (k === 'leech') b = '<ellipse cx="45" cy="25" rx="34" ry="9" fill="#3a3a2a"/><circle cx="12" cy="25" r="5" fill="#2a2a1a"/><circle cx="78" cy="25" r="7" fill="#2a2a1a"/><path d="M20 22 L70 22" stroke="#6a6a3a" stroke-width="2" stroke-dasharray="3 3"/>';
+  if (k === 'snail') b = '<ellipse cx="50" cy="34" rx="26" ry="6" fill="#8a7a6a"/><circle cx="40" cy="22" r="14" fill="#c8a870"/><path d="M40 22 m-9 0 a9 9 0 1 0 9 -9 a5 5 0 1 0 5 5" stroke="#7a5a2a" fill="none" stroke-width="2"/>';
+  return '<svg viewBox="0 0 ' + W0 + ' ' + H0 + '" width="' + W0 + '" height="' + H0 + '" aria-hidden="true">' + b + '</svg>';
+}
+function svSite(id) { return SVSITES.find(function (q) { return q.id === id; }); }
+function svStart(id) {
+  const site = svSite(id); if (!site || W.talk) return; W.k = {}; W.vx = W.vz = 0; W.ui = 'survey';
+  if (site.kind === 'kick') { kickStart(site); return; }
+  const real = site.what === 'frog' ? (isNight() ? 'frog.night' : 'frog.day') : site.id;
+  W.sv = { site: site, rid: real, t: 30, n: 0, m: 0, next: 1.2, on: false, ev: [] };
+  const dx = site.cx - W.px, dz = site.cz - W.pz; W.face = Math.atan2(dx, dz); W.yaw = Math.atan2(-dx, -dz); W.pitch = 0.32; W.distT = 7.5;
+  svPanel();
+}
+function svPanel() {
+  const v = W.sv, site = v.site, ttl = site.what === 'frog' ? 'cz.sv.frogT' : 'cz.sv.pollT';
+  if (!v.on && v.t >= 30) $('czSurvey').innerHTML = '<h3>📋 ' + C.esc(tx(ttl)) + ' · ' + C.esc(tx('cz.sv.' + v.rid)) + '</h3><p>' + C.esc(tx(site.what === 'frog' ? 'cz.sv.frogI' : 'cz.sv.pollI')) + '</p><p><button type="button" class="primary" data-sv="go">' + C.esc(tx('cz.sv.go')) + '</button> <button type="button" data-sv="stop">' + C.esc(tx('cz.sv.cancel')) + '</button></p>';
+  else if (v.on) $('czSurvey').innerHTML = '<h3>📋 ' + C.esc(tx(ttl)) + ' · ' + C.esc(tx('cz.sv.' + v.rid)) + '</h3><div class="svbar"><i style="width:' + Math.round(v.t / 30 * 100) + '%"></i></div><p class="svn">' + C.esc(tx('cz.sv.count')) + ': <b>' + v.n + '</b></p><p><button type="button" class="primary big" data-sv="tally">' + C.esc(tx('cz.sv.tally')) + '</button> <button type="button" data-sv="stop">' + C.esc(tx('cz.sv.cancel')) + '</button></p>';
+  $('czSurvey').hidden = false;
+}
+function svTally() { const v = W.sv; if (!v || !v.on) return; v.n++; amb('sfx', 'step', 0.6); const b = $('czSurvey').querySelector('.svn b'); if (b) b.textContent = v.n; }
+function svEvent(v) {
+  const site = v.site, a = Math.random() * 6.283, r = 1 + Math.random() * 3.5, x = site.cx + Math.cos(a) * r, z = site.cz + Math.sin(a) * r * 0.6, g = new T.Group();
+  if (site.what === 'frog') { const f = C.specimen('frog', '#5fbf5a'); f.scale.setScalar(0.8); g.add(f); const ring = new T.Mesh(new T.RingGeometry(0.4, 0.55, 20), C.basic('#e8fbff', 0.7)); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05; g.add(ring); g.position.set(x, Math.max(H(x, z), WL0 - 0.15), z); if (v.rid === 'frog.night') { amb('env', 'frogs', 0.9); C.beep(140 + Math.random() * 40, 0.12, 'square'); } }
+  else { const b = new T.Group(), col = Math.random() < 0.5 ? '#ffd166' : ['#ff9f3a', '#7fd4ff', '#ffe08a'][Math.floor(Math.random() * 3)]; const body = new T.Mesh(C.G.sph, C.emat(col, '#3a2a08')); body.scale.set(0.12, 0.1, 0.16); b.add(body); [-1, 1].forEach(function (sd) { const w = new T.Mesh(C.G.box, C.basic('#ffffff', 0.7)); w.scale.set(0.22, 0.01, 0.14); w.position.x = sd * 0.13; b.add(w); }); g.add(b); g.add(C.glow('#fff4b0', 1, 0.7)); g.position.set(x, H(x, z) + 0.45, z); }
+  W.g.add(g); v.ev.push({ g: g, t: site.what === 'frog' ? 2.2 : 1.8 }); v.m++;
+}
+function svStep(dt) {
+  const v = W.sv; if (!v) return;
+  v.ev = v.ev.filter(function (e) { e.t -= dt; e.g.children.forEach(function (c, k) { if (k === 0 && c.children && c.children.length) c.children.forEach(function (w, j) { if (j) w.rotation.z = Math.sin(W.t * 30) * 0.6; }); }); if (e.t > 0) return true; W.g.remove(e.g); return false; });
+  if (!v.on) return;
+  v.t -= dt; v.next -= dt;
+  if (v.next <= 0 && v.t > 1.5) { svEvent(v); const site = v.site, rate = site.what === 'frog' ? (v.rid === 'frog.night' ? [1.4, 2.6] : [7, 11]) : site.rate; v.next = rate[0] + Math.random() * (rate[1] - rate[0]); }
+  const bar = $('czSurvey').querySelector('.svbar i'); if (bar) bar.style.width = Math.max(0, Math.round(v.t / 30 * 100)) + '%';
+  if (v.t <= 0) svEnd();
+}
+function svEnd() {
+  const v = W.sv, s = st(); v.on = false; if (!s.surveys) s.surveys = {}; s.surveys[v.rid] = { n: v.n, m: v.m, tod: W.tod, at: Date.now() }; saveSoon();
+  const done = Object.keys(s.surveys).length; if (done >= 3) C.award('cz-survey');
+  $('czSurvey').innerHTML = '<h3>📋 ' + C.esc(tx('cz.sv.' + v.rid)) + '</h3><p>' + C.esc(tx('cz.sv.res', { n: v.n, m: v.m })) + ' ' + C.esc(tx(Math.abs(v.n - v.m) <= 0 ? 'cz.sv.resPerfect' : 'cz.sv.resMiss')) + '</p><p><b>' + C.esc(tx('cz.sv.' + v.rid + 'R')) + '</b></p><p class="dim">' + C.esc(tx('cz.sv.compare')) + '</p><p><button type="button" class="primary" data-sv="stop">' + C.esc(tx('cz.close')) + '</button></p>';
+  amb('sfx', 'discover');
+}
+function svStop() { if (W.sv) W.sv.ev.forEach(function (e) { W.g.remove(e.g); }); W.sv = null; W.kick = null; W.ui = null; $('czSurvey').hidden = true; }
+function kickStart(site) {
+  W.kick = { site: site, items: KICKS[site.id].map(function (k) { return { k: k, ok: null }; }) }; amb('sfx', 'splash', 0.7); kickDraw();
+}
+function kickDraw() {
+  const kk = W.kick, done = kk.items.every(function (q) { return q.ok === true; });
+  let h = '<h3>🪣 ' + C.esc(tx('cz.sv.kickT')) + ' · ' + C.esc(tx('cz.sv.' + kk.site.id)) + '</h3>';
+  if (!done) {
+    h += '<p>' + C.esc(tx('cz.sv.kickI')) + '</p><p class="dim">' + C.esc(tx('cz.sv.guide')) + '</p><div class="bugs">' + kk.items.map(function (q, i) {
+      return '<div class="bug' + (q.ok ? ' ok' : q.ok === false ? ' no' : '') + '">' + bugSVG(q.k) + '<b>' + C.esc(tx('cz.bug.' + q.k)) + '</b><small>' + C.esc(tx('cz.bugd.' + q.k)) + '</small>' +
+        (q.ok ? '<span class="tag">' + C.esc(tx(BUGS[q.k] ? 'cz.sv.need' : 'cz.sv.tol')) + ' ✓</span>' : '<span class="bb"><button type="button" data-bug="' + i + '" data-v="1">' + C.esc(tx('cz.sv.need')) + '</button><button type="button" data-bug="' + i + '" data-v="0">' + C.esc(tx('cz.sv.tol')) + '</button></span>' + (q.ok === false ? '<small class="bad">' + C.esc(tx('cz.sv.wrong')) + '</small>' : '')) + '</div>'; }).join('') + '</div>';
+  } else {
+    const sens = kk.items.filter(function (q) { return BUGS[q.k]; }).length, t = kk.items.length, q = sens / t >= 0.6 ? 'good' : sens / t >= 0.3 ? 'fair' : 'poor', s = st();
+    if (!s.surveys) s.surveys = {}; if (!s.surveys[kk.site.id]) { s.surveys[kk.site.id] = { sens: sens, n: t, q: q, tod: W.tod, at: Date.now() }; saveSoon(); if (Object.keys(s.surveys).length >= 3) C.award('cz-survey'); amb('sfx', 'discover'); }
+    h += '<p>' + C.esc(tx('cz.sv.kickRes', { s: sens, t: t, q: tx('cz.sv.q.' + q) })) + '</p><p><b>' + C.esc(tx('cz.sv.' + kk.site.id + 'R')) + '</b></p><p class="dim">' + C.esc(tx('cz.sv.compare')) + '</p>';
+  }
+  h += '<p><button type="button" class="primary" data-sv="stop">' + C.esc(tx(done ? 'cz.close' : 'cz.sv.cancel')) + '</button></p>';
+  $('czSurvey').innerHTML = h; $('czSurvey').hidden = false;
+}
+function kickSort(i, v) { const q = W.kick.items[i]; q.ok = (BUGS[q.k] ? 1 : 0) === v ? true : false; C.beep(q.ok ? 880 : 220, 0.12, q.ok ? 'triangle' : 'sawtooth'); kickDraw(); }
 /* ---------- EVERY FRAME ---------- */
 function step(dt) {
   if (!W) return; W.t += dt; const cam = C.cam, s = st();
@@ -789,13 +1559,18 @@ function step(dt) {
   r.x += Math.sign(r.tx - r.x) * Math.min(Math.abs(r.tx - r.x), dt * (flee ? 5 : 2)); r.z += Math.sign(r.tz - r.z) * Math.min(Math.abs(r.tz - r.z), dt * (flee ? 5 : 2));
   W.rabbit.position.set(r.x, H(r.x, r.z) + Math.abs(Math.sin(W.t * 7)) * 0.3, r.z);
   W.hawk.position.set(10 + Math.cos(W.t * 0.3) * 18, 26, 44 + Math.sin(W.t * 0.3) * 18); W.hawk.rotation.y = -W.t * 0.3; W.hawk.rotation.z = 0.25;
+  if (W.heron) { W.heronHead.position.y = 2.55 + (Math.sin(W.t * 0.7) > 0.95 ? -0.5 : 0); W.heronHead.rotation.y = Math.sin(W.t * 0.4) * 0.4; }
+  if (W.springFish) W.springFish.forEach(function (f, i) { const a = W.t * 0.9 + i * 2.1; f.position.set(SPRING.x + Math.cos(a) * 1.8, H(SPRING.x, SPRING.z) + 0.2, SPRING.z + Math.sin(a) * 1.2); f.rotation.y = -a; });
+  if (W.listenFx) { if (W.listenT > 0 || (W.talk && W.talk.lines[0] && W.talk.lines[0].animal)) { W.listenT = Math.max(0, (W.listenT || 0) - dt); W.listenFx.material.opacity = 0.45 + Math.sin(W.t * 8) * 0.3; W.listenFx.position.set(W.px, W.py + 2.3, W.pz); } else W.listenFx.material.opacity = 0; }
   W.tads.forEach(function (t0, i) { const a = W.t * 0.6 + t0.ph, x = W.tadAt[0] + Math.cos(a) * (1.2 + (i % 3) * 0.7), z = W.tadAt[1] + Math.sin(a * 1.3) * 1.4; t0.m.position.set(x, Math.max(H(x, z) + 0.3, WL0 - 0.6 - (i % 4) * 0.25), z); t0.m.rotation.y = -a; t0.tail.rotation.y = Math.sin(W.t * 18 + i) * 0.6; });
   if (W.camUnder) { const o = W._wo || (W._wo = new T.Object3D()); W.weedList.forEach(function (b, i) { if (i % 2) return; o.position.set(b[0], b[1], b[2]); o.scale.set(b[3], b[4], b[5]); o.rotation.set(Math.sin(W.t * 1.3 + i) * 0.12, b[6], Math.cos(W.t * 1.1 + i) * 0.1); o.updateMatrix(); W.weed.setMatrixAt(i, o.matrix); }); W.weed.instanceMatrix.needsUpdate = true; }
   if (W.fish.visible) W.fish.children.forEach(function (f, i) { const a = W.t * 0.5 + i * 1.05, rr = 5 + (i % 3) * 2.5; f.position.set(POND.x + Math.cos(a) * rr, W.water.position.y - 0.9 - (i % 3) * 1.1, POND.z + Math.sin(a) * rr); f.rotation.y = -a; });
   if (W.frogJump) { W.frogJump -= dt; const u = Math.max(0, W.frogJump); W.frog.position.set(-8 - (1 - u) * 4, H(-8, 30) + Math.sin((1 - u) * Math.PI) * 1.5, 30 - (1 - u) * 2); if (W.frogJump <= 0) { W.frogJump = 0; setTimeout(function () { if (W) W.frog.position.set(-8, H(-8, 30), 30); }, 6000); } }
   { const o = W._co || (W._co = new T.Object3D()); W.clouds.forEach(function (c, i) { c.x += dt * c.sp; if (c.x > 200) c.x = -200;
       for (let k = 0; k < 5; k++) { o.position.set(c.x + (k - 2) * 6, c.y + (k % 2) * 1.5, c.z + (k % 3) * 2); o.scale.set(7 + (k % 3) * 2, 3.5 + (k % 2), 5); o.updateMatrix(); W.cloudIM.setMatrixAt(i * 5 + k, o.matrix); } }); W.cloudIM.instanceMatrix.needsUpdate = true; }
-  W.wfTex.offset.y -= dt * 1.6; if (W.creekTex) W.creekTex.offset.y -= dt * 0.35; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
+  W.wfTex.offset.y -= dt * 1.6; if (W.fall2) W.fall2.offset.y -= dt * 1.6; if (W.seaTex) { W.seaTex.offset.x += dt * 0.004; W.seaTex.offset.y += dt * 0.002; }
+  if (W.gulls) W.gulls.forEach(function (gl, k) { const a = W.t * 0.18 + gl.ph; gl.m.position.set(110 + Math.cos(a) * gl.r, 6 + k * 3 + Math.sin(W.t + k) * 1.5, -10 + Math.sin(a) * gl.r * 0.7); gl.m.rotation.y = -a; gl.m.children.forEach(function (w, j) { w.rotation.z = (j ? -1 : 1) * (0.25 + Math.sin(W.t * 4 + k) * 0.3); }); });
+  if (W.mist2) W.mist2.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.4; }); if (W.creekTex) W.creekTex.offset.y -= dt * 0.35; W.mist.forEach(function (m) { m.m.position.y = m.y + Math.sin(W.t * 2 + m.ph) * 0.3; m.m.material.opacity = 0.25 + Math.sin(W.t * 3 + m.ph) * 0.1; });
   W.flies.forEach(function (f, i) { const a = W.t * 0.7 + f.ph, x = f.cx + Math.cos(a) * f.r, z = f.cz + Math.sin(a * 1.3) * f.r; f.m.position.set(x, H(x, z) + 1.4 + Math.sin(W.t * 2 + i) * 0.4, z); f.m.rotation.y = -a; f.m.children[0].rotation.z = Math.sin(W.t * 14 + i) * 0.8; f.m.children[1].rotation.z = -Math.sin(W.t * 14 + i) * 0.8; });
   W.dflies.forEach(function (d0, i) { const a = W.t * 0.9 + d0.ph, x = -31 + Math.cos(a) * 3 + Math.sin(W.t * 2.3 + i) * 0.8, z = 31 + Math.sin(a) * 2.5; d0.m.position.set(x, WL0 + 1 + Math.sin(W.t * 3 + i) * 0.3, z); d0.m.rotation.y = -a - Math.PI / 2; });
   { const dm1 = new T.Object3D(); for (let i = 0; i < 24; i++) { const a = W.t * 0.35 + i * 0.27, rr = 1.2 + (i % 2) * 0.12, x = 14 + Math.cos(a) * rr + (i > 12 ? Math.cos(a) * 1.4 : 0), z = 4 + Math.sin(a) * rr; dm1.position.set(x, H(x, z) + 0.06, z); dm1.scale.set(0.07, 0.05, 0.12); dm1.rotation.y = -a; dm1.updateMatrix(); W.ants.setMatrixAt(i, dm1.matrix); } W.ants.instanceMatrix.needsUpdate = true; }
@@ -824,7 +1599,7 @@ function step(dt) {
     if (!W.drag) { const want = Math.atan2(-dx, -dz), d = ((want - W.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI; W.yaw += d * Math.min(1, dt * 0.9) * (mz < 0 ? 1 : 0.25); } }
   const grip = W.ground || W.swim || W.flying ? 9 : 3.5; W.vx += (tvx - W.vx) * Math.min(1, dt * grip); W.vz += (tvz - W.vz) * Math.min(1, dt * grip);
   W.px += W.vx * dt; W.pz += W.vz * dt;
-  { const dd = Math.hypot(W.px, W.pz); if (dd > BOUND) { W.px *= BOUND / dd; W.pz *= BOUND / dd; } }
+  { const dd = Math.hypot(W.px, W.pz), lim = BOUND - (BOUND - (EDGE + 1.9)) * edgeW(W.px, W.pz).w; if (dd > lim) { W.px *= lim / dd; W.pz *= lim / dd; } }
   const moving = Math.hypot(W.vx, W.vz) > 0.5;
   if (len > 0 && !k.run && !W.toldRun && !W.swim) { W.walkT = (W.walkT || 0) + dt; if (W.walkT > 6) { W.toldRun = true; showCard('msg', 'cz.runTip'); W.cardT = 4; } }
   if (k.run && len > 0) W.toldRun = true;
@@ -873,8 +1648,10 @@ function step(dt) {
     if (L2 > 0.01) W.colliders.forEach(function (c) { const rr = c.r + 0.6, u = ((c.x - tgt.x) * vx + (c.z - tgt.z) * vz) / L2; if (u <= 0 || u > 1.2) return;
       const px = tgt.x + vx * u - c.x, pz = tgt.z + vz * u - c.z; if (px * px + pz * pz < rr * rr) { const back = u - rr / Math.sqrt(L2); if (back < best) best = back; } });
     best = Math.max(0.28, best); if (best < 1) { want.x = tgt.x + vx * best; want.z = tgt.z + vz * best; want.y = tgt.y + (want.y - tgt.y) * best; } }
+  if ((W.talk || W.sitting) && W.talkFocus) { const f = W.talkFocus, mx0 = (W.px + f.x) / 2, mz0 = (W.pz + f.z) / 2, dx = f.x - W.px, dz = f.z - W.pz, L0 = Math.hypot(dx, dz) || 1, sx = -dz / L0, sz = dx / L0, dd = Math.max(5, L0 * 1.6);
+    const sgn = ((cam.position.x - mx0) * sx + (cam.position.z - mz0) * sz) >= 0 ? 1 : -1; want.set(mx0 + sx * dd * sgn - dx / L0 * 1.2, Math.max(W.py, f.y) + 1.6, mz0 + sz * dd * sgn - dz / L0 * 1.2); tgt.set(mx0, (W.py + 1.1 + f.y) / 2, mz0); }
   const gc = H(want.x, want.z) + (W.under ? 0.6 : 1.2); if (want.y < gc) want.y = gc;
-  cam.position.lerp(want, Math.min(1, dt * 6)); cam.lookAt(tgt);
+  cam.position.lerp(want, Math.min(1, dt * (W.talk || W.sitting ? 3 : 6))); if (W.talk || W.sitting) { W.lookAt = W.lookAt || tgt.clone(); W.lookAt.lerp(tgt, Math.min(1, dt * 4)); cam.lookAt(W.lookAt); } else { W.lookAt = null; cam.lookAt(tgt); }
   { const fov = W.dist < 4 ? 28 + (W.dist - 2.2) / 1.8 * 14 : 42; if (Math.abs(cam.fov - fov) > 0.05) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 5); cam.updateProjectionMatrix(); } }
   underwaterLook(cam); W.me.visible = W.dist > 3.2;
   { /* tree tops between the camera and the player fade out so you can always see yourself */
@@ -886,9 +1663,28 @@ function step(dt) {
       else if (c.inst != null) { const arr = W.ringCone.instanceMatrix.array, o = c.inst * 16; if (hide) { for (let k = 0; k < 16; k++) arr[o + k] = 0; } else for (let k = 0; k < 16; k++) arr[o + k] = c.mat[k]; instDirty = true; } });
     if (instDirty) W.ringCone.instanceMatrix.needsUpdate = true; }
   /* nearest interaction prompt */
-  if (!busy) { W.near = nearest(); const sig = W.near ? W.near.id + (C.S.set.lang || 'en') : '';
-    if (sig !== W.lastPrompt) { W.lastPrompt = sig; if (W.near) { $('czPrompt').textContent = 'E: ' + tx(W.near.verb) + ' ' + tx(W.near.t); $('czPrompt').hidden = false; } else $('czPrompt').hidden = true; } }
+  if (!busy) { W.near = nearest(); W.voice = nearestVoice(); const sig = (W.near ? W.near.id : '') + '|' + (W.voice ? W.voice.id : '') + (C.S.set.lang || 'en');
+    if (sig !== W.lastPrompt) { W.lastPrompt = sig; let h = '';
+      if (W.near) h += C.esc('E: ' + tx(typeof W.near.verb === 'function' ? W.near.verb() : W.near.verb) + ' ' + tx(W.near.t));
+      if (W.voice) h += (h ? ' &nbsp;·&nbsp; ' : '') + '<button type="button" class="czL" data-listen="1">' + C.esc(tx('cz.listenKey')) + '</button> ' + (W.near ? '' : C.esc(tx('cz.listen') + ' ' + tx('cz.lt.' + W.voice.id)));
+      $('czPrompt').innerHTML = h; $('czPrompt').hidden = !h;
+      if (W.voice && !s.toldListen && !(s.voices && Object.keys(s.voices).length)) { s.toldListen = 1; queueCard('cz.listenTip', 7); } } }
   else if (!$('czPrompt').hidden) { $('czPrompt').hidden = true; W.lastPrompt = null; }
+  $('cozyUI').classList.toggle('talking', !!W.talk || W.ui === 'rest'); $('cozyUI').classList.toggle('mapping', W.ui === 'map');
+  W.seenT = (W.seenT || 0) - dt; if (W.seenT <= 0) { W.seenT = 0.6; markSeen(); }
+  { const fast = W.sitting && W.restTo != null; W.tod = (W.tod + dt * (fast ? 0.7 : 1 / 50)) % 24; s.tod = W.tod;
+    if (fast && Math.abs(((W.tod - W.restTo + 36) % 24) - 12) > 11.6) W.restTo = null;
+    W.lightT = (W.lightT || 0) - dt; if (W.lightT <= 0 || fast) { W.lightT = 0.3; dayLight(); } }
+  soundscape(dt); svStep(dt);
+  if (W.ffly && W.ffly[0].visible) W.ffly.forEach(function (f, i) { const u = f.userData, a = W.t * 0.4 + u.ph; f.position.set(u.cx + Math.sin(a) * 2, H(u.cx, u.cz) + 0.8 + Math.sin(W.t * 0.9 + u.ph) * 0.6, u.cz + Math.cos(a * 0.8) * 2); f.material.opacity = Math.max(0, Math.sin(W.t * 2.2 + u.ph * 3)) * 0.95; });
+  if (W.moth.visible) { W.moth.position.set(W.porch.position.x + Math.sin(W.t * 2.3) * 0.6, W.porch.position.y + Math.sin(W.t * 3.1) * 0.3, W.porch.position.z + 0.5 + Math.cos(W.t * 2) * 0.4); W.moth.children.forEach(function (w, j) { w.rotation.z = (j ? -1 : 1) * Math.sin(W.t * 18) * 0.7; }); }
+  if (W.flames.visible) W.flames.children.forEach(function (f, i) { if (f.isMesh) { f.scale.y = (0.5 - i * 0.12) * (1 + Math.sin(W.t * (9 + i * 3)) * 0.18); f.rotation.y += dt * (1 + i); } });
+  if (isNight() && W.stars.material.opacity > 0.5) { if (!W.shootT || W.t > W.shootT) { W.shootT = W.t + 12 + Math.random() * 20; W.shootA = { x: -200 + Math.random() * 200, y: 200 + Math.random() * 80, t: 0 }; } if (W.shootA && W.shootA.t < 1.2) { W.shootA.t += dt; const u = W.shootA.t / 1.2; W.shoot.position.set(W.shootA.x + u * 160, W.shootA.y - u * 50, -360); W.shoot.material.opacity = Math.sin(u * Math.PI) * 0.9; } else W.shoot.material.opacity = 0; } else W.shoot.material.opacity = 0;
+  if (W.sitting) { const legs0 = W.me.userData.legs; if (legs0) legs0.forEach(function (h) { h.rotation.x = -1.3; }); W.yaw += dt * 0.05; if (W.k.f || W.k.b || W.k.l || W.k.r || W.k.jump) standUp(); }
+  if (W.hintTarget) { W.hintTarget.t -= dt; W.beacon.material.opacity = 0.25 + Math.sin(W.t * 4) * 0.12; if (W.hintTarget.t <= 0 || Math.hypot(W.px - W.hintTarget.x, W.pz - W.hintTarget.z) < 3) { W.hintTarget = null; W.beacon.visible = false; } }
+  if (W.hintT > 0) { W.hintT -= dt; if (W.hintT <= 0) $('czHint').hidden = true; }
+  if (W.ui === 'map') drawMap();
+  W.npcs.forEach(function (n) { n.tag.visible = !(W.talk && W.talk.lines[0] && W.talk.lines[0].who === n.id) && Math.hypot(cam.position.x - n.x, cam.position.z - n.z) > 7; });
   if (W.cardT > 0) { W.cardT -= dt; if (W.cardT <= 0) { $('czCard').hidden = true; W.card = null; } }
   if (W.cardT <= 0 && W.queue && W.queue.length) { const q = W.queue.shift(); showCard('msg', q[0]); W.cardT = q[1]; amb('sfx', 'discover'); }
   { const fb = $('czFly'), on = !!s.f.fly && (W.flying || W.flyE < 0.999); fb.hidden = !on; if (on) fb.firstChild.style.width = Math.round(W.flyE * 100) + '%'; }
@@ -903,11 +1699,19 @@ function act() {
 function key(e, down) {
   if (!W) return; const kk = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+  if (down && W.ui === 'map' && (kk === 'Escape' || kk === 'm')) { e.preventDefault(); closeMap(); return; }
+  if (W.ui === 'survey' && down) { if (kk === ' ' || kk === 'Enter') { e.preventDefault(); if (W.sv && !W.sv.on && W.sv.t >= 30) { W.sv.on = true; svPanel(); } else svTally(); return; } if (kk === 'Escape') { e.preventDefault(); svStop(); return; } }
+  if (W.ui === 'survey') return;
+  if (W.ui === 'rest' && down) { if (/^[1-4]$/.test(kk)) { restChoice(['18.4', '22', '7.5', '-1'][+kk - 1]); return; } if (kk === 'Escape' || kk === 'e') { e.preventDefault(); standUp(); return; } }
+  if (W.ui === 'map') { if (down && (kk === '+' || kk === '=')) mapZoom(1.3); if (down && (kk === '-' || kk === '_')) mapZoom(1 / 1.3); return; }
   if (down && kk === 'Escape') { e.preventDefault(); if (W.talk) { W.talk = null; $('czTalk').hidden = true; return; } setPause(!W.pause); return; }
   if (W.pause) return;
   if (down && W.talk && W.talk.lines[W.talk.i].choices && /^[1-3]$/.test(kk)) { choose(+kk - 1); return; }
   if (down && (kk === 'e' || kk === 'Enter')) { if (e.target && e.target.tagName === 'BUTTON' && kk === 'Enter') return; act(); e.preventDefault(); return; }
   if (down && kk === 'j') { openJ(); return; }
+  if (down && kk === 'm' && !e.repeat) { openMap(); return; }
+  if (down && kk === 'h' && !e.repeat) { giveHint(); return; }
+  if (down && kk === 'l' && !e.repeat) { if (W.voice && !W.talk) listen(W.voice); return; }
   if (down && kk === 'f' && !e.repeat) { toggleFly(); return; }
   if (down && kk === 'v' && !e.repeat) { lookCloser(); return; }
   if (down && (kk === '-' || kk === '_')) { W.distT = Math.min(30, W.distT * 1.2); return; }
@@ -930,7 +1734,14 @@ function journalHTML() {
   const myst = '<section class="jl"><h3>🔎 ' + C.esc(tx('cz.m.title')) + (s.f.solved ? ' <span class="jn ok">✓ ' + C.esc(tx('cz.m.solved')) + '</span>' : '') + '</h3><ul>' +
     evs.map(function (k) { return '<li>' + (s.ev[k] ? '✓ ' + C.esc(tx('cz.ev.' + k)) : '○ <span class="dim">' + C.esc(tx('cz.m.need')) + '</span>') + '</li>'; }).join('') + '</ul>' +
     (s.f.compared ? '<p>⚖️ ' + C.esc(tx('cz.d.compare')) + '</p>' : '') + '</section>';
-  return '<p class="dim">' + C.esc(tx('cz.j.tip')) + '</p><p><b>' + C.esc(tx('cz.j.found', { n: n, m: FINDS.length })) + '</b></p>' + myst + '<section class="jl"><h3>🌿 ' + C.esc(tx('cz.reserve')) + '</h3><div class="jcs">' + cards + '</div></section>';
+  const vs = voices().filter(function (v) { return v.clue && s.voices && s.voices[v.key || v.id]; }), uniq = {};
+  const voiceSec = '<section class="jl"><h3>👂 ' + C.esc(tx('cz.j.voices')) + '</h3><p class="dim">' + C.esc(tx('cz.j.voiceTip')) + '</p><ul>' +
+    (vs.length ? vs.filter(function (v) { const k = v.key || v.id; if (uniq[k]) return false; uniq[k] = 1; return true; }).map(function (v) { return '<li>' + C.esc(tx(v.clue)) + '</li>'; }).join('') : '<li class="dim">…</li>') + '</ul></section>';
+  const svs = s.surveys || {}, svk = Object.keys(svs);
+  const svSec = '<section class="jl"><h3>📋 ' + C.esc(tx('cz.j.surveys')) + '</h3><p class="dim">' + C.esc(tx('cz.j.svTip')) + '</p><ul>' + (svk.length ? svk.map(function (k) { const r = svs[k]; return '<li><b>' + C.esc(tx('cz.sv.' + k)) + '</b>: ' + (r.sens != null ? C.esc(tx('cz.sv.kickRes', { s: r.sens, t: r.n, q: tx('cz.sv.q.' + r.q) })) : C.esc(tx('cz.j.sv.counted')) + ' ' + r.n) + ' <span class="dim">(' + C.esc(tx('cz.tod.' + todName(r.tod))) + ')</span></li>'; }).join('') : '<li class="dim">…</li>') + '</ul></section>';
+  const logs = ['log1', 'log2', 'log3'].filter(function (k) { return s.log && s.log[k]; });
+  const logSec = logs.length ? '<section class="jl"><h3>' + C.esc(tx('cz.logT')) + '</h3>' + logs.map(function (k) { return '<p><i>' + C.esc(tx('cz.' + k)) + '</i></p>'; }).join('') + '</section>' : '';
+  return '<p class="dim">' + C.esc(tx('cz.j.tip')) + '</p><p><b>' + C.esc(tx('cz.j.found', { n: n, m: FINDS.length })) + '</b></p>' + logSec + myst + voiceSec + svSec + '<section class="jl"><h3>🌿 ' + C.esc(tx('cz.reserve')) + '</h3><div class="jcs">' + cards + '</div></section>';
 }
 function blur() { if (W) W.k = {}; }
 const cb = document.getElementById('btnCozy'); if (cb) cb.hidden = false;

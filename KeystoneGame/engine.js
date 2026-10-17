@@ -287,7 +287,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 22 · October 17, 2026';
+const VERSION = 'Version 24 · October 17, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -461,19 +461,31 @@ function buildAlien(a) {
   const dark = '#10202c', iris = '#6b4bd8';
   for (let i = 0; i < n; i++) {
     const off = (i - (n - 1) / 2) * (style === 1 ? 0.36 : 0.3);
-    if (style === 1) { /* anime eyes: big and glossy */
-      const w = mesh('sph', '#ffffff'); w.scale.set(0.15, 0.2, 0.1); w.position.set(off, ey, ez); g.add(w);
-      const ir = mesh('sph', iris); ir.scale.set(0.115, 0.155, 0.06); ir.position.set(off, ey - 0.02, ez + 0.06); g.add(ir);
-      const p = mesh('sph', dark); p.scale.set(0.065, 0.09, 0.04); p.position.set(off, ey - 0.03, ez + 0.1); g.add(p);
-      const h1 = mesh('sph', '#ffffff'); h1.scale.setScalar(0.045); h1.position.set(off - 0.045, ey + 0.05, ez + 0.13); g.add(h1);
-      const h2 = mesh('sph', '#ffffff'); h2.scale.setScalar(0.022); h2.position.set(off + 0.04, ey - 0.07, ez + 0.13); g.add(h2);
-      const lash = mesh('box', dark); lash.scale.set(0.2, 0.03, 0.03); lash.position.set(off, ey + 0.19, ez + 0.03); lash.rotation.z = (off < 0 ? 0.25 : off > 0 ? -0.25 : 0); g.add(lash);
+    const blush = function () { const b = mesh('sph', '#ff9aa8'); b.scale.set(0.08, 0.04, 0.025); b.position.set(off * 1.5 + (off === 0 ? 0.12 : 0), ey - 0.15, ez - 0.03); g.add(b); };
+    if (style === 1) { /* cute eyes: big, dark and sparkly, with happy eyebrows and rosy cheeks */
+      const e0 = mesh('sph', '#1e1446'); e0.scale.set(0.135, 0.155, 0.08); e0.position.set(off, ey + 0.03, ez + 0.02); g.add(e0);
+      const h1 = mesh('sph', '#ffffff'); h1.scale.set(0.05, 0.055, 0.02); h1.position.set(off + 0.04, ey + 0.08, ez + 0.1); g.add(h1);
+      const h2 = mesh('sph', '#ffffff'); h2.scale.set(0.025, 0.025, 0.02); h2.position.set(off - 0.055, ey - 0.03, ez + 0.1); g.add(h2);
+      const h3 = mesh('sph', '#ffffff'); h3.scale.set(0.012, 0.012, 0.012); h3.position.set(off - 0.02, ey - 0.055, ez + 0.1); g.add(h3);
+      const br = new T.Mesh(new T.TorusGeometry(0.075, 0.016, 6, 12, Math.PI * 0.7), mat('#1e1446')); br.rotation.z = Math.PI * 0.15; br.position.set(off, ey + 0.2, ez - 0.01); g.add(br);
+      blush();
+    } else if (style === 3) { /* happy closed eyes with lashes */
+      const arcE = new T.Mesh(new T.TorusGeometry(0.085, 0.022, 6, 14, Math.PI), mat('#1e1446')); arcE.position.set(off, ey - 0.03, ez + 0.03); g.add(arcE);
+      [-1, 1].forEach(function (sd) { const l = mesh('box', '#1e1446'); l.scale.set(0.05, 0.016, 0.016); l.position.set(off + sd * 0.1, ey - 0.02 + 0.015, ez + 0.03); l.rotation.z = sd * -0.6; g.add(l); });
+      const br = new T.Mesh(new T.TorusGeometry(0.07, 0.014, 6, 12, Math.PI * 0.7), mat('#1e1446')); br.rotation.z = Math.PI * 0.15; br.position.set(off, ey + 0.15, ez - 0.01); g.add(br);
+      blush();
+    } else if (style === 4) { /* heart eyes */
+      const hc = '#f06a7a', hg = new T.Group();
+      [-1, 1].forEach(function (sd) { const lobe = mesh('sph', hc); lobe.scale.set(0.085, 0.085, 0.05); lobe.position.set(sd * 0.065, 0.035, 0); hg.add(lobe); });
+      const tip = mesh('cone', hc); tip.scale.set(0.125, -0.07, 0.05); tip.rotation.y = Math.PI / 4; tip.position.set(0, -0.06, 0); hg.add(tip);
+      const sh = mesh('sph', '#ffffff'); sh.scale.set(0.026, 0.026, 0.012); sh.position.set(0.08, 0.07, 0.05); hg.add(sh);
+      hg.position.set(off, ey + 0.02, ez + 0.03); g.add(hg); blush();
     } else {
       const w = mesh('sph', '#ffffff'); w.scale.setScalar(0.14); w.position.set(off, ey, ez); g.add(w);
       const p = mesh('sph', dark); p.scale.setScalar(0.07); p.position.set(off, ey, ez + 0.1); g.add(p);
       if (style === 2) { const lid = mesh('sph', col); lid.scale.set(0.155, 0.09, 0.155); lid.position.set(off, ey + 0.07, ez + 0.01); g.add(lid); }
     }
-    if (a.gear === 1) { const ring = mesh('tor', '#ffd166'); ring.scale.setScalar(style === 1 ? 0.2 : 0.15); ring.position.set(off, ey, ez + 0.06); g.add(ring); }
+    if (a.gear === 1) { const ring = mesh('tor', '#ffd166'); ring.scale.setScalar(style === 1 || style === 4 ? 0.2 : 0.15); ring.position.set(off, ey, ez + 0.06); g.add(ring); }
   }
   if (a.gear === 1) { const strap = mesh('box', dark); strap.scale.set(sc[0] * 1.9, 0.07, sc[2] * 1.7); strap.position.set(0, ey, 0); g.add(strap); }
   /* mouth */
@@ -2650,7 +2662,7 @@ function menuScene() {
 function refreshAlien() { if (!menuGrp) return; if (menuAlien) menuGrp.remove(menuAlien); menuAlien = buildAlien(S.alien); menuAlien.scale.setScalar(1.5); menuGrp.add(menuAlien); }
 function custHTML() {
   const stars = totalStars();
-  const rows = [['Body', 'shape', ['Round', 'Tall', 'Wide', 'Jelly', 'Cube']], ['Color', 'color', COLORS.map(function (c) { return c[2] && !(S.owned && S.owned[c[2]]) ? '🔒 Secret' : c[0]; })], ['Eyes', 'eyes', ['1', '2', '3'], 1], ['Eye style', 'estyle', ['Classic', 'Anime', 'Sleepy']],
+  const rows = [['Body', 'shape', ['Round', 'Tall', 'Wide', 'Jelly', 'Cube']], ['Color', 'color', COLORS.map(function (c) { return c[2] && !(S.owned && S.owned[c[2]]) ? '🔒 Secret' : c[0]; })], ['Eyes', 'eyes', ['1', '2', '3'], 1], ['Eye style', 'estyle', ['Classic', 'Cute', 'Sleepy', 'Happy', 'Hearts']],
     ['Mouth', 'mouth', ['None', 'Smile', 'Open', 'Cat', 'Fangs', 'Tongue']], ['Antennae', 'ant', ['0', '1', '2']],
     ['Gear', 'gear', GEAR.map(function (g, i) { return !gearOpen(i) ? g[0] + ' (' + g[1] + ' stars)' : g[0]; })]];
   return rows.map(function (r) {
