@@ -1,6 +1,7 @@
 /* EARTHLING FIELD GUIDE: OPENING STORY
-   A short cinematic that plays the first time the game starts: the alien's ship crosses a starfield,
-   Earth comes into view, the ship lands in a golden meadow and the alien steps out and says hello.
+   A short cinematic that plays the first time the game starts, told by the alien biologist in the first person:
+   the long search across the Milky Way, our solar system and its habitable zone, Earth and a Moon flyby, then the
+   ship lands in a golden meadow and the alien steps out and says hello.
    "Skip intro" works at every moment and always lands on the main menu. The menu has "Watch intro again". */
 (function () {
 'use strict';
@@ -9,10 +10,16 @@ function init() {
 const C = BQ.core, T = C.T, tx = C.tx;
 Object.assign(C.I18N.en, {
   'in.skip': 'Skip intro ⏭', 'in.begin': '▶ Begin', 'in.beginSub': 'A short story with sound. Skip it anytime.', 'in.watch': '🎬 Watch intro again',
-  'in.l1a': 'Somewhere among the stars, I heard about a planet filled with life.',
-  'in.l1b': 'A world of forests, oceans, tiny creatures, enormous animals, and amazing natural mysteries.',
-  'in.l1c': 'I had to see it for myself.',
-  'in.l2a': 'Hello, Earth! I\'m here to explore, observe, and learn.',
+  'in.n1': 'I have searched across the stars for a world that might support life.',
+  'in.n2': 'Across the vast Milky Way, I have looked for the conditions that let life begin and thrive.',
+  'in.n3': 'Now my search has led me here: to an ordinary star, and the planets that circle it.',
+  'in.n4': 'The third planet orbits in the habitable zone, where water can stay liquid on the surface.',
+  'in.n5': 'Being in that zone does not prove a planet has life...',
+  'in.n6': '...but this small blue world has oceans, an atmosphere, and an extraordinary variety of living things.',
+  'in.n7': 'Earth. My search is over.',
+  'in.n8': 'My investigation is just beginning.',
+  'in.scan': '🛸 My scanner', 'in.sc1': 'Star: yellow, steady, ordinary', 'in.sc2': 'Planet 3: inside the habitable zone', 'in.sc3': 'Liquid water at the surface', 'in.sc4': 'Atmosphere with oxygen', 'in.sc5': 'Living things: too many kinds to count!',
+  'in.l2a': 'Hello, Earth! I\'m a biologist. I\'m here to explore, observe, and learn.',
   'in.l2b': 'I come in peace, with a curious mind and a scientist\'s heart.',
   'in.l3a': 'Every stream, forest, flower, and tiny creature has a story to tell.',
   'in.l3b': 'Will you help me discover how life works on this wonderful planet?',
@@ -20,17 +27,27 @@ Object.assign(C.I18N.en, {
 });
 Object.assign(C.I18N.es, {
   'in.skip': 'Saltar intro ⏭', 'in.begin': '▶ Comenzar', 'in.beginSub': 'Una historia corta con sonido. Puedes saltarla cuando quieras.', 'in.watch': '🎬 Ver la intro otra vez',
-  'in.l1a': 'En algún lugar entre las estrellas, oí hablar de un planeta lleno de vida.',
-  'in.l1b': 'Un mundo de bosques, océanos, criaturas diminutas, animales enormes y misterios naturales asombrosos.',
-  'in.l1c': 'Tenía que verlo con mis propios ojos.',
-  'in.l2a': '¡Hola, Tierra! Vengo a explorar, observar y aprender.',
+  'in.n1': 'He buscado entre las estrellas un mundo que pudiera albergar vida.',
+  'in.n2': 'A lo largo de la inmensa Vía Láctea, he buscado las condiciones que permiten que la vida surja y prospere.',
+  'in.n3': 'Ahora mi búsqueda me ha traído aquí: a una estrella común y a los planetas que giran a su alrededor.',
+  'in.n4': 'El tercer planeta gira en la zona habitable, donde el agua puede seguir líquida en la superficie.',
+  'in.n5': 'Estar en esa zona no demuestra que un planeta tenga vida...',
+  'in.n6': '...pero este pequeño mundo azul tiene océanos, una atmósfera y una variedad extraordinaria de seres vivos.',
+  'in.n7': 'La Tierra. Mi búsqueda ha terminado.',
+  'in.n8': 'Mi investigación apenas comienza.',
+  'in.scan': '🛸 Mi escáner', 'in.sc1': 'Estrella: amarilla, estable, común', 'in.sc2': 'Planeta 3: dentro de la zona habitable', 'in.sc3': 'Agua líquida en la superficie', 'in.sc4': 'Atmósfera con oxígeno', 'in.sc5': 'Seres vivos: ¡demasiados tipos para contarlos!',
+  'in.l2a': '¡Hola, Tierra! Estudio a los seres vivos. Vengo a explorar, observar y aprender.',
   'in.l2b': 'Vengo en paz, con una mente curiosa y un corazón científico.',
   'in.l3a': 'Cada arroyo, bosque, flor y criatura diminuta tiene una historia que contar.',
   'in.l3b': '¿Me ayudas a descubrir cómo funciona la vida en este planeta maravilloso?',
   'in.title': 'Earthling Field Guide', 'in.tag': 'Una misión de Biología Keystone'
 });
-const LINES = [[2, 6.2, 'in.l1a'], [6.6, 11.6, 'in.l1b'], [12, 15, 'in.l1c'], [25.2, 29.4, 'in.l2a'], [29.8, 34.2, 'in.l2b'], [34.8, 39.4, 'in.l3a'], [39.8, 44.8, 'in.l3b']];
-const END = 50.5;
+/* the story is told by the alien biologist: first the long search (galaxy), then the solar system, then Earth up close, then the landing */
+const SH = 20; /* the original Earth approach and landing now start 20 seconds later */
+const LINES = [[2, 6.6, 'in.n1'], [7, 12.2, 'in.n2'], [13.4, 17.4, 'in.n3'], [17.8, 22.2, 'in.n4'], [22.6, 25.6, 'in.n5'], [26, 31, 'in.n6'], [31.4, 33.6, 'in.n7'], [34, 36.6, 'in.n8'],
+  [25.2 + SH, 29.4 + SH, 'in.l2a'], [29.8 + SH, 34.2 + SH, 'in.l2b'], [34.8 + SH, 39.4 + SH, 'in.l3a'], [39.8 + SH, 44.8 + SH, 'in.l3b']];
+const SCAN = [[13.6, 'in.sc1'], [18.6, 'in.sc2'], [23.2, 'in.sc3'], [25.4, 'in.sc4'], [28, 'in.sc5']];
+const END = 50.5 + SH;
 let I = null; /* the running intro */
 function $(id) { return document.getElementById(id); }
 function smooth(u) { u = Math.max(0, Math.min(1, u)); return u * u * (3 - 2 * u); }
@@ -53,12 +70,14 @@ function ensureUI() {
 #inTitle { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); text-align: center; color: #fff; opacity: 0; pointer-events: none !important; text-shadow: 0 4px 18px rgba(0,0,0,.7); }
 #inTitle h1 { font-size: clamp(34px, 6vw, 64px); margin: 0; font-family: var(--display, inherit); }
 #inTitle p { font-size: 1.2em; margin: 6px 0 0; color: #ffd166; }
+#inScan { position: absolute; top: 56px; left: 12px; min-width: 250px; max-width: calc(100% - 24px); padding: 8px 12px; border: 1px solid rgba(127, 240, 255, .6); border-radius: 10px; background: rgba(4, 20, 30, .62); color: #bff6ff; font-size: calc(15px * var(--ts, 1)); opacity: 0; pointer-events: none !important; }
+#inScan b { color: #7ff0ff; display: block; margin-bottom: 4px; letter-spacing: .04em; } #inScan div { opacity: 0; transition: opacity .5s; } #inScan div.on { opacity: 1; } #inScan div::before { content: '✓ '; color: #7be0ad; }
 #inBegin { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 8, 20, .35); }
 #inBegin .card { text-align: center; max-width: 440px; }
 #inBegin h1 { margin: 0 0 4px; } #inBegin .primary { font-size: 1.3em; padding: 10px 28px; margin: 12px 0 4px; }`;
   document.head.appendChild(css);
   const ui = document.createElement('div'); ui.id = 'introUI'; ui.hidden = true;
-  ui.innerHTML = '<div id="inFade"></div><div id="inSub" aria-live="polite"></div><div id="inTitle"><h1></h1><p></p></div>' +
+  ui.innerHTML = '<div id="inFade"></div><div id="inScan" aria-hidden="true"></div><div id="inSub" aria-live="polite"></div><div id="inTitle"><h1></h1><p></p></div>' +
     '<div id="inLang" role="group" aria-label="Language"><button type="button" data-lang="en">English</button><button type="button" data-lang="es">Español</button></div>' +
     '<button type="button" id="inSkip"></button><div id="inBegin" hidden><div class="card"><h1></h1><p class="dim tag"></p><button type="button" id="inGo" class="primary"></button><p class="dim sub"></p></div></div>';
   $('toast').parentNode.appendChild(ui);
@@ -74,6 +93,7 @@ function text() {
   document.querySelectorAll('#inLang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === (C.S.set.lang || 'en'))); });
   $('inTitle').querySelector('h1').textContent = tx('in.title'); $('inTitle').querySelector('p').textContent = tx('in.tag');
   const bg = $('inBegin'); bg.querySelector('h1').textContent = tx('in.title'); bg.querySelector('.tag').textContent = tx('in.tag'); $('inGo').textContent = tx('in.begin'); bg.querySelector('.sub').textContent = tx('in.beginSub');
+  $('inScan').innerHTML = '<b>' + C.esc(tx('in.scan')) + '</b>' + SCAN.map(function (x) { return '<div>' + C.esc(tx(x[1])) + '</div>'; }).join('');
   if (I) I.lastLine = null;
   const wb = $('btnIntro'); if (wb) wb.textContent = tx('in.watch');
 }
@@ -109,6 +129,37 @@ function earthTextures() {
   g.putImageData(im, 0, 0); gc.putImageData(ic, 0, 0);
   return [new T.CanvasTexture(cv), new T.CanvasTexture(cl)];
 }
+function moonTex() { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 128; const g = cv.getContext('2d'); g.fillStyle = '#b8b4ac'; g.fillRect(0, 0, 256, 128);
+  for (let i = 0; i < 9; i++) { g.fillStyle = 'rgba(90,90,96,0.45)'; g.beginPath(); g.ellipse(hash3(i, 1, 1) * 256, 20 + hash3(i, 2, 2) * 88, 10 + hash3(i, 3, 3) * 26, 8 + hash3(i, 4, 4) * 16, 0, 0, 6.283); g.fill(); }
+  for (let i = 0; i < 70; i++) { const x = hash3(i, 5, 5) * 256, y = hash3(i, 6, 6) * 128, r = 1.5 + hash3(i, 7, 7) * 6; g.strokeStyle = 'rgba(240,238,230,0.55)'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, r, 0, 6.283); g.stroke(); g.fillStyle = 'rgba(70,70,76,0.35)'; g.beginPath(); g.arc(x + 0.6, y + 0.6, r * 0.8, 0, 6.283); g.fill(); }
+  return new T.CanvasTexture(cv); }
+/* the Milky Way: two spiral arms of stars around a glowing core */
+function buildGalaxy(g) {
+  const n = C.S.set.low ? 4000 : 9000, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), c = new T.Color();
+  const gauss = function (i, k) { return (hash3(i, k, 1) + hash3(i, k, 2) + hash3(i, k, 3) - 1.5) * 1.15; };
+  for (let i = 0; i < n; i++) { const core = i % 5 === 0, r = core ? Math.pow(hash3(i, 9, 9), 1.8) * 70 : 30 + Math.pow(hash3(i, 8, 8), 0.8) * 260, arm = i % 2, a = core ? hash3(i, 7, 7) * 6.283 : r * 0.021 + arm * Math.PI + gauss(i, 4) * (0.28 + 18 / r);
+    pos[i * 3] = Math.cos(a) * r; pos[i * 3 + 1] = gauss(i, 6) * (core ? 14 : 5) * (1 - r / 340); pos[i * 3 + 2] = Math.sin(a) * r;
+    c.set(core ? (i % 3 ? '#ffe2b0' : '#fff4d8') : ['#cfe0ff', '#ffffff', '#aac8ff', '#ffd8e8', '#fff0c8'][i % 5]); const k = 0.45 + hash3(i, 10, 10) * 0.55; col[i * 3] = c.r * k; col[i * 3 + 1] = c.g * k; col[i * 3 + 2] = c.b * k; }
+  const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3)); geo.setAttribute('color', new T.BufferAttribute(col, 3));
+  g.add(new T.Points(geo, new T.PointsMaterial({ size: 1.8, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.95, depthWrite: false })));
+  g.add(C.glow('#ffe6b8', 170, 0.85)); g.add(C.glow('#fff6e0', 60, 1));
+  for (let i = 0; i < 46; i++) { const arm = i % 2, r = 50 + (i / 46) * 230, a = r * 0.021 + arm * Math.PI + (hash3(i, 1, 3) - 0.5) * 0.3, s = C.glow(['#6a7ad8', '#b06ac0', '#5a9ad0', '#d08ab0'][i % 4], 60 + hash3(i, 2, 3) * 50, 0.18); s.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); g.add(s); }
+  const sunAt = new T.Vector3(Math.cos(190 * 0.021 + 0.12) * 190, 0, Math.sin(190 * 0.021 + 0.12) * 190), here = C.glow('#fff2c0', 9, 1); here.position.copy(sunAt); g.add(here);
+  return { sunAt: sunAt, here: here };
+}
+/* our solar system: the Sun, orbits, the habitable zone (green band), and the planets */
+function buildSolar(g, tex) {
+  const sun = new T.Mesh(new T.SphereGeometry(6, 32, 20), new T.MeshBasicMaterial({ color: '#ffd76a' })); g.add(sun); g.add(C.glow('#ffcf6a', 46, 0.9)); g.add(C.glow('#fff4c8', 18, 1));
+  const hz = new T.Mesh(new T.RingGeometry(23, 32, 96), new T.MeshBasicMaterial({ color: '#5fe0a0', transparent: true, opacity: 0.16, side: T.DoubleSide, depthWrite: false })); hz.rotation.x = -Math.PI / 2; g.add(hz);
+  const P = [[14, 0.8, '#a8a29a', 1.6], [20, 1.3, '#e8d2a0', 1.2], [27, 1.5, null, 1], [34, 1.05, '#c8643a', 0.8], [52, 4.2, 'band', 0.42], [70, 3.4, '#e0c890', 0.32]], planets = [];
+  P.forEach(function (p, i) { const ob = new T.Mesh(new T.RingGeometry(p[0] - 0.08, p[0] + 0.08, 128), new T.MeshBasicMaterial({ color: '#7f9fc8', transparent: true, opacity: 0.35, side: T.DoubleSide, depthWrite: false })); ob.rotation.x = -Math.PI / 2; g.add(ob);
+    const m = new T.Mesh(new T.SphereGeometry(p[1], 24, 16), p[2] === null ? new T.MeshLambertMaterial({ map: tex[0], emissive: '#0a1830' }) : p[2] === 'band' ? new T.MeshLambertMaterial({ map: bandTex() }) : new T.MeshLambertMaterial({ color: p[2] })); g.add(m);
+    if (i === 5) { const rg = new T.Mesh(new T.RingGeometry(4.4, 6.8, 48), new T.MeshBasicMaterial({ color: '#e8cfa0', transparent: true, opacity: 0.55, side: T.DoubleSide })); rg.rotation.x = -1.2; m.add(rg); }
+    planets.push({ m: m, r: p[0], w: p[3], a: i * 1.7 + 0.6 }); });
+  const mark = new T.Mesh(new T.RingGeometry(2.6, 3.0, 40), new T.MeshBasicMaterial({ color: '#7ff0ff', transparent: true, opacity: 0, depthWrite: false, side: T.DoubleSide })); g.add(mark);
+  const light = new T.PointLight('#fff2d8', 1.6, 0); g.add(light);
+  return { planets: planets, earth: planets[2].m, mark: mark };
+}
 function gradTex(stops) { const cv = document.createElement('canvas'); cv.width = 4; cv.height = 256; const g = cv.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256); stops.forEach(function (s) { gr.addColorStop(s[0], s[1]); }); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); return new T.CanvasTexture(cv); }
 function bandTex() { const cv = document.createElement('canvas'); cv.width = 4; cv.height = 128; const g = cv.getContext('2d'); for (let y = 0; y < 128; y++) { const k = Math.sin(y * 0.35) * 0.5 + Math.sin(y * 0.9 + 1) * 0.3; g.fillStyle = 'rgb(' + Math.round(210 + k * 30) + ',' + Math.round(160 + k * 30) + ',' + Math.round(110 + k * 25) + ')'; g.fillRect(0, y, 4, 1); } return new T.CanvasTexture(cv); }
 
@@ -131,7 +182,7 @@ function buildSpace(g) {
   [['#7a4ad0', -180, 90, -420, 260], ['#d04a9a', 160, -60, -460, 240], ['#3a7ad0', 40, 140, -500, 300], ['#2ab0a0', -260, -120, -380, 200], ['#c05a3a', 280, 120, -300, 180]].forEach(function (nb) { const s = C.glow(nb[0], nb[4], 0.35); s.position.set(nb[1], nb[2], nb[3]); g.add(s); });
   const giant = new T.Mesh(new T.SphereGeometry(26, 32, 20), new T.MeshLambertMaterial({ map: bandTex() })); giant.position.set(-120, 50, -300); giant.rotation.z = 0.3; g.add(giant);
   const ring = new T.Mesh(new T.RingGeometry(34, 50, 48), new T.MeshBasicMaterial({ color: '#e8cfa0', transparent: true, opacity: 0.5, side: T.DoubleSide })); ring.position.copy(giant.position); ring.rotation.set(1.25, 0.2, 0.3); g.add(ring);
-  const moon = new T.Mesh(new T.SphereGeometry(6, 20, 14), new T.MeshLambertMaterial({ color: '#b8b0c8' })); moon.position.set(110, -40, -240); g.add(moon);
+  const moon = new T.Mesh(new T.SphereGeometry(7, 32, 20), new T.MeshLambertMaterial({ map: moonTex() })); moon.position.set(46, 7, -150); g.add(moon); /* the camera passes close to the Moon on the way in */
   const tex = earthTextures(), earth = new T.Group();
   const ball = new T.Mesh(new T.SphereGeometry(70, 48, 32), new T.MeshPhongMaterial({ map: tex[0], shininess: 18, specular: '#1a2a3a' })); earth.add(ball);
   const clouds = new T.Mesh(new T.SphereGeometry(71.6, 48, 32), new T.MeshLambertMaterial({ map: tex[1], transparent: true, depthWrite: false })); earth.add(clouds);
@@ -139,7 +190,7 @@ function buildSpace(g) {
   earth.position.set(60, -14, -440); earth.rotation.z = 0.35; g.add(earth);
   const ship = saucer(); ship.scale.setScalar(0.9); g.add(ship);
   const streak = C.glow('#ffffff', 3, 0.9); streak.scale.set(18, 0.6, 1); streak.visible = false; g.add(streak);
-  return { stars: stars, earth: earth, ball: ball, clouds: clouds, ship: ship, streak: streak, tex: tex };
+  return { stars: stars, earth: earth, ball: ball, clouds: clouds, ship: ship, streak: streak, tex: tex, giant: giant };
 }
 function hills(x, z) { const d = Math.hypot(x, z); let h = 2.2 * Math.sin(x * 0.045) * Math.cos(z * 0.05) + 1.4 * Math.sin((x + z) * 0.03); h *= Math.min(1, Math.max(0, (d - 10) / 30)); h += Math.max(0, d - 90) * 0.35; return h; }
 function buildMeadow(g) {
@@ -186,6 +237,7 @@ function play() {
   I = { t: 0, run: false, g: new T.Group(), bg: scene.background, fog: scene.fog, lights: [C.HEMI.intensity, C.HEMI.color.clone(), C.HEMI.groundColor.clone(), C.KEYL.intensity, C.KEYL.color.clone(), C.KEYL.position.clone()], part: 0, lastLine: null, said: {} };
   I.space = new T.Group(); I.meadow = new T.Group(); I.g.add(I.space); I.g.add(I.meadow); I.meadow.visible = false;
   I.A = buildSpace(I.space); I.B = buildMeadow(I.meadow);
+  I.gal = new T.Group(); I.sol = new T.Group(); I.g.add(I.gal); I.g.add(I.sol); I.Gx = buildGalaxy(I.gal); I.Sx = buildSolar(I.sol, I.A.tex); I.gal.visible = I.sol.visible = false;
   scene.add(I.g); setSet(0);
   $('introUI').hidden = false; text(); $('inSub').style.opacity = 0; $('inTitle').style.opacity = 0; $('inFade').style.opacity = 1; $('inFade').style.background = '#000';
   frame(0);
@@ -204,8 +256,13 @@ function setSet(n) {
     C.HEMI.color.set('#ffe2b8'); C.HEMI.groundColor.set('#3e5a32'); C.HEMI.intensity = 0.95; C.KEYL.color.set('#ffcf8a'); C.KEYL.intensity = 1.05; C.KEYL.position.set(-160, 40, -300);
     if (BQ.amb) { BQ.amb.mood('arrival', 4); BQ.amb.env('wind', 0.25); BQ.amb.env('birds', 0.5); } }
 }
-function frame(t) {
+function frame(t0) {
   const cam = C.cam, A = I.A, B = I.B;
+  /* scanner readout (the biologist's own instruments) */
+  { const sc = $('inScan'); sc.style.opacity = t0 > 13.2 && t0 < 34.6 ? Math.min(1, (t0 - 13.2) / 0.6, (34.6 - t0) / 0.6) : 0; const rows = sc.querySelectorAll('div'); SCAN.forEach(function (x, i) { if (rows[i]) rows[i].classList.toggle('on', t0 >= x[0]); }); }
+  if (t0 < SH) { prologue(t0); subs(t0); return; }
+  if (I.gal.visible || I.sol.visible || !I.A.earth.visible || !I.A.giant.visible) { I.gal.visible = I.sol.visible = false; I.A.earth.parent.children.forEach(function (o) { o.visible = true; }); I.A.streak.visible = false; I.A.ship.scale.setScalar(0.9); }
+  const t = t0 - SH;
   if (t < 16.4) {
     if (I.part !== 0) setSet(0);
     A.earth.rotation.y = t * 0.02; A.clouds.rotation.y = t * 0.012; A.stars.rotation.y = t * 0.004;
@@ -217,11 +274,11 @@ function frame(t) {
     A.ship.position.copy(sp); A.ship.rotation.y += 0.04; A.ship.rotation.z = 0.25 - 0.2 * seg(t, 0, 8); A.ship.userData.lights.forEach(function (l, i) { l.visible = Math.floor(t * 6 + i) % 3 !== 0; });
     A.ship.scale.setScalar(0.9 * (1 - seg(t, 13, 16) * 0.85));
     A.streak.visible = t > 3.5 && t < 5.2; if (A.streak.visible) { const k = (t - 3.5) / 1.7; A.streak.position.set(lerp(-160, 120, k), lerp(110, 40, k), -320); A.streak.material.opacity = Math.sin(k * Math.PI); }
-    $('inFade').style.background = t > 14 ? '#ffffff' : '#000'; $('inFade').style.opacity = t < 2 ? 1 - seg(t, 0, 2) : t > 14.6 ? seg(t, 14.6, 16.4) : 0;
+    $('inFade').style.background = t > 14 ? '#ffffff' : '#000'; $('inFade').style.opacity = t < 1.2 ? 1 - seg(t, 0, 1.2) : t > 14.6 ? seg(t, 14.6, 16.4) : 0;
   } else {
     if (I.part !== 1) setSet(1);
     const gy = B.gy, ship = B.ship, me = B.me;
-    $('inFade').style.background = t > 47 ? '#000' : '#ffffff'; $('inFade').style.opacity = t < 18.5 ? 1 - seg(t, 16.4, 18.5) : t > 47.5 ? seg(t, 47.5, END - 0.3) : 0;
+    $('inFade').style.background = t > 47 ? '#000' : '#ffffff'; $('inFade').style.opacity = t < 18.5 ? 1 - seg(t, 16.4, 18.5) : t > 47.5 ? seg(t, 47.5, END - SH - 0.3) : 0;
     /* the ship glides down and lands */
     const land = seg(t, 16.4, 23), sp = v3([-70, 70, -150], [0, gy + 3.2, 0], land); sp.y += Math.sin(t * 2) * 0.12 * (1 - seg(t, 22, 23));
     if (t > 31) sp.y = lerp(gy + 3.2, gy + 70, seg(t, 41, 47)), sp.x = lerp(0, 40, seg(t, 41, 47));
@@ -241,7 +298,7 @@ function frame(t) {
     if (t < 23.5) { cp = v3([30, 26, 50], [9, gy + 4, 16], seg(t, 16.4, 23.5)); look = ship.position.clone(); }
     else if (t < 30) { cp = v3([9, gy + 4, 16], [3.5, gy + 2.6, 11], seg(t, 23.5, 29)); look = v3([0, gy + 2.4, 0], [ax, ay, az], seg(t, 23.5, 27)); }
     else if (t < 44.5) { const a = lerp(0.35, 2.2, seg(t, 30, 44.5)), r = lerp(6, 8.5, seg(t, 30, 44.5)); cp = new T.Vector3(ax + Math.sin(a) * r, ay + 1.4 + seg(t, 38, 44.5) * 1.2, az + Math.cos(a) * r); look = new T.Vector3(ax, ay, az); }
-    else { const a = 2.2, r = 8.5, base = new T.Vector3(ax + Math.sin(a) * r, ay + 2.6, az + Math.cos(a) * r); cp = base.clone().lerp(new T.Vector3(ax + 14, ay + 18, az + 26), seg(t, 44.5, END)); look = new T.Vector3(ax, ay, az).lerp(new T.Vector3(-160, 30, -420), seg(t, 44.5, END)); }
+    else { const a = 2.2, r = 8.5, base = new T.Vector3(ax + Math.sin(a) * r, ay + 2.6, az + Math.cos(a) * r); cp = base.clone().lerp(new T.Vector3(ax + 14, ay + 18, az + 26), seg(t, 44.5, END - SH)); look = new T.Vector3(ax, ay, az).lerp(new T.Vector3(-160, 30, -420), seg(t, 44.5, END - SH)); }
     cam.position.copy(cp); cam.lookAt(look);
     const dtI = Math.min(0.1, Math.max(0, t - (B.lastT || t))); B.lastT = t;
     B.birds.forEach(function (b, i) { const k = ((t * 0.05 + i * 0.13) % 1); b.g.position.set(lerp(-120, 120, k), 34 + i * 2 + Math.sin(t + i) * 1.5, -60 - i * 6);
@@ -250,9 +307,35 @@ function frame(t) {
     B.flies.forEach(function (f, i) { const ph = f.g.userData.ph, P = function (tt) { return [Math.sin(tt * 0.5 + ph) * 7 + Math.sin(tt * 3 + ph) * 0.5, gy + 1.2 + Math.sin(tt * 2 + ph) * 0.4, 4 + Math.cos(tt * 0.4 + ph) * 6]; };
       const p = P(t), q = P(t + 0.05); f.g.position.set(p[0], p[1], p[2]);
       if (f.wings) { f.g.rotation.set(0, Math.atan2(q[0] - p[0], q[2] - p[2]), 0); BQ.creatures.poseButterfly(f, dtI, 'fly'); } });
-    $('inTitle').style.opacity = t < 45 ? 0 : t < 47.5 ? seg(t, 45, 46.5) : 1 - seg(t, 48.5, END - 0.2);
+    $('inTitle').style.opacity = t < 45 ? 0 : t < 47.5 ? seg(t, 45, 46.5) : 1 - seg(t, 48.5, END - SH - 0.2);
   }
-  /* subtitles */
+  subs(t0);
+}
+/* the first 20 seconds: the long search through the Milky Way, then our solar system */
+function prologue(t) {
+  const cam = C.cam, A = I.A, sol = I.sol, gal = I.gal;
+  if (I.part !== 0) setSet(0);
+  A.earth.visible = A.ship.visible = true; I.A.earth.parent.children.forEach(function (o) { if (o !== A.stars && o !== A.ship) o.visible = false; });
+  A.ship.userData.lights.forEach(function (l, i) { l.visible = Math.floor(t * 6 + i) % 3 !== 0; }); A.ship.rotation.y += 0.04;
+  if (t < 12.6) { gal.visible = true; sol.visible = false; A.stars.visible = false; gal.rotation.y = t * 0.012;
+    const S = I.Gx.sunAt.clone().applyAxisAngle(new T.Vector3(0, 1, 0), gal.rotation.y), u = seg(t, 0, 12.6);
+    const cp = v3([-60, 300, 420], [S.x + 18, 10, S.z + 34], Math.pow(u, 1.6)), look = new T.Vector3(0, 0, 0).lerp(S, seg(t, 3, 11.5));
+    cam.position.copy(cp); cam.lookAt(look); I.Gx.here.material.opacity = 0.6 + 0.4 * Math.sin(t * 4) * seg(t, 7, 9);
+    const fw = look.clone().sub(cp).normalize(); A.ship.position.copy(cp).addScaledVector(fw, 16).add(new T.Vector3(0, -3.2, 0)); A.ship.scale.setScalar(0.55); A.ship.rotation.z = 0.15;
+    $('inFade').style.background = '#000'; $('inFade').style.opacity = t < 2 ? 1 - seg(t, 0, 2) : t > 11.8 ? seg(t, 11.8, 12.6) : 0;
+  } else {
+    gal.visible = false; sol.visible = true; A.stars.visible = true; const X = I.Sx;
+    X.planets.forEach(function (p) { p.a += 0.004 * p.w; p.m.position.set(Math.cos(p.a) * p.r, 0, Math.sin(p.a) * p.r); p.m.rotation.y = t * 0.3; });
+    const E = X.earth.position, u = seg(t, 12.6, 20);
+    const uu = Math.pow(seg(t, 12.6, 19.6), 1.8), cp = v3([-20, 70, 95], [E.x + 3.5, E.y + 1.6, E.z + 6], uu).add(new T.Vector3(0, Math.sin(uu * Math.PI) * 22, 0)), look = new T.Vector3(0, 0, 0).lerp(E, seg(t, 15.5, 18.5));
+    cam.position.copy(cp); cam.lookAt(look);
+    X.mark.position.copy(E); X.mark.lookAt(cam.position); X.mark.material.opacity = seg(t, 17.6, 18.3) * (0.6 + 0.3 * Math.sin(t * 6)) * (1 - seg(t, 19.2, 19.7)); X.mark.scale.setScalar(1 + 0.1 * Math.sin(t * 6));
+    const fw = look.clone().sub(cp).normalize(); A.ship.position.copy(cp).addScaledVector(fw, 9).add(new T.Vector3(0, -1.8, 0)); A.ship.scale.setScalar(0.2 * (1 - seg(t, 18.6, 19.8) * 0.7)); A.ship.rotation.z = 0.2;
+    $('inFade').style.background = '#000'; $('inFade').style.opacity = t < 13.4 ? 1 - seg(t, 12.6, 13.4) : t > 19.3 ? seg(t, 19.3, 20) : 0;
+  }
+}
+function subs(t) {
+  { const onWhite = t > 35 && t < SH + 18.4, sb = $('inSub'); sb.style.color = onWhite ? '#0b1d2a' : ''; sb.style.textShadow = onWhite ? '0 0 10px rgba(255,255,255,.95), 0 0 2px #fff' : ''; }
   const ln = LINES.find(function (l) { return t >= l[0] && t <= l[1]; });
   const sub = $('inSub'); if (ln) { if (I.lastLine !== ln[2] + C.S.set.lang) { I.lastLine = ln[2] + C.S.set.lang; sub.textContent = tx(ln[2]); } sub.style.opacity = Math.min(1, (t - ln[0]) / 0.5, (ln[1] - t) / 0.5); } else sub.style.opacity = 0;
 }
