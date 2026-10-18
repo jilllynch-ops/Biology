@@ -282,7 +282,7 @@ ul.slots { list-style: none; padding-left: 0; }
 
   <section id="progress" class="screen" hidden>
     <div class="card wide"><h2>Progress</h2><div id="progBody"></div>
-      <label class="set" for="nick"><span>Nickname for high scores<br><span class="dim">Use a made-up name, not your real one.</span></span><input type="text" id="nick" maxlength="12" autocomplete="off"></label>
+      <label class="set" for="nick"><span>Nickname for high scores<br><span class="dim">Use a made-up name, not your real one.</span></span><input type="text" id="nick" maxlength="16" autocomplete="off"></label>
       <p id="nickMsg" class="dim" role="status" aria-live="polite"></p>
       <button type="button" data-back>Back</button></div>
   </section>
@@ -324,6 +324,7 @@ ul.slots { list-style: none; padding-left: 0; }
   <div id="err" hidden><p>This browser could not start 3D graphics. Try a current version of Chrome, Edge, Firefox, or Safari.</p></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="namefilter.js"></script>
 <script src="engine.js"></script>
 <script src="GLTFLoader.js"></script>
 <script src="birdmodels.js"></script>

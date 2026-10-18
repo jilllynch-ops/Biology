@@ -73,6 +73,7 @@ function rot13(w) { return w.replace(/[a-z]/g, function (c) { return String.from
 const NOPE_SET = new Set(NOPE_WHOLE), NOPE_LONG = NOPE_WHOLE.filter(function (w) { return w.length >= 7; }), NOPE_RSET = new Set(NOPE_REVIEW);
 function nickCheck(n) {
   if (!n) return 'ok';
+  if (window.FG_NameFilter) return window.FG_NameFilter.check(n).ok ? 'ok' : 'bad'; /* namefilter.js (categories, look-alikes, phrases); the older lists below are the backup */
   const two = function (x) { return x.replace(/(.)\1{2,}/g, '$1$1'); }, one = function (x) { return x.replace(/(.)\1+/g, '$1'); };
   const base = n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const leet = function (x, o) { return x.replace(/0/g, 'o').replace(/1/g, o).replace(/3/g, 'e').replace(/[4@]/g, 'a').replace(/[5$]/g, 's').replace(/7/g, 't').replace(/8/g, 'b').replace(/9/g, 'g').replace(/[!|]/g, 'i'); };
@@ -287,7 +288,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 28 · October 17, 2026';
+const VERSION = 'Version 31 · October 18, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -2910,12 +2911,12 @@ function wire() {
   $('btnMapPlay').onclick = function () { const e = nextUp(); if (e) startLevel(e.w, e.lv); };
   $('btnMap').onclick = function () { openMap(); };
   document.querySelectorAll('[data-back]').forEach(function (b) { b.onclick = function () { if ((b.closest('#settings') || b.closest('#journal')) && backTo === 'pause') show('pause'); else if (b.closest('#journal') && backTo === 'done') show('done'); else if (b.closest('#journal') && backTo === 'cozy') { show(null); if (BQ.cozy) BQ.cozy.resume(); } else show('menu'); }; });
-  $('nick').addEventListener('input', function () { const v = $('nick').value.replace(/[^A-Za-z0-9 _-]/g, '').slice(0, 12); if (v !== $('nick').value) $('nick').value = v; $('nickMsg').textContent = ''; });
+  $('nick').addEventListener('input', function () { const v = $('nick').value.replace(/[^A-Za-z0-9 _-]/g, '').slice(0, 16); if (v !== $('nick').value) $('nick').value = v; $('nickMsg').textContent = ''; });
   const nickSave = function () {
     const v = $('nick').value.trim();
     if (!nickOK(v)) {
       if (TEACH) { S.okNames = (S.okNames || []).concat([v]); S.nick = v; save(); $('nickMsg').textContent = 'Teacher mode: "' + v + '" is allowed on this device even though it matched the word filter.'; $('nickMsg').className = 'dim'; return; }
-      const sug = safeName(); $('nickMsg').innerHTML = 'Please choose a name that is appropriate and respectful. Try again, or use <button type="button" id="nickSug">' + sug + '</button>';
+      const sug = safeName(); $('nickMsg').innerHTML = 'Please choose a different username. Or use <button type="button" id="nickSug">' + sug + '</button>';
       $('nickMsg').className = 'nickbad'; $('nick').value = S.nick; $('nick').focus(); beep(200, 0.2, 'sawtooth', 'buzz, name not allowed');
       $('nickSug').onclick = function () { $('nick').value = sug; nickSave(); }; return;
     }

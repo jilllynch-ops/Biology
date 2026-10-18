@@ -57,33 +57,96 @@ function poseFrog(f, dt, hop, call) {
   f.arms.forEach(function (a) { a.rotation.x = -0.9 * ext; });
 }
 
-/* ================= SUNFISH (pumpkinseed): faces +z, about 0.55 long ================= */
-function makeFish(kind) {
-  const g = new T.Group(), body = new T.Group(); g.add(body);
-  const pal = kind === 'trout' ? { back: '#3a4a2a', side: '#6a7a4a', belly: '#e8742a', spot: '#e8d860' } : { back: '#6a7a3a', side: '#d8a040', belly: '#f08a2a', spot: '#4a8ab0' };
-  const skin = function (v) { const c = new T.Color(pal.side); if (v.y > 0.05) c.lerp(new T.Color(pal.back), clamp((v.y - 0.05) * 8, 0, 1)); if (v.y < -0.04) c.lerp(new T.Color(pal.belly), clamp((-v.y - 0.04) * 10, 0, 1));
-    if (kind !== 'trout' && v.z > 0.08 && v.z < 0.18 && Math.abs(v.x) > 0.02 && Math.sin(v.y * 90) > 0.4) c.set('#3a9ad0'); /* blue cheek stripes */
-    if (kind !== 'trout' && v.z > 0.04 && v.z < 0.09 && v.y > 0.02 && v.y < 0.06 && Math.abs(v.x) > 0.03) c.set(v.z > 0.075 ? '#e83020' : '#111111'); /* the black "ear flap" with a red spot */
-    if (kind !== 'trout' && v.z < 0.04 && v.y > -0.02 && Math.sin(v.y * 70 + v.z * 30) * Math.sin(v.z * 60) > 0.7) c.set('#e0b030');
-    if (kind === 'trout' && v.y > -0.02 && Math.sin(v.z * 80) * Math.sin(v.y * 70) > 0.75) c.set(pal.spot);
+/* ================= FISH: six real species, each one smooth body that bends as it swims =================
+   brook trout, pumpkinseed sunfish, common carp, channel catfish, northern pike, largemouth bass.
+   The body, fins, eyes and whiskers are one mesh painted with each species' field marks; a tiny vertex-shader
+   wave makes the S-shaped swimming bend (head steady, tail sweeping). Faces +z; length L (meters). */
+const FISH = {
+  trout:   { L: 0.42, hd: 0.115, wd: 0.065, ped: 0.32, head: 1, tail: 'square', dors: [0.05, 0.22], anal: [-0.22, -0.08], adipose: 1, mouth: 0.6 },
+  pumpkinseed: { L: 0.26, hd: 0.25, wd: 0.07, ped: 0.32, head: 1, tail: 'notch', dors: [-0.32, 0.22], anal: [-0.3, -0.05], mouth: 0.35, spiny: 1 },
+  carp:    { L: 0.62, hd: 0.15, wd: 0.085, ped: 0.34, head: 1, tail: 'fork', dors: [-0.22, 0.2], anal: [-0.28, -0.16], barbels: 2, mouth: 0.4, scales: 1 },
+  catfish: { L: 0.62, hd: 0.09, wd: 0.095, ped: 0.32, head: 1.35, tail: 'fork', dors: [0.08, 0.2], anal: [-0.36, -0.08], adipose: 1, barbels: 8, mouth: 0.9, flat: 1 },
+  pike:    { L: 0.8, hd: 0.068, wd: 0.058, ped: 0.45, head: 0.8, tail: 'fork', dors: [-0.36, -0.2], anal: [-0.36, -0.22], mouth: 1.1, snout: 1 },
+  bass:    { L: 0.48, hd: 0.13, wd: 0.075, ped: 0.33, head: 1.1, tail: 'notch', dors: [-0.3, 0.2], anal: [-0.3, -0.1], mouth: 1.2, spiny: 1, notchDors: 1 }
+};
+function fishSkin(kind, sp) {
+  const c = new T.Color(), tmp = new T.Color(), R = function (col) { return tmp.set(col); };
+  const paint = function (t, yn, side) { /* t: -1 tail .. +1 head along the body, yn: -1 belly .. +1 back, side: |x| fraction */
+    const back = clamp((yn - 0.15) * 1.6, 0, 1), belly = clamp((-yn - 0.25) * 2, 0, 1);
+    if (kind === 'trout') { c.set('#7a8a50').lerp(R('#2f3a24'), back).lerp(R('#e8742a'), belly); if (belly > 0.6) c.lerp(R('#f4f0e4'), (belly - 0.6) * 1.5);
+      if (yn > 0.15 && Math.sin(t * 95 + Math.sin(yn * 30) * 2) * Math.sin(yn * 55 + t * 20) > 0.35) c.lerp(R('#c8c890'), 0.75); /* wormy marks on the back */
+      const sp1 = Math.sin(t * 70) * Math.sin(yn * 26 + 1); if (yn < 0.3 && yn > -0.45 && sp1 > 0.82) c.set('#e8d870'); /* yellow spots */
+      if (yn < 0.15 && yn > -0.35 && Math.sin(t * 41 + 1.3) * Math.sin(yn * 19 + 2) > 0.9) c.set(Math.sin(t * 41 + 1.3) * Math.sin(yn * 19 + 2) > 0.96 ? '#e82a2a' : '#5a8ae0'); }
+    else if (kind === 'pumpkinseed') { c.set('#c8a040').lerp(R('#5a6a30'), back).lerp(R('#f07a1a'), belly);
+      if (Math.sin(t * 60) * Math.sin(yn * 30) > 0.6 && belly < 0.5) c.lerp(R(yn > 0 ? '#3a8a8a' : '#e8802a'), 0.7); /* speckles */
+      if (t > 0.42 && t < 0.72 && yn < 0.35 && Math.abs(Math.sin(yn * 26 + t * 30)) > 0.82) c.set('#3ab0d0'); /* blue cheek lines */
+      if (t > 0.38 && t < 0.5 && yn > 0.05 && yn < 0.42) c.set(t < 0.42 ? '#e02020' : '#101010'); /* the black ear flap with its red spot */
+      if (Math.abs(Math.sin(t * 22)) < 0.12 && yn > -0.2 && t < 0.35) c.multiplyScalar(0.85); }
+    else if (kind === 'carp') { c.set('#c09040').lerp(R('#6a5428'), back).lerp(R('#f0e0b0'), belly);
+      const row = Math.floor(yn * 6 + 6), u = t * 13 + (row % 2) * 0.5, fr = u - Math.floor(u), rv = yn * 6 + 6 - row; if (fr < 0.14 || rv < 0.1) c.multiplyScalar(0.72); else if (fr > 0.5 && fr < 0.75) c.lerp(R('#f0c870'), 0.25); /* big scales */ }
+    else if (kind === 'catfish') { c.set('#8a98a8').lerp(R('#3e4a5a'), back).lerp(R('#f4f4f0'), belly);
+      if (belly < 0.3 && Math.sin(t * 52 + 0.4) * Math.sin(yn * 31) > 0.86) c.set('#1a1e24'); /* scattered black spots */ }
+    else if (kind === 'pike') { c.set('#6a8a40').lerp(R('#2e4424'), back).lerp(R('#f0ecd0'), belly);
+      const bx = t * 13, by = yn * 4.5, fx = bx - Math.floor(bx), fy = by - Math.floor(by); if (belly < 0.4 && yn < 0.6 && Math.hypot((fx - 0.5) * 1, (fy - 0.5) * 1.8) < 0.3) c.set('#e8e098'); /* rows of pale bean-shaped spots */ }
+    else { c.set('#7a9a50').lerp(R('#34502a'), back).lerp(R('#f2f0e0'), belly); /* largemouth bass */
+      const stripe = Math.abs(yn - 0.05 + Math.sin(t * 18) * 0.06); if (stripe < 0.13 && t < 0.55) c.lerp(R('#1e2a16'), 0.85); if (yn > 0.2 && Math.sin(t * 30) * Math.sin(yn * 20) > 0.7) c.multiplyScalar(0.8); }
     return c; };
-  const front = new T.Group(); body.add(front);
-  front.add(mesh([ell(0, 0, 0.0, 0.045, kind === 'trout' ? 0.07 : 0.125, 0.22, skin, 0, 0, 0, 18), ell(0, 0.0, 0.18, 0.035, 0.07, 0.06, skin)].concat(eye(-0.034, 0.03, 0.18, 0.022, '#d08020', -1), eye(0.034, 0.03, 0.18, 0.022, '#d08020', 1), [ell(0, -0.025, 0.235, 0.015, 0.012, 0.02, '#4a3a2a')]), 'fish'));
-  const finMat = { side: T.DoubleSide, transparent: true, opacity: 0.85 };
-  const dors = new T.Mesh(merge([{ geo: flat([[0, 0.1], [0.05, 0.06], [0.07, -0.04], [0.06, -0.12], [0, -0.15]], true), m: M4(0, kind === 'trout' ? 0.05 : 0.09, 0.0, 0, 0, Math.PI / 2), color: pal.back }]), vmat('fin', finMat)); front.add(dors);
-  const pecs = [-1, 1].map(function (sd) { const p = new T.Group(); p.position.set(sd * 0.04, -0.02, 0.1); front.add(p); p.add(new T.Mesh(merge([{ geo: flat([[0, 0], [sd * 0.08, -0.04], [sd * 0.07, -0.08], [0, -0.05]], true), m: M4(0, 0, 0, 0, 0, 0), color: '#e8a050' }]), vmat('fin', finMat))); return p; });
-  const back = new T.Group(); back.position.z = -0.1; body.add(back); /* rear half bends for the swimming S-curve */
-  back.add(mesh([ell(0, 0, -0.03, 0.032, kind === 'trout' ? 0.05 : 0.075, 0.09, skin), ell(0, 0, -0.11, 0.016, 0.028, 0.06, skin)], 'fish'));
-  const tail = new T.Group(); tail.position.z = -0.16; back.add(tail);
-  tail.add(new T.Mesh(merge([{ geo: flat([[0, 0], [0.09, -0.1], [0.04, -0.12], [0, -0.07], [-0.04, -0.12], [-0.09, -0.1]], true), m: M4(0, 0, 0, 0, 0, Math.PI / 2), color: pal.back }]), vmat('fin', finMat)));
-  return { g: g, front: front, back: back, tail: tail, pecs: pecs, ph: Math.random() * 6, kind: kind };
+  /* the gill cover edge and the mouth are painted on */
+  const gillT = { trout: 0.52, pumpkinseed: 0.38, carp: 0.5, catfish: 0.58, pike: 0.58, bass: 0.5 }[kind], mouthL = 0.06 + 0.07 * sp.mouth;
+  return function (t, yn, side) { const c = paint(t, yn, side); const gt = gillT + yn * yn * 0.06; if (Math.abs(t - gt) < 0.012 && yn < 0.5) c.multiplyScalar(0.55);
+    if (t > 1 - mouthL && Math.abs(yn + 0.12 + (t - 1) * 0.6) < 0.035) c.set('#2a1a14'); return c; };
 }
-/* speed 0..1: the tail drives a wave that runs from head to tail; the head barely moves */
-function poseFish(f, dt, speed) {
-  f.ph += dt * (4 + speed * 10); const a = (0.12 + speed * 0.3);
-  f.front.rotation.y = Math.sin(f.ph) * a * 0.15; f.back.rotation.y = Math.sin(f.ph - 1.1) * a; f.tail.rotation.y = Math.sin(f.ph - 2.1) * a * 1.6;
-  f.pecs.forEach(function (p, i) { p.rotation.y = (i ? 1 : -1) * (0.3 + 0.35 * Math.sin(f.ph * 0.7 + i)); });
+/* the body pattern is painted once per species into a picture wrapped around the body (sharp spots and stripes) */
+const fishTexCache = {};
+function fishTex(kind, sp) { if (fishTexCache[kind]) return fishTexCache[kind]; const W0 = 384, H0 = 192, cv = document.createElement('canvas'); cv.width = W0; cv.height = H0;
+  const g = cv.getContext('2d'), im = g.createImageData(W0, H0), skin = fishSkin(kind, sp);
+  for (let py = 0; py < H0; py++) { const v = 1 - (py + 0.5) / H0, th = (1 - v) * Math.PI, t = Math.cos(th);
+    for (let px = 0; px < W0; px++) { const phi = (px + 0.5) / W0 * Math.PI * 2, yn = -Math.sin(phi), c = skin(t, yn, Math.abs(Math.cos(phi))), i = (py * W0 + px) * 4; im.data[i] = c.r * 255; im.data[i + 1] = c.g * 255; im.data[i + 2] = c.b * 255; im.data[i + 3] = 255; } }
+  g.putImageData(im, 0, 0); const tx0 = new T.CanvasTexture(cv); fishTexCache[kind] = tx0; return tx0; }
+function finColor(kind, which) {
+  const base = { trout: which === 'low' ? '#e86a2a' : '#7a7a50', pumpkinseed: '#8a7a40', carp: which === 'tail' || which === 'low' ? '#c0603a' : '#8a6a3a', catfish: '#5a6070', pike: which === 'tail' || which === 'low' ? '#c0603a' : '#6a7a40', bass: '#6a7a48' }[kind];
+  return function (v) { const c = new T.Color(base); if (Math.sin(Math.atan2(v.y, v.z) * 40) > 0.5) c.multiplyScalar(0.82); /* fin rays */
+    if (kind === 'trout' && which === 'low' && v.__edge) c.set('#ffffff'); if (kind === 'pike' && Math.sin(v.z * 120) * Math.sin(v.y * 140) > 0.75) c.set('#2a2a20'); return c; };
 }
+function finGeo(pts) { const sh = new T.Shape(); sh.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) sh.lineTo(pts[i][0], pts[i][1]); const g = new T.ShapeGeometry(sh, 4); g.rotateY(-Math.PI / 2); return g; } /* points are (z, y) */
+function makeFish(kind) {
+  if (kind === 'sunfish') kind = 'pumpkinseed'; const sp = FISH[kind] || FISH.pumpkinseed, L = sp.L, half = L / 2, D = sp.hd * L, Wd = sp.wd * L;
+  const prof = function (t) { const base = Math.sqrt(Math.max(0, 1 - t * t)), tail = 0.3 + 0.7 * Math.min(1, Math.max(0, (t + 1) / 1.1)); let f = base * (sp.ped + (1 - sp.ped) * Math.pow(tail, 0.9)); if (sp.snout && t > 0.45) f *= 1 - (t - 0.45) * 0.9; return f; };
+  /* body: a sphere reshaped along its length */
+  const bg = new T.SphereGeometry(1, 30, 18); bg.rotateX(Math.PI / 2); const P = bg.attributes.position;
+  for (let i = 0; i < P.count; i++) { const x0 = P.getX(i), y0 = P.getY(i), t = P.getZ(i), f = prof(t), headW = t > 0.3 ? 1 + (sp.head - 1) * (t - 0.3) / 0.7 : 1, flat = sp.flat && t > 0.2 ? 1 - (t - 0.2) * 0.45 : 1;
+    P.setXYZ(i, x0 * Wd * Math.max(f, 0.06) * headW, (y0 < 0 ? y0 * 1.08 : y0) * D * Math.max(f, 0.05) * flat + (sp.snout ? 0 : t * t * D * 0.06), t * half); }
+  bg.computeVertexNormals();
+  const parts = [];
+  const eyeR = Math.max(0.006, L * (kind === 'catfish' ? 0.013 : kind === 'pike' ? 0.026 : 0.034)), ez = half * (sp.snout ? 0.62 : 0.66), ey = D * prof(ez / half) * (sp.flat ? 0.2 : 0.32), ex = Wd * prof(ez / half) * (sp.flat ? sp.head : 0.88);
+  [-1, 1].forEach(function (sd) { parts.push({ geo: new T.SphereGeometry(eyeR, 10, 8), m: M4(sd * ex, ey, ez), color: kind === 'pike' || kind === 'trout' ? '#d8b040' : kind === 'bass' ? '#c89030' : kind === 'catfish' ? '#5a4a30' : '#c87a30' },
+      { geo: new T.SphereGeometry(eyeR * 0.6, 8, 6), m: M4(sd * (ex + eyeR * 0.5), ey, ez + eyeR * 0.15), color: '#0a0a0a' }, { geo: new T.SphereGeometry(eyeR * 0.22, 6, 4), m: M4(sd * (ex + eyeR * 0.75), ey + eyeR * 0.35, ez + eyeR * 0.3), color: '#ffffff' }); });
+  /* fins (z, y) */
+  const top = function (t) { return D * prof(t) * 0.92; }, z0 = sp.dors[0] * half * 2, z1 = sp.dors[1] * half * 2, fh = L * (kind === 'catfish' ? 0.1 : kind === 'pike' ? 0.06 : kind === 'pumpkinseed' ? 0.07 : 0.085);
+  const dPts = [[z1, top(z1 / half) * 0.95]]; for (let k = 0; k <= 8; k++) { const u = k / 8, z = z1 + (z0 - z1) * u, notch = sp.notchDors ? (Math.abs(u - 0.45) < 0.12 ? 0.35 : 1) : 1; dPts.push([z, top(z / half) + fh * notch * (sp.spiny ? (0.82 + 0.18 * (k % 2)) * (u < 0.5 ? 0.85 : 1.1) : Math.sin(Math.min(1, u * 1.6) * Math.PI * 0.5) * (1 - u * 0.35))]); }
+  dPts.push([z0, top(z0 / half) * 0.95]); parts.push({ geo: finGeo(dPts), color: finColor(kind, 'top') });
+  if (sp.adipose) { const az = -half * 0.62; parts.push({ geo: finGeo([[az + L * 0.05, top(az / half) * 0.9], [az + L * 0.02, top(az / half) + D * 0.3], [az - L * 0.03, top(az / half) + D * 0.25], [az - L * 0.04, top(az / half) * 0.9]]), color: finColor(kind, 'top') }); }
+  const a0 = sp.anal[0] * half * 2, a1 = sp.anal[1] * half * 2, bot = function (t) { return -D * prof(t) * 1.0; };
+  parts.push({ geo: finGeo([[a1, bot(a1 / half) * 0.92], [a1 - L * 0.03, bot(a1 / half) - L * 0.075], [a0, bot(a0 / half) - L * 0.06], [a0, bot(a0 / half) * 0.92]]), color: finColor(kind, 'low') });
+  /* tail */
+  const tz = -half * 0.97, th = D * (kind === 'pumpkinseed' ? 0.9 : kind === 'pike' ? 1.4 : 1.25), tl = L * (kind === 'pike' ? 0.2 : 0.17), fork = sp.tail === 'fork' ? 0.55 : sp.tail === 'notch' ? 0.25 : 0.06;
+  parts.push({ geo: finGeo([[tz + L * 0.02, D * 0.12], [tz - tl, th], [tz - tl * (1 - fork), 0], [tz - tl, -th], [tz + L * 0.02, -D * 0.12]]), color: finColor(kind, 'tail') });
+  /* paired fins: pectorals behind the gills, pelvics on the belly */
+  [-1, 1].forEach(function (sd) { const pz = half * 0.42, pg = finGeo([[0, 0], [-L * 0.1, D * 0.25], [-L * 0.13, -D * 0.05], [-L * 0.04, -D * 0.2]]); parts.push({ geo: pg, m: M4(sd * Wd * prof(0.42) * 0.95, -D * 0.25, pz, 0, sd * 0.6, sd * 0.5), color: finColor(kind, 'low') });
+    const vg = finGeo([[0, 0], [-L * 0.08, -D * 0.3], [-L * 0.11, -D * 0.1]]); parts.push({ geo: vg, m: M4(sd * Wd * 0.4, -D * prof(0.1) * 0.85, half * (kind === 'pike' ? -0.25 : 0.15), 0, sd * 0.35, 0), color: finColor(kind, 'low') }); });
+  /* whiskers (barbels) */
+  if (sp.barbels) { const n = sp.barbels, mz = half * 0.92; for (let k = 0; k < n; k++) { const sd = k % 2 ? 1 : -1, row = Math.floor(k / 2), len = L * (kind === 'catfish' ? (row === 0 ? 0.24 : 0.1) : 0.06);
+      parts.push({ geo: new T.CylinderGeometry(L * 0.004, L * 0.0025, len, 4), m: M4(sd * (Wd * 0.4 + row * L * 0.012), -D * (0.05 + row * 0.12), mz - len * 0.35, Math.PI / 2 + 0.5 + row * 0.25, 0, sd * (0.7 + row * 0.2)), color: kind === 'catfish' ? '#2a2e34' : '#7a5a30' }); } }
+  const geo = merge(parts);
+  const U = { uPh: { value: Math.random() * 6 }, uAmp: { value: 0.1 }, uLen: { value: L } };
+  const bend = function (mat) { mat.userData.keepShader = 1; mat.customProgramCacheKey = function () { return 'fishbend'; };
+    mat.onBeforeCompile = function (sh) { sh.uniforms.uPh = U.uPh; sh.uniforms.uAmp = U.uAmp; sh.uniforms.uLen = U.uLen;
+      sh.vertexShader = 'uniform float uPh; uniform float uAmp; uniform float uLen;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nfloat tz = position.z / uLen; float kk = smoothstep(0.2, -0.55, tz); transformed.x += sin(uPh - tz * 7.0) * uAmp * uLen * kk * kk;'); }; return mat; };
+  const g = new T.Group(), body = new T.Mesh(bg, bend(new T.MeshLambertMaterial({ map: fishTex(kind, sp) }))), m = new T.Mesh(geo, bend(new T.MeshLambertMaterial({ vertexColors: true, side: T.DoubleSide, transparent: true, opacity: 0.92 }))); g.add(body); g.add(m);
+  return { g: g, m: m, U: U, kind: kind, L: L, ph: 0 };
+}
+/* speed 0..1: faster swimming means a quicker, bigger tail beat */
+function poseFish(f, dt, speed) { f.U.uPh.value += dt * (3 + speed * 11); f.U.uAmp.value += ((0.05 + speed * 0.13) - f.U.uAmp.value) * Math.min(1, dt * 3); }
 
 /* ================= BUMBLEBEE: faces +z, about 0.3 long (larger than life so you can see it) ================= */
 let beeWingTex = null;
@@ -218,6 +281,6 @@ function poseHeron(h, dt, strike) {
   h.n1.rotation.x = 0.1 + Math.sin(h.ph * 0.4) * 0.05 + s * 0.6; h.n2.rotation.x = -0.1 + s * 0.4; h.head.rotation.x = s * 0.5; h.head.rotation.y = strike > 0 ? 0 : Math.sin(h.ph * 0.35) * 0.4;
 }
 
-Object.assign(CR, { makeFrog: makeFrog, poseFrog: poseFrog, makeFish: makeFish, poseFish: poseFish, makeBee: makeBee, poseBee: poseBee, makeDragonfly: makeDragonfly, poseDragonfly: poseDragonfly,
+Object.assign(CR, { FISH: FISH, makeFrog: makeFrog, poseFrog: poseFrog, makeFish: makeFish, poseFish: poseFish, makeBee: makeBee, poseBee: poseBee, makeDragonfly: makeDragonfly, poseDragonfly: poseDragonfly,
   makeRabbit: makeRabbit, poseRabbit: poseRabbit, makeDeer: makeDeer, poseDeer: poseDeer, makeOwl: makeOwl, poseOwl: poseOwl, makeHeron: makeHeron, poseHeron: poseHeron });
 })();
