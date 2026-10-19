@@ -288,7 +288,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 31 · October 18, 2026';
+const VERSION = 'Version 32 · October 18, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -2835,6 +2835,7 @@ function tick(t) {
   const dt = Math.min((t - last) / 1000 || 0, 1 / 30); last = t;
   if (mode === 'intro' && BQ.intro) BQ.intro.step(dt);
   else if (mode === 'cozy' && BQ.cozy) BQ.cozy.step(dt);
+  else if (mode === 'dome' && BQ.dome) BQ.dome.step(dt);
   else if (mode === 'mini' && M) { if (M.kind === 'golf') golfStep(dt); else if (M.kind === 'dna') dnaStep(dt); else miniStep(dt); }
   else if (mode === 'play' && !paused) {
     step(dt);
@@ -2862,6 +2863,7 @@ function wire() {
     if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
     if (mode === 'intro' && BQ.intro) { BQ.intro.key(e, true); return; }
     if (mode === 'cozy' && BQ.cozy) { BQ.cozy.key(e, true); return; }
+    if (mode === 'dome' && BQ.dome) { BQ.dome.key(e, true); return; }
     if (mode === 'mini') { miniKey(e, true); return; }
     if (mode === 'play' && e.key === 'Escape' && L && L.active && (L.active.clue || L.active.portal)) { closeQ(); e.preventDefault(); return; }
     if (mode === 'play' && (e.key === 'p' || e.key === 'P' || e.key === 'Escape')) { pause(!paused); e.preventDefault(); return; }
@@ -2884,6 +2886,7 @@ function wire() {
   window.addEventListener('keyup', function (e) {
     if (mode === 'intro') return;
     if (mode === 'cozy' && BQ.cozy) { BQ.cozy.key(e, false); return; }
+    if (mode === 'dome') return;
     if (mode === 'mini') { miniKey(e, false); return; }
     const nk = e.key.length === 1 ? e.key.toLowerCase() : e.key, k = KEYMAP[nk]; if (!k || !held[nk]) return; delete held[nk];
     if (!Object.keys(held).some(function (h) { return KEYMAP[h] === k; })) press(k, false);
@@ -2899,7 +2902,7 @@ function wire() {
   $('cust').addEventListener('click', function (e) { const b = e.target.closest('.chip'); if (!b) return; S.alien[b.dataset.k] = +b.dataset.v; save(); refreshAlien(); buildMenu(); const again = $('cust').querySelector('[data-k="' + b.dataset.k + '"][data-v="' + b.dataset.v + '"]'); if (again) again.focus(); });
   $('btnPlay').onclick = function () { openMap(); };
   $('btnCozy').hidden = !BQ.cozy; $('btnCozy').onclick = function () { if (BQ.cozy) BQ.cozy.start(); };
-  ['pointerdown', 'pointermove', 'pointerup', 'wheel'].forEach(function (ev) { $('stage').addEventListener(ev, function (e) { if (mode === 'cozy' && BQ.cozy) BQ.cozy.pointer(e, ev); }, ev === 'wheel' ? { passive: false } : undefined); });
+  ['pointerdown', 'pointermove', 'pointerup', 'wheel'].forEach(function (ev) { $('stage').addEventListener(ev, function (e) { if (mode === 'cozy' && BQ.cozy) BQ.cozy.pointer(e, ev); else if (mode === 'dome' && BQ.dome) BQ.dome.pointer(e, ev); }, ev === 'wheel' ? { passive: false } : undefined); });
   $('btnLevels').onclick = function () { openMap(); };
   $('btnAbout').onclick = function () { show('about'); $('aboutVer').textContent = VERSION; };
   $('menuVer').textContent = VERSION + ' · by J.E. Lynch';
@@ -2967,7 +2970,7 @@ function boot() {
   if (jump) { const e = allLevels().find(function (x) { return x.lv.id === jump[1]; }); if (e) startLevel(e.w, e.lv); }
   BQ.core = { T: T, get scene() { return scene; }, get cam() { return cam; }, get renderer() { return renderer; }, get G() { return G; }, get S() { return S; }, get HEMI() { return HEMI; }, get KEYL() { return KEYL; },
     glow: glow, label: label, labelTex: labelTex, emat: emat, basic: basic, mesh: mesh, buildAlien: buildAlien, specimen: specimen, beep: beep, save: save, $: $, esc: esc, tx: tx, I18N: I18N, ACH: ACH, award: award,
-    show: show, teardown: teardown, menuScene: menuScene, caption: caption, audio: function () { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { return null; } return AC; }, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup };
+    show: show, teardown: teardown, menuScene: menuScene, caption: caption, audio: function () { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { return null; } return AC; }, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup, teach: TEACH };
   if (BQ.onCore) BQ.onCore(); (BQ.onCoreList || []).forEach(function (f) { f(); });
   BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, start: startLevel, mini: function () { return M; }, cam: function () { return cam; } };
 }
