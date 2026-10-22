@@ -74,6 +74,7 @@ Object.assign(C.I18N.en, {
   'bd.vl.decomp.ok': 'Leftovers again? Delicious. I turn them back into nutrients for the plants.', 'bd.vl.decomp.busy': 'So. Much. Waste. Send help. (More worms, please.)',
   'bd.vl.fish.ok': 'Clear water, plenty of pondweed. Blub!', 'bd.vl.fish.bad': 'The water is green and I can barely breathe. Blub...',
   'bd.vl.grass.ok': 'Sun, water, carbon dioxide... I am turning them into sugar. Try it sometime.', 'bd.vl.grass.bad': 'I am thirsty, or too hot, or being eaten too fast. Maybe all three.',
+  'bd.fly1': 'Leaving Earth with everything I packed...', 'bd.fly2': 'Across the stars, toward home.', 'bd.fly3': 'Landing beside the dome.', 'bd.skip': 'Skip ⏭',
   'bd.storeLeft': 'crates left in storage', 'bd.helpCam': 'Drag to look around the dome. Wheel or + / − to zoom.'
 });
 Object.assign(C.I18N.es, {
@@ -139,6 +140,7 @@ Object.assign(C.I18N.es, {
   'bd.vl.decomp.ok': '¿Sobras otra vez? Deliciosas. Las convierto en nutrientes para las plantas.', 'bd.vl.decomp.busy': 'Tantos. Desechos. Ayuda. (Más lombrices, por favor.)',
   'bd.vl.fish.ok': 'Agua clara y muchas plantas acuáticas. ¡Blub!', 'bd.vl.fish.bad': 'El agua está verde y casi no puedo respirar. Blub...',
   'bd.vl.grass.ok': 'Sol, agua, dióxido de carbono... los convierto en azúcar. Pruébalo algún día.', 'bd.vl.grass.bad': 'Tengo sed, o hace mucho calor, o me comen demasiado rápido. Quizá las tres cosas.',
+  'bd.fly1': 'Dejo la Tierra con todo lo que empaqué...', 'bd.fly2': 'Cruzando las estrellas, rumbo a casa.', 'bd.fly3': 'Aterrizando junto al domo.', 'bd.skip': 'Saltar ⏭',
   'bd.storeLeft': 'cajas en el almacén', 'bd.helpCam': 'Arrastra para mirar el domo. Rueda o + / − para acercar.'
 });
 C.I18N.en['a.biodome'] = 'Biodome Builder'; C.I18N.en['a.biodome.d'] = 'Keep a biodome in balance for all 8 seasons.'; C.I18N.es['a.biodome'] = 'Constructor de biodomos'; C.I18N.es['a.biodome.d'] = 'Mantén un biodomo en equilibrio durante las 8 temporadas.';
@@ -198,7 +200,7 @@ function ensureUI() {
 }
 function esc(s) { return C.esc(s); }
 function top() {
-  const ph = B.phase === 'pack' ? 0 : B.phase === 'build' ? 1 : 2;
+  const ph = B.phase === 'pack' ? 0 : B.phase === 'build' || B.phase === 'fly' ? 1 : 2;
   $('bdTop').innerHTML = '<h2>🛸 ' + esc(tx('bd.title')) + '</h2>' + ['pack', 'build', 'season'].map(function (p, i) { return '<span class="ph' + (i === ph ? ' on' : '') + '">' + esc(tx('bd.ph.' + p)) + '</span>'; }).join('') +
     '<span class="sp"></span><span class="czLang btns"><button type="button" data-lang="en" aria-pressed="' + ((C.S.set.lang || 'en') === 'en') + '">English</button><button type="button" data-lang="es" aria-pressed="' + (C.S.set.lang === 'es') + '">Español</button></span>' +
     '<button type="button" data-a="menu">' + esc(tx('bd.back')) + '</button>';
@@ -266,7 +268,9 @@ function card() {
   }
   K.innerHTML = h;
 }
-function render() { top(); left(); right(); card(); }
+function render() {
+  if (B.phase === 'fly') { top(); $('bdLeft').hidden = true; $('bdRight').hidden = true; const K = $('bdCard'); K.hidden = false; K.innerHTML = '<p id="bdFlyCap" class="bdVoice"></p><div class="bdBtns"><button type="button" data-a="skipfly">' + esc(tx('bd.skip')) + '</button></div>'; return; }
+  $('bdLeft').hidden = false; top(); left(); right(); card(); }
 function storeLeft() { return ITEMS.reduce(function (n, it) { return n + (B.store[it.id] || 0); }, 0); }
 function canStart() { const p = B.placed; return (p.water || 0) >= 1 && (p.soil || 0) >= 1 && ((p.grass || 0) + (p.flowers || 0) + (p.trees || 0)) >= 1; }
 function story() {
@@ -293,7 +297,8 @@ function click(d) {
   if (a === 'inc' || a === 'dec') { const it = ITEMS.find(function (q) { return q.id === d.id; }), n = B.cargo[it.id] || 0;
     if (a === 'inc' && n < it.max && used() + it.size <= CAP) B.cargo[it.id] = n + 1; else if (a === 'dec' && n > 0) B.cargo[it.id] = n - 1; else C.beep(200, 0.08, 'sine');
     left(); return; }
-  if (a === 'launch') { B.store = Object.assign({}, B.cargo); B.phase = 'build'; B.fly = 0; sfx('whoosh'); render(); return; }
+  if (a === 'launch') { B.store = Object.assign({}, B.cargo); startFlight(); return; }
+  if (a === 'skipfly') { B.flyT = 99; return; }
   if (a === 'place') { const why = placeCheck(d.id); if (why) { B.warn = tx(why); C.beep(220, 0.12, 'triangle'); left(); return; } B.warn = null;
     if ((B.store[d.id] || 0) > 0) { B.store[d.id]--; B.placed[d.id] = (B.placed[d.id] || 0) + 1; DS.place(B.sim, d.id); sfx('pop'); B.dirty = true; } render(); return; }
   if (a === 'start') { if (!canStart()) return; B.phase = 'season'; B.hist = []; DS.beginSeason(B.sim); B.voice = null; render(); return; }
@@ -359,7 +364,7 @@ function build() {
   const me = C.buildAlien(C.S.alien); me.position.set(2.5, 0, R0 + 4.5); me.rotation.y = Math.PI; me.scale.setScalar(0.9); g.add(me); B.me = me;
   { const sh = new T.Group(), body = new T.Mesh(C.G.sph, new T.MeshPhongMaterial({ color: '#c8d6e0', emissive: '#22303a', shininess: 90 })); body.scale.set(4.8, 1, 4.8); sh.add(body);
     const dome2 = new T.Mesh(C.G.sph, new T.MeshPhongMaterial({ color: '#8ff0ff', emissive: '#1a5a6a', transparent: true, opacity: 0.75 })); dome2.scale.set(2, 1.7, 2); dome2.position.y = 0.7; sh.add(dome2);
-    sh.position.set(-16, 1.2, R0 + 10); g.add(sh); B.ship = sh; }
+    sh.position.set(17, 1.2, R0 + 7); g.add(sh); B.ship = sh; }
   /* life inside (instanced so it stays fast); amounts follow the model */
   const inst = function (geo, mat, n) { const m = new T.InstancedMesh(geo, mat, n); m.count = 0; g.add(m); return m; };
   B.grassIM = inst(new T.ConeGeometry(0.12, 0.6, 4), new T.MeshLambertMaterial({ color: '#6ab04a' }), 420);
@@ -415,6 +420,36 @@ function visuals(dt) {
     if (d0.hang > 0) { d0.hang -= dt; d0.y = y; } else { d0.v += dt * 9; d0.y -= d0.v * dt; x *= 0.92; z *= 0.92; y = d0.y; }
     dp.setXYZ(i, x, Math.max(0.05, y), z); }); dp.needsUpdate = true;
 }
+/* ---------- the trip home: lift off from Earth, cross the stars, land by the dome ---------- */
+function buildFlight() {
+  const f = new T.Group(); B.flyG = f; f.visible = false;
+  const n = 1400, pos = new Float32Array(n * 3); for (let i = 0; i < n; i++) { pos[i * 3] = (Math.random() - 0.5) * 400; pos[i * 3 + 1] = (Math.random() - 0.5) * 300; pos[i * 3 + 2] = -Math.random() * 1400 + 100; }
+  const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(pos, 3)); B.flyStars = new T.Points(sg, new T.PointsMaterial({ color: '#ffffff', size: 1.6, sizeAttenuation: false, fog: false })); f.add(B.flyStars);
+  const real = window.FG_EARTH, tex = real ? new T.TextureLoader().load(real.day) : null;
+  const earth = new T.Mesh(new T.SphereGeometry(110, 64, 40), new T.MeshPhongMaterial(tex ? { map: tex, shininess: 30, specular: '#141c26' } : { color: '#3a7ac8' })); earth.position.set(10, -150, -40); earth.rotation.z = 0.41; f.add(earth); B.flyEarth = earth; B.flyTex = tex;
+  const home = new T.Mesh(new T.SphereGeometry(70, 40, 28), new T.MeshLambertMaterial({ color: '#c8704a', emissive: '#3a1408' })); home.position.set(30, -20, -1150); f.add(home); B.flyHome = home;
+  const ship = B.ship.clone(true); ship.scale.setScalar(0.45); f.add(ship); B.flyShip = ship;
+  const trail = C.glow('#9fe8ff', 6, 0.7, false); ship.add(trail); trail.position.set(0, 0, 3);
+  C.scene.add(f);
+}
+function startFlight() {
+  if (!B.flyG) buildFlight(); B.phase = 'fly'; B.flyT = 0; B.flyG.visible = true; B.g.visible = false; B.prevBg = C.scene.background; B.prevFog = C.scene.fog;
+  C.scene.background = new T.Color('#03040c'); C.scene.fog = null; sfx('whoosh'); render();
+}
+function endFlight() {
+  B.flyG.visible = false; B.g.visible = true; C.scene.background = B.prevBg; C.scene.fog = B.prevFog; B.phase = 'build'; B.landT = 2.2; B.view.yaw = 0.15; B.view.pitch = 0.3; B.view.dist = 46; render();
+}
+function flightStep(dt) {
+  B.flyT += dt; const t = B.flyT, cam = C.cam, sh = B.flyShip, E = B.flyEarth, cap = $('bdFlyCap');
+  const seg = function (a, b) { const u = Math.max(0, Math.min(1, (t - a) / (b - a))); return u * u * (3 - 2 * u); };
+  E.rotation.y = t * 0.05; sh.rotation.y += dt * 2;
+  /* 0-2.2 s: lift off; 2.2-5.4 s: cruise toward the red planet; then land */
+  const z = -1000 * seg(2.2, 5.4), y = -8 + 22 * seg(0, 2.2) - 10 * seg(4.6, 5.4);
+  sh.position.set(Math.sin(t * 1.3) * 1.2, y, z); cam.position.set(sh.position.x * 0.5 + 6 - 4 * seg(2, 3), y + 4 + 8 * (1 - seg(1.0, 2.4)) - 2 * seg(2, 3), z + 16 + 6 * seg(2.2, 3.2)); cam.lookAt(sh.position.x, sh.position.y + 1 - 6 * seg(4.4, 5.4) - 14 * (1 - seg(1.0, 2.4)), sh.position.z - 20 * seg(2.2, 3)); /* first look down at Earth falling away below */
+  B.flyStars.material.size = 1.6 + 4 * Math.sin(Math.PI * seg(2.2, 5.4));
+  if (cap) { const k = t < 2.2 ? 'bd.fly1' : t < 4.6 ? 'bd.fly2' : 'bd.fly3'; if (cap.dataset.k !== k) { cap.dataset.k = k; cap.textContent = tx(k); } }
+  if (t >= 5.6) endFlight();
+}
 /* ---------- run ---------- */
 function start() {
   ensureUI(); C.teardown(); C.show(null); C.setMode('dome'); C.Music.stop();
@@ -425,15 +460,17 @@ function start() {
 }
 function exit() {
   if (!B) return; const scene = C.scene, l = B.light;
-  scene.remove(B.g); C.disposeGroup(B.g); scene.background = B.bg; scene.fog = B.fog; C.HEMI.intensity = l[0]; C.HEMI.color.copy(l[1]); C.HEMI.groundColor.copy(l[2]); C.KEYL.intensity = l[3]; C.KEYL.color.copy(l[4]); C.KEYL.position.copy(l[5]);
+  scene.remove(B.g); C.disposeGroup(B.g); if (B.flyG) { scene.remove(B.flyG); C.disposeGroup(B.flyG); if (B.flyTex) B.flyTex.dispose(); } scene.background = B.bg; scene.fog = B.fog; C.HEMI.intensity = l[0]; C.HEMI.color.copy(l[1]); C.HEMI.groundColor.copy(l[2]); C.KEYL.intensity = l[3]; C.KEYL.color.copy(l[4]); C.KEYL.position.copy(l[5]);
   C.cam.fov = 42; C.cam.updateProjectionMatrix(); B = null; $('domeUI').hidden = true; if (BQ.amb) BQ.amb.stop(1); C.save(); C.setMode('menu'); C.menuScene();
 }
 function step(dt) {
   if (!B) return; B.t += dt; const cam = C.cam, v = B.view;
+  if (B.phase === 'fly') { flightStep(dt); return; }
   if (v.auto) v.yaw += dt * 0.05;
   if (B.timeT > 0) { B.timeT -= dt; v.yaw += dt * 0.9; } /* time passing: the view sweeps around */
   const tgt = new T.Vector3(0, 2, 0), cp = Math.cos(v.pitch); cam.position.set(Math.sin(v.yaw) * cp * v.dist, Math.sin(v.pitch) * v.dist + 1, Math.cos(v.yaw) * cp * v.dist); cam.lookAt(tgt);
   if (Math.abs(cam.fov - 42) > 0.01) { cam.fov = 42; cam.updateProjectionMatrix(); }
+  if (B.landT > 0) { B.landT -= dt; const u = Math.max(0, B.landT / 2.2); B.ship.position.y = 1.2 + 26 * u * u; B.ship.rotation.y += dt * 3 * u; } else if (B.ship) B.ship.position.y = 1.2;
   if (B.me) { B.me.rotation.y = Math.PI + Math.sin(B.t * 0.5) * 0.3; const legs = B.me.userData.legs; if (legs) legs.forEach(function (h) { h.rotation.x = 0; }); }
   visuals(dt);
 }

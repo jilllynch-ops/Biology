@@ -204,6 +204,9 @@ function Wild(opts) {
         }
       } else if (b.state === 'fly') {
         b.ft += dt / b.dur; const u = Math.min(1, b.ft); bezier(b.path[0], b.path[1], b.path[2], b.path[3], u, b.pos); bezier(b.path[0], b.path[1], b.path[2], b.path[3], Math.min(1, u + 0.02), tmp);
+        /* stay above the ground and the grass on the way: full clearance in mid-flight, easing down only for take-off and landing */
+        const clr = function (v, uu) { const c = Math.max(0, Math.min(1, uu / 0.14, (1 - uu) / 0.14)) * 1.4, gy = W.H(v.x, v.z) + c; if (v.y < gy) v.y = gy; };
+        clr(b.pos, u); clr(tmp, Math.min(1, u + 0.02));
         b.g.position.copy(b.pos); const dx = tmp.x - b.pos.x, dz = tmp.z - b.pos.z, dy = tmp.y - b.pos.y, hd = Math.atan2(dx, dz);
         let dh = hd - (b.lastH == null ? hd : b.lastH); while (dh > Math.PI) dh -= 6.283; while (dh < -Math.PI) dh += 6.283; b.lastH = hd;
         b.bank = lerp(b.bank || 0, clamp(-dh / Math.max(dt, 0.001) * 0.25, -0.9, 0.9), Math.min(1, dt * 4));
@@ -216,7 +219,7 @@ function Wild(opts) {
       }
     });
     W.soar.forEach(function (b) {
-      const c = b.c; b.a += dt * (c.speed || 0.12) * (14 / b.r); const x = c.cx + Math.cos(b.a) * b.r, z = c.cz + Math.sin(b.a) * b.r, y = b.h + Math.sin(W.t * 0.3 + b.var * 5) * 2;
+      const c = b.c; b.a += dt * (c.speed || 0.12) * (14 / b.r); const x = c.cx + Math.cos(b.a) * b.r, z = c.cz + Math.sin(b.a) * b.r, y = Math.max(b.h + Math.sin(W.t * 0.3 + b.var * 5) * 2, W.H(x, z) + 6);
       b.g.position.set(x, y, z); b.g.rotation.order = 'YXZ'; b.g.rotation.y = Math.atan2(-Math.sin(b.a), Math.cos(b.a)) + (c.speed < 0 ? Math.PI : 0); b.g.rotation.z = -0.35; b.g.rotation.x = 0;
       b.flapT -= dt; if (b.flapT < -6 - b.var * 6) b.flapT = 1 + Math.random() * 1.2;
       poseBird(b, dt, b.flapT > 0 ? 'flap' : 'glide', 0.7, 0);

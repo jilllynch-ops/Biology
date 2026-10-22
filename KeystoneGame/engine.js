@@ -5,9 +5,10 @@
 const T = window.THREE;
 const BQ = window.FieldGuide = {
   worlds: {}, data: {},
+  /* the course order (updated October 2026): Units 3 and 5 of the old sequence are now one ecosystems unit */
   UNITS: ['Structure and Function', 'Matter and Energy in Organisms and Ecosystems',
-    'Interdependent Relationships in Ecosystems', 'Inheritance and Variation of Traits',
-    'Disruptions to Ecosystems', 'Environmental Pressure Drives Evolution']
+    'Ecosystems: Interdependence and Disruptions', 'Inheritance and Variation of Traits',
+    'Environmental Pressure Drives Evolution']
 };
 const QMAP = {};
 BQ.registerWorld = function (w) { BQ.worlds[w.id] = w; };
@@ -288,7 +289,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 32 · October 18, 2026';
+const VERSION = 'Version 34 · October 21, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -2685,18 +2686,17 @@ function nextUp() {
   const list = allLevels(); let i = list.findIndex(function (e) { return !(S.levels[e.lv.id] && S.levels[e.lv.id].stars); });
   if (i < 0) i = list.length - 1; return list[i];
 }
-/* MISSION MAP: like a Mario world map. Six lands in course order, a dotted trail through every level,
+/* MISSION MAP: like a Mario world map. Five lands in course order, a dotted trail through every level,
    gold flags on conquered levels, a lock on levels not open yet, and the alien standing on the next one. */
 const MAPLANDS = [
   { cx: 175, cy: 165, rx: 150, ry: 112, fill: '#1f5f6a', edge: '#7fe0d8', icon: '🧫' },
   { cx: 500, cy: 140, rx: 150, ry: 105, fill: '#4a6a28', edge: '#c8ff7a', icon: '🌿' },
   { cx: 825, cy: 170, rx: 150, ry: 112, fill: '#7a6a2a', edge: '#ffd98a', icon: '🦁' },
-  { cx: 825, cy: 425, rx: 150, ry: 108, fill: '#4a3a7a', edge: '#c59cff', icon: '🧬' },
-  { cx: 500, cy: 450, rx: 150, ry: 100, fill: '#7a3a2a', edge: '#ff9f6e', icon: '🌋' },
-  { cx: 175, cy: 420, rx: 150, ry: 108, fill: '#6a5a4a', edge: '#e8d0b0', icon: '🦴' }];
+  { cx: 690, cy: 430, rx: 165, ry: 108, fill: '#4a3a7a', edge: '#c59cff', icon: '🧬' },
+  { cx: 310, cy: 430, rx: 165, ry: 108, fill: '#6a5a4a', edge: '#e8d0b0', icon: '🦴' }];
 function buildLevels() {
   const list = allLevels(), next = nextUp(), nodes = [];
-  for (let w = 1; w <= 6; w++) {
+  for (let w = 1; w <= MAPLANDS.length; w++) {
     const ld = MAPLANDS[w - 1], lvls = BQ.worlds[w] ? BQ.worlds[w].levels : [0, 1, 2, 3, 4], n = lvls.length, dir = w <= 3 ? 1 : -1;
     lvls.forEach(function (lv, k) {
       const u = n > 1 ? k / (n - 1) : 0.5, x = ld.cx + dir * (u - 0.5) * ld.rx * 1.45, y = ld.cy + Math.sin(u * Math.PI * 2 + w) * ld.ry * 0.22 + 32;
@@ -2750,7 +2750,7 @@ function mapInfo(i) {
 }
 function buildProgress() {
   let html = '<h3>Mastery by unit</h3><p class="dim">Share of questions answered right on the first try.</p>';
-  for (let w = 1; w <= 6; w++) {
+  for (let w = 1; w <= BQ.UNITS.length; w++) {
     let r = 0, t = 0; Object.keys(S.codes).forEach(function (k) { if (S.codes[k].world === w) { r += S.codes[k].right; t += S.codes[k].tries; } });
     const pct = t ? Math.round(r / t * 100) : 0;
     html += '<div class="bar"><span>' + w + '. ' + BQ.UNITS[w - 1] + '</span><div class="track"><div class="fill" style="width:' + pct + '%"></div></div><span class="num">' + (BQ.worlds[w] ? (t ? pct + '%' : 'Not started') : 'Coming soon') + '</span></div>';
@@ -2785,7 +2785,7 @@ function thumb(look, col) {
 let JTAB = 1;
 function openJournal(from) { backTo = from || 'menu'; show('journal'); journalTab(JTAB); }
 function journalTab(tab) {
-  JTAB = tab; const tabs = []; for (let w = 1; w <= 6; w++) if (BQ.worlds[w]) tabs.push(w);
+  JTAB = tab; const tabs = []; for (let w = 1; w <= BQ.UNITS.length; w++) if (BQ.worlds[w]) tabs.push(w);
   $('jTabs').innerHTML = tabs.map(function (w) { return '<button type="button" data-jt="' + w + '" aria-pressed="' + (tab === w) + '">' + esc(tx('j.world', { n: w })) + '</button>'; }).join('') +
     (BQ.cozy ? '<button type="button" data-jt="cozy" aria-pressed="' + (tab === 'cozy') + '">🌿 ' + esc(tx('cz.reserve')) + '</button>' : '') +
     '<button type="button" data-jt="ach" aria-pressed="' + (tab === 'ach') + '">🏅 ' + esc(tx('j.achTab')) + '</button>';
@@ -2905,7 +2905,7 @@ function wire() {
   ['pointerdown', 'pointermove', 'pointerup', 'wheel'].forEach(function (ev) { $('stage').addEventListener(ev, function (e) { if (mode === 'cozy' && BQ.cozy) BQ.cozy.pointer(e, ev); else if (mode === 'dome' && BQ.dome) BQ.dome.pointer(e, ev); }, ev === 'wheel' ? { passive: false } : undefined); });
   $('btnLevels').onclick = function () { openMap(); };
   $('btnAbout').onclick = function () { show('about'); $('aboutVer').textContent = VERSION; };
-  $('menuVer').textContent = VERSION + ' · by J.E. Lynch';
+  $('menuVer').textContent = VERSION + ' · by J.E. Lynch' + (S.set.admin ? ' · ADMIN' : '');
   $('btnProgress').onclick = function () { buildProgress(); show('progress'); };
   $('btnSettings').onclick = function () { backTo = 'menu'; show('settings'); };
   $('levelList').addEventListener('click', function (e) { const b = e.target.closest('.lvl'); if (!b) return; if (b.dataset.lock) { mapInfo(+b.dataset.i); return; } const en = allLevels()[+b.dataset.i]; startLevel(en.w, en.lv); });
@@ -2955,8 +2955,25 @@ function wire() {
   $('stTabs').addEventListener('click', function (e) { const b = e.target.closest('[data-tab]'); if (!b) return; if (b.dataset.tab === 'journal') { openJournal('done'); return; } stationTab(b.dataset.tab); });
   $('stBody').addEventListener('click', stationClick);
 }
+/* HIDDEN ADMIN MODE (for the game's author): type the password anywhere on the main menu, or tap the version line 5 times and enter it.
+   Only a scrambled number of the password is stored here, not the password itself. Admin mode unlocks every level and Biodome supply,
+   lets you fly right away in the reserve, removes the map fog, and lets you tap the map to jump anywhere. Enter the password again to turn it off. */
+const ADMIN_HASH = 4052282519, ADMIN_LEN = 13;
+function pwHash(t) { let h = 5381; for (const ch of String(t).toLowerCase()) h = ((h * 33) ^ ch.charCodeAt(0)) >>> 0; return h; }
+function adminNote(text) { let n = $('adminNote'); if (!n) { n = document.createElement('div'); n.id = 'adminNote'; n.setAttribute('role', 'status'); n.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99;background:#0b1d2a;color:#ffd166;border:2px solid #ffd166;border-radius:10px;padding:8px 14px;font-weight:700;max-width:90vw;text-align:center'; document.body.appendChild(n); }
+  n.textContent = text; n.hidden = false; clearTimeout(adminNote.t); adminNote.t = setTimeout(function () { n.hidden = true; }, 5000); }
+function adminTry(t) { if (pwHash(t) !== ADMIN_HASH) return false; const on = !S.set.admin; S.set.admin = on ? 1 : 0; S.set.unlock = on; save();
+  $('teacherRow').hidden = !(on || TEACH); if ($('setUnlock')) $('setUnlock').checked = on; $('menuVer').textContent = VERSION + ' · by J.E. Lynch' + (on ? ' · ADMIN' : '');
+  adminNote(on ? '🔓 Admin mode ON: every level and supply is unlocked. In the reserve you can fly right away, and tap the map to jump anywhere.' : '🔒 Admin mode OFF'); return true; }
+function adminSetup() { let buf = '', taps = [];
+  document.addEventListener('keydown', function (e) { if ($('menu').hidden || !e.key || e.key.length !== 1) return; const tg = e.target; if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA')) return;
+    buf = (buf + e.key).slice(-ADMIN_LEN); if (buf.length === ADMIN_LEN && adminTry(buf)) buf = ''; });
+  $('menuVer').addEventListener('click', function () { const now = Date.now(); taps = taps.filter(function (x) { return now - x < 3000; }); taps.push(now);
+    if (taps.length >= 5) { taps = []; const t = window.prompt('Password'); if (t && !adminTry(t.trim())) adminNote('That is not the password.'); } });
+  if (S.set.admin) $('menuVer').textContent = VERSION + ' · by J.E. Lynch · ADMIN'; }
 function boot() {
-  if (TEACH) $('teacherRow').hidden = false;
+  if (TEACH || S.set.admin) $('teacherRow').hidden = false;
+  adminSetup();
   try {
     renderer = new T.WebGLRenderer({ canvas: $('stage'), antialias: !S.set.low });
   } catch (e) { $('err').hidden = false; return; }

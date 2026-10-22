@@ -16,6 +16,8 @@ Object.assign(C.I18N.en, {
   'cz.controls': 'Move: WASD or arrows · Run: Shift · Jump: Space (hold in the air to glide) · Swim down: C · Interact: E · Listen: L · Map: M · Hint: H · Look around: drag the mouse, Q / R, T / G · Zoom: mouse wheel or − / + · Look closer: V · Journal: J · Menu: Esc · Show or hide this list: K',
   'cz.swimTip': 'You are swimming! Hold C to dive under the water. Hold Space to rise. Press Space at the surface near the shore to climb out.',
   'cz.diveTip': 'Underwater! Look around with the mouse. You float back up on your own whenever you let go of C.',
+  'cz.edgeTip': 'The hills beyond the reserve are steep and wild. This is as far as the trail goes. Turn around and keep exploring!',
+  'cz.edgeTip2': 'This is the edge of the lookout. Enjoy the view from here, but it is a long way down!',
   'cz.flyTip': 'Flying! Space: go up · C: go down · Shift: faster. Watch your energy bar. When it runs out you glide down gently.',
   'cz.flyNew': 'Warm air rises up this hill. Your alien suit can ride it! NEW ABILITY: press F to fly for a short time. Energy refills while you walk on the ground.',
   'cz.flyLow': 'Not enough flight energy yet. It refills while you are on the ground.',
@@ -113,6 +115,8 @@ Object.assign(C.I18N.es, {
   'cz.controls': 'Moverse: WASD o flechas · Correr: Shift · Saltar: Espacio (mantenlo en el aire para planear) · Bucear: C · Interactuar: E · Escuchar: L · Mapa: M · Pista: H · Mirar alrededor: arrastra el ratón, Q / R, T / G · Zoom: rueda del ratón o − / + · Mirar de cerca: V · Diario: J · Menú: Esc · Mostrar u ocultar esta lista: K',
   'cz.swimTip': '¡Estás nadando! Mantén C para bucear bajo el agua. Mantén Espacio para subir. Pulsa Espacio en la superficie cerca de la orilla para salir.',
   'cz.diveTip': '¡Bajo el agua! Mira alrededor con el ratón. Vuelves a flotar solo cuando sueltas C.',
+  'cz.edgeTip': 'Las colinas más allá de la reserva son empinadas y salvajes. Hasta aquí llega el sendero. ¡Da la vuelta y sigue explorando!',
+  'cz.edgeTip2': 'Este es el borde del mirador. Disfruta la vista desde aquí, ¡pero hay una gran caída!',
   'cz.flyTip': '¡Volando! Espacio: subir · C: bajar · Shift: más rápido. Mira tu barra de energía. Cuando se acaba, bajas planeando con suavidad.',
   'cz.flyNew': 'El aire caliente sube por esta colina. ¡Tu traje alienígena puede aprovecharlo! NUEVA HABILIDAD: pulsa F para volar un rato. La energía se recarga mientras caminas por el suelo.',
   'cz.flyLow': 'Todavía no hay suficiente energía para volar. Se recarga mientras estás en el suelo.',
@@ -556,6 +560,8 @@ function H(x, z) {
   const sd = streamDist(x, z); if (sd < 4.5) h -= 1.1 * (1 - (sd / 4.5) * (sd / 4.5));
   if (Math.abs(x) > 60 || Math.abs(z) > 60) { const sd2 = farRiverDist(x, z); if (sd2 < 10) h -= 1.2 * (1 - sd2 / 10); }
   const dh = Math.hypot(x - HOLLOW.x, z - HOLLOW.z); if (dh < 7) h = h * 0.3 + 0.2;
+  /* the pond's bank: make sure the ground climbs out of the water right where the water surface ends (no dry hollows below the water line) */
+  if (WLK !== null) { const dp = Math.hypot(x - POND.x, z - POND.z); if (dp > 12.5 && dp < 24) { const want = WLK + 0.14 + (dp - 15.2) * 0.09, wi = Math.min(1, (dp - 12.5) / 2.7), wo = Math.min(1, (24 - dp) / 4), wgt = Math.min(wi, wo); if (h < want) h += (want - h) * wgt * wgt * (3 - 2 * wgt); } }
   h += 12 * Math.exp(-((x + 28) * (x + 28)) / 140 - ((z + 70) * (z + 70)) / 34); /* the cliff with the waterfall */
   const d = Math.hypot(x, z); if (d > EDGE - 1) { const rise = d - EDGE, a = Math.atan2(z, x), ew = edgeW(x, z);
     const hills = rise > 0 ? 20 * (1 - Math.exp(-rise / 20)) * (0.72 + 0.28 * Math.sin(a * 5 + 1.3) * Math.cos(a * 2.2)) + 1.5 * Math.sin(a * 13) * Math.min(1, rise / 15) : 0;
@@ -569,10 +575,16 @@ function H(x, z) {
       h = (h + hills) * (1 - ew.w) + cliffH * ew.w; } }
   return h;
 }
-const WL0 = H(POND.x, POND.z) + 6;
+let WLK = null; const WL0 = H(POND.x, POND.z) + 6; WLK = WL0;
+/* THE DRAWN GROUND: the ground is drawn as a grid of flat triangles, so between grid points it is a little higher or lower than H().
+   Anything that stands, walks or swims uses this height, so it matches what the player actually sees. */
+let GRID_N = 140;
+function GH(x, z) { const inn = Math.abs(x) < 159.9 && Math.abs(z) < 159.9, cell = inn ? 320 / GRID_N : 10, org = inn ? 160 : 450, fx = (x + org) / cell, fz = (z + org) / cell, ix = Math.floor(fx), iz = Math.floor(fz), u = fx - ix, v = fz - iz;
+  const h = function (a, b) { return H(-org + (ix + a) * cell, -org + (iz + b) * cell) - (inn ? 0 : 0.15); };
+  return u + v <= 1 ? h(0, 0) + u * (h(1, 0) - h(0, 0)) + v * (h(0, 1) - h(0, 0)) : h(1, 1) + (1 - u) * (h(0, 1) - h(1, 1)) + (1 - v) * (h(1, 0) - h(1, 1)); }
 /* bodies of water you can swim in: the pond (deep enough to dive) */
-const WATERS = [{ id: 'pond', x: POND.x, z: POND.z, r: 15.6, y: WL0 }];
-function waterAt(x, z) { for (let i = 0; i < WATERS.length; i++) { const w = WATERS[i]; if (Math.hypot(x - w.x, z - w.z) < w.r && H(x, z) < w.y - 0.05) return w; } return null; }
+const WATERS = [{ id: 'pond', x: POND.x, z: POND.z, r: 15.8, y: WL0 }];
+function waterAt(x, z) { for (let i = 0; i < WATERS.length; i++) { const w = WATERS[i]; if (Math.hypot(x - w.x, z - w.z) < w.r && GH(x, z) < w.y - 0.05) return w; } return null; }
 
 const ROCKBANDS = ['#cdbfa6', '#a99a82', '#d9cfba', '#b8a88e', '#9a8a74'], CANYONBANDS = ['#c8805a', '#d9a070', '#b86a4a', '#e0b888', '#a85a40'], FIELDS = ['#9ab84a', '#c8b858', '#7aa840', '#d6c070', '#6a9a3a', '#b0c860', '#8a6a40'];
 function edgeColor(x, z, y, cc) {
@@ -642,6 +654,7 @@ function ensureUI() {
 #czTalk { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); width: min(640px, calc(100% - 24px)); background: rgba(11, 29, 42, .96); border: 2px solid #ffd166; border-radius: 14px; padding: 10px 14px; }
 #czTalk b { color: #ffd166; } #czTalk p { margin: 6px 0; line-height: 1.4; } #czTalk .ch { display: flex; flex-direction: column; gap: 6px; } #czTalk .ch button { text-align: left; } #czTalk .fb { color: #ffb09c; }
 #czTalk small { opacity: .75; }
+#czGrade { position: absolute; inset: 0; pointer-events: none !important; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(30,18,6,.28) 100%); mix-blend-mode: multiply; }
 #czHelp { position: absolute; bottom: 8px; right: 8px; max-width: 46%; font-size: .78em; background: rgba(11, 29, 42, .7); border-radius: 10px; padding: 4px 8px; opacity: .85; }
 #czPause { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(11, 29, 42, .7); }
 #czPause .card { max-width: 380px; }
@@ -673,7 +686,7 @@ function ensureUI() {
 @media (max-width: 700px) { #czHelp { display: none; } #czObj { max-width: 100%; } }`;
   document.head.appendChild(css);
   const ui = document.createElement('div'); ui.id = 'cozyUI'; ui.hidden = true;
-  ui.innerHTML = '<div id="czTop"><div id="czObj" aria-live="polite"></div><div id="czBtns">' +
+  ui.innerHTML = '<div id="czGrade" aria-hidden="true"></div><div id="czTop"><div id="czObj" aria-live="polite"></div><div id="czBtns">' +
     '<span id="czClock" aria-live="off"></span><button type="button" id="czMapB"></button><button type="button" id="czHintB"></button><button type="button" id="czJ"></button><button type="button" id="czKeys" aria-pressed="false"></button><button type="button" id="czM"></button></div></div><div id="czHint" role="status" aria-live="polite" hidden></div><div id="czRest" hidden></div><div id="czSurvey" hidden></div>' +
     '<div id="czMapP" hidden><div class="card mapcard"><div class="mh"><h2 id="czMapT"></h2><span class="mz"><button type="button" data-mz="in">+</button><button type="button" data-mz="out">−</button><button type="button" data-mz="me" id="czMapMe"></button><button type="button" id="czMapClose"></button></span></div>' +
     '<canvas id="czMapC" aria-label="Map"></canvas><div class="mf"><div id="czMapInfo" aria-live="polite"></div><div id="czMapLeg"></div></div><p class="dim" id="czMapH"></p></div></div><div id="czPrompt" hidden></div><div id="czCard" role="status" aria-live="polite" hidden></div>' +
@@ -753,13 +766,15 @@ function build() {
   const g = new T.Group(), G = C.G, scene = C.scene;
   /* low-detail shapes for things drawn hundreds of times (keeps Chromebooks smooth) */
   const LP = { sph: new T.SphereGeometry(1, 7, 5), cone: new T.ConeGeometry(1, 2, 5), cone8: new T.ConeGeometry(1, 2, 8), cyl: new T.CylinderGeometry(1, 1, 1, 5), sph10: new T.SphereGeometry(1, 10, 7) };
+  /* graphics part 2: more detailed shapes, built once and reused (grass tufts, flowers, bushes, ferns, mossy rocks) */
+  const GX = detailGeos();
   W = { g: g, tod: st().tod != null ? st().tod : 9, colliders: [], tops: [], spots: [], npcs: [], anim: [], t: 0, k: {}, yaw: Math.PI * 0.75, pitch: 0.42, dist: 11, distT: 11, vx: 0, vz: 0, flyE: 1, drag: null, talk: null, card: null, cardT: 0, saveT: 0, birdT: 3, pause: false,
     bg: scene.background, fog: scene.fog, light: [C.HEMI.intensity, C.KEYL.intensity, C.KEYL.position.clone()] };
   scene.add(g);
   scene.background = new T.Color('#cfe9f7'); scene.fog = new T.Fog('#d0eaf6', 70, 260);
   C.HEMI.color.set('#fff2d8'); C.HEMI.groundColor.set('#4a5a2a'); C.HEMI.intensity = 0.5; C.KEYL.color.set('#ffeccc'); C.KEYL.position.set(60, 55, 40); C.KEYL.intensity = 0.85;
   /* terrain with colors by place */
-  const N = S0low() ? 110 : 140, geo = new T.PlaneGeometry(320, 320, N, N); geo.rotateX(-Math.PI / 2);
+  const N = S0low() ? 110 : 140, geo = new T.PlaneGeometry(320, 320, N, N); GRID_N = N; geo.rotateX(-Math.PI / 2);
   const pos = geo.attributes.position, cols = new Float32Array(pos.count * 3), cc = new T.Color();
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i), z = pos.getZ(i), y = H(x, z); pos.setY(i, y);
@@ -772,7 +787,8 @@ function build() {
     cc.offsetHSL(0, 0, (Math.sin(x * 1.7 + z * 2.3) * 0.5) * 0.04); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b;
   }
   geo.setAttribute('color', new T.BufferAttribute(cols, 3)); geo.computeVertexNormals();
-  g.add(new T.Mesh(geo, new T.MeshLambertMaterial({ vertexColors: true })));
+  W.groundTex = groundTex(); W.groundTex.repeat.set(48, 48);
+  g.add(new T.Mesh(geo, new T.MeshLambertMaterial({ vertexColors: true, map: W.groundTex })));
   /* far ground beyond the reserve (coarser), with a hole where the detailed ground already is */
   { const FG = new T.PlaneGeometry(900, 900, 90, 90); FG.rotateX(-Math.PI / 2); const fp = FG.attributes.position, fcl = new Float32Array(fp.count * 3);
     for (let i = 0; i < fp.count; i++) { const x = fp.getX(i), z = fp.getZ(i), inside = Math.abs(x) < 159.9 && Math.abs(z) < 159.9, y = H(x, z); fp.setY(i, inside ? -60 : y - 0.15);
@@ -839,12 +855,22 @@ function build() {
     if (edgeW(x, z, 'sea') > 0) continue; mts.push([x, 0, z, sx, sy, sz, i]); mcol.push(i % 2 ? '#8fb0c8' : '#7f9fbf'); caps.push([x, sy * 0.36, z, sx * 0.3, sy * 0.3, sz * 0.3, i]); }
   g.add(inst(LP.cone8, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#304050' }), mts, mcol)); g.add(inst(LP.cone8, C.emat('#f4f8ff', '#8090a0'), caps));
   /* pond water (green and cloudy until the mystery is solved) and the stream */
-  W.water = new T.Mesh(new T.CircleGeometry(15.8, 56), new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10', side: T.DoubleSide }));
+  /* the pond surface: a disc with many rings of points, shaded lighter over the shallows and darker over the deep middle */
+  const wgeo = new T.RingGeometry(0.01, 15.8, 72, 16), wpos = wgeo.attributes.position, wcol = new Float32Array(wpos.count * 3);
+  for (let i = 0; i < wpos.count; i++) { const dep = Math.max(0, WL0 - GH(POND.x + wpos.getX(i), POND.z - wpos.getY(i))), f = 0.72 + 0.62 * Math.exp(-dep / 1.4); wcol[i * 3] = f; wcol[i * 3 + 1] = f * 1.02; wcol[i * 3 + 2] = f * 0.98; }
+  wgeo.setAttribute('color', new T.BufferAttribute(wcol, 3));
+  W.water = new T.Mesh(wgeo, new T.MeshLambertMaterial({ color: '#5a8a3a', transparent: true, opacity: 0.85, emissive: '#102a10', side: T.DoubleSide, vertexColors: true }));
   W.water.rotation.x = -Math.PI / 2; W.water.position.set(POND.x, WL0, POND.z); g.add(W.water);
   { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x0 = cv.getContext('2d'); x0.fillStyle = '#ffffff'; x0.fillRect(0, 0, 256, 256);
     x0.strokeStyle = 'rgba(255,255,255,0.0)'; for (let k = 0; k < 22; k++) { const cx0 = (k * 97) % 256, cy0 = (k * 57 + 31) % 256, r0 = 6 + (k * 13) % 14; x0.strokeStyle = 'rgba(200,235,240,0.9)'; x0.lineWidth = 2; x0.beginPath(); x0.ellipse(cx0, cy0, r0, r0 * 0.55, 0, 0, 6.283); x0.stroke(); x0.globalAlpha = 0.5; x0.beginPath(); x0.ellipse(cx0, cy0, r0 * 1.6, r0 * 0.9, 0, 0.4, 2.6); x0.stroke(); x0.globalAlpha = 1; }
     W.pondTex = new T.CanvasTexture(cv); W.pondTex.wrapS = W.pondTex.wrapT = T.RepeatWrapping; W.pondTex.repeat.set(3, 3); W.water.material.map = W.pondTex; W.water.material.needsUpdate = true;
-    W.rim = new T.Mesh(new T.RingGeometry(15.2, 16.4, 72), new T.MeshBasicMaterial({ color: '#e8f4d8', transparent: true, opacity: 0.35, depthWrite: false })); W.rim.rotation.x = -Math.PI / 2; W.rim.position.set(POND.x, WL0 + 0.04, POND.z); g.add(W.rim); }
+    /* a soft line of ripples that follows the real shoreline (where the ground meets the water), not a perfect circle */
+    const rimGeo = (function () { const n = 120, P = new Float32Array((n + 1) * 2 * 3), U = new Float32Array((n + 1) * 2 * 2), I = [];
+      for (let k = 0; k <= n; k++) { const a = k / n * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a); let rs = 15.8; for (let r = 4; r <= 15.8; r += 0.1) { if (GH(POND.x + ca * r, POND.z - sa * r) >= WL0 - 0.02) { rs = r; break; } }
+        P.set([ca * (rs - 0.9), sa * (rs - 0.9), 0, ca * (rs + 0.15), sa * (rs + 0.15), 0], k * 6); U.set([0, k / n * 24, 1, k / n * 24], k * 4); if (k < n) { const o = k * 2; I.push(o, o + 1, o + 2, o + 1, o + 3, o + 2); } }
+      const gg = new T.BufferGeometry(); gg.setAttribute('position', new T.BufferAttribute(P, 3)); gg.setAttribute('uv', new T.BufferAttribute(U, 2)); gg.setIndex(I); return gg; })();
+    const rcv = document.createElement('canvas'); rcv.width = 64; rcv.height = 8; const rx0 = rcv.getContext('2d'), rgr = rx0.createLinearGradient(0, 0, 64, 0); rgr.addColorStop(0, 'rgba(255,255,255,0)'); rgr.addColorStop(0.7, 'rgba(255,255,255,0.8)'); rgr.addColorStop(0.86, 'rgba(255,255,255,1)'); rgr.addColorStop(1, 'rgba(255,255,255,0)'); rx0.fillStyle = rgr; rx0.fillRect(0, 0, 64, 8);
+    W.rim = new T.Mesh(rimGeo, new T.MeshBasicMaterial({ color: '#e8f4d8', map: new T.CanvasTexture(rcv), transparent: true, opacity: 0.35, depthWrite: false })); W.rim.rotation.x = -Math.PI / 2; W.rim.position.set(POND.x, WL0 + 0.04, POND.z); g.add(W.rim); }
   W.scum = new T.Group(); for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 3 + (i * 7 % 11); const m = new T.Mesh(new T.CircleGeometry(1 + (i % 3) * 0.5, 10), C.basic('#6fae3a', 0.7)); m.rotation.x = -Math.PI / 2; m.position.set(POND.x + Math.cos(a) * r, WL0 + 0.03, POND.z + Math.sin(a) * r); W.scum.add(m); } g.add(W.scum);
   /* creeks: one smooth ribbon of flowing water per creek, laid along its carved bed */
   { const cv0 = document.createElement('canvas'); cv0.width = 64; cv0.height = 256; const x0 = cv0.getContext('2d'), gr0 = x0.createLinearGradient(0, 0, 64, 0);
@@ -918,11 +944,12 @@ function build() {
   { const sh = [], shc = [], fr = []; for (let i = 0; i < 90; i++) { const a = rnd(i + 5000) * 6.283, r2 = 8 + Math.sqrt(rnd(i + 5100)) * 52, x = Math.cos(a) * r2, z = Math.sin(a) * r2; if (Math.hypot(x - POND.x, z - POND.z) < 17 || pathDist(x, z) < 2 || Math.hypot(x - STATION.x, z - STATION.z) < 10 || (Math.abs(x - FARM.x) < 13 && Math.abs(z - FARM.z) < 11) || streamDist(x, z) < 2.5) continue;
       const s2 = 0.6 + rnd(i + 5200) * 0.5; sh.push([x, H(x, z) + 0.45 * s2, z, 1.1 * s2, 0.8 * s2, 1.1 * s2, i]); shc.push(['#3f7a34', '#4a8a3c', '#5a7a2a', '#6a8a3a'][i % 4]); }
     for (let i = 0; i < 120; i++) { const x = 24 + rnd(i + 6000) * 42, z = 16 + rnd(i + 6100) * 44; if (Math.hypot(x, z) > EDGE) continue; fr.push([x, H(x, z) + 0.25, z, 0.5, 0.35, 0.5, i]); }
-    g.add(inst(LP.sph, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#081206' }), sh, shc)); g.add(inst(LP.cone, C.emat('#3a7a3a', '#081808'), fr)); }
+    g.add(inst(GX.bush, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#081206', vertexColors: true }), sh, shc)); g.add(inst(GX.fern, new T.MeshLambertMaterial({ vertexColors: true }), fr.map(function (q) { return [q[0], q[1] - 0.2, q[2], 1.1, 1.3, 1.1, q[6]]; }))); }
   tree(18, -14, 1.3, true); /* the oak by the station */
   /* rocks on the hill and the ring around the hidden hollow (with a gap hidden behind bushes) */
   const rockM = C.emat('#8a8a80', '#1a1a18');
-  const rock = function (x, z, s) { const m = new T.Mesh(G.ico, rockM); m.scale.set(s, s * 0.8, s); m.position.set(x, H(x, z) + s * 0.4, z); m.rotation.y = x; g.add(m); const c = { x: x, z: z, r: s * 0.95, top: H(x, z) + s * 1.05 }; W.colliders.push(c); W.tops.push(c); };
+  const rockVM = new T.MeshLambertMaterial({ vertexColors: true });
+  const rock = function (x, z, s) { const m = new T.Mesh(GX.rocks[Math.abs(Math.round(x * 7 + z * 3)) % GX.rocks.length], rockVM); m.scale.set(s * 1.05, s * 0.85, s); m.position.set(x, H(x, z) + s * 0.3, z); m.rotation.y = x; g.add(m); const c = { x: x, z: z, r: s * 0.95, top: H(x, z) + s * 1.05 }; W.colliders.push(c); W.tops.push(c); };
   for (let i = 0; i < 12; i++) { const a = i * 0.52; rock(HILL.x + Math.cos(a) * (11 + i % 3 * 3), HILL.z + Math.sin(a) * (11 + i % 3 * 3), 0.8 + (i % 3) * 0.4); }
   for (let a = 0; a < Math.PI * 2; a += 0.28) { if (Math.abs(((a + Math.PI) % (Math.PI * 2)) - Math.PI) < 0.3) continue; rock(HOLLOW.x + Math.cos(a) * 9, HOLLOW.z + Math.sin(a) * 9, 1.9); }
   const bushM = C.emat('#3a7a2a', '#081808'); for (let i = -1; i <= 1; i++) { const b = new T.Mesh(G.sph, bushM); b.scale.set(1.6, 1.3, 1.6); const x = HOLLOW.x + 9.6, z = HOLLOW.z + i * 1.6; b.position.set(x, H(x, z) + 0.8, z); g.add(b); W.anim.push({ m: b, ph: i, sway: true }); }
@@ -1001,17 +1028,18 @@ function build() {
   W.deerM = BQ.creatures.makeDeer(); W.deer = W.deerM.g; /* white-tailed deer (fauna.js) */
   W.dr = { x: -30, z: 50, tx: -30, tz: 50, t: 2, walk: 0 }; W.deer.position.set(-30, H(-30, 50), 50); W.deer.rotation.y = 2.4; g.add(W.deer);
   /* meadow flowers and clover (instanced so they are cheap to draw) */
-  const FN = S0low() ? 400 : 900, fl = new T.InstancedMesh(LP.sph, new T.MeshLambertMaterial({ color: '#ffffff' }), FN), dm = new T.Object3D(), fcol = ['#ff8fb1', '#ffd166', '#ffffff', '#c59cff', '#ff9f6e', '#7fd4ff'], stems = new T.InstancedMesh(LP.cyl, C.emat('#4a8a2a', '#0a1a08'), FN);
+  const FN = S0low() ? 400 : 900, fl = new T.InstancedMesh(GX.petals, new T.MeshLambertMaterial({ color: '#ffffff', side: T.DoubleSide }), FN), flc = new T.InstancedMesh(GX.center, C.emat('#ffd040', '#3a2a00'), FN), dm = new T.Object3D(), fcol = ['#ff8fb1', '#ffd166', '#ffffff', '#c59cff', '#ff9f6e', '#7fd4ff'], stems = new T.InstancedMesh(LP.cyl, C.emat('#4a8a2a', '#0a1a08'), FN);
   for (let i = 0; i < FN; i++) { let x, z; if (i < 160) { x = -6 + rnd(i) * 30; z = 34 + rnd(i + 999) * 22; } else { const a = rnd(i) * 6.2832, r2 = 6 + Math.sqrt(rnd(i + 500)) * 56; x = Math.cos(a) * r2; z = Math.sin(a) * r2; }
     const bad = Math.hypot(x - POND.x, z - POND.z) < 16.5 || (Math.abs(x - FARM.x) < 12 && Math.abs(z - FARM.z) < 10) || (x > 22 && z > 14) || pathDist(x, z) < 1.4 || Math.hypot(x - STATION.x, z - STATION.z) < 9 || streamDist(x, z) < 2.4 || Math.hypot(x, z) > EDGE + 3;
-    const fs = bad ? 0.0001 : 0.15 + (i % 3) * 0.03; dm.position.set(x, H(x, z) + 0.34, z); dm.scale.set(fs, fs * 0.5, fs); dm.updateMatrix(); fl.setMatrixAt(i, dm.matrix); fl.setColorAt(i, new T.Color(fcol[(i * 7) % 6]));
+    const fs = bad ? 0.0001 : (0.15 + (i % 3) * 0.03) * 0.75; dm.position.set(x, H(x, z) + 0.34, z); dm.rotation.set(0.25 * Math.sin(i), i, 0.25 * Math.cos(i)); dm.scale.set(fs, fs, fs); dm.updateMatrix(); fl.setMatrixAt(i, dm.matrix); flc.setMatrixAt(i, dm.matrix); fl.setColorAt(i, new T.Color(fcol[(i * 7) % 6])); dm.rotation.set(0, 0, 0);
     dm.position.set(x, H(x, z) + 0.15, z); dm.scale.set(bad ? 0.0001 : 0.025, bad ? 0.0001 : 0.32, bad ? 0.0001 : 0.025); dm.updateMatrix(); stems.setMatrixAt(i, dm.matrix); }
   g.add(stems);
-  g.add(fl);
-  const GN = S0low() ? 500 : 1100, gr = new T.InstancedMesh(LP.cone, windy(new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#0a1a08' })), GN), gc = new T.Color();
-  for (let i = 0; i < GN; i++) { const a = rnd(i + 3000) * 6.2832, r2 = Math.sqrt(rnd(i + 7000)) * 80, x = Math.cos(a) * r2, z = Math.sin(a) * r2; if (Math.hypot(x - POND.x, z - POND.z) < 17 || (x > 22 && z > 14 && r2 < EDGE) || pathDist(x, z) < 1.3 || (Math.abs(x - FARM.x) < 12 && Math.abs(z - FARM.z) < 10)) { dm.scale.setScalar(0.0001); } else dm.scale.set(0.15, 0.3 + (i % 4) * 0.08, 0.15);
+  g.add(fl); g.add(flc);
+  const GN = S0low() ? 600 : 1500, gr = new T.InstancedMesh(GX.tuft, windy(new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#0a1a08' })), GN), gc = new T.Color();
+  for (let i = 0; i < GN; i++) { const a = rnd(i + 3000) * 6.2832, r2 = Math.sqrt(rnd(i + 7000)) * 80, x = Math.cos(a) * r2, z = Math.sin(a) * r2; if (Math.hypot(x - POND.x, z - POND.z) < 17 || (x > 22 && z > 14 && r2 < EDGE) || pathDist(x, z) < 1.3 || (Math.abs(x - FARM.x) < 12 && Math.abs(z - FARM.z) < 10)) { dm.scale.setScalar(0.0001); } else dm.scale.set(0.75, 0.45 + (i % 4) * 0.1, 0.75); dm.rotation.set(0, i, 0);
     gc.set(['#5aa03a', '#6ab04a', '#4a9030'][i % 3]); gr.setColorAt(i, gc); dm.position.set(x, H(x, z) + 0.3, z); dm.updateMatrix(); gr.setMatrixAt(i, dm.matrix); }
-  g.add(gr);
+  dm.rotation.set(0, 0, 0);
+  g.add(gr); W.grassIM = gr;
   /* sunny clover patch vs shady ferns (the comparison) */
   const clover = C.emat('#7be06a', '#103a08'); for (let i = 0; i < 30; i++) { const x = 8 + (i % 6) * 0.9, z = 46 + Math.floor(i / 6) * 0.9, m = new T.Mesh(G.sph, clover); m.scale.set(0.45, 0.6, 0.45); m.position.set(x, H(x, z) + 0.5, z); g.add(m); }
   const fern = C.emat('#2f6a2a', '#081808'); for (let i = 0; i < 6; i++) { const x = 44 + (i % 3) * 1.6, z = 52 + Math.floor(i / 3) * 1.6, m = new T.Mesh(G.cone, fern); m.scale.set(0.25, 0.2, 0.25); m.position.set(x, H(x, z) + 0.2, z); g.add(m); }
@@ -1036,6 +1064,11 @@ function build() {
   /* animals: frog, rabbit, a hawk circling, bees, butterflies */
   W.frogM = BQ.creatures.makeFrog(); W.frog = W.frogM.g; W.frog.scale.setScalar(1.4); W.frog.rotation.y = 2.2; W.frog.position.set(-8, H(-8, 30), 30); g.add(W.frog); /* green frog (fauna.js) */
   W.rabM = BQ.creatures.makeRabbit(); W.rabbit = W.rabM.g; W.rabbit.scale.setScalar(1.15); W.rabbit.position.set(4, H(4, 40), 40); g.add(W.rabbit); W.rab = { x: 4, z: 40, tx: 6, tz: 42, t: 0 };
+  /* animals are solid too: the deer's body is two circles (chest and hips) that turn with it; small animals get a small circle */
+  W.movers = [{ r: 0.55, at: function () { const a = W.deer.rotation.y; return [W.dr.x + Math.sin(a) * 0.5, W.dr.z + Math.cos(a) * 0.5]; }, top: 1.7 },
+    { r: 0.55, at: function () { const a = W.deer.rotation.y; return [W.dr.x - Math.sin(a) * 0.5, W.dr.z - Math.cos(a) * 0.5]; }, top: 1.7 },
+    { r: 0.3, at: function () { return [W.rabbit.position.x, W.rabbit.position.z]; }, top: 0.6 },
+    { r: 0.28, at: function () { return [W.frog.position.x, W.frog.position.z]; }, top: 0.5 }];
   W.hawk = new T.Group(); g.add(W.hawk); /* the red-tailed hawk now comes from creatures.js */
   W.bees = []; for (let i = 0; i < 4; i++) { const b = BQ.creatures.makeBee(); b.g.scale.setScalar(1.3); g.add(b.g); W.bees.push({ b: b, m: b.g, ph: i * 1.7 }); } /* bumblebees (fauna.js) */
   W.fish = new T.Group(); W.fishM = []; ['pumpkinseed', 'pumpkinseed', 'pumpkinseed', 'bass', 'carp', 'catfish', 'pike', 'pumpkinseed'].forEach(function (k, i) { const fm = BQ.creatures.makeFish(k), f = fm.g; f.scale.setScalar(k === 'pike' || k === 'carp' || k === 'catfish' ? 1.7 : 2.2); f.userData.ph = i; W.fish.add(f); W.fishM.push(fm); fm.x = POND.x + Math.cos(i) * 6; fm.z = POND.z + Math.sin(i) * 6; fm.y = null; fm.yaw = i; fm.t = 0; fm.spd = 0.6; }); /* pond fish (fauna.js): sunfish, bass, carp, catfish and pike */ W.fish.visible = false; g.add(W.fish);
@@ -1110,14 +1143,18 @@ function build() {
      and a heron and egrets in flight (creatures.js) */
   if (BQ.creatures) { const CR = BQ.creatures, low = S0low(), P = W.perches || [], pick = function (f) { return P.filter(function (q) { return f(q[0], q[2], q[3]); }); };
     const lawn = [], meadowFl = [], farmEdge = [], pondFl = [];
-    for (let i = 0; i < 60; i++) { const x = -4 + rnd(i + 20000) * 26, z = -2 + rnd(i + 20100) * 18; if (pathDist(x, z) > 1 && Math.hypot(x - STATION.x, z - STATION.z + 4) > 5) lawn.push([x, H(x, z) + 0.02, z]); }
-    for (let i = 0; i < 20; i++) { const x = ORCH.x - 7 + rnd(i + 20200) * 14, z = ORCH.z - 6 + rnd(i + 20300) * 12; lawn.push([x, H(x, z) + 0.02, z]); }
+    for (let i = 0; i < 60; i++) { const x = -4 + rnd(i + 20000) * 26, z = -2 + rnd(i + 20100) * 18; if (pathDist(x, z) > 1 && Math.hypot(x - STATION.x, z - STATION.z + 4) > 5) lawn.push([x, GH(x, z) + 0.02, z]); }
+    for (let i = 0; i < 20; i++) { const x = ORCH.x - 7 + rnd(i + 20200) * 14, z = ORCH.z - 6 + rnd(i + 20300) * 12; lawn.push([x, GH(x, z) + 0.02, z]); }
     for (let i = 0; i < 160; i++) { const x = -6 + rnd(i) * 30, z = 34 + rnd(i + 999) * 22; if (Math.hypot(x - POND.x, z - POND.z) > 17 && pathDist(x, z) > 1.4 && (i % 4 === 0)) meadowFl.push([x, H(x, z) + 0.42, z]); }
     for (let i = 0; i < 12; i++) { const x = FARM.x + 12 + rnd(i + 20400) * 3, z = FARM.z - 8 + rnd(i + 20500) * 16; farmEdge.push([x, H(x, z) + 0.3, z]); }
     for (let i = 0; i < 12; i++) { const a = rnd(i + 20600) * 6.283, x = POND.x + Math.cos(a) * 18, z = POND.z + Math.sin(a) * 18; pondFl.push([x, H(x, z) + 0.35, z]); }
     const milk = [[16, H(16, 38) + 1.3, 38], [16.9, H(16.9, 38) + 1.3, 38], [17.8, H(17.8, 38) + 1.3, 38], [16, H(16, 38.9) + 1.3, 38.9], [16.9, H(16.9, 38.9) + 1.3, 38.9]];
-    const farmPts = []; for (let i = 0; i < 14; i++) { const x = FARM.x - 8 + rnd(i + 20700) * 16, z = FARM.z - 5 + rnd(i + 20800) * 10; farmPts.push([x, H(x, z) + 0.02, z]); }
-    W.wild = CR.Wild({ group: g, H: H,
+    const farmPts = []; for (let i = 0; i < 14; i++) { const x = FARM.x - 8 + rnd(i + 20700) * 16, z = FARM.z - 5 + rnd(i + 20800) * 10; farmPts.push([x, GH(x, z) + 0.02, z]); }
+    /* the robins' and crows' feeding spots are mown short, so a bird on the ground is not buried in tall grass */
+    if (W.grassIM) { const pts = lawn.concat(farmPts), m4 = new T.Matrix4(), pv = new T.Vector3(); let dirty = false;
+      for (let i = 0; i < W.grassIM.count; i++) { W.grassIM.getMatrixAt(i, m4); pv.setFromMatrixPosition(m4); for (let j = 0; j < pts.length; j++) { if (Math.abs(pts[j][0] - pv.x) < 1.6 && Math.abs(pts[j][2] - pv.z) < 1.6) { m4.makeScale(0.0001, 0.0001, 0.0001); m4.setPosition(pv); W.grassIM.setMatrixAt(i, m4); dirty = true; break; } } }
+      if (dirty) W.grassIM.instanceMatrix.needsUpdate = true; }
+    W.wild = CR.Wild({ group: g, H: GH,
       birds: [{ kind: 'robin', n: low ? 2 : 4, ground: true, perches: lawn }, { kind: 'cardinal', n: low ? 1 : 2, perches: pick(function (x, z, k) { return k === 'dogwood' || (Math.hypot(x, z) < 40 && k !== 'pine' && k !== 'spruce'); }) },
         { kind: 'jay', n: low ? 1 : 2, perches: pick(function (x, z, k) { return x > 20 && z > 12; }) }, { kind: 'blackbird', n: low ? 2 : 3, perches: W.cattailTops || [] },
         { kind: 'crow', n: 2, ground: true, perches: farmPts.concat(W.postTops || []) }],
@@ -1150,6 +1187,33 @@ function antGeo() { const M4 = BQ.creatures.M4, S = function (w, h) { return new
     { geo: new T.CylinderGeometry(0.003, 0.003, 0.05, 3), m: M4(-0.012, 0.06, 0.1, 0.9, 0, 0.5), color: cc }, { geo: new T.CylinderGeometry(0.003, 0.003, 0.05, 3), m: M4(0.012, 0.06, 0.1, 0.9, 0, -0.5), color: cc }];
   [-1, 1].forEach(function (sd) { [0.045, 0.025, 0.005].forEach(function (z, k) { parts.push({ geo: new T.CylinderGeometry(0.0035, 0.0025, 0.07, 3), m: M4(sd * 0.03, 0.025, z + (k - 1) * 0.012, (k - 1) * 0.5, 0, sd * 1.1), color: cc }); }); });
   return BQ.creatures.merge(parts); }
+function detailGeos() {
+  const M4 = BQ.creatures.M4, merge = BQ.creatures.merge, flat = function (geo) { const gg = geo.index ? geo.toNonIndexed() : geo; gg.computeVertexNormals(); return gg; };
+  /* a grass tuft: seven thin blades leaning outward (base at y = -0.5 so the wind bends the tips) */
+  const blades = []; for (let k = 0; k < 7; k++) { const a = k / 7 * 6.283 + (k % 2) * 0.4, lean = 0.22 + (k % 3) * 0.12, h = 0.75 + (k % 3) * 0.13, r = k === 0 ? 0 : 0.12;
+    const bg = new T.ConeGeometry(0.06, h, 3, 1, true); bg.translate(0, h / 2, 0); const m = new T.Object3D(); m.position.set(Math.cos(a) * r, -0.5, Math.sin(a) * r); m.rotation.set(Math.sin(a) * lean, 0, -Math.cos(a) * lean); m.updateMatrix();
+    blades.push({ geo: bg, m: m.matrix.clone(), color: function (v) { return new T.Color('#ffffff').multiplyScalar(0.72 + Math.min(0.28, (v.y + 0.5) * 0.3)); } }); }
+  /* a five-petal flower head (white, so each flower can be tinted) and its yellow center */
+  const petals = []; for (let k = 0; k < 5; k++) { const a = k / 5 * 6.283; const pg = new T.CircleGeometry(1, 6); pg.rotateX(-Math.PI / 2); petals.push({ geo: pg, m: M4(Math.cos(a) * 0.55, 0.05, Math.sin(a) * 0.55, 0, -a, 0.2, 0.55, 1, 0.32), color: '#ffffff' }); }
+  /* a bush: a few lumpy leaf clumps with lighter tops */
+  const bushParts = [[0, 0, 0, 1], [0.55, 0.1, 0.2, 0.75], [-0.5, 0.05, -0.15, 0.8], [0.1, 0.45, -0.35, 0.7], [-0.15, 0.35, 0.45, 0.65]].map(function (q) { return { geo: new T.IcosahedronGeometry(q[3], 1), m: M4(q[0], q[1], q[2]), color: function (v) { return new T.Color('#ffffff').multiplyScalar(0.78 + Math.max(0, v.y) * 0.25); } }; });
+  /* a fern: arching fronds */
+  const fronds = []; for (let k = 0; k < 7; k++) { const a = k / 7 * 6.283; fronds.push({ geo: new T.SphereGeometry(1, 5, 3), m: M4(Math.cos(a) * 0.45, 0.25, Math.sin(a) * 0.45, 0, -a, 0.55, 0.6, 0.07, 0.16), color: function (v) { return new T.Color('#3f8a3c').lerp(new T.Color('#6ab04a'), Math.min(1, Math.max(0, v.y * 2))); } }); }
+  /* mossy rocks: lumpy, faceted, darker in the cracks, with moss and lichen on top */
+  const rocks = []; for (let r = 0; r < 5; r++) { const geo = new T.IcosahedronGeometry(1, 1), P = geo.attributes.position, v = new T.Vector3();
+    for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); const n = 1 + 0.22 * Math.sin(v.x * 3.1 + r * 1.7) * Math.cos(v.z * 2.7 + r) + 0.12 * Math.sin(v.y * 5.3 + r * 2.1); v.multiplyScalar(n); if (v.y < -0.35) v.y = -0.35 + (v.y + 0.35) * 0.2; P.setXYZ(i, v.x, v.y, v.z); }
+    const fg = flat(geo), FP = fg.attributes.position, FN = fg.attributes.normal, col = new Float32Array(FP.count * 3), c = new T.Color();
+    for (let i = 0; i < FP.count; i++) { const ny = FN.getY(i), x = FP.getX(i), y = FP.getY(i), z = FP.getZ(i), sp = Math.sin(x * 9 + r) * Math.sin(z * 8 - r) * Math.sin(y * 7);
+      c.set(r % 2 ? '#9a968a' : '#8a8a80').multiplyScalar(0.8 + y * 0.18); if (ny > 0.55 && sp > -0.3) c.lerp(new T.Color(sp > 0.4 ? '#7aa04a' : '#5a8a3a'), 0.85); else if (sp > 0.75) c.set('#c8c870');
+      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+    fg.setAttribute('color', new T.BufferAttribute(col, 3)); rocks.push(fg); }
+  return { tuft: merge(blades), petals: merge(petals), center: new T.SphereGeometry(0.28, 5, 3), bush: flat(merge(bushParts)), fern: merge(fronds), rocks: rocks };
+}
+/* soft speckles and blade marks, multiplied over the ground colors so the grass does not look like flat paint */
+function groundTex() { const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x0 = cv.getContext('2d'); x0.fillStyle = '#f2f2f2'; x0.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 2600; i++) { const x = (i * 97.13) % 256, y = (i * 57.71 + (i % 7) * 13) % 256, s = (i * 31) % 100 / 100; x0.fillStyle = s > 0.55 ? 'rgba(255,255,255,0.55)' : 'rgba(40,60,20,' + (0.08 + s * 0.12) + ')'; x0.fillRect(x, y, 1 + (i % 2), 2 + (i % 4)); }
+  for (let i = 0; i < 40; i++) { const x = (i * 71) % 256, y = (i * 137) % 256, gr = x0.createRadialGradient(x, y, 2, x, y, 26 + (i % 5) * 6); gr.addColorStop(0, i % 3 ? 'rgba(255,255,230,0.18)' : 'rgba(30,50,10,0.10)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); x0.fillStyle = gr; x0.fillRect(0, 0, 256, 256); }
+  const t = new T.CanvasTexture(cv); t.wrapS = t.wrapT = T.RepeatWrapping; t.anisotropy = 4; return t; }
 function toonify(root) {
   const grad = new T.DataTexture(new Uint8Array([88, 150, 215]), 3, 1, T.LuminanceFormat); grad.minFilter = grad.magFilter = T.NearestFilter; grad.needsUpdate = true; const cache = {};
   root.traverse(function (o) { const m = o.material; if (!m || m.type !== 'MeshLambertMaterial') return;
@@ -1344,7 +1408,7 @@ function start() {
   ensureUI(); C.teardown(); C.show(null); C.setMode('cozy');
   ['hud', 'touch', 'toast', 'qpanel'].forEach(function (id) { const e = $(id); if (e) e.hidden = true; });
   build(); $('cozyUI').hidden = false; refreshText(); if (C.S.set.czKeys == null) { showKeys(true); W.keysT = 25; } else showKeys(!!C.S.set.czKeys); C.Music.stop(); dayLight(); W.moodNow = moodNow(); amb('mood', W.moodNow, 2);
-  { const s0 = st(); if (s0.found.overlook && !s0.f.fly) { s0.f.fly = 1; C.save(); } }
+  { const s0 = st(); if ((s0.found.overlook || C.S.set.admin) && !s0.f.fly) { s0.f.fly = 1; C.save(); } }
   const s = st(); if (!s.f.met) setTimeout(function () { if (W && !W.talk) talkAma(); }, 800);
 }
 function exit() {
@@ -1358,7 +1422,7 @@ function setPause(on) { if (!W) return; W.pause = on; $('czPause').hidden = !on;
 function openJ() { if (!W) return; W.k = {}; W.pause = true; $('cozyUI').hidden = true; C.openJournal('cozy'); C.journalTab('cozy'); }
 function resume() { if (!W) return; W.pause = false; $('czPause').hidden = true; $('cozyUI').hidden = false; refreshText(); }
 
-function groundAt(x, z) { let g0 = H(x, z); for (let i = 0; i < W.tops.length; i++) { const c = W.tops[i]; if (c.top > g0 && Math.hypot(x - c.x, z - c.z) < c.r * 0.85) g0 = c.top; } return g0; }
+function groundAt(x, z) { let g0 = GH(x, z); for (let i = 0; i < W.tops.length; i++) { const c = W.tops[i]; if (c.top > g0 && Math.hypot(x - c.x, z - c.z) < c.r * 0.85) g0 = c.top; } return g0; }
 function amb(fn, a, b) { if (BQ.amb && BQ.amb[fn]) BQ.amb[fn](a, b); }
 function underwaterLook(cam) {
   const wb = waterAt(cam.position.x, cam.position.z), under = !!wb && cam.position.y < wb.y - 0.05, scene = C.scene, clear = st().f.fixed;
@@ -1483,6 +1547,7 @@ function fogCanvas() {
 }
 function openMap() {
   if (!W || W.talk) return; W.k = {}; W.ui = 'map'; $('czMapP').hidden = false; W.mapZ = W.mapZ || 3; W.mapCx = W.px; W.mapCz = W.pz; markSeen(); sizeMap(); drawMap(); $('czMapClose').focus();
+  { const h = $('czMapH'); if (C.S.set.admin && h.textContent.indexOf('Admin') < 0) h.textContent += ' · Admin: tap an empty spot to jump there.'; }
 }
 function closeMap() { if (!W) return; W.ui = null; $('czMapP').hidden = true; $('czMapInfo').innerHTML = ''; }
 function sizeMap() { const cv = $('czMapC'), r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); cv.width = Math.max(200, Math.round(r.width * dpr)); cv.height = Math.max(200, Math.round(r.height * dpr)); W.mapDpr = dpr; }
@@ -1498,7 +1563,7 @@ function drawMap() {
   const cv = $('czMapC'); if (!cv || $('czMapP').hidden) return; const g = cv.getContext('2d'), sc = W.mapZ * W.mapDpr, dpr = W.mapDpr;
   g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#d8ccb0'; g.fillRect(0, 0, cv.width, cv.height);
   g.save(); g.translate(cv.width / 2, cv.height / 2); g.scale(sc, sc); g.translate(-W.mapCx, -W.mapCz); g.imageSmoothingEnabled = true;
-  g.drawImage(mapBase(), MX0, MZ0, MX1 - MX0, MZ1 - MZ0); g.drawImage(fogCanvas(), MX0, MZ0, MX1 - MX0, MZ1 - MZ0); g.restore();
+  g.drawImage(mapBase(), MX0, MZ0, MX1 - MX0, MZ1 - MZ0); if (!C.S.set.admin) g.drawImage(fogCanvas(), MX0, MZ0, MX1 - MX0, MZ1 - MZ0); g.restore();
   /* area names */
   g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round';
   AREAS.forEach(function (a) { if (a[3] && !st().found[a[3]]) return; if (!isSeen(a[1], a[2])) return; const p0 = mapS(a[1], a[2]); g.font = '700 ' + Math.round(13 * dpr) + 'px sans-serif'; g.strokeStyle = 'rgba(255,250,235,0.9)'; g.lineWidth = 4 * dpr; const t0 = tx('cz.ar.' + a[0]); g.strokeText(t0, p0[0], p0[1]); g.fillStyle = '#3a2a1a'; g.fillText(t0, p0[0], p0[1]); });
@@ -1525,7 +1590,9 @@ function mapPointer(e, type) {
   const cv = $('czMapC'), r = cv.getBoundingClientRect(), dpr = W.mapDpr, px = (e.clientX - r.left) * dpr, py = (e.clientY - r.top) * dpr;
   if (type === 'down') { W.mapDrag = { x: px, y: py, cx: W.mapCx, cz: W.mapCz, moved: 0 }; cv.setPointerCapture && cv.setPointerCapture(e.pointerId); }
   else if (type === 'move' && W.mapDrag) { const sc = W.mapZ * dpr, dx = px - W.mapDrag.x, dy = py - W.mapDrag.y; W.mapDrag.moved = Math.max(W.mapDrag.moved, Math.hypot(dx, dy)); W.mapCx = W.mapDrag.cx - dx / sc; W.mapCz = W.mapDrag.cz - dy / sc; drawMap(); }
-  else if (type === 'up' && W.mapDrag) { if (W.mapDrag.moved < 6 * dpr) { let best = null, bd = 18 * dpr; (W.mapHits || []).forEach(function (h) { const d = Math.hypot(h.x - px, h.y - py); if (d < bd) { bd = d; best = h.m; } }); if (best) mapInfo(best); } W.mapDrag = null; }
+  else if (type === 'up' && W.mapDrag) { if (W.mapDrag.moved < 6 * dpr) { let best = null, bd = 18 * dpr; (W.mapHits || []).forEach(function (h) { const d = Math.hypot(h.x - px, h.y - py); if (d < bd) { bd = d; best = h.m; } }); if (best) mapInfo(best);
+      else if (C.S.set.admin) { /* admin: jump to the spot you tapped */ const sc = W.mapZ * dpr; let x = W.mapCx + (px - cv.width / 2) / sc, z = W.mapCz + (py - cv.height / 2) / sc; const d = Math.hypot(x, z), lim = EDGE + 1; if (d > lim) { x *= lim / d; z *= lim / d; }
+        W.px = x; W.pz = z; W.py = groundAt(x, z); W.vx = W.vz = W.vy = 0; W.swim = false; W.flying = false; closeMap(); } } W.mapDrag = null; }
 }
 function mapZoom(f) { W.mapZ = Math.max(1.2, Math.min(9, W.mapZ * f)); drawMap(); }
 
@@ -1577,9 +1644,9 @@ function dayLight() {
   W.moon.position.set(-Math.cos(a) * 380, Math.max(-60, -el * 280 + 40), -140); W.moon.visible = el < 0.15;
   W.stars.material.opacity = Math.max(0, Math.min(0.95, -el * 3));
   const sunCol = new T.Color('#ffeccc').lerp(new T.Color('#ff9a5a'), dusk * 0.8);
-  if (el > -0.08) { C.KEYL.color.copy(sunCol); C.KEYL.intensity = 0.3 + 0.55 * day + 0.25 * dusk; C.KEYL.position.set(Math.cos(a) * 80, Math.max(8, el * 80), 40); }
+  if (el > -0.08) { C.KEYL.color.copy(sunCol); C.KEYL.intensity = 0.32 + 0.66 * day + 0.25 * dusk; C.KEYL.position.set(Math.cos(a) * 80, Math.max(8, el * 80), 40); }
   else { C.KEYL.color.set('#9ab0ff'); C.KEYL.intensity = 0.32; C.KEYL.position.set(-Math.cos(a) * 60, 50, -40); }
-  C.HEMI.intensity = 0.4 + 0.12 * day + 0.05 * dusk; C.HEMI.color.copy(new T.Color('#3a4a8a').lerp(new T.Color('#fff2d8'), day)); C.HEMI.groundColor.copy(new T.Color('#141a2a').lerp(new T.Color('#4a5a2a'), day));
+  C.HEMI.intensity = 0.4 + 0.12 * day + 0.05 * dusk; C.HEMI.color.copy(new T.Color('#3a4a8a').lerp(new T.Color('#fff0d2'), day)); C.HEMI.groundColor.copy(new T.Color('#141a2a').lerp(new T.Color('#4a5a2a'), day));
   if (W.cloudIM) { const cm = W.cloudIM.material; cm.color.copy(new T.Color('#3a4060').lerp(new T.Color('#ffffff'), day)).lerp(new T.Color('#ffb08a'), dusk * 0.5); cm.emissive.copy(new T.Color('#10142a').lerp(new T.Color('#c8d8e8'), day)).lerp(new T.Color('#c0705a'), dusk * 0.4); }
   const night = isNight(); W.ffly.forEach(function (f) { f.visible = night || t > 19.6; }); W.porch.material.opacity = el < 0.05 ? 0.9 : 0; W.moth.visible = night;
   W.beams.forEach(function (b) { b.m.material.opacity = (el > 0.1 ? 0.18 + 0.2 * (1 - el) : 0) * (0.7 + 0.3 * Math.sin(W.t * 0.6 + b.ph)); });
@@ -1724,7 +1791,7 @@ function step(dt) {
   const flee = Math.hypot(W.px - r.x, W.pz - r.z) < 4 && !(W.near && W.near.id === 'rabbit'); if (flee) { r.tx = r.x + (r.x - W.px) * 2; r.tz = r.z + (r.z - W.pz) * 2; }
   const ox = r.x, oz = r.z; r.x += Math.sign(r.tx - r.x) * Math.min(Math.abs(r.tx - r.x), dt * (flee ? 5 : 2)); r.z += Math.sign(r.tz - r.z) * Math.min(Math.abs(r.tz - r.z), dt * (flee ? 5 : 2));
   { const mv = Math.hypot(r.x - ox, r.z - oz) > dt * 0.3; if (mv) { r.hp = (r.hp || 0) + dt * (flee ? 3.6 : 2.6); W.rabbit.rotation.y = Math.atan2(r.x - ox, r.z - oz); } else r.hp = 0; const hop = mv ? r.hp % 1 : 0;
-    W.rabbit.position.set(r.x, H(r.x, r.z) + Math.sin(hop * Math.PI) * (flee ? 0.4 : 0.25), r.z); BQ.creatures.poseRabbit(W.rabM, dt, hop, !mv && Math.hypot(W.px - r.x, W.pz - r.z) < 7); }
+    W.rabbit.position.set(r.x, GH(r.x, r.z) + Math.sin(hop * Math.PI) * (flee ? 0.4 : 0.25), r.z); BQ.creatures.poseRabbit(W.rabM, dt, hop, !mv && Math.hypot(W.px - r.x, W.pz - r.z) < 7); }
   W.hawk.position.set(10 + Math.cos(W.t * 0.3) * 18, 26, 44 + Math.sin(W.t * 0.3) * 18); W.hawk.rotation.y = -W.t * 0.3; W.hawk.rotation.z = 0.25;
   if (W.heronM) { W.heronNext -= dt; if (W.heronNext <= 0 && !W.heronStrike) { W.heronStrike = 0.001; W.heronNext = 7 + Math.random() * 8; } if (W.heronStrike) { W.heronStrike += dt / 1.4; if (W.heronStrike >= 1) W.heronStrike = 0; } BQ.creatures.poseHeron(W.heronM, dt, W.heronStrike); }
   if (W.springFish) W.springFish.forEach(function (f, i) { const a = W.t * 0.9 + i * 2.1; f.position.set(SPRING.x + Math.cos(a) * 1.8, H(SPRING.x, SPRING.z) + 0.2, SPRING.z + Math.sin(a) * 1.2); f.rotation.y = Math.atan2(-Math.sin(a) * 1.8, Math.cos(a) * 1.2); BQ.creatures.poseFish(W.springFishM[i], dt, 0.5); });
@@ -1758,7 +1825,7 @@ function step(dt) {
     const D = W.dr; let walk = 0; /* the deer wanders slowly, grazing; if you come close it stops, faces you and raises its white tail */
     if (!alert) { D.t -= dt; if (D.t <= 0) { const a = Math.random() * 6.283, rr = Math.random() * 3.5; D.tx = -30 + Math.cos(a) * rr; D.tz = 50 + Math.sin(a) * rr; D.t = 6 + Math.random() * 8; }
       const dx = D.tx - D.x, dz = D.tz - D.z, dl = Math.hypot(dx, dz); if (dl > 0.15) { walk = 1; const sp = Math.min(dl, dt * 0.9); D.x += dx / dl * sp; D.z += dz / dl * sp; const want = Math.atan2(dx, dz); W.deer.rotation.y += (((want - W.deer.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 2.5); } }
-    D.walk += (walk - D.walk) * Math.min(1, dt * 3); W.deer.position.set(D.x, H(D.x, D.z), D.z); BQ.creatures.poseDeer(W.deerM, dt, D.walk * 0.6, !alert && D.walk < 0.3, alert);
+    D.walk += (walk - D.walk) * Math.min(1, dt * 3); W.deer.position.set(D.x, GH(D.x, D.z), D.z); BQ.creatures.poseDeer(W.deerM, dt, D.walk * 0.6, !alert && D.walk < 0.3, alert);
     if (alert) W.deer.rotation.y += (((Math.atan2(W.px - W.dr.x, W.pz - W.dr.z) - W.deer.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 2); }
   if (W.owlLook > 0) W.owlLook -= dt; BQ.creatures.poseOwl(W.owlM, dt, W.owlLook > 0 ? Math.sin(W.owlLook * 3) * 1.6 : (Math.hypot(W.px - W.owl.position.x, W.pz - W.owl.position.z) < 25 ? ((Math.atan2(W.px - W.owl.position.x, W.pz - W.owl.position.z) - W.owl.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI : Math.sin(W.t * 0.2) * 1.2));
   if (W.grow) W.grow.forEach(function (p) { if (p.scale.x < 1) p.scale.setScalar(Math.min(1, p.scale.x + dt * 0.8)); });
@@ -1780,6 +1847,10 @@ function step(dt) {
   if (len > 0) { const cy = Math.cos(W.yaw), sy = Math.sin(W.yaw), dx = (mx * cy + mz * sy) / len, dz = (-mx * sy + mz * cy) / len; tvx = dx * sp; tvz = dz * sp; W.face = Math.atan2(dx, dz);
     if (!W.drag) { const want = Math.atan2(-dx, -dz), d = ((want - W.yaw + Math.PI * 3) % (Math.PI * 2)) - Math.PI; W.yaw += d * Math.min(1, dt * 0.9) * (mz < 0 ? 1 : 0.25); } }
   const grip = W.ground || W.swim || W.flying ? 9 : 3.5; W.vx += (tvx - W.vx) * Math.min(1, dt * grip); W.vz += (tvz - W.vz) * Math.min(1, dt * grip);
+  { /* the edge of the reserve: in the last few steps the hills (or the lookout railing) slow you down, so you never slam into an invisible wall */
+    const dd = Math.hypot(W.px, W.pz), lim = BOUND - (BOUND - (EDGE + 1.9)) * edgeW(W.px, W.pz).w, soft = 5;
+    if (dd > lim - soft && dd > 0.01) { const nx = W.px / dd, nz = W.pz / dd, out = W.vx * nx + W.vz * nz, u = Math.min(1, (dd - (lim - soft)) / soft);
+      if (out > 0) { W.vx -= nx * out * u; W.vz -= nz * out * u; if (u > 0.5 && len > 0 && !W.toldEdge) { W.toldEdge = true; showCard('msg', edgeW(W.px, W.pz).w > 0.5 ? 'cz.edgeTip2' : 'cz.edgeTip'); W.cardT = 5; } } } }
   W.px += W.vx * dt; W.pz += W.vz * dt;
   { const dd = Math.hypot(W.px, W.pz), lim = BOUND - (BOUND - (EDGE + 1.9)) * edgeW(W.px, W.pz).w; if (dd > lim) { W.px *= lim / dd; W.pz *= lim / dd; } }
   const moving = Math.hypot(W.vx, W.vz) > 0.5;
@@ -1787,7 +1858,11 @@ function step(dt) {
   if (k.run && len > 0) W.toldRun = true;
   if (k.run && len > 0 && W.ground && !busy) { W.dustT = (W.dustT || 0) - dt; if (W.dustT <= 0) { W.dustT = 0.09; const p0 = C.glow('#e8dcc0', 1.2, 0.6); p0.position.set(W.px, W.py + 0.2, W.pz); W.g.add(p0); (W.dust = W.dust || []).push({ m: p0, t: 0 }); } }
   if (W.dust) W.dust = W.dust.filter(function (d0) { d0.t += dt; d0.m.position.y += dt * 0.6; d0.m.material.opacity = Math.max(0, 0.6 - d0.t); d0.m.scale.setScalar(1.2 + d0.t * 2); if (d0.t > 0.6) { W.g.remove(d0.m); return false; } return true; });
-  W.colliders.forEach(function (c) { if (c.top != null && W.py >= c.top - 0.35) return; const dx = W.px - c.x, dz = W.pz - c.z, d = Math.hypot(dx, dz), mn = c.r + 0.45; if (d < mn && d > 0.001 && W.py < (c.top != null ? c.top : H(c.x, c.z) + 3.5)) { W.px = c.x + dx / d * mn; W.pz = c.z + dz / d * mn; } });
+  /* bump into things: trees, rocks, buildings, people and animals. Two passes, so being squeezed between two things never pushes you through one of them */
+  const push = function (cx, cz, r, top) { if (W.py >= top - 0.35) return; const dx = W.px - cx, dz = W.pz - cz, d = Math.hypot(dx, dz), mn = r + 0.45; if (d >= mn) return;
+    if (d < 0.001) { W.px = cx + mn; return; } W.px = cx + dx / d * mn; W.pz = cz + dz / d * mn; const vn = (W.vx * dx + W.vz * dz) / d; if (vn < 0) { W.vx -= vn * dx / d; W.vz -= vn * dz / d; } };
+  for (let pass = 0; pass < 2; pass++) { W.colliders.forEach(function (c) { if (Math.abs(W.px - c.x) > c.r + 1 || Math.abs(W.pz - c.z) > c.r + 1) return; push(c.x, c.z, c.r, c.top != null ? c.top : H(c.x, c.z) + 3.5); });
+    if (W.movers) W.movers.forEach(function (m) { const p = m.at(); push(p[0], p[1], m.r, GH(p[0], p[1]) + m.top); }); }
   const gy = groundAt(W.px, W.pz);
   /* flight energy: drains while flying, refills on the ground */
   if (W.flying) { W.flyE = Math.max(0, W.flyE - dt / 24); if (W.flyE <= 0) { W.flying = false; showCard('msg', 'cz.flyLow'); W.cardT = 3; } }
@@ -1798,7 +1873,7 @@ function step(dt) {
     const tr = W.trail[Math.floor(W.t * 20) % W.trail.length]; tr.visible = true; tr.position.set(W.px - Math.sin(W.face) * 0.6, W.py + 0.7, W.pz - Math.cos(W.face) * 0.6); tr.material.opacity = 0.8;
     if (!W.whooshT || W.t > W.whooshT) { W.whooshT = W.t + 2.5 + Math.random() * 2; if (moving) amb('sfx', 'whoosh', 0.5); }
   } else if (W.swim) {
-    const surf = wl - 0.75;
+    const surf = wl - 0.5; /* head and shoulders above the water while swimming at the surface */
     if (!busy && k.dive) W.vy += (-3.4 - W.vy) * Math.min(1, dt * 4);
     else if (!busy && k.jump) { if (W.py > surf - 0.25 && wl - gy < 2.2) { W.vy = 8; W.swim = false; amb('sfx', 'splash', 0.6); } else W.vy += (3.2 - W.vy) * Math.min(1, dt * 4); }
     else W.vy += ((surf - W.py) * 2.2 - W.vy) * Math.min(1, dt * 3);
@@ -1836,7 +1911,14 @@ function step(dt) {
     best = Math.max(0.28, best); if (best < 1) { want.x = tgt.x + vx * best; want.z = tgt.z + vz * best; want.y = tgt.y + (want.y - tgt.y) * best; } }
   if ((W.talk || W.sitting) && W.talkFocus) { const f = W.talkFocus, mx0 = (W.px + f.x) / 2, mz0 = (W.pz + f.z) / 2, dx = f.x - W.px, dz = f.z - W.pz, L0 = Math.hypot(dx, dz) || 1, sx = -dz / L0, sz = dx / L0, dd = Math.max(5, L0 * 1.6);
     const sgn = ((cam.position.x - mx0) * sx + (cam.position.z - mz0) * sz) >= 0 ? 1 : -1; want.set(mx0 + sx * dd * sgn - dx / L0 * 1.2, Math.max(W.py, f.y) + 1.6, mz0 + sz * dd * sgn - dz / L0 * 1.2); tgt.set(mx0, (W.py + 1.1 + f.y) / 2, mz0); }
-  const gc = H(want.x, want.z) + (W.under ? 0.6 : 1.2); if (want.y < gc) want.y = gc;
+  if (W.under && wb) { /* diving: the camera stays under the water with you. If the bank is in the way it moves closer instead of popping out above the surface */
+    let s0 = 1; for (let k = 0; k < 7; k++) { const cx = tgt.x + (want.x - tgt.x) * s0, cz = tgt.z + (want.z - tgt.z) * s0, cy = tgt.y + (want.y - tgt.y) * s0; if (waterAt(cx, cz) && GH(cx, cz) + 0.45 < Math.min(cy, wl - 0.4)) break; s0 *= 0.72; }
+    want.set(tgt.x + (want.x - tgt.x) * s0, tgt.y + (want.y - tgt.y) * s0, tgt.z + (want.z - tgt.z) * s0); want.y = Math.max(GH(want.x, want.z) + 0.45, Math.min(want.y, wl - 0.4)); }
+  else { const gc = GH(want.x, want.z) + 1.2; if (want.y < gc) want.y = gc;
+    /* a hill between the camera and you: rise up and look over it */
+    for (let k = 1; k <= 2; k++) { const u = k / 3, mx = tgt.x + (want.x - tgt.x) * u, mz = tgt.z + (want.z - tgt.z) * u, my = tgt.y + (want.y - tgt.y) * u, gm = GH(mx, mz) + 0.6; if (my < gm) want.y += (gm - my) / u; }
+    /* over the pond the camera never sits half in the water */
+    const wc = waterAt(want.x, want.z); if (wc && want.y < wc.y + 0.45) want.y = wc.y + 0.45; }
   cam.position.lerp(want, Math.min(1, dt * (W.talk || W.sitting ? 3 : 6))); if (W.talk || W.sitting) { W.lookAt = W.lookAt || tgt.clone(); W.lookAt.lerp(tgt, Math.min(1, dt * 4)); cam.lookAt(W.lookAt); } else { W.lookAt = null; cam.lookAt(tgt); }
   { const fov = W.dist < 4 ? 28 + (W.dist - 2.2) / 1.8 * 14 : 42; if (Math.abs(cam.fov - fov) > 0.05) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 5); cam.updateProjectionMatrix(); } }
   if (W.ui === 'scope' && W.scope) scopeStep(dt, cam);
@@ -1951,7 +2033,7 @@ const cb = document.getElementById('btnCozy'); if (cb) cb.hidden = false;
   const mark = function () { d.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.ml === (C.S.set.lang || 'en'))); }); };
   d.addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b) return; C.S.set.lang = b.dataset.ml; C.save(); mark(); const wb = document.getElementById('btnIntro'); if (wb && C.tx) wb.textContent = C.tx('in.watch'); });
   mark(); const st0 = document.createElement('style'); st0.textContent = '#menuLang { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; margin: 8px 0; } #menuLang button[aria-pressed="true"] { border-color: #ffd166; box-shadow: inset 0 0 0 1px #ffd166; }'; document.head.appendChild(st0); })();
-BQ.cozy = { start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _scopeT: function (id) { return SCOPE[id]; } };
+BQ.cozy = { start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _GH: GH, _scopeT: function (id) { return SCOPE[id]; } };
 }
 if (BQ.core) init(); else BQ.onCore = init;
 })();
