@@ -69,24 +69,39 @@ FieldGuide.registerWorld({
           .goal();
       } },
     { id: '5-4', title: 'Reading the Evidence', theme: 'canyon',
-      log: 'Mission log: The canyon walls are a history book written in rock. Bones, embryos, and DNA tell the same story. Gather the evidence.',
+      log: 'Mission log: The canyon walls are a history book written in rock. Your burrow drill can read it from the top down. The deeper you dig, the further back in time you go.',
       outro: 'Report sent: fossils in rock layers, transitional fossils, homologous and vestigial structures, similar embryos, matching DNA and proteins, and a universal genetic code all show that living things share common ancestors.',
       build: function (b) {
-        b.sparks(4, 1.2, 4).hazard(9, 1.1, { ax: 1.8, sp: 1.2 }).ground(13).review()
-          .scan(3, 's5-fossil').scan(8, 's5-layers').scan(13, 's5-transitional').ground(16).hsparks(-10, 6.2, 4)
-          .sequence('s-layers')
-          .scan(3, 's5-homologous').scan(8, 's5-analogous').scan(13, 's5-vestigial').ground(16)
-          .become('b-homolog')
-          .refuel().sparks(0.5, 8.5, 4).ground(6)
-          .station([{ sort: 'structures', n: 4 }])
-          .scan(3, 's5-embryo').scan(8, 's5-molecular').scan(13, 's5-code').ground(16)
+        /* FOSSIL DIG: the evidence from living things is up top; then drill DOWN through five rock layers, each older than the one above
+           (law of superposition). The layers are a "greatest hits" stack from real fossil sites around the world, in true age order. */
+        b.hint(5, 4.6, 'Evidence from living things first. Then drill down into the rock!').sparks(9, 1.2, 4).ground(14).review()
+          .scan(3, 's5-embryo').scan(8, 's5-molecular').scan(13, 's5-code').ground(16).hsparks(-10, 6.2, 4)
           .readData('d-cytochrome')
-          .squeeze(3, 4).antibody(15, 8, 3.2, 0.5).ground(16)
-          .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
-          .lablock('lock-5-4')
-          .crumbleBridge(5, 'mix').mixed(2, ['BIO.B.2.2.1', 'BIO.B.3.1.2', 'BIO.B.3.2.1', 'BIO.B.3.1.1'])
-          .station(['w5q17', 'w5q22'])
-          .bridge(11).ground(5)
+          .fossil(3, 's5-fossil').scan(8, 's5-layers').ground(12)
+          .digShaft(3, 10, { color: '#c8a878' })
+          .stratum({ name: 'Layer 1 · Ice Age', sub: 'About 20,000 years ago. Near the top = youngest.', color: '#c8a878' })
+          .fossil(4, 's5r-mammoth').rockfall(11, 4.2, 0).ground(15)
+          .become('b-homolog').ground(4)
+          .digShaft(3, 10, { color: '#b88a5a' })
+          .stratum({ name: 'Layer 2 · Early whales', sub: 'About 49 million years ago (fossils found in Pakistan)', color: '#b88a5a' })
+          .fossil(3, 's5r-ambulo').scan(8, 's5-vestigial').scan(13, 's5-homologous').scan(18, 's5-analogous').ground(21)
+          .refuel().station([{ sort: 'structures', n: 4 }]).ground(4)
+          .digShaft(3, 10, { color: '#9a6a4a' })
+          .stratum({ name: 'Layer 3 · Dinosaurs', sub: 'About 68 million years ago (like Montana\'s Hell Creek rocks)', color: '#9a6a4a' })
+          .fossil(4, 's5r-dino').rockfall(9, 3.6, 0.4).rockfall(14, 3.6, 2.2).ground(18)
+          .lablock('lock-5-4').ground(4)
+          .digShaft(3, 10, { color: '#8a7a6a' })
+          .stratum({ name: 'Layer 4 · Fish with legs', sub: 'About 375 million years ago (Tiktaalik, Ellesmere Island, Canada)', color: '#8a7a6a' })
+          .fossil(4, 's5-transitional').rockfall(10, 3.8, 1.2).ground(14)
+          .mixed(2, ['BIO.B.2.2.1', 'BIO.B.3.1.2', 'BIO.B.3.2.1', 'BIO.B.3.1.1'])
+          .station(['w5q17', 'w5q22']).ground(4)
+          .digShaft(3, 10, { color: '#6a7a8a' })
+          .stratum({ name: 'Layer 5 · Early sea animals', sub: 'About 500 million years ago (like the Burgess Shale, Canada)', color: '#6a7a8a' })
+          .fossil(4, 's5r-trilobite').ground(9)
+          .digBlock(0, -3, 6, 3, '#7a8a9a').rise(-3).rare(3, 0.9, { name: 'Hallucigenia fossil', fact: 'A tiny spiky Burgess Shale animal. Scientists first drew it upside down and back to front. New fossils showed them the mistake: science corrects itself with evidence.' }).ground(6).rise(3)
+          .rockfall(4, 3.2, 1).ground(9)
+          .sequence('s-layers').ground(3)
+          .caveEnd().ground(10)
           .goal();
       } },
     { id: '5-5', title: 'How Science Knows', theme: 'island',

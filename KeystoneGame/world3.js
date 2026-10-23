@@ -29,23 +29,31 @@ FieldGuide.registerWorld({
           .station(['w3q01', 'w3q06'])
           .goal();
       } },
-    { id: '3-2', title: 'Living Together', theme: 'meadow',
-      log: 'Mission log: A sunny meadow full of hunters, helpers, and hitchhikers. Figure out who eats whom, and who helps whom.',
+    { id: '3-2', title: 'Living Together', theme: 'reef',
+      log: 'Mission log: A coral reef, the busiest neighborhood on Earth. Put on the bubble helmet and dive in. Figure out who eats whom, and who helps whom.',
       outro: 'Report sent: species interact through predation, competition, and symbiosis: mutualism (both benefit), commensalism (one benefits, one is unaffected), and parasitism (one benefits, the host is harmed).',
       build: function (b) {
-        b.sparks(4, 1.2, 4).virus(9, 2, 1).ground(12).review()
-          .scan(3, 's3-predator').scan(8, 's3-prey').scan(13, 's3-compete').ground(16).hsparks(-10, 6.2, 4)
-          .scan(3, 's3-mutual').scan(8, 's3-commensal').scan(13, 's3-parasite').ground(16)
+        /* REEF LEVEL: a short dock, then everything happens under water (swim with jump and duck). Air bubbles mark refill spots. */
+        b.hint(5, 4.6, 'The coral reef! Your bubble helmet lets you swim anywhere. Jump in!').sparks(8, 1.2, 3).ground(13).review()
+          .sea(-0.6).gap(1).rise(-8)
+          .bubbles(2).scan(5, 's3r-shark').scan(10, 's3r-prey').scan(15, 's3r-compete').hazard(12, 4.6, { look: 'shark', ax: 7, ay: 0.4, sp: 0.35 }).ground(19)
+          .plat(2, 2.6, 4).plat(8, 4.6, 3).sparks(8.5, 5.6, 3).ground(13)
           .catchGame('c-symbiosis')
-          .squeeze(3, 4).snapper(11, 3.4, 0.6).ground(15)
-          .become('b-mutual')
-          .refuel().sparks(0.5, 8.5, 4).ground(6)
+          .bubbles(2).scan(5, 's3r-clown').scan(10, 's3r-cleaner').scan(15, 's3r-coral').ground(19)
+          .become('b-clownfish')
+          .snapper(6, 4, 0, 'eel').hazard(13, 3, { look: 'jelly', ax: 0.5, ay: 1.6, sp: 0.6 }).ground(18)
+          .current(0, 24, 0.4, 6.8, 3.2, 0).bubbles(12).sparks(4, 3.5, 6).ground(24)
+          .refuel().bubbles(1).ground(5)
           .station([{ sort: 'interaction', n: 4 }])
-          .bridge(11).virus(4, 2.5, 1.2).spikes(9, 1.8).qblock(13, 3.4, 'shield').ground(16)
-          .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
+          .bubbles(2).scan(5, 's3r-remora').scan(10, 's3r-parasite').hazard(14, 2.8, { look: 'jelly', ax: 1.2, ay: 1.2, sp: 0.5 }).ground(17)
+          .ground(3).rise(-3).bubbles(2).rare(4, 0.9, { name: 'Pygmy seahorse', fact: 'It is about 2 cm long and lives on one kind of sea fan, matching its color and bumps: camouflage.' }).ground(6).rise(3)
+          .squeeze(2, 6).snapper(11, 3.5, 1.5, 'eel').ground(14)
           .wordbank('wb-relations')
-          .crumbleBridge(4, 'mix').mixed(2, ['BIO.B.4.1.1', 'BIO.B.4.1.2', 'BIO.B.4.2.1', 'BIO.B.4.2.2'])
+          .mixed(2, ['BIO.B.4.1.1', 'BIO.B.4.1.2', 'BIO.B.4.2.1', 'BIO.B.4.2.2'])
+          .bubbles(2).hazard(9, 4.6, { look: 'shark', ax: 5, ay: 0.3, sp: 0.45 }).ground(14)
           .station(['w3q11', 'w3q15'])
+          .current(0, 10, 0.2, 9, 0, 4).ground(10).rise(8).shore()
+          .hint(3, 4.6, 'Back on the beach. Mothership ahead!').ground(10)
           .goal();
       } },
     { id: '3-3', title: 'Limits to Growth', theme: 'pond',

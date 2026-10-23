@@ -225,6 +225,8 @@ const SONGS = {
   membrane: { name: 'flowing membrane theme', bpm: 92, root: 60, scale: 'mixo', prog: [0, 6, 3, 0], seed: 9, drums: 1, lead: 'triangle' },
   body: { name: 'heartbeat theme', bpm: 112, root: 57, scale: 'minor', prog: [0, 5, 3, 4], seed: 13, drums: 2, lead: 'triangle' },
   shore: { name: 'ocean breeze theme', bpm: 92, root: 62, scale: 'major', prog: [0, 4, 5, 3], seed: 19, drums: 1, lead: 'triangle' },
+  deep: { name: 'deep sea theme', bpm: 58, root: 50, scale: 'minor', prog: [0, 5, 3, 4], seed: 77, drums: 0, lead: 'sine' },
+  reef: { name: 'coral reef theme', bpm: 84, root: 62, scale: 'major', prog: [0, 4, 5, 3], seed: 59, drums: 1, lead: 'triangle' },
   lab: { name: 'molecule builder theme', bpm: 104, root: 60, scale: 'mixo', prog: [0, 3, 6, 4], seed: 23, drums: 1, lead: 'square' },
   gut: { name: 'enzyme groove theme', bpm: 100, root: 57, scale: 'dorian', prog: [0, 3, 0, 4], seed: 29, drums: 2, lead: 'triangle' },
   leaf: { name: 'sunlit leaf theme', bpm: 96, root: 64, scale: 'major', prog: [0, 5, 3, 4], seed: 31, drums: 1, lead: 'triangle' },
@@ -293,7 +295,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 37 · October 22, 2026';
+const VERSION = 'Version 40 · October 23, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -323,6 +325,10 @@ const THEMES = {
   meadow: { skyTop: '#2a6fd4', horizon: '#cfeeff', skyBottom: '#8fc9f0', sun: ['#fff6d0', 40, 18, 240], ridge: '#5a8a4a', ground: '#3a4a22', top: '#7aa84a', rim: '#fff6c0',
     mote: '#ffffff', shafts: '#fff6d0', pal: ['#4a7a3a', '#6a9a4a', '#8aba5a'], shapes: ['tree', 'hill'], density: 0.8, fogD: 0.008, hemi: ['#e8f6ff', '#3a4a2a'], key: '#fff6e0' },
   /* Worlds 3 to 5 */
+  reef: { skyTop: '#2a8ad8', horizon: '#9fe6f0', skyBottom: '#1f6a9a', sun: ['#fff8d8', 30, 20, 240], ridge: '#1f5f7a', ground: '#d8c08a', top: '#f0dca8', rim: '#fff6d0',
+    mote: '#e8fbff', shafts: '#cff6ff', pal: ['#ff7a8a', '#ffb070', '#c59cff', '#ffd166', '#5fd0c5', '#ff9fdf'], shapes: ['coral', 'fan', 'kelp', 'coral'], density: 0.9, fogD: 0.012, hemi: ['#d8f6ff', '#1a3a4a'], key: '#fff6e0', seabed: -9, doorWall: '#b08a6a' },
+  deep: { skyTop: '#1a6ab8', horizon: '#8fd0e8', skyBottom: '#1f5a8a', sun: ['#fff8d8', 30, 20, 240], ridge: '#1a4a6a', ground: '#3a3c48', top: '#5a5c6a', rim: '#9fe6ff',
+    mote: '#cfefff', shafts: '#bfe8ff', pal: ['#bfe8ff', '#9fd8ff', '#d8c8ff'], shapes: ['blob'], density: 0.001, fogD: 0.012, hemi: ['#cfe8ff', '#10202c'], key: '#e8f4ff', doorWall: '#4a4c58' },
   forest: { skyTop: '#123a2a', horizon: '#f0c878', skyBottom: '#6a8a4a', sun: ['#fff0b0', 35, 16, 230], ridge: '#1f4a2a', ground: '#2e3a1e', top: '#5f8a3a', rim: '#fff0c0',
     mote: '#fff6c0', shafts: '#ffe8a0', pal: ['#1f4a2a', '#2f6a34', '#4a8a3a'], shapes: ['tree', 'tree', 'hill'], density: 0.85, fogD: 0.011, hemi: ['#f0f8d0', '#1a2a12'], key: '#fff0c8' },
   garden: { skyTop: '#3a6ad0', horizon: '#ffe6c0', skyBottom: '#a8d0f0', sun: ['#fff6d0', -35, 16, 240], ridge: '#6a9a4a', ground: '#4a3a22', top: '#8ab84a', rim: '#fff6d0',
@@ -363,7 +369,9 @@ function gate(x0, x1, y0, y1) {
   const core = new T.Mesh(G.box, basic(L.th.rim, 0.28, true)); core.scale.set(0.15, y1 - y0, 5.2); core.position.copy(m.position); g.add(core);
   return g;
 }
+let RIDGES = [];
 function scenery(th, x0, x1, grp, anim) {
+  RIDGES = [];
   const low = S.set.low, hz = new T.Color(th.horizon);
   scene.background = new T.Color(th.horizon); scene.fog = new T.FogExp2(th.horizon, th.fogD);
   HEMI.color.set(th.hemi[0]); HEMI.groundColor.set(th.hemi[1]); KEYL.color.set(th.key);
@@ -393,7 +401,7 @@ function scenery(th, x0, x1, grp, anim) {
     for (let x = xa; x <= xb; x += 2.5) sh.lineTo(x, base + amp * (0.6 * Math.sin(x * fr[0] + ph[0]) + 0.3 * Math.sin(x * fr[1] + ph[1]) + 0.1 * Math.sin(x * fr[2] + ph[2])));
     sh.lineTo(xb, -120); sh.closePath();
     const col = new T.Color(th.ridge).lerp(hz, 0.12 + k * 0.2), m = new T.Mesh(new T.ShapeGeometry(sh), new T.MeshBasicMaterial({ color: col, fog: false }));
-    m.position.z = z; m.renderOrder = -5 + k; grp.add(m);
+    m.position.z = z; m.renderOrder = -5 + k; grp.add(m); RIDGES.push({ m: m, base: col.clone() });
   });
   /* beams of light from above */
   if (th.shafts && !low) {
@@ -515,7 +523,7 @@ function buildAlien(a) {
   for (let i = 0; i < a.ant; i++) {
     const off = (i - (a.ant - 1) / 2) * 0.4;
     const st = mesh('cyl', col); st.scale.set(0.035, 0.4, 0.035); st.position.set(off, top + 0.15, 0); g.add(st);
-    const b = new T.Mesh(G.sph, emat('#ffd166', '#c08a10')); b.scale.setScalar(0.09); b.position.set(off, top + 0.38, 0); b.add(glow('#ffd166', 9, 0.7)); g.add(b);
+    const b = new T.Mesh(G.sph, emat('#ffd166', '#c08a10')); b.scale.setScalar(0.09); b.position.set(off, top + 0.38, 0); b.add(glow('#ffd166', 9, 0.7)); g.add(b); (g.userData.bulbs = g.userData.bulbs || []).push(b);
   }
   if (a.gear === 2) { const cape = mesh('box', '#D55E00'); cape.scale.set(sc[0] * 1.7, sc[1] * 1.5, 0.06); cape.position.set(0, sc[1] * 0.95, -sc[2] - 0.05); cape.rotation.x = 0.18; g.add(cape); g.userData.cape = cape; }
   if (a.gear === 3) {
@@ -532,10 +540,16 @@ function decor(th, x0, x1, grp, anim) {
     for (let i = 0; i < count; i++) {
       const shape = ly.fore ? 'blob' : th.shapes[Math.floor(Math.random() * th.shapes.length)];
       const c = new T.Color(th.pal[Math.floor(Math.random() * th.pal.length)]).lerp(fog, ly.f);
-      const col = '#' + c.getHexString(), s = ly.s * rnd(0.7, 1.4);
+      const col = '#' + c.getHexString(); let s = ly.s * rnd(0.7, 1.4);
       const x = rnd(x0 - 30 - Math.abs(ly.z), x1 + 30 + Math.abs(ly.z)), z = ly.z + rnd(-2, 2);
       let m, floaty = true, y = rnd(-4, 14) * (ly.fore ? 0.7 : Math.max(1, ly.s * 0.45));
-      if (shape === 'tree') { m = new T.Mesh(G.cone, basic(col)); m.scale.set(s * 0.8, s * 2.4, s * 0.8); y = -1 + s * 2.4; floaty = false; }
+      if (shape === 'coral' || shape === 'fan' || shape === 'kelp') { /* reef life standing on the sea floor */
+        const fl = (th.seabed || -9) - 0.5 - (ly.s > 2 ? ly.s * 0.6 : 0); m = new T.Group(); floaty = false; y = fl; s = Math.min(s, 2.6);
+        if (shape === 'coral') { for (let k = 0; k < 5; k++) { const br = new T.Mesh(G.cyl, emat(col, '#2a1a1a')); const h = s * rnd(0.8, 1.6); br.scale.set(s * 0.18, h, s * 0.18); br.position.set(rnd(-0.6, 0.6) * s, h / 2, rnd(-0.3, 0.3)); br.rotation.z = rnd(-0.5, 0.5); m.add(br); const tip = new T.Mesh(G.sph, emat(col, '#2a1a1a')); tip.scale.setScalar(s * 0.24); tip.position.set(br.position.x - Math.sin(br.rotation.z) * h / 2, h, br.position.z); m.add(tip); } }
+        else if (shape === 'fan') { const f = new T.Mesh(G.sph, emat(col, '#2a102a')); f.scale.set(s * 1.4, s * 1.3, s * 0.06); f.position.y = s * 1.2; m.add(f); }
+        else { const k2 = new T.Mesh(G.cyl, emat('#5a8a3a', '#1a2a0a')); const h = s * rnd(3, 6); k2.scale.set(s * 0.12, h, s * 0.12); k2.position.y = h / 2; m.add(k2); }
+        m.rotation.y = rnd(0, 3); anim.push({ m: m, y: y, ph: rnd(0, 6), amp: 0, rot: 0, sway: true }); }
+      else if (shape === 'tree') { m = new T.Mesh(G.cone, basic(col)); m.scale.set(s * 0.8, s * 2.4, s * 0.8); y = -1 + s * 2.4; floaty = false; }
       else if (shape === 'hill') { m = mesh('sph', col); m.scale.set(s * 5, s * 2.4, s * 3); y = -2; floaty = false; }
       else if (shape === 'pillar') { m = mesh('cyl', col); m.scale.set(s * 0.5, s * 7, s * 0.5); y = rnd(-3, 3); floaty = false; }
       else if (shape === 'bean') { m = mesh('sph', col); m.scale.set(s * 1.7, s * 0.75, s * 0.75); m.rotation.z = rnd(0, 3); }
@@ -625,6 +639,7 @@ function specimen(look, col) {
   else if (look === 'lily') { const p = new T.Mesh(G.cyl, M('#3f9a4a')); p.scale.set(0.9, 0.06, 0.9); p.position.y = 0.1; g.add(p); sph('#ffb0d0', 0.22, 0.2, 0.22, 0.2, 0.3); }
   else if (look === 'eggs') { for (let i = 0; i < 7; i++) sph('#e8f0d0', 0.16, 0.16, 0.16, Math.cos(i) * 0.35, 0.25 + (i % 3) * 0.12, Math.sin(i) * 0.25); }
   else if (look === 'turtle') { sph('#6a8a3a', 0.7, 0.4, 0.55, 0, 0.4); sph('#8ab06a', 0.2, 0.18, 0.2, 0.75, 0.35); }
+  else if (look === 'tubeworm') { g.userData.grow = true; [-0.35, 0, 0.35].forEach(function (tx, i) { const t = new T.Mesh(G.cyl, M('#f4f0e8')); const h = 1.1 + i * 0.25; t.scale.set(0.1, h / 2, 0.1); t.position.set(tx, h / 2, 0); g.add(t); sph('#e8283a', 0.17, 0.26, 0.17, tx, h + 0.15); }); }
   else if (look === 'rod') { g.userData.wiggle = true; sph(col, 0.7, 0.3, 0.3, 0, 0.8); const f = new T.Mesh(G.cyl, M(col)); f.scale.set(0.03, 0.5, 0.03); f.rotation.z = Math.PI / 2; f.position.set(-0.9, 0.8, 0); g.add(f); sph('#ffd166', 0.25, 0.08, 0.08, 0.1, 0.8, 0.22); }
   else if (look === 'cell') { const m = new T.Mesh(G.sph, basic(col, 0.35, true)); m.scale.setScalar(0.85); m.position.y = 0.9; g.add(m); sph('#8a5ac8', 0.3, 0.3, 0.3, 0.1, 0.9, 0.2); sph('#ff9f6e', 0.15, 0.08, 0.08, -0.4, 0.7, 0.3); }
   else if (look === 'helix') { g.userData.spin = true; for (let i = 0; i < 10; i++) { const a = i * 0.7; sph(i % 2 ? '#7fd4ff' : '#ffb09c', 0.1, 0.1, 0.1, Math.cos(a) * 0.3, 0.2 + i * 0.16, Math.sin(a) * 0.3); sph(i % 2 ? '#ffd166' : '#7be0ad', 0.1, 0.1, 0.1, -Math.cos(a) * 0.3, 0.2 + i * 0.16, -Math.sin(a) * 0.3); } }
@@ -703,7 +718,7 @@ function refuelSummary() {
   $('qopts').innerHTML = '<div class="rfSum"><div><b>' + st.answered + '</b><span>answered</span></div><div><b>' + st.right + '</b><span>correct</span></div><div><b>+' + st.pts + '</b><span>points</span></div></div><button type="button" class="opt" data-rf="done">Continue (E)</button>';
   $('qfb').textContent = ''; if (st.pts) burst(P.x, P.y + 1, '#5ff5e6'); beep(990, 0.25, 'sine', 'rising chime, refueled'); hud();
 }
-function nearScan() { return L.scans.find(function (k) { return Math.abs(P.x - k.x) < 1.6 && P.y > k.y - 1 && P.y < k.y + 2.4; }); }
+function nearScan() { return L.scans.find(function (k) { return !k.buried && Math.abs(P.x - k.x) < 1.6 && P.y > k.y - 1 && P.y < k.y + 2.4; }); }
 function showNote(sc) {
   const n = $('note'); n.innerHTML = '<small>New word for your Field Guide</small><b>' + esc(sc.word) + '</b><span>' + esc(sc.note) + '</span>';
   n.hidden = false; noteT = Math.max(8, sc.note.split(' ').length / 2.6);
@@ -771,6 +786,7 @@ function disposeGroup(g) {
   g.traverse(function (o) { if (o.geometry && shared.indexOf(o.geometry) < 0) o.geometry.dispose(); });
 }
 function teardown() {
+  caveLight(false);
   if (L) { scene.remove(L.group); disposeGroup(L.group); }
   if (menuGrp) { scene.remove(menuGrp); disposeGroup(menuGrp); menuGrp = null; }
   SKY = null; MOTES = null;
@@ -788,6 +804,13 @@ function addGround(x0, x1, y) {
 }
 function builder() {
   const D = BQ.data[L.world.id] || {};
+  /* MORAY EEL: lives in a rock hole on the reef and lunges out on a steady beat (a reef version of the snapper) */
+  function eelHole(dx, period, offset) {
+    const x = b.x + dx, rock = new T.Mesh(G.sph, emat('#6a5a4a', '#1a120a')); rock.scale.set(1.3, 1.1, 1); rock.position.set(x, b.y + 0.3, -0.4); L.group.add(rock);
+    const hole = new T.Mesh(G.sph, basic('#0a0a10')); hole.scale.set(0.5, 0.42, 0.2); hole.position.set(x, b.y + 0.55, 0.55); L.group.add(hole);
+    const g = new T.Group(), head = foeMesh('eel'); g.add(head); g.position.set(x, b.y, 0); L.group.add(g);
+    L.hazards.push({ kind: 'snapper', foe: 'eel', m: g, head: head, arms: [new T.Group(), new T.Group()], x: x, y: b.y, gy: b.y, period: period || 4, offset: offset || 0, t: 0, alive: true }); return b;
+  }
   const b = {
     x: 0, y: 0,
     ground: function (len) { addGround(b.x, b.x + len, b.y); b.x += len; return b; },
@@ -856,6 +879,103 @@ function builder() {
       return b;
     },
     checkpoint: function () { L.cps.push({ x: b.x - 2, y: b.y }); return b; },
+    /* ---------- WATER (bubble helmet) ----------
+       sea(top): water starts here; its surface is "top" above the current ground. shore() ends it.
+       Below the surface the alien swims: hold jump to rise, duck to dive. An air meter drains while the
+       head is under water; air bubbles from a vent (bubbles) or the surface refill it. */
+    sea: function (top) { const w = { x0: b.x, x1: 1e9, top: b.y + (top || 0) }; L.waters.push(w); L.waterOpen = w; return b; },
+    shore: function () { if (L.waterOpen) { L.waterOpen.x1 = b.x; L.waterOpen = null; } return b; },
+    /* a current: a stream of water that pushes you (vx, vy); shown as drifting streaks */
+    current: function (dx, len, dy0, dy1, vx, vy) {
+      const c = { x0: b.x + dx, x1: b.x + dx + len, y0: b.y + dy0, y1: b.y + dy1, vx: vx || 0, vy: vy || 0, streaks: [] };
+      const n = S.set.low ? 6 : 14;
+      for (let i = 0; i < n; i++) { const m = new T.Mesh(G.box, basic('#cff6ff', 0.35, true)); m.scale.set(vx ? 1.1 : 0.06, vy && !vx ? 1.1 : 0.06, 0.06); m.position.set(rnd(c.x0, c.x1), rnd(c.y0, c.y1), rnd(-0.8, 0.8)); L.group.add(m); c.streaks.push(m); }
+      L.currents.push(c); return b;
+    },
+    /* a research ship: a white hull under the deck you start on, and a crane for lowering subs (scenery) */
+    ship: function (len) {
+      const x0 = b.x - len, hull = box(x0 - 1, b.x + 0.6, b.y - 3.2, b.y - 0.02, 8, '#f2f4f6'); L.group.add(hull);
+      const stripe = box(x0 - 1, b.x + 0.6, b.y - 1.2, b.y - 0.8, 8.1, '#d8343a'); L.group.add(stripe);
+      const cab = box(x0 + 1, x0 + 5, b.y, b.y + 3, 2.4, '#f2f4f6'); cab.position.z = -1.6; L.group.add(cab);
+      const win = box(x0 + 1.4, x0 + 4.6, b.y + 1.9, b.y + 2.5, 2.5, '#2a4a6a'); win.position.z = -1.55; L.group.add(win);
+      [-0.8, 0.8].forEach(function (z) { const leg = new T.Mesh(G.cyl, emat('#ff9a2a', '#5a2a0a')); leg.scale.set(0.12, 2.4, 0.12); leg.position.set(b.x - 2, b.y + 2.3, z); leg.rotation.z = -0.35; L.group.add(leg); });
+      const bar = new T.Mesh(G.cyl, emat('#ff9a2a', '#5a2a0a')); bar.scale.set(0.12, 0.9, 0.12); bar.rotation.x = Math.PI / 2; bar.position.set(b.x - 0.4, b.y + 4.5, 0); L.group.add(bar);
+      return b;
+    },
+    /* OCEAN ZONES: a depth marker sign (sunlit, twilight, midnight...) */
+    oceanZone: function (name, sub) {
+      const sg = label(name.toUpperCase() + (sub ? ': ' + sub : ''), 8, { bg: '#e8f6ff', fg: '#06283a', bd: '#06283a' }); sg.position.set(b.x + 7, b.y + 7.4, -1.5); L.group.add(sg); return b;
+    },
+    /* below this depth there is no sunlight at all: the antennae light the way */
+    abyss: function (dy) { L.deepY = b.y + (dy || 0); return b; },
+    /* glowing animals of the deep (scenery): 'lantern' (a school of lanternfish), 'comb' (comb jellies), 'snow' (bioluminescent specks) */
+    glowers: function (dx, dy, kind, n) {
+      const g = new T.Group(), list = []; n = n || (kind === 'lantern' ? 9 : 4);
+      for (let i = 0; i < n; i++) {
+        const m = new T.Group();
+        if (kind === 'lantern') { const bd = new T.Mesh(G.sph, emat('#2a3a4a', '#0a1018')); bd.scale.set(0.32, 0.12, 0.1); m.add(bd); for (let k = 0; k < 3; k++) { const ph = new T.Mesh(G.sph, new T.MeshBasicMaterial({ color: '#7fe8ff', fog: false })); ph.scale.setScalar(0.05); ph.position.set(-0.18 + k * 0.14, -0.08, 0.08); m.add(ph); } m.add(glow('#7fe8ff', 2.6, 0.8, false)); }
+        else if (kind === 'comb') { const bd = new T.Mesh(G.sph, new T.MeshBasicMaterial({ color: '#e8f8ff', transparent: true, opacity: 0.12, depthWrite: false })); bd.scale.set(0.3, 0.45, 0.3); m.add(bd); for (let k = 0; k < 4; k++) { const r = new T.Mesh(G.box, new T.MeshBasicMaterial({ color: '#ff7aa8', transparent: true, opacity: 0.95, blending: T.AdditiveBlending, depthWrite: false, fog: false })); r.scale.set(0.04, 0.8, 0.04); r.position.set(Math.cos(k * 1.57) * 0.28, 0, Math.sin(k * 1.57) * 0.28); m.add(r); } m.add(glow('#c8b8ff', 3.2, 0.7, false)); }
+        else { m.add(glow(['#7fe8ff', '#9fffd8', '#bfd8ff'][i % 3], 1.1, 0.95, false)); }
+        m.userData = { ox: rnd(-2.5, 2.5), oy: rnd(-1.2, 1.2), ph: rnd(0, 6.3) }; g.add(m); list.push(m);
+      }
+      g.position.set(b.x + dx, b.y + dy, kind === 'snow' ? -1 : 0.3); L.group.add(g); L.glowers.push({ g: g, list: list, kind: kind, t: 0 }); return b;
+    },
+    /* HYDROTHERMAL VENT ("black smoker"): a chimney of minerals with a plume of hot, dark water rising from it.
+       The plume carries the alien up (like an elevator); tube worms crowd around the base. */
+    smoker: function (dx, h, rise) {
+      const x = b.x + dx, y = b.y, g = new T.Group(); h = h || 3.2;
+      for (let i = 0; i < 4; i++) { const c = new T.Mesh(G.cyl, emat(['#2a2420', '#3a2e24', '#4a3a2a', '#2a2420'][i], '#0a0604')); const w = 0.9 - i * 0.16; c.scale.set(w, h / 8, w); c.position.y = h / 8 + i * h / 4; g.add(c); }
+      const mouth = new T.Mesh(G.sph, basic('#ff9a4a', 0.8, true)); mouth.scale.set(0.3, 0.1, 0.3); mouth.position.y = h; g.add(mouth); const mg = glow('#ff8a3a', 2.4, 0.5); mg.position.y = h; g.add(mg);
+      for (let i = 0; i < 9; i++) { const tx = rnd(-2.4, 2.4); if (Math.abs(tx) < 1) continue; const th = rnd(0.6, 1.5);
+        const tube = new T.Mesh(G.cyl, emat('#f4f0e8', '#3a3a3a')); tube.scale.set(0.07, th / 2, 0.07); tube.position.set(tx, th / 2, rnd(-0.6, 0.6)); g.add(tube);
+        const plume = new T.Mesh(G.sph, emat('#e8283a', '#5a0a10')); plume.scale.set(0.13, 0.2, 0.13); plume.position.set(tx, th + 0.12, tube.position.z); g.add(plume); }
+      g.position.set(x, y, -0.4); L.group.add(g); addSolid(x - 0.45, x + 0.45, y, y + h * 0.75);
+      const puffs = []; if (!S.set.low) for (let i = 0; i < 14; i++) { const p = new T.Mesh(G.sph, new T.MeshBasicMaterial({ color: '#6a5a50', transparent: true, opacity: 0.55, depthWrite: false })); p.scale.setScalar(0.4); p.position.set(x, y + h + rnd(0, rise || 9), -0.2); L.group.add(p); puffs.push(p); }
+      L.smokers.push({ x: x, y0: y + h, y1: y + h + (rise || 9), puffs: puffs });
+      L.currents.push({ x0: x - 1.3, x1: x + 1.3, y0: y + h * 0.75, y1: y + h + (rise || 9), vx: 0, vy: 7.5, streaks: [] });
+      if (!L.toldVent) { L.toldVent = 1; const sg = label('♨️ Ride the vent plume up!', 3.6, { bd: '#ff9a4a' }); sg.position.set(x, y + h + 2, 0.6); L.group.add(sg); }
+      return b;
+    },
+    /* an air vent on the sea floor: a column of bubbles that refills your air */
+    bubbles: function (dx) {
+      const x = b.x + dx, g = new T.Group(), rock = new T.Mesh(G.sph, emat('#5a6a7a', '#101820')); rock.scale.set(0.9, 0.45, 0.7); g.add(rock); g.position.set(x, b.y, -0.3); L.group.add(g);
+      const bs = []; for (let i = 0; i < (S.set.low ? 6 : 12); i++) { const m = new T.Mesh(G.sph, basic('#e8fbff', 0.55, true)); m.scale.setScalar(rnd(0.08, 0.2)); m.position.set(x + rnd(-0.3, 0.3), b.y + rnd(0, 8), 0.3); L.group.add(m); bs.push(m); }
+      L.airs.push({ x: x, y: b.y, bs: bs }); return b;
+    },
+    /* ---------- DIGGING (burrow drill) ----------
+       digShaft(w, depth, roomLen, o): a shaft of soft rock to drill DOWN through into the next, older rock layer.
+       Hard rock to the right is the ceiling of the room below, so drilling is the only way down. */
+    digShaft: function (w, depth, o) {
+      o = o || {}; closeSlab(b.x + w); const x0 = b.x, yTop = b.y, yBot = b.y - depth, cols = Math.max(1, Math.round(w / 1.5)), rows = Math.max(1, Math.round(depth / 1.5)), tw = w / cols, th = depth / rows;
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) digTile(x0 + c * tw, x0 + (c + 1) * tw, yTop - (r + 1) * th, yTop - r * th, o.color);
+      addGround(x0, x0 + w, yBot);
+      L.slab = { x0: x0 + w, yTop: yTop, rock: o.rock || '#5a4a3a' }; /* the hard-rock ceiling over the next room; closed when the room ends */
+      const sg = label('⛏️ Soft rock: hold ↓ to drill down', 4.4, { bd: '#ffd166' }); sg.position.set(x0 + w / 2, yTop + 2.6, 0.5); L.group.add(sg);
+      L.digHint = L.digHint || x0; b.x = x0 + w; b.y = yBot; return b;
+    },
+    /* the tunnel comes out into daylight (the canyon floor) */
+    caveEnd: function () { closeSlab(b.x + 1); L.darkEnd = b.x + 1; const sg = label('☀️ Daylight! The canyon floor', 4.4, { bd: '#ffd166' }); sg.position.set(b.x + 4, b.y + 4.6, 0.5); L.group.add(sg); return b; },
+    /* a block of soft rock (for example a wall hiding a secret chamber) */
+    digBlock: function (dx, dy, w, h, color) {
+      const cols = Math.max(1, Math.round(w / 1.5)), rows = Math.max(1, Math.round(h / 1.5)), tw = w / cols, th = h / rows;
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) digTile(b.x + dx + c * tw, b.x + dx + (c + 1) * tw, b.y + dy + r * th, b.y + dy + (r + 1) * th, color);
+      return b;
+    },
+    /* a rock layer: a sign with its age, a back wall in the layer's color, and darkness (the drill's light shows the way) */
+    stratum: function (o) {
+      const len = o.len || 60, wall = box(b.x - 2, b.x + len, b.y - 1, b.y + 10, 0.5, o.color || '#8a6a4a'); wall.position.z = -4; L.group.add(wall);
+      for (let i = 0; i < len / 3; i++) { const st = box(b.x + i * 3, b.x + i * 3 + rnd(1, 2.5), b.y + rnd(0, 9), 0, 0.2, new T.Color(o.color || '#8a6a4a').offsetHSL(0, 0, rnd(-0.08, 0.08)).getStyle()); st.scale.y = rnd(0.15, 0.4); st.position.y = b.y + rnd(0.5, 9); st.position.z = -3.7; L.group.add(st); }
+      const sg = label(o.name, 7.5, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }); sg.position.set(b.x + 9, b.y + 8.3, -1.5); L.group.add(sg);
+      if (o.sub) { const s2 = label(o.sub, 7.5, { bd: '#ffd166' }); s2.position.set(b.x + 9, b.y + 6.9, -1.5); L.group.add(s2); }
+      if (L.darkX == null) { L.darkX = b.x - 1; L.darkTop = b.y + 10; }
+      return b;
+    },
+    /* CAVE-IN: a rock shakes loose from the ceiling and drops on a steady beat; dust falls first as a warning */
+    rockfall: function (dx, period, offset, h) {
+      const x = b.x + dx, top = b.y + (h || 7.9), g = new T.Group(), r = new T.Mesh(G.ico, emat('#7a6a5a', '#1a140a')); r.scale.set(0.7, 0.55, 0.6); g.add(r); g.position.set(x, top, 0); L.group.add(g);
+      const dust = glow('#e8d8b8', 1.6, 0); dust.position.set(x, top - 0.4, 0.5); L.group.add(dust);
+      L.hazards.push({ kind: 'rock', m: g, dust: dust, x: x, y: top, top: top, gy: b.y, period: period || 4, offset: offset || 0, t: 0, alive: true }); return b;
+    },
     /* REFUEL STATION: an optional bonus quiz. Stand on the glowing pad and press E. */
     refuel: function () {
       const x0 = b.x, cx = x0 + 4; addGround(x0, x0 + 8, b.y); const g = new T.Group();
@@ -916,10 +1036,12 @@ function builder() {
     wordbank: function (id) { const wb = (D.wordbanks || []).find(function (e) { return e.id === id; }); if (wb) makeWordbank(wb); return b; },
     /* ACTION PIECES: free radicals to dodge or stomp, moving platforms, ATP boosts, catch games */
     hazard: function (dx, dy, o) {
-      o = o || {}; const g = new T.Group(), core = new T.Mesh(G.ico, emat('#ff6b4a', '#7a1a0a')); core.scale.setScalar(0.55); g.add(core);
-      const sp = new T.Mesh(G.oct, emat('#ffb09c', '#7a2a1a')); sp.scale.set(0.95, 0.25, 0.25); g.add(sp); const sp2 = sp.clone(); sp2.rotation.z = Math.PI / 2; g.add(sp2);
-      g.add(glow('#ff6b4a', 2.8, 0.55)); g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g);
-      L.hazards.push({ m: g, bx: b.x + dx, by: b.y + dy, x: b.x + dx, y: b.y + dy, ax: o.ax || 0, ay: o.ay == null ? 0.6 : o.ay, sp: o.sp || 1.5, ph: Math.random() * 6, t: 0, alive: true }); return b;
+      o = o || {}; const g = o.look ? foeMesh(o.look) : new T.Group();
+      if (!o.look) { const core = new T.Mesh(G.ico, emat('#ff6b4a', '#7a1a0a')); core.scale.setScalar(0.55); g.add(core);
+        const sp = new T.Mesh(G.oct, emat('#ffb09c', '#7a2a1a')); sp.scale.set(0.95, 0.25, 0.25); g.add(sp); const sp2 = sp.clone(); sp2.rotation.z = Math.PI / 2; g.add(sp2);
+        g.add(glow('#ff6b4a', 2.8, 0.55)); }
+      g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g);
+      L.hazards.push({ m: g, look: o.look || null, bx: b.x + dx, by: b.y + dy, x: b.x + dx, y: b.y + dy, ax: o.ax || 0, ay: o.ay == null ? 0.6 : o.ay, sp: o.sp || 1.5, ph: Math.random() * 6, t: 0, alive: true }); return b;
     },
     bridge: function (len, o) {
       o = o || {}; const w = o.w || 3.6, cx = b.x + len / 2, sl = addSolid(cx - w / 2, cx + w / 2, b.y - 0.5, b.y, { oneWay: true });
@@ -940,7 +1062,8 @@ function builder() {
     /* SNAPPER: a phagocyte (an amoeba in the pond, a white blood cell in the body) that pops out of a
        pore on a steady beat to engulf whatever is nearby. It shakes just before it pops up.
        Time your jump to get past; it cannot be stomped. */
-    snapper: function (dx, period, offset) {
+    snapper: function (dx, period, offset, look) {
+      if (look === 'eel') return eelHole(dx, period, offset);
       const x = b.x + dx, g = new T.Group(), pore = new T.Mesh(G.tor, emat('#6a4a7a', '#200a2a')); pore.scale.set(0.8, 0.8, 0.8); pore.rotation.x = Math.PI / 2; pore.position.set(x, b.y + 0.05, 0); L.group.add(pore);
       const head = new T.Group(), body = new T.Mesh(G.sph, emat('#e6f0ff', '#3a4a6a')); body.scale.set(0.85, 0.75, 0.7); head.add(body); head.add(glow('#cfe0ff', 2.6, 0.35));
       const nuc = new T.Mesh(G.sph, emat('#8a5ac8', '#2a0a4a')); nuc.scale.set(0.32, 0.26, 0.2); nuc.position.set(0.15, -0.15, 0.55); head.add(nuc);
@@ -969,6 +1092,14 @@ function builder() {
       const nm = label('🔍 ' + sc.name, 3, { bd: '#9fe0ff' }); nm.position.set(x, y + 3.6, 0.6); L.group.add(nm);
       L.scans.push({ sc: sc, x: x, y: y, g: g, ring: ring, nm: nm, done: false, t: Math.random() * 6 }); return b;
     },
+    /* FOSSIL: a specimen buried in a mound of soft rock. Drill it out to uncover the fact card, then press E. */
+    fossil: function (dx, id) {
+      b.scan(dx, id); const k = L.scans[L.scans.length - 1]; if (!k || k.sc.id !== id) return b;
+      const x0 = k.x - 1.5, tiles = []; for (let c = 0; c < 2; c++) for (let r = 0; r < 2; r++) tiles.push(digTile(x0 + c * 1.5, x0 + (c + 1) * 1.5, b.y + r * 1.5, b.y + (r + 1) * 1.5, '#a08060'));
+      const bone = new T.Mesh(G.box, basic('#f4ecd8', 0.9)); bone.scale.set(0.9, 0.18, 0.05); bone.rotation.z = 0.5; bone.position.set(k.x, b.y + 1.6, 3.64); L.group.add(bone); tiles[1].digM.push(bone);
+      const tag = label('⛏️ Buried fossil! Push into the rock to drill it out.', 4.2, { bd: '#ffd166' }); tag.position.set(k.x, b.y + 3.9, 0.6); L.group.add(tag);
+      k.buried = tiles; k.tag = tag; k.g.visible = k.ring.visible = k.nm.visible = false; return b;
+    },
     /* SQUEEZE: a low tunnel of fibers. Duck (down arrow or S) and crawl through. */
     squeeze: function (dx, len) {
       const x0 = b.x + dx, x1 = x0 + (len || 4); addSolid(x0, x1, b.y + 1.05, b.y + 7.2); L.group.add(box(x0, x1, b.y + 1.05, b.y + 7.2, 1.6, L.th.top));
@@ -992,9 +1123,10 @@ function builder() {
       s.qb = { m: m, q: q, gl: gl, reward: reward || 'sparks', used: false, x: x0 + 0.6, y: y0 + 1.2 }; return b;
     },
     /* RARE SPECIMEN: one hidden bonus per level, usually somewhere only a double jump can reach. */
-    rare: function (dx, dy) {
+    rare: function (dx, dy, o) {
       const g = new T.Group(), core = new T.Mesh(G.ico, emat('#ffd700', '#8a6a00')); core.scale.setScalar(0.45); g.add(core); g.add(glow('#ffd700', 4, 0.8));
-      g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g); L.rare = { x: b.x + dx, y: b.y + dy, m: g, got: false }; return b;
+      if (o && o.name) { const lb = label('✦ ' + o.name, 3.2, { bd: '#ffd700' }); lb.position.y = 1.2; g.add(lb); }
+      g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g); L.rare = { x: b.x + dx, y: b.y + dy, m: g, got: false, name: o && o.name, fact: o && o.fact }; return b;
     },
     /* a trail of sparks along a jump arc: shows the player where to jump */
     arc: function (dx, len, h) {
@@ -1086,7 +1218,7 @@ function builder() {
     const x0 = b.x, y = b.y, wx = x0 + 17, end = x0 + 31;
     addGround(x0, end, y);
     const op = [[0, 2.3], [2.7, 4.9], [5.3, 7.5]].map(function (o) { return [y + o[0], y + o[1]]; });
-    [[y + 2.3, y + 2.7], [y + 4.9, y + 5.3], [y + 7.5, y + 18]].forEach(function (g) { addSolid(wx, wx + 1.4, g[0], g[1]); L.group.add(bilayer(wx, wx + 1.4, g[0], g[1])); });
+    [[y + 2.3, y + 2.7], [y + 4.9, y + 5.3], [y + 7.5, y + 18]].forEach(function (g) { addSolid(wx, wx + 1.4, g[0], g[1]); L.group.add(L.th.doorWall ? box(wx, wx + 1.4, g[0], g[1], 4.6, L.th.doorWall) : bilayer(wx, wx + 1.4, g[0], g[1])); });
     [[wx - 6.5, y + 2.7], [wx - 4, y + 5.3]].forEach(function (p) { const sl = addSolid(p[0], wx, p[1] - 0.4, p[1], { oneWay: true }); L.group.add(box(sl.x0, sl.x1, sl.y0, sl.y1, 3, L.th.top)); });
     const KC = { lipid: '#f2c078', protein: '#c59cff', pump: '#ff9f6e', flow: '#7fd4ff', organelle: '#ffd166', vesicle: '#7be0ad' };
     const doors = shuffle(it.doors).map(function (d, i) {
@@ -1097,7 +1229,7 @@ function builder() {
       const lb = label(d.label, 3.2, { bd: KC[d.kind] || '#7fd4ff' }); lb.position.set(wx - 1.9, mid + 0.2, -0.9); g.add(lb);
       L.group.add(g); return { d: d, s: sd, g: g, plate: plate, cool: 0, kc: KC[d.kind] || '#7fd4ff' };
     });
-    for (let i = doors.length; i < 3; i++) { addSolid(wx, wx + 1.4, op[i][0], op[i][1]); L.group.add(bilayer(wx, wx + 1.4, op[i][0], op[i][1])); }
+    for (let i = doors.length; i < 3; i++) { addSolid(wx, wx + 1.4, op[i][0], op[i][1]); L.group.add(L.th.doorWall ? box(wx, wx + 1.4, op[i][0], op[i][1], 4.6, L.th.doorWall) : bilayer(wx, wx + 1.4, op[i][0], op[i][1])); }
     if (it.hereCrowd != null) {
     crowd(x0 + 1, wx - 0.4, y, it.hereCrowd * 3, it.dotColor || it.color);
     crowd(wx + 1.8, end - 1, y, it.thereCrowd * 3, it.dotColor || it.color);
@@ -1688,13 +1820,165 @@ function zoneAct(z) {
 function doorText(d) {
   d.label.material.map = labelTex('Collected ' + d.got + ' of ' + d.need); d.label.material.needsUpdate = true;
 }
+/* ---------- REAL EARTH CREATURES (used instead of the cell-world enemies in Earth-biome levels) ---------- */
+const FOES = {
+  jelly: { name: 'jellyfish', stomp: false, msg: 'Stung by a jellyfish! Its tentacles are lined with stinging cells. Swim around it.' },
+  shark: { name: 'reef shark', stomp: false, msg: 'A reef shark bumped you! Predators patrol the reef. Wait in the coral until it passes.' },
+  angler: { name: 'anglerfish', stomp: false, msg: 'An anglerfish snapped at you! Its glowing lure is lit by bioluminescent bacteria living inside it. Keep your distance.' },
+  atolla: { name: 'alarm jellyfish', stomp: false, msg: 'Stung by an Atolla jellyfish! When attacked, it flashes a ring of blue light, like a burglar alarm, to call bigger predators.' },
+  eel: { name: 'moray eel', stomp: false, msg: 'A moray eel lunged from its hole! Morays are ambush predators. Swim past while it is hiding.' }
+};
+function foeMesh(look) {
+  const g = new T.Group();
+  if (look === 'jelly') {
+    const bell = new T.Mesh(new T.SphereGeometry(0.55, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), new T.MeshLambertMaterial({ color: '#ffb3e0', emissive: '#6a2a5a', transparent: true, opacity: 0.75 })); g.add(bell);
+    for (let i = 0; i < 6; i++) { const t = new T.Mesh(G.cyl, emat('#ffc8ea', '#5a2a4a')); t.scale.set(0.03, 0.75, 0.03); t.position.set(Math.cos(i) * 0.3, -0.45, Math.sin(i) * 0.3); g.add(t); }
+    g.add(glow('#ff9fdf', 2.4, 0.45)); g.userData.tent = g.children.slice(1, 7);
+  } else if (look === 'shark') {
+    const M = emat('#7a8a9a', '#1a2028'), body = new T.Mesh(G.sph, M); body.scale.set(1.9, 0.5, 0.5); g.add(body);
+    const belly = new T.Mesh(G.sph, emat('#e8ecef', '#2a2a2a')); belly.scale.set(1.6, 0.3, 0.42); belly.position.y = -0.18; g.add(belly);
+    const fin = new T.Mesh(G.cone, M); fin.scale.set(0.35, 0.6, 0.12); fin.position.set(0.1, 0.55, 0); fin.rotation.z = -0.3; g.add(fin);
+    const tail = new T.Mesh(G.cone, M); tail.scale.set(0.4, 0.7, 0.1); tail.position.set(-1.9, 0.2, 0); tail.rotation.z = 0.9; g.add(tail);
+    const tail2 = tail.clone(); tail2.position.y = -0.15; tail2.rotation.z = 2.3; g.add(tail2);
+    const eye = new T.Mesh(G.sph, emat('#10202c', '#000000')); eye.scale.setScalar(0.08); eye.position.set(1.35, 0.1, 0.42); g.add(eye);
+  } else if (look === 'angler') {
+    const M = emat('#2a2630', '#0a080c'), body = new T.Mesh(G.sph, M); body.scale.set(0.9, 0.75, 0.6); g.add(body);
+    const jaw = new T.Mesh(G.sph, emat('#3a3440', '#100c14')); jaw.scale.set(0.7, 0.35, 0.55); jaw.position.set(0.35, -0.35, 0); g.add(jaw);
+    for (let i = 0; i < 6; i++) { const t = new T.Mesh(G.cone, emat('#f4f0e4', '#6a6a6a')); t.scale.set(0.04, 0.14, 0.04); t.position.set(0.55 + i * 0.07, -0.18, (i % 2 ? 0.2 : -0.2) + 0.25); t.rotation.z = Math.PI; g.add(t); }
+    const rod = new T.Mesh(G.cyl, M); rod.scale.set(0.03, 0.55, 0.03); rod.position.set(0.45, 0.95, 0); rod.rotation.z = -0.7; g.add(rod);
+    const lure = new T.Mesh(G.sph, basic('#bff6ff')); lure.scale.setScalar(0.13); lure.position.set(0.85, 1.25, 0); lure.add(glow('#7fe8ff', 6, 0.9, false)); g.add(lure); g.userData.lure = lure;
+    const tail = new T.Mesh(G.cone, M); tail.scale.set(0.35, 0.5, 0.08); tail.position.set(-0.95, 0, 0); tail.rotation.z = Math.PI / 2; g.add(tail);
+    const eye = new T.Mesh(G.sph, basic('#d8e8f0')); eye.scale.setScalar(0.07); eye.position.set(0.55, 0.25, 0.4); g.add(eye);
+  } else if (look === 'atolla') {
+    const bell = new T.Mesh(new T.SphereGeometry(0.6, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), new T.MeshLambertMaterial({ color: '#8a1a2a', emissive: '#3a0610' })); g.add(bell);
+    const ring = new T.Mesh(G.tor, new T.MeshBasicMaterial({ color: '#3fa8ff', transparent: true, opacity: 0.9, blending: T.AdditiveBlending, depthWrite: false, fog: false })); ring.scale.set(0.62, 0.62, 0.3); ring.rotation.x = Math.PI / 2; g.add(ring); g.userData.ring = ring;
+    for (let i = 0; i < 8; i++) { const t = new T.Mesh(G.cyl, emat('#a82a3a', '#3a0610')); t.scale.set(0.025, 0.6, 0.025); t.position.set(Math.cos(i * 0.8) * 0.5, -0.5, Math.sin(i * 0.8) * 0.5); g.add(t); }
+    g.add(glow('#3fa8ff', 4.5, 0.55, false));
+  } else if (look === 'eel') {
+    const M = emat('#6a8a3a', '#1a2a0a'); for (let i = 0; i < 5; i++) { const s = new T.Mesh(G.sph, M); s.scale.set(0.42 - i * 0.04, 0.42 - i * 0.04, 0.42 - i * 0.04); s.position.y = -i * 0.5; g.add(s); }
+    const jaw = new T.Mesh(G.sph, emat('#c8d87a', '#2a3a0a')); jaw.scale.set(0.3, 0.12, 0.3); jaw.position.set(0, -0.12, 0.25); g.add(jaw);
+    [-0.15, 0.15].forEach(function (ex) { const e = new T.Mesh(G.sph, emat('#ffe08a', '#6a5010')); e.scale.setScalar(0.08); e.position.set(ex, 0.12, 0.36); g.add(e); });
+  }
+  return g;
+}
+/* ---------- DIGGING helpers ---------- */
+function closeSlab(x1) {
+  const sl = L.slab; if (!sl) return; L.slab = null;
+  addSolid(sl.x0, x1, sl.yTop - 1.5, sl.yTop + 30); L.group.add(box(sl.x0, x1, sl.yTop - 1.5, sl.yTop + 16, 7.4, sl.rock));
+  for (let x = sl.x0 + 1; x < x1 - 1; x += rnd(2.5, 5)) { const st = new T.Mesh(G.cone || G.oct, emat('#6a5a48', '#140e08')); st.scale.set(0.35, rnd(0.6, 1.4), 0.35); st.rotation.x = Math.PI; st.position.set(x, sl.yTop - 1.8, 2.6); L.group.add(st); }
+}
+function digTile(x0, x1, y0, y1, color) {
+  const s = addSolid(x0, x1, y0, y1); s.dig = true; const col = color || '#b08a5a';
+  const m = box(x0 + 0.03, x1 - 0.03, y0 + 0.03, y1 - 0.03, 7.2, col); L.group.add(m);
+  const crack = new T.Mesh(G.box, basic('#3a2a1a', 0.55)); crack.scale.set((x1 - x0) * 0.5, 0.06, 0.05); crack.rotation.z = rnd(-0.6, 0.6); crack.position.set((x0 + x1) / 2, (y0 + y1) / 2, 3.62); L.group.add(crack);
+  s.digM = [m, crack]; s.col = col; return s;
+}
+function breakTile(t) {
+  t.off = true; t.digM.forEach(function (m) { m.visible = false; }); if (P.ground === t) P.ground = null;
+  if (!S.set.low) for (let i = 0; i < 6; i++) { const g = glow(t.col, 0.8, 0.9); g.position.set((t.x0 + t.x1) / 2, (t.y0 + t.y1) / 2, 0.8); L.group.add(g); const a = rnd(0, 6.3); L.fx.push({ o: g, t: 0, vx: Math.cos(a) * 3, vy: Math.sin(a) * 3 + 2, life: 0.5 }); }
+  beep(140 + Math.random() * 60, 0.08, 'sawtooth');
+  L.scans.forEach(function (k) {
+    if (!k.buried || k.buried.some(function (q) { return !q.off; })) return;
+    k.buried = null; k.g.visible = k.ring.visible = k.nm.visible = true; k.tag.visible = false; burst(k.x, k.y + 1, '#f4ecd8');
+    popup(k.x, k.y + 2, 'Fossil uncovered!', '#ffd166'); toast('🦴 Fossil uncovered: ' + k.sc.name + '. Press E to study it.', 3.5); beep(880, 0.25, 'triangle', 'chime, fossil uncovered');
+  });
+}
+/* drill: hold down on soft rock to dig down; push sideways into soft rock to dig across. Hard rock can't be drilled. */
+function digStep(dt, ax) {
+  if (L.active) { P.digT = 0; return; }
+  if (!L.toldDig && L.digHint != null && (Math.abs(P.x - L.digHint) < 8 || L.scans.some(function (k) { return k.buried && Math.abs(P.x - k.x) < 6; }))) { L.toldDig = true; toast('⛏️ Burrow drill! Hold Down (or S) to drill through soft, cracked rock. Push sideways into it to drill across. Smooth hard rock can\'t be drilled.', 7); }
+  let t = null;
+  if (keys.duck && P.ground && P.ground.dig && !P.ground.off) t = P.ground;
+  else if (ax) { const fx = P.x + ax * (HW + 0.15), fy = P.y + 0.6; t = L.solids.find(function (q) { return q.dig && !q.off && fx > q.x0 && fx < q.x1 && fy > q.y0 && fy < q.y1; }); }
+  if (!t) { P.digT = 0; return; }
+  P.digT = (P.digT || 0) + dt; if (!S.set.low && Math.random() < dt * 20) { const g = glow('#ffd8a0', 0.5, 0.9); g.position.set(P.x + (keys.duck ? 0 : ax * 0.6), P.y + (keys.duck ? 0 : 0.6), 0.9); L.group.add(g); L.fx.push({ o: g, t: 0, vx: rnd(-2, 2), vy: rnd(1, 3), life: 0.3 }); }
+  if (P.digT > 0.28) { breakTile(t); P.digT = 0; }
+}
+const _cv = new T.Vector3();
+function caveSpot() { const ov = $('caveDark'); if (!ov) return; _cv.set(P.x, P.y + 0.8, 0).project(cam); const x = (_cv.x + 1) * 50, y = (1 - _cv.y) * 50;
+  ov.style.background = 'radial-gradient(circle at ' + x.toFixed(1) + '% ' + y.toFixed(1) + '%, rgba(0,0,0,0) 0, rgba(0,0,0,0) 24vmin, rgba(' + (L.darkTone || '5,3,2') + ',' + (L.darkTone ? '.3' : '.5') + ') 50vmin, rgba(' + (L.darkTone || '5,3,2') + ',' + (L.darkTone ? '.55' : '.8') + ') 85vmin)'; }
+function deepStep(dt) {
+  L.glowers.forEach(function (gw) { gw.t += dt; gw.list.forEach(function (m, i) { const u = m.userData;
+    if (gw.kind === 'lantern') { m.position.set(u.ox + Math.sin(gw.t * 0.6 + u.ph) * 1.6, u.oy + Math.sin(gw.t * 1.1 + u.ph) * 0.4, 0); m.rotation.y = Math.cos(gw.t * 0.6 + u.ph) > 0 ? 0 : Math.PI; }
+    else if (gw.kind === 'comb') { m.position.set(u.ox + Math.sin(gw.t * 0.3 + u.ph) * 0.8, u.oy + Math.sin(gw.t * 0.5 + u.ph) * 0.8, 0); m.rotation.y += dt * 0.8; for (let k = 1; k <= 4; k++) if (m.children[k]) m.children[k].material.color.setHSL((gw.t * 0.5 + k * 0.25 + u.ph) % 1, 1, 0.65); }
+    else { m.position.set(u.ox, u.oy + Math.sin(gw.t + u.ph) * 0.3, 0); m.children[0].material.opacity = 0.4 + 0.5 * Math.max(0, Math.sin(gw.t * 2 + u.ph * 3)); } }); });
+  L.smokers.forEach(function (sm) { sm.puffs.forEach(function (p, i) { p.position.y += dt * 3.2; p.position.x = sm.x + Math.sin(p.position.y * 0.7 + i) * 0.5 * (p.position.y - sm.y0) / 6; const u = (p.position.y - sm.y0) / (sm.y1 - sm.y0); p.scale.setScalar(0.35 + u * 1.3); p.material.opacity = 0.6 * (1 - u); if (u >= 1) p.position.y = sm.y0; }); });
+  if (L.inCave) L.scans.forEach(function (k) { if (!k.buried) k.nm.visible = Math.abs(P.x - k.x) < 8 && Math.abs(P.y - k.y) < 6; });
+  else if (L.deepY != null) L.scans.forEach(function (k) { if (!k.buried) k.nm.visible = true; });
+}
+/* caves: the world goes dark and a warm light around the alien shows the way */
+let BASE_LIGHT = null;
+function caveLight(on, tone) {
+  if (!HEMI) return; if (!BASE_LIGHT) BASE_LIGHT = { h: HEMI.intensity, k: KEYL.intensity };
+  let ov = $('caveDark'); if (!ov && on) { ov = document.createElement('div'); ov.id = 'caveDark'; document.body.appendChild(ov); }
+  if (ov) ov.hidden = !on;
+  const deep = tone === 'deep'; if (L) L.darkTone = deep ? '1,4,10' : '5,3,2';
+  if (on) { HEMI.intensity = BASE_LIGHT.h * (deep ? 0.35 : 0.55); KEYL.intensity = BASE_LIGHT.k * (deep ? 0.15 : 0.3); if (SKY) SKY.visible = false; if (!deep) { scene.background = new T.Color('#0a0806'); if (scene.fog) { scene.fog.color.set('#0a0806'); scene.fog.density = 0.045; } }
+    if (P && P.m && !P.lamp) { P.lamp = new T.PointLight(deep ? 0xbfe8ff : 0xffd8a0, 2.6, 22, 1); P.lamp.position.set(0, 1.8, 1.5); P.m.add(P.lamp); }
+    if (deep && P && P.m && P.m.userData.bulbs) P.m.userData.bulbs.forEach(function (bb) { bb.scale.setScalar(0.16); }); }
+  else { HEMI.intensity = BASE_LIGHT.h; KEYL.intensity = BASE_LIGHT.k; if (P && P.lamp) { P.m.remove(P.lamp); P.lamp = null; } if (P && P.m && P.m.userData.bulbs) P.m.userData.bulbs.forEach(function (bb) { bb.scale.setScalar(0.09); }); if (L && L.th) { if (SKY) SKY.visible = true; scene.background = new T.Color(L.th.horizon); if (scene.fog) { scene.fog.color.set(L.th.horizon); scene.fog.density = L.th.fogD; } } }
+  if (L) L.inCave = on;
+}
+/* ---------- WATER helpers ---------- */
+function waterAt(x, y) { if (!L || !L.waters.length) return null; for (let i = 0; i < L.waters.length; i++) { const w = L.waters[i]; if (x >= w.x0 && x <= w.x1 && y < w.top) return w; } return null; }
+function buildWater() {
+  L.waters.forEach(function (w) {
+    if (w.x1 > 1e8) w.x1 = L.len + 20;
+    const deep = new T.Mesh(G.plane, new T.MeshBasicMaterial({ color: '#0e6a8a', transparent: true, opacity: 0.22, depthWrite: false })); if (L.deepY != null) deep.visible = false; const dd = Math.max(60, w.top - (L.floor || -16) + 20); deep.scale.set(w.x1 - w.x0, dd, 1); deep.position.set((w.x0 + w.x1) / 2, w.top - dd / 2, 4.6); L.group.add(deep);
+    const surf = new T.Mesh(G.plane, new T.MeshBasicMaterial({ color: '#bff4ff', transparent: true, opacity: 0.55, depthWrite: false })); surf.scale.set(w.x1 - w.x0, 0.12, 1); surf.position.set((w.x0 + w.x1) / 2, w.top, 4.7); L.group.add(surf);
+    const sheet = new T.Mesh(G.plane, new T.MeshBasicMaterial({ color: '#7fd4ff', transparent: true, opacity: 0.25, depthWrite: false, side: T.DoubleSide })); sheet.rotation.x = -Math.PI / 2; sheet.scale.set(w.x1 - w.x0, 14, 1); sheet.position.set((w.x0 + w.x1) / 2, w.top, -2); L.group.add(sheet);
+    /* the open sea stretching to the horizon: from above it hides the reef below; from below it is the shimmering surface */
+    const ocean = new T.Mesh(G.plane, new T.MeshLambertMaterial({ color: '#2a8ab0', emissive: '#0a3a50', transparent: true, opacity: 0.88, side: T.DoubleSide, depthWrite: false }));
+    ocean.rotation.x = -Math.PI / 2; ocean.scale.set(w.x1 - w.x0 + 600, 420, 1); ocean.position.set((w.x0 + w.x1) / 2, w.top - 0.02, -212); L.group.add(ocean);
+    w.surf = surf;
+  });
+}
+function hudAir(show) {
+  let el = $('hudAir'); if (!el) { el = document.createElement('span'); el.id = 'hudAir'; $('hud').insertBefore(el, $('hudLevel')); }
+  el.hidden = !show; if (!show) return; const n = Math.max(0, Math.round(P.air * 10));
+  el.textContent = '🫧 Air ' + '▮'.repeat(n) + '▯'.repeat(10 - n) + ' ' + Math.round(P.air * 100) + '%'; el.classList.toggle('low', P.air < 0.3);
+}
+/* swimming: steer in any direction, hold jump to rise, duck to dive; the helmet shows while you swim */
+function swimStep(w, dt, ax) {
+  if (!P.swim) { P.swim = true; P.vy *= 0.3; splash(P.x, w.top); if (!S.stat || !S.stat.swamOnce) { S.stat = S.stat || {}; S.stat.swamOnce = 1; save(); toast('🫧 Bubble helmet on! Hold jump (Space or Up) to swim up, duck (Down or S) to dive. Shift swims faster.', 6); }
+    if (!P.helm) { P.helm = new T.Mesh(G.sph, new T.MeshLambertMaterial({ color: '#cff6ff', emissive: '#2a5a6a', transparent: true, opacity: 0.28, depthWrite: false })); P.helm.scale.setScalar(1.05); P.helm.position.y = 0.95; P.m.add(P.helm); } P.helm.visible = true; }
+  const up = (keys.jump && !L.active ? 1 : 0) - (keys.duck && !L.active ? 1 : 0), fast = keys.run ? 1.35 : 1;
+  P.vx += (ax * SPEED * 0.72 * fast - P.vx) * Math.min(1, dt * 5);
+  P.vy += (up * 5.2 * fast - 0.7 - P.vy) * Math.min(1, dt * 4);
+  if (up > 0 && P.y + PH > w.top - 0.15) { P.vy = JUMP * 0.78; P.swim = false; splash(P.x, w.top); } /* hop out at the surface */
+  L.currents.forEach(function (c) { if (P.x > c.x0 && P.x < c.x1 && P.y + 0.7 > c.y0 && P.y + 0.7 < c.y1) { P.vx += c.vx * dt * 3; P.vy += c.vy * dt * 3; } });
+  if (!S.set.low && Math.random() < dt * 3) { const g = glow('#e8fbff', 0.5, 0.8); g.position.set(P.x + 0.2, P.y + 1.3, 0.8); L.group.add(g); L.fx.push({ o: g, t: 0, vx: 0, vy: 2, life: 1.2 }); }
+}
+function splash(x, y) { if (S.set.low) return; for (let i = 0; i < 8; i++) { const g = glow('#e8fbff', 0.8, 0.9); g.position.set(x, y, 0.8); L.group.add(g); const a = Math.PI * (0.15 + 0.7 * i / 7); L.fx.push({ o: g, t: 0, vx: Math.cos(a) * 3, vy: Math.sin(a) * 4, life: 0.5 }); } beep(300, 0.12, 'sine', 'splash'); }
+function bubbleStep(dt) { L.airs.forEach(function (a) { a.bs.forEach(function (m) { m.position.y += dt * 2.2; if (m.position.y > (waterAt(a.x, a.y + 1) || { top: a.y + 8 }).top) m.position.y = a.y; }); }); }
+/* (old air meter, no longer used: the alien does not need to breathe) */
+function airStep(w, dt) {
+  if (P.air == null) P.air = 1;
+  const under = !!w && P.y + PH < w.top - 0.05;
+  let refill = !under;
+  L.airs.forEach(function (a) { a.bs.forEach(function (m) { m.position.y += dt * 2.2; if (m.position.y > (waterAt(a.x, a.y + 1) || { top: a.y + 8 }).top) m.position.y = a.y; }); if (Math.abs(P.x - a.x) < 1 && P.y > a.y - 1) refill = true; });
+  if (refill) P.air = Math.min(1, P.air + dt * 0.9); else P.air = Math.max(0, P.air - dt / 24);
+  if (P.air <= 0) { P.airT = (P.airT || 0) - dt; if (P.airT <= 0) { P.airT = 2.5; toast('Out of air! Swim up to the surface or into a bubble column.', 3); hurt(true); } }
+  hudAir(!!w || P.air < 1);
+}
+/* underwater view: no sky, deep blue haze, slowly darker with depth */
+function underwaterView(w) {
+  const under = !!w && cam.position.y - 3 < w.top;
+  if (under !== !!L.camUnder) { L.camUnder = under; if (SKY) SKY.visible = !under; }
+  if (under) { let c;
+    if (L.deepY != null) { const d = Math.max(0, Math.min(1, (w.top - P.y) / Math.max(10, w.top - L.deepY))); c = d < 0.5 ? new T.Color('#1b7fa0').lerp(new T.Color('#0a3050'), d * 2) : new T.Color('#0a3050').lerp(new T.Color('#010307'), (d - 0.5) * 2); scene.fog.density = 0.022 + d * 0.035; }
+    else { const d = Math.max(0, Math.min(1, (w.top - P.y) / 14)); c = new T.Color('#1b7fa0').lerp(new T.Color('#06283a'), d); scene.fog.density = 0.022 + d * 0.02; }
+    scene.background = c; scene.fog.color.copy(c); if (L.deepY != null) RIDGES.forEach(function (r) { r.m.material.color.copy(r.base).lerp(c, Math.min(1, (w.top - P.y) / 12)); }); }
+  else if (L.th) { scene.background = new T.Color(L.th.horizon); scene.fog.color.set(L.th.horizon); scene.fog.density = L.th.fogD; }
+}
 function startLevel(w, lv) {
   teardown();
   const th = THEMES[lv.theme] || THEMES.cell;
   L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [], models: [], flies: [], secrets: [], ghosts: [], crumbs: [], told: {}, temps: [], clues: [], portal: null,
-    refuels: [], score: 0, streak: 0, hp: 5, time: 0, started: false, pen: 0, wrongs: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
+    refuels: [], waters: [], currents: [], airs: [], glowers: [], smokers: [], score: 0, streak: 0, hp: 5, time: 0, started: false, pen: 0, wrongs: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
   scene.add(L.group);
-  const b = builder(); lv.build(b); L.len = b.x;
+  const b = builder(); lv.build(b); closeSlab(b.x); L.len = b.x; if (L.waters.length) buildWater();
+  L.floor = Math.min(-16, L.solids.reduce(function (m, s) { return Math.min(m, s.y1); }, 0) - 14);
   scenery(th, 0, L.len, L.group, L.anim);
   /* checkpoint flags: they light up when you pass them */
   L.cps.forEach(function (c, i) {
@@ -1913,6 +2197,7 @@ function step(dt) {
   if (!L.started && !L.active && (keys.left || keys.right || keys.jump || keys.duck || jumpBuf > 0)) L.started = true;
   if (L.started) L.time += dt; P.t += dt; hudTime();
   const ax = L.active ? 0 : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+  const inW = waterAt(P.x, P.y + 0.75); if (!inW && P.swim) { P.swim = false; if (P.helm) P.helm.visible = false; }
   if (L.active) jumpBuf = 0;
   if (ax) P.face = ax;
   const bo = P.boost > 0; P.boost -= dt; if (!bo && P.boostM) { P.m.remove(P.boostM); P.boostM = null; }
@@ -1931,10 +2216,11 @@ function step(dt) {
   const running = keys.run && !P.duck; P.vx += (ax * SPEED * (bo ? 1.45 : 1) * (P.duck ? 0.5 : running ? 1.6 : 1) - P.vx) * Math.min(1, dt * (running ? 10 : 14));
   jumpBuf -= dt; coyote = P.ground ? 0.1 : coyote - dt;
   if (P.ground) P.dbl = true;
+  if (inW) jumpBuf = 0; /* in water, jump means swim up (handled in swimStep) */
   if (jumpBuf > 0 && coyote > 0) { P.vy = JUMP * (bo ? 1.15 : 1); jumpBuf = 0; coyote = 0; beep(420, 0.08, 'triangle'); }
   else if (jumpBuf > 0 && !P.ground && P.dbl && P.vy < 10) { P.vy = JUMP * 1.05 * (bo ? 1.1 : 1); P.dbl = false; jumpBuf = 0; beep(620, 0.08, 'triangle'); burst(P.x, P.y + 0.2, '#ffffff'); }
-  if (!keys.jump && P.vy > 0) P.vy -= 50 * dt;
-  if (S.alien.gear === 2 && !(P.fly > 0)) { /* Explorer cape: hold jump while falling to fly a little */
+  if (!keys.jump && P.vy > 0 && !inW) P.vy -= 50 * dt; /* short hop when jump is let go (not in water: currents and plumes can lift you) */
+  if (S.alien.gear === 2 && !(P.fly > 0) && !inW) { /* Explorer cape: hold jump while falling to fly a little */
     if (P.cape == null) P.cape = 1.5;
     if (P.ground) P.cape = Math.min(1.5, P.cape + dt * 1.5);
     else if (keys.jump && (P.vy < 0.5 || P.capeOn) && P.cape > 0 && !L.active) { P.capeOn = true; P.cape -= dt; P.vy = Math.min(5, P.vy + 30 * dt) + GRAV * dt; P.capeT = 0.15; }
@@ -1951,9 +2237,15 @@ function step(dt) {
     if (P.fly < 3 && !P.flyWarn) { P.flyWarn = true; toast('Flight power is running out. Find a place to land!', 3); }
     if (P.fly <= 0 && P.flyM) { P.m.remove(P.flyM); P.flyM = null; }
   }
-  P.vy = Math.max(-30, P.vy - GRAV * dt);
+  if (inW && !(P.fly > 0)) swimStep(inW, dt, ax); else P.vy = Math.max(-30, P.vy - GRAV * dt);
+  if (L.solids.length && (L.digHint != null)) digStep(dt, ax);
+  if (L.darkX != null) { const cave = P.x > L.darkX && P.y < L.darkTop && !(L.darkEnd != null && P.x > L.darkEnd); if (cave !== !!L.inCave) caveLight(cave); if (L.inCave) caveSpot(); }
+  else if (L.deepY != null) { const dp = !!inW && P.y < L.deepY; if (dp !== !!L.inCave) { caveLight(dp, 'deep'); if (dp && !L.toldDeep) { L.toldDeep = 1; toast('🌑 No sunlight reaches this deep. Your antennae light up! Many animals down here make their own light (bioluminescence).', 6); } } if (L.inCave) caveSpot(); }
+  deepStep(dt);
+  if (L.waters.length) { bubbleStep(dt); underwaterView(waterAt(cam.position.x, cam.position.y - 3)); } /* the alien does not need air: bubble vents are just scenery */
+  if (L.currents.length) L.currents.forEach(function (c) { c.streaks.forEach(function (m, i) { m.position.x += c.vx * dt * 1.6; m.position.y += c.vy * dt * 1.6; if (m.position.x > c.x1) m.position.x = c.x0; if (m.position.x < c.x0) m.position.x = c.x1; if (m.position.y > c.y1) m.position.y = c.y0; if (m.position.y < c.y0) m.position.y = c.y1; }); });
   moveX(P.vx * dt); moveY(P.vy * dt);
-  if (P.y < -16) { respawn(); L.score = Math.max(0, L.score - 25); toast('You fell. Back to the last checkpoint.', 3); hud(); }
+  if (P.y < (L.floor != null ? L.floor : -16)) { respawn(); L.score = Math.max(0, L.score - 25); toast('You fell. Back to the last checkpoint.', 3); hud(); }
   for (let i = L.cp + 1; i < L.cps.length; i++) if (P.x > L.cps[i].x) {
     L.cp = i; const f = L.flags[i];
     if (f && !f.lit) { f.lit = true; f.fl.material = emat('#7be0ad', '#2f7a50'); f.g.add(glow('#7be0ad', 2.4, 0.6)); beep(760, 0.15, 'triangle', 'bell, checkpoint'); popup(L.cps[i].x, L.cps[i].y + 2, 'Checkpoint', '#7be0ad'); }
@@ -1967,7 +2259,14 @@ function step(dt) {
       h.head.position.set(c > upStart - 0.6 && !up ? (Math.random() - 0.5) * 0.12 : 0, lift, 0);
       const open = up ? 0.2 + Math.abs(Math.sin(h.t * 6)) * 0.6 : 0.9; h.arms[0].rotation.z = -open; h.arms[1].rotation.z = open;
       h.y = h.gy + lift + 0.2;
-      if (lift > -0.2 && P.inv <= 0 && Math.abs(P.x - h.x) < 0.75 && P.y < h.gy + lift + 0.6 && P.y + PH > h.gy) { P.inv = 1.3; P.vx = P.x < h.x ? -8 : 8; P.vy = 8; toast('Engulfed! Phagocytes eat by wrapping around things. Jump past while it is hiding.', 3.5); hurt(true); }
+      if (lift > -0.2 && P.inv <= 0 && Math.abs(P.x - h.x) < 0.75 && P.y < h.gy + lift + 0.6 && P.y + PH > h.gy) { P.inv = 1.3; P.vx = P.x < h.x ? -8 : 8; P.vy = 8; toast(h.foe ? FOES[h.foe].msg : 'Engulfed! Phagocytes eat by wrapping around things. Jump past while it is hiding.', 3.5); hurt(true); }
+      return;
+    }
+    if (h.kind === 'rock') {
+      const c = (h.t + h.offset) % h.period, warn = c > h.period - 1.3 && c < h.period - 0.55, fall = c >= h.period - 0.55, u = fall ? (c - (h.period - 0.55)) / 0.55 : 0;
+      h.dust.material.opacity = warn ? 0.4 + 0.3 * Math.sin(h.t * 30) : 0; h.y = fall ? h.top - (h.top - h.gy - 0.4) * u * u : h.top; h.m.visible = fall || warn || c < 0.2;
+      h.m.position.set(h.x + (warn ? Math.sin(h.t * 50) * 0.06 : 0), h.y, 0); if (fall) h.m.rotation.z += dt * 6;
+      if (fall && u > 0.3 && P.inv <= 0 && P.shield <= 0 && Math.abs(P.x - h.x) < 0.8 && P.y < h.y && P.y + PH > h.y - 0.5) { P.inv = 1.3; P.vx = P.x < h.x ? -6 : 6; P.vy = 4; toast('Cave-in! Watch for falling dust: it means a rock is about to drop.', 3.5); hurt(true); }
       return;
     }
     if (h.kind === 'antibody') {
@@ -1978,10 +2277,16 @@ function step(dt) {
       return;
     }
     if (h.kind === 'virus') { const k = Math.asin(Math.sin(h.t * h.sp + h.ph)) * 2 / Math.PI; h.x = h.bx + k * h.range; h.y = h.by + Math.abs(Math.sin(h.t * 6)) * 0.12; h.m.position.set(h.x, h.y, 0); h.m.rotation.y = Math.cos(h.t * h.sp + h.ph) > 0 ? 0.6 : -0.6; }
-    else { h.x = h.bx + Math.sin(h.t * h.sp + h.ph) * h.ax; h.y = h.by + Math.sin(h.t * h.sp * 1.3 + h.ph) * h.ay; h.m.position.set(h.x, h.y, 0); h.m.rotation.z += dt * 2.5; }
+    else { const px = h.x; h.x = h.bx + Math.sin(h.t * h.sp + h.ph) * h.ax; h.y = h.by + Math.sin(h.t * h.sp * 1.3 + h.ph) * h.ay; h.m.position.set(h.x, h.y, 0);
+      if (h.look === 'angler') { h.m.rotation.y = h.x >= px ? 0 : Math.PI; const u = h.m.userData.lure; if (u) u.scale.setScalar(0.13 * (1 + Math.sin(h.t * 4) * 0.2)); }
+      else if (h.look === 'atolla') { const r = h.m.userData.ring, f = Math.sin(h.t * 2.2) > 0.6; if (r) r.material.opacity = f ? 1 : 0.25; const pulse = 1 + Math.sin(h.t * 2) * 0.1; h.m.scale.set(pulse, 2 - pulse, pulse); }
+      else if (h.look === 'shark') { h.m.rotation.y = h.x >= px ? 0 : Math.PI; h.m.rotation.z = Math.sin(h.t * 3) * 0.05; }
+      else if (h.look === 'jelly') { const pulse = 1 + Math.sin(h.t * 3) * 0.12; h.m.scale.set(pulse, 2 - pulse, pulse); }
+      else h.m.rotation.z += dt * 2.5; }
     const dx = P.x - h.x, dy = P.y + PH * 0.52 - h.y;
     if (Math.abs(dx) > 0.85 || Math.abs(dy) > PH * 0.52 + 0.3) return;
-    const name = h.kind === 'virus' ? 'virus' : 'free radical';
+    const foe = h.look ? FOES[h.look] : null, name = foe ? foe.name : h.kind === 'virus' ? 'virus' : 'free radical';
+    if (foe && !foe.stomp) { if (P.inv > 0 || P.shield > 0) return; P.inv = 1.3; P.vx = dx >= 0 ? 7 : -7; P.vy = 5; toast(foe.msg, 3.5); hurt(true); return; } /* real wildlife is never stomped: you just get bumped */
     if ((P.vy < -1 && P.y > h.y - 0.25) || P.shield > 0) { h.alive = false; h.m.visible = false; if (P.shield <= 0) P.vy = 12; L.score += 50; popup(h.x, h.y, '+50', '#ffd166'); burst(h.x, h.y, h.kind === 'virus' ? '#9be36b' : '#ff6b4a'); beep(900, 0.12, 'square', 'pop, ' + name + ' stopped'); hud(); return; }
     if (P.inv > 0) return;
     P.inv = 1.3; P.vx = dx >= 0 ? 9 : -9; P.vy = 7; toast(h.kind === 'virus' ? 'Ouch! A virus got you. Jump on top of it, or jump over it.' : 'Ouch! Free radicals damage cells. Jump on top of them instead.', 3); hurt(true);
@@ -1992,7 +2297,7 @@ function step(dt) {
   });
   if (P.shield > 0) { P.shield -= dt; if (P.shieldM) P.shieldM.rotation.y += dt * 4; if (P.shield <= 0 && P.shieldM) { P.m.remove(P.shieldM); P.shieldM = null; toast('Shield used up.', 2); } }
   if (L.rare && !L.rare.got) { L.rare.m.rotation.y += dt * 2; L.rare.m.position.y = L.rare.y + Math.sin(P.t * 2) * 0.2;
-    if (Math.abs(P.x - L.rare.x) < 1 && Math.abs(P.y + 0.7 - L.rare.y) < 1.1) { L.rare.got = true; L.rare.m.visible = false; L.score += 500; S.rare[L.lv.id] = true; save(); award('first-rare'); checkBig(); popup(L.rare.x, L.rare.y, 'Rare specimen! +500', '#ffd700'); burst(L.rare.x, L.rare.y, '#ffd700'); beep(1320, 0.4, 'triangle', 'sparkle, rare specimen found'); hud(); } }
+    if (Math.abs(P.x - L.rare.x) < 1 && Math.abs(P.y + 0.7 - L.rare.y) < 1.1) { L.rare.got = true; L.rare.m.visible = false; L.score += 500; S.rare[L.lv.id] = true; save(); award('first-rare'); checkBig(); popup(L.rare.x, L.rare.y, (L.rare.name ? L.rare.name + '! ' : 'Rare specimen! ') + '+500', '#ffd700'); if (L.rare.fact) toast('✦ Rare specimen: ' + L.rare.name + '. ' + L.rare.fact, 7); burst(L.rare.x, L.rare.y, '#ffd700'); beep(1320, 0.4, 'triangle', 'sparkle, rare specimen found'); hud(); } }
   L.fx = L.fx.filter(function (f) {
     f.t += dt; f.o.position.x += (f.vx || 0) * dt; f.o.position.y += f.vy * dt; f.o.material.opacity = Math.max(0, 1 - f.t / f.life);
     if (f.t >= f.life) { L.group.remove(f.o); return false; } return true;
@@ -2086,12 +2391,12 @@ function step(dt) {
   const sq = P.duck ? 0.58 : P.ground ? 1 : 1 + Math.min(0.18, Math.abs(P.vy) * 0.012); P.m.scale.set(P.duck ? 1.2 : 1 / sq, sq, P.duck ? 1.2 : 1 / sq);
   P.shadow.position.set(P.x, (P.ground ? P.y : P.y - 0.5) + 0.04, 0); P.shadow.visible = !!P.ground;
   cam.position.x += (P.x + P.face * 2.5 - cam.position.x) * Math.min(1, dt * 4);
-  const lift = L.active && L.active.chart ? 2.4 : 0;
+  const lift = L.active && L.active.chart ? 2.4 : L.inCave ? -1.8 : 0;
   cam.position.y += (P.y + 5.2 + lift - cam.position.y) * Math.min(1, dt * 3); cam.position.z = camZ;
   if (L.shake > 0) { L.shake -= dt; cam.position.x += (Math.random() - 0.5) * L.shake; cam.position.y += (Math.random() - 0.5) * L.shake; }
   cam.lookAt(cam.position.x, cam.position.y - 0.6, 0);
   sceneryTick(dt, P.t);
-  L.anim.forEach(function (a) { a.m.position.y = a.y + Math.sin(P.t * 0.6 + a.ph) * a.amp; a.m.rotation.z += a.rot * dt; });
+  L.anim.forEach(function (a) { if (a.sway) { a.m.rotation.z = Math.sin(P.t * 0.8 + a.ph) * 0.08; return; } a.m.position.y = a.y + Math.sin(P.t * 0.6 + a.ph) * a.amp; a.m.rotation.z += a.rot * dt; });
 }
 let LAST = null, STTAB = 'report', PQ = null;
 function finish() {

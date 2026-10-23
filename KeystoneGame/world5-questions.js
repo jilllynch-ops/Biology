@@ -1642,6 +1642,42 @@ FieldGuide.registerQuestions(5, {
    "note": "The codon AUG means 'start' in bacteria, oak trees, and you. A UNIVERSAL GENETIC CODE points to one common ancestor."
   },
   {
+   "id": "s5r-mammoth",
+   "name": "Woolly mammoth tusk",
+   "look": "rock",
+   "color": "#f0e6d0",
+   "word": "Youngest layer",
+   "def": "Rock and ice near the top hold the most recent fossils.",
+   "note": "Woolly mammoths lived in the last Ice Age. Some have been found frozen in Siberian permafrost. Near the top means YOUNG: only thousands of years old."
+  },
+  {
+   "id": "s5r-ambulo",
+   "name": "Ambulocetus fossil",
+   "look": "critter",
+   "color": "#c8b08a",
+   "word": "Walking whale",
+   "def": "Ambulocetus, about 49 million years old, found in Pakistan.",
+   "note": "Ambulocetus had legs and webbed feet but a whale-like skull and ears. It is a TRANSITIONAL FOSSIL between land mammals and whales."
+  },
+  {
+   "id": "s5r-dino",
+   "name": "T. rex skull",
+   "look": "rock",
+   "color": "#9a7a5a",
+   "word": "Deeper means older",
+   "def": "T. rex lived about 68 to 66 million years ago. Many were dug up in Montana's Hell Creek rocks.",
+   "note": "No human or mammoth fossil is ever found in the same layer as T. rex. The deeper the layer, the OLDER the fossils."
+  },
+  {
+   "id": "s5r-trilobite",
+   "name": "Trilobite fossil",
+   "look": "critter",
+   "color": "#7a8a9a",
+   "word": "Oldest layer here",
+   "def": "Trilobites were sea arthropods that lived from about 520 to 252 million years ago.",
+   "note": "Trilobites in the Burgess Shale (Canada) and the Grand Canyon are over 500 million years old. The bottom layer holds the OLDEST, simplest animals in this dig."
+  },
+  {
    "id": "s5-observation",
    "name": "Field notebook",
    "look": "stack",
@@ -1811,6 +1847,22 @@ FieldGuide.registerQuestions(5, {
   {
    "term": "Universal genetic code",
    "def": "Nearly all organisms use the same codons for the same amino acids."
+  },
+  {
+   "term": "Youngest layer",
+   "def": "Rock and ice near the top hold the most recent fossils."
+  },
+  {
+   "term": "Walking whale",
+   "def": "Ambulocetus, about 49 million years old, found in Pakistan."
+  },
+  {
+   "term": "Deeper means older",
+   "def": "T. rex lived about 68 to 66 million years ago. Many were dug up in Montana's Hell Creek rocks."
+  },
+  {
+   "term": "Oldest layer here",
+   "def": "Trilobites were sea arthropods that lived from about 520 to 252 million years ago."
   },
   {
    "term": "Observation",

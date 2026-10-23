@@ -74,7 +74,7 @@ dt { color: var(--dim); } dd { margin: 0; }
 #hudHp { color: var(--bad); letter-spacing: .15em; font-size: 1.2em; }
 #hudScore { font-variant-numeric: tabular-nums; color: var(--signal); font-size: 1.2em; }
 #hudLevel { margin-left: auto; color: var(--ink); }
-#hudTime { font-variant-numeric: tabular-nums; color: #bfe9ff; } #hudTime.wait { opacity: .55; animation: tpulse 1.4s ease-in-out infinite; } @keyframes tpulse { 50% { opacity: .9; } }
+#hudTime { font-variant-numeric: tabular-nums; color: #bfe9ff; } #caveDark { position: fixed; inset: 0; pointer-events: none; z-index: 2; background: radial-gradient(circle at 50% 62%, rgba(0,0,0,0) 0, rgba(0,0,0,0) 17vmin, rgba(5,3,2,.78) 42vmin, rgba(5,3,2,.94) 70vmin); } #caveDark[hidden] { display: none; } #hudAir { font-variant-numeric: tabular-nums; color: #cff6ff; } #hudAir.low { color: #ffb09c; animation: tpulse .8s ease-in-out infinite; } #hudTime.wait { opacity: .55; animation: tpulse 1.4s ease-in-out infinite; } @keyframes tpulse { 50% { opacity: .9; } }
 #qopts.cool .opt { opacity: .45; pointer-events: none; } #qcool { height: 5px; border-radius: 3px; background: rgba(255,176,156,.25); margin: 4px 0; overflow: hidden; } #qcool i { display: block; height: 100%; width: 100%; background: #ffb09c; }
 @keyframes qcool { from { width: 100%; } to { width: 0; } }
 #btnPause { padding: 4px 12px; }

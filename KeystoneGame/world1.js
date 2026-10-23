@@ -48,29 +48,36 @@ FieldGuide.registerWorld({
           .station(['w1q01', 'w1q02'])
           .goal();
       } },
-    { id: '1-2', title: 'Two Kinds of Cells', theme: 'cell',
-      log: 'Mission log: Shrunk to cell size. Earth cells come in two kinds. Build one of each to find out what sets them apart.',
-      outro: 'Report sent: prokaryotes have no nucleus. Eukaryotes have a nucleus and membrane-bound organelles.',
+    { id: '1-2', title: 'Two Kinds of Cells', theme: 'deep',
+      log: 'Mission log: A research ship far out at sea. Sink down through the ocean zones to the hydrothermal vents, and find the two kinds of cells that live all the way down.',
+      outro: 'Report sent: prokaryotes (bacteria and archaea) have no nucleus. Eukaryotes have a nucleus and membrane-bound organelles. At the vents, prokaryotes make food from chemicals and feed animals made of eukaryotic cells.',
       build: function (b) {
-        /* adds: toxin spikes, moving platforms, shields */
-        b.sparks(4, 1.2, 5).virus(9, 2, 1).ground(12).gap(3).ground(5).gap(3.5)
-          .hint(4, 4.6, 'Toxin crystals! Jump over them.').spikes(4, 2.2).ground(9)
-          .review()
-          .hint(4, 4.6, 'Antibodies tag invaders, like you! Duck under them or jump over.').antibody(15, 15, 3.4).ground(16).hsparks(-11, 6.2, 4)
-          .scan(3, 's-bact2').scan(8, 's-membrane').scan(13, 's-cyto').scan(18, 's-ribo').ground(21)
+        /* DEEP SEA: dive from the ship through the sunlit, twilight and midnight zones to a vent field on the sea floor.
+           Below the twilight zone there is no sunlight: the alien's antennae glow and the animals make their own light. */
+        b.hint(5, 4.6, 'A research ship over the deep ocean. Dive in and sink to the vents!').sparks(8, 1.2, 3).ground(13).ship(13).review()
+          .sea(-0.6).gap(1).rise(-10)
+          .oceanZone('Sunlit zone', '0 to 200 m deep. Enough light for photosynthesis.')
+          .scan(5, 's1d-diatom').scan(10, 's-plant').hazard(15, 4, { look: 'jelly', ax: 1, ay: 1.4, sp: 0.6 }).ground(19)
+          .rise(-8)
+          .oceanZone('Twilight zone', '200 to 1,000 m deep. Only dim blue light. Many animals glow.')
+          .glowers(8, 5, 'lantern').scan(4, 's-bact2').scan(9, 's-membrane').scan(14, 's-cyto').scan(19, 's-ribo').ground(22)
           .hunt('build-prok')
-          .sparks(0, 8, 5).sparks(1, 11, 4).qblock(3, 3.4, 'boost').ground(7).clue(5, 'w1q03').ground(8).bridge(11)
-          .hint(7, 5.2, 'White blood cells engulf invaders like you! Jump when they hide.').virus(4, 2.5, 1.2).snapper(9.5, 3.6, 0).qblock(13, 3.4, 'sparks').ground(16)
-          .hplat(-7, 2.4, 3).hplat(-4.5, 4.8, 3).hplat(-2, 8.4, 2.6).rare(-0.7, 9.7)
-          .refuel().scan(3, 's-animal').scan(8, 's-nucleus').scan(13, 's-mito').scan(18, 's-er').scan(23, 's-golgi').scan(28, 's-plant').ground(31)
+          .glowers(4, 4, 'comb').hazard(10, 3, { look: 'jelly', ax: 0.8, ay: 1.2, sp: 0.5 }).clue(5, 'w1q03').ground(14)
+          .rise(-8).abyss(5)
+          .oceanZone('Midnight zone', '1,000 to 4,000 m deep. Totally dark and near freezing.')
+          .glowers(6, 4, 'snow', 10).hazard(13, 3.5, { look: 'angler', ax: 3, ay: 0.6, sp: 0.4 }).scan(4, 's-animal').scan(9, 's-nucleus').ground(18)
+          .refuel().scan(3, 's-mito').scan(8, 's-er').scan(13, 's-golgi').ground(16)
           .hunt('build-euk')
-          .sparks(0.5, 8.5, 5).sparks(1, 11.5, 4).ground(7).clue(4, 'w1q04').ground(7)
-          .crumbleBridge(4, 'crumble').mixed(2, ['BIO.A.1.1.1'])
-          .rise(1.5).ground(5).rise(1.5).sparks(1, 1.2, 3).ground(5).gap(4).rise(-3)
-          .qblock(3, 3.4, 'shield').virus(7, 2, 1.4).spikes(11, 1.8).ground(15)
+          .glowers(5, 5, 'comb').hazard(9, 3, { look: 'atolla', ax: 0.6, ay: 1.4, sp: 0.5 }).clue(4, 'w1q04').ground(13)
+          .mixed(2, ['BIO.A.1.1.1'])
+          .rise(-10)
+          .oceanZone('Hydrothermal vents', 'About 2,500 m deep. Hot, mineral-rich water gushes from the sea floor.')
+          .glowers(10, 6, 'snow', 8).scan(4, 's1d-ventmat').scan(9, 's1d-archaea').scan(14, 's1d-tubeworm').ground(18)
+          .smoker(3, 3.2, 10).plat(6.5, 8.5, 3.5).rare(8.2, 9.6, { name: 'Yeti crab', fact: 'Found at deep-sea vents in 2005. It waves its hairy arms over the vents to farm bacteria on them, then eats the bacteria.' }).ground(12)
           .station(['w1q05', 'w1q06'])
-          .bridge(12, { ay: 1.4, sp: 1.1 }).ground(4).clue(2, 'w1q24').ground(5)
+          .smoker(4, 2.6, 7).hazard(10, 3.5, { look: 'angler', ax: 2, ay: 0.8, sp: 0.5 }).clue(13, 'w1q24').ground(16)
           .hint(1, 6.6, 'Portal! Its code is the letters of your 3 clue answers.').portal(6).ground(11)
+          .hint(3, 5.2, 'The mothership beam reaches all the way down here!').ground(6)
           .goal();
       } },
     { id: '1-3', title: 'The Protein Factory', theme: 'nucleus',

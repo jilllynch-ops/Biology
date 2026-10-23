@@ -779,6 +779,35 @@ FieldGuide.registerQuestions(3, {
     }
    ],
    "explain": "Plant buffers and wetlands soak up nutrients before they reach the water, which helps prevent algal blooms."
+  },
+  {
+   "id": "b-clownfish",
+   "code": "BIO.B.4.2.2",
+   "steels": "3.1.9-12.L",
+   "you": "a young clownfish looking for a home on the reef",
+   "short": "Clownfish",
+   "color": "#ff8a3a",
+   "goal": "Swim through the door where you AND your partner both benefit.",
+   "doors": [
+    {
+     "kind": "flow",
+     "label": "Sea anemone: you get shelter, it gets protected",
+     "ok": true
+    },
+    {
+     "kind": "pump",
+     "label": "Moray eel's hole",
+     "ok": false,
+     "why": "The eel would eat you. That is predation, not a partnership."
+    },
+    {
+     "kind": "organelle",
+     "label": "An anemone another clownfish already guards",
+     "ok": false,
+     "why": "Two clownfish fighting over one anemone is competition."
+    }
+   ],
+   "explain": "Clownfish and sea anemones are a classic mutualism: shelter for the fish, protection and cleaning for the anemone."
   }
  ],
  "catches": [
@@ -1694,6 +1723,78 @@ FieldGuide.registerQuestions(3, {
    "word": "Conservation",
    "def": "Protecting, restoring, and wisely using natural resources and ecosystems.",
    "note": "Replanting dune grass and protecting nesting areas is CONSERVATION in action."
+  },
+  {
+   "id": "s3r-shark",
+   "name": "Whitetip reef shark",
+   "look": "critter",
+   "color": "#8a9aa8",
+   "word": "Predator",
+   "def": "An organism that hunts and eats other organisms.",
+   "note": "This reef shark is a PREDATOR. It hunts fish at night and helps keep prey populations in balance."
+  },
+  {
+   "id": "s3r-prey",
+   "name": "School of damselfish",
+   "look": "eggs",
+   "color": "#5fd0ff",
+   "word": "Prey",
+   "def": "An organism that is hunted and eaten by a predator.",
+   "note": "Damselfish are PREY for sharks, groupers, and eels. Swimming in a school helps them avoid being eaten."
+  },
+  {
+   "id": "s3r-compete",
+   "name": "Two corals touching",
+   "look": "rock",
+   "color": "#ffb070",
+   "word": "Competition",
+   "def": "A relationship in which organisms struggle for the same limited resource.",
+   "note": "Corals COMPETE for space and sunlight. Some even sting their neighbors to win room to grow."
+  },
+  {
+   "id": "s3r-clown",
+   "name": "Clownfish in an anemone",
+   "look": "eggs",
+   "color": "#ff8a3a",
+   "word": "Mutualism",
+   "def": "A relationship in which both species benefit.",
+   "note": "The clownfish hides from predators in the anemone's stinging tentacles; the clownfish chases off fish that eat anemones. Both benefit: MUTUALISM."
+  },
+  {
+   "id": "s3r-cleaner",
+   "name": "Cleaner shrimp",
+   "look": "critter",
+   "color": "#ff6a6a",
+   "word": "Cleaning symbiosis",
+   "def": "A mutualism in which one animal removes parasites from another.",
+   "note": "Fish line up at this 'cleaning station'. The shrimp gets a meal of parasites and the fish gets cleaned. Both benefit."
+  },
+  {
+   "id": "s3r-coral",
+   "name": "Coral polyp",
+   "look": "cell",
+   "color": "#c8a8ff",
+   "word": "Zooxanthellae",
+   "def": "Tiny algae that live inside coral cells and share food made by photosynthesis.",
+   "note": "Coral animals and the algae inside them are partners: the algae get shelter and the coral gets food. When stressed by heat, corals expel the algae and turn white (bleaching)."
+  },
+  {
+   "id": "s3r-remora",
+   "name": "Remora on a shark",
+   "look": "critter",
+   "color": "#9aa8a0",
+   "word": "Commensalism",
+   "def": "A relationship in which one species benefits and the other is neither helped nor harmed.",
+   "note": "The remora hitches a ride and eats scraps from the shark's meals. The shark is not helped or harmed: COMMENSALISM."
+  },
+  {
+   "id": "s3r-parasite",
+   "name": "Fish with sea lice",
+   "look": "critter",
+   "color": "#d8c070",
+   "word": "Parasitism",
+   "def": "A relationship in which one organism (the parasite) benefits by harming another (the host).",
+   "note": "Sea lice are tiny crustaceans that feed on a fish's skin and mucus. The parasite benefits and the host fish is harmed: PARASITISM."
   }
  ],
  "vocab": [
@@ -1844,6 +1945,14 @@ FieldGuide.registerQuestions(3, {
   {
    "term": "Conservation",
    "def": "Protecting, restoring, and wisely using natural resources and ecosystems."
+  },
+  {
+   "term": "Cleaning symbiosis",
+   "def": "A mutualism in which one animal removes parasites from another."
+  },
+  {
+   "term": "Zooxanthellae",
+   "def": "Tiny algae that live inside coral cells and share food made by photosynthesis."
   }
  ]
 });
