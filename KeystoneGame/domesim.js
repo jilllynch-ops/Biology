@@ -13,11 +13,13 @@ const clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
 const SEASONS = 8;
 /* what one packed unit adds when it is placed in the dome */
 const PLACE = { water: { water: 2 }, air: { o2: 12, co2: 12 }, blocks: { nut: 4 }, soil: { decomp: 1.5, nut: 1.5 }, grass: { grass: 2.5 }, flowers: { flowers: 2 }, trees: { trees: 2 },
-  pondweed: { pondweed: 2.5 }, bees: { bees: 1.5 }, rabbits: { rabbits: 1.5 }, hawks: { hawks: 0.8 }, pond: { fish: 1.5 }, cellkit: { kit: 1 } };
+  pondweed: { pondweed: 2.5 }, bees: { bees: 1.5 }, rabbits: { rabbits: 1.5 }, hawks: { hawks: 0.8 }, pond: { fish: 1.5 }, cellkit: { kit: 1 },
+  /* supplies earned in Worlds 3 to 5 */
+  wetland: { wetland: 1 }, seedbank: { seedbank: 1 }, hardy: { heatTrait: 0.5 } };
 /* the disruption that arrives at the start of each season (season 1 is calm) */
 const EVENTS = [null, 'boom', 'heat', 'disease', 'invasive', 'algae', 'cold', 'final'];
 function fresh() {
-  return { season: 0, water: 0, o2: 35, co2: 30, nut: 0, temp: 22, grass: 0, flowers: 0, trees: 0, pondweed: 0, bees: 0, rabbits: 0, hawks: 0, fish: 0, decomp: 0, waste: 0, vine: 0, kit: 0,
+  return { season: 0, water: 0, o2: 35, co2: 30, nut: 0, temp: 22, grass: 0, flowers: 0, trees: 0, pondweed: 0, bees: 0, rabbits: 0, hawks: 0, fish: 0, decomp: 0, waste: 0, vine: 0, kit: 0, wetland: 0, seedbank: 0,
     shade: false, ev: null, evDone: false, cured: false, heatTrait: 0, log: [] };
 }
 function place(s, id) { const p = PLACE[id]; if (!p) return; Object.keys(p).forEach(function (k) { s[k] = (s[k] || 0) + p[k]; }); }
@@ -69,8 +71,9 @@ function runSeason(s) {
   s.grass += gG; s.flowers += gF - (s.bees > 0.3 ? 0 : s.flowers * 0.18); s.trees += gT; s.pondweed += gW; /* without pollinators, old wildflowers die and no new seeds form */
   const uptake = (gG + gF + gT + gW) * 0.32 + producers(s) * 0.07; s.nut = Math.max(0, s.nut - uptake); /* growing plants, and plants just staying alive, take nutrients from the soil and water */
   /* disease hits the grass; many kinds of plants (and the cell-care kit) limit the damage */
-  if (ev === 'disease' && s.sick) { const kinds = ['grass', 'flowers', 'trees'].filter(function (k) { return s[k] > 0.5; }).length; let loss = s.cured ? 0.15 : kinds >= 3 ? 0.35 : kinds === 2 ? 0.55 : 0.85; const lost = s.grass * loss; s.grass -= lost; s.waste += lost * 0.5; s.sick = false; notes.push(s.cured ? 'diseaseCured' : kinds >= 2 ? 'diseaseMixed' : 'diseaseMono'); }
+  if (ev === 'disease' && s.sick) { const kinds = ['grass', 'flowers', 'trees'].filter(function (k) { return s[k] > 0.5; }).length; let loss = s.cured ? 0.15 : kinds >= 3 ? 0.35 : kinds === 2 ? 0.55 : 0.85; if (s.seedbank > 0 && !s.cured) { loss *= 0.6; notes.push('seedbank'); } /* a seed bank with many alleles: some grass plants resist the blight */ const lost = s.grass * loss; s.grass -= lost; s.waste += lost * 0.5; s.sick = false; notes.push(s.cured ? 'diseaseCured' : kinds >= 2 ? 'diseaseMixed' : 'diseaseMono'); }
   /* heat: plants with heat-tolerant traits survive better (and become more common: natural selection) */
+  if (ev === 'heat' && before.heatTrait >= 0.5) notes.push('hardy'); /* hardy seeds from drought survivors were already adapted */
   if (ev === 'heat') { if (s.water < 6) { s.grass *= 0.75; s.flowers *= 0.75; notes.push('heatDry'); } s.heatTrait = Math.min(1, s.heatTrait + 0.5); notes.push('heatTrait'); }
   if (ev === 'cold') { s.bees *= s.temp < 16 ? 0.55 : 0.9; if (s.temp < 16) notes.push('coldBees'); }
   /* invasive vine spreads and smothers other plants unless pulled */
@@ -88,6 +91,7 @@ function runSeason(s) {
   s.bees = Math.max(0, s.bees + s.bees * (s.flowers > 2 ? 0.25 : -0.45)); if (before.bees > 0.3 && s.flowers <= 2) notes.push('noFlowers');
   if (before.flowers > 1 && before.bees < 0.3) notes.push('noBees');
   /* pond: algae blooms when there are too many nutrients; fish need pondweed and oxygen */
+  if (s.wetland > 0 && s.nut > 7) { s.nut -= Math.min(s.nut - 7, 2.5 * s.wetland); notes.push('wetland'); } /* wetland plants soak up extra nutrients before they reach the pond */
   let algae = s.nut > 11 || ev === 'algae' && s.nut > 7.5; if (algae) notes.push('algae');
   s.fish = Math.max(0, s.fish + s.fish * (s.pondweed > 1.5 && !algae && s.o2 > 20 ? 0.2 : -0.45));
   /* waste and decomposers */

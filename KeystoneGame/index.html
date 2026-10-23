@@ -74,6 +74,9 @@ dt { color: var(--dim); } dd { margin: 0; }
 #hudHp { color: var(--bad); letter-spacing: .15em; font-size: 1.2em; }
 #hudScore { font-variant-numeric: tabular-nums; color: var(--signal); font-size: 1.2em; }
 #hudLevel { margin-left: auto; color: var(--ink); }
+#hudTime { font-variant-numeric: tabular-nums; color: #bfe9ff; } #hudTime.wait { opacity: .55; animation: tpulse 1.4s ease-in-out infinite; } @keyframes tpulse { 50% { opacity: .9; } }
+#qopts.cool .opt { opacity: .45; pointer-events: none; } #qcool { height: 5px; border-radius: 3px; background: rgba(255,176,156,.25); margin: 4px 0; overflow: hidden; } #qcool i { display: block; height: 100%; width: 100%; background: #ffb09c; }
+@keyframes qcool { from { width: 100%; } to { width: 0; } }
 #btnPause { padding: 4px 12px; }
 #qpanel { position: absolute; top: calc(46px * var(--ts)); left: 50%; transform: translateX(-50%); width: min(720px, calc(100% - 32px)); max-height: 56%; overflow: auto; background: color-mix(in srgb, var(--panel) 95%, transparent); border: 2px solid var(--signal); border-radius: 14px; padding: 10px 14px; }
 #qmeta { font-family: var(--display); color: var(--signal); font-size: .85em; letter-spacing: .08em; text-transform: uppercase; }
@@ -86,6 +89,7 @@ dt { color: var(--dim); } dd { margin: 0; }
 #qfb { color: var(--bad); font-weight: 700; margin-top: 6px; min-height: 1.3em; }
 #qhow { color: var(--dim); font-size: .85em; }
 #qpanel.compact { max-height: 30%; }
+.rfBtns { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; } .rfSum { display: flex; gap: 10px; margin: 6px 0 10px; } .rfSum div { flex: 1; text-align: center; background: rgba(95,245,230,.12); border: 2px solid #5ff5e6; border-radius: 10px; padding: 8px; } .rfSum b { display: block; font-size: 1.6em; color: #5ff5e6; } .rfSum span { font-size: .85em; }
 #qpanel.short #qopts { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); }
 .crowd { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 2px 0 6px; }
 .crowd > span { min-width: 0; }
@@ -177,6 +181,11 @@ ul.slots { list-style: none; padding-left: 0; }
 .achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
 .ach { display: flex; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 8px; opacity: .6; } .ach.on { opacity: 1; border-color: #ffd166; } .ach .ai { font-size: 26px; }
 .modeh { margin: 4px 0 -6px; color: var(--dim); font-size: .9em; } .modes { display: flex; gap: 8px; flex-wrap: wrap; } .modes > * { flex: 1 1 180px; } .cozyb { background: #7be0ad; border-color: #7be0ad; color: #10202c; }
+/* each play mode has its own color; hover and pressed look the same on every one */
+.modes .primary { color: #10202c; transition: filter .12s, transform .08s, box-shadow .12s; }
+#btnPlay { background: #ffd166; border-color: #ffd166; } #btnDome { background: #7fd4ff; border-color: #7fd4ff; } #btnWords { background: #c9a7ff; border-color: #c9a7ff; }
+.modes .primary:hover:not(:disabled) { filter: brightness(1.08); border-color: #ffffff; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+.modes .primary:active:not(:disabled) { filter: brightness(.9); transform: translateY(1px); }
 .gearinfo { margin: 4px 0 0; font-size: .9em; }
 #guide .gh { color: #9fe0ff; margin-top: 8px; }
 #toast { position: absolute; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); background: var(--deep); border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; }
@@ -217,7 +226,7 @@ ul.slots { list-style: none; padding-left: 0; }
   <canvas id="stage" aria-label="Earthling Field Guide game view"></canvas>
 
   <div id="hud" hidden>
-    <span id="hudHp"></span><span id="hudScore">0</span><span id="hudStreak"></span>
+    <span id="hudHp"></span><span id="hudScore">0</span><span id="hudStreak"></span><span id="hudTime"></span>
     <span id="hudInv"></span><span id="hudLevel"></span><button type="button" id="btnPause" aria-label="Pause">Pause</button>
   </div>
   <div id="qpanel" hidden>
