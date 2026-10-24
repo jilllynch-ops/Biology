@@ -516,6 +516,65 @@ Object.assign(C.I18N.es, {
   C.I18N.es['a.' + id] = C.I18N.es['cz.a.' + id]; C.I18N.es['a.' + id + '.d'] = C.I18N.es['cz.a.' + id + '.d'];
 });
 
+/* ---------- TEXT FOR THE NEW AREAS (Pennsylvania places beyond the hills) ---------- */
+Object.assign(C.I18N.en, {
+ "cz.ar.bog": "Pocono Bog",
+ "cz.hb.bog": "the bog",
+ "cz.bogIn": "Welcome to the Pocono Bog! The ground here is a floating mat of moss over a deep, wet hollow. Follow the boardwalk and look closely: some plants here eat insects.",
+ "cz.t.sphagnum": "the moss mat",
+ "cz.n.sphagnum": "Sphagnum moss",
+ "cz.d.sphagnum": "This whole floor is a floating mat of SPHAGNUM MOSS. It can hold up to 20 times its own weight in water, like a sponge, and it makes the water around it ACIDIC. Dead moss breaks down very slowly here and piles up as PEAT, only about 1 millimeter a year.",
+ "cz.t.pitcher": "the pitcher plants",
+ "cz.n.pitcher": "Purple pitcher plant",
+ "cz.d.pitcher": "Bog soil has very little NITROGEN. The pitcher plant's leaves are cups full of rainwater: insects slip in, drown, and are digested by enzymes and bacteria. The plant still makes its own food by PHOTOSYNTHESIS. The insects give it nitrogen: an ADAPTATION to poor soil.",
+ "cz.t.sundew": "the tiny red plants",
+ "cz.n.sundew": "Round-leaved sundew",
+ "cz.d.sundew": "Each leaf is covered in hairs tipped with sticky, glittering drops. A small insect that lands gets stuck, and the leaf slowly curls around it to digest it. Like the pitcher plant, the sundew is a PRODUCER that also catches animals for nutrients.",
+ "cz.t.cranberry": "the red berries",
+ "cz.n.cranberry": "Wild cranberry",
+ "cz.d.cranberry": "Cranberries are native to bogs like this one. Their low vines creep over the moss. Their roots partner with fungi that help pull nutrients out of the poor, acidic peat: MUTUALISM, where both partners benefit.",
+ "cz.t.tamarack": "the soft-needled tree",
+ "cz.n.tamarack": "Tamarack (American larch)",
+ "cz.d.tamarack": "A surprise: a CONIFER that loses its needles! Every fall the tamarack's needles turn gold and drop, like a maple's leaves. Tamaracks usually grow much farther north, in Canada.",
+ "cz.t.blackspruce": "the narrow dark trees",
+ "cz.n.blackspruce": "Black spruce",
+ "cz.d.blackspruce": "Black spruce is a tree of the cold northern forest. It grows here because the bog stays cool and wet, a pocket left over from the Ice Age climate. Pocono bogs like this are some of the southernmost of their kind in the eastern United States.",
+ "cz.t.kettle": "the dark pond",
+ "cz.n.kettle": "Kettle pond",
+ "cz.d.kettle": "About 15,000 years ago a glacier covered this part of Pennsylvania. As it melted, a giant block of ice was left buried here. When the ice melted too, it left a deep hole called a KETTLE. Water filled it, and moss has been growing in from the edges ever since. The water is brown like tea from chemicals that leak out of the peat.",
+ "cz.t.peat": "the sample tube",
+ "cz.n.peat": "Peat core",
+ "cz.d.peat": "Scientists push a long tube into the peat and pull out a core, layer by layer. The deepest layers are thousands of years old. POLLEN trapped in each layer shows which plants grew here long ago, so the core is a record of how the climate changed. Older layers are deeper, just like rock layers."
+});
+Object.assign(C.I18N.es, {
+ "cz.ar.bog": "Turbera de los Pocono",
+ "cz.hb.bog": "la turbera",
+ "cz.bogIn": "¡Bienvenido a la turbera de los Pocono! Aquí el suelo es una alfombra flotante de musgo sobre un hoyo profundo y húmedo. Sigue la pasarela y mira con atención: algunas plantas de aquí comen insectos.",
+ "cz.t.sphagnum": "la alfombra de musgo",
+ "cz.n.sphagnum": "Musgo esfagno",
+ "cz.d.sphagnum": "Todo este suelo es una alfombra flotante de MUSGO ESFAGNO. Puede retener hasta 20 veces su propio peso en agua, como una esponja, y vuelve ÁCIDA el agua que lo rodea. Aquí el musgo muerto se descompone muy despacio y se acumula como TURBA, apenas 1 milímetro por año.",
+ "cz.t.pitcher": "las plantas jarro",
+ "cz.n.pitcher": "Planta jarro púrpura",
+ "cz.d.pitcher": "El suelo de la turbera tiene muy poco NITRÓGENO. Las hojas de la planta jarro son copas llenas de agua de lluvia: los insectos resbalan, se ahogan y son digeridos por enzimas y bacterias. La planta sigue fabricando su propio alimento por FOTOSÍNTESIS. Los insectos le dan nitrógeno: una ADAPTACIÓN a un suelo pobre.",
+ "cz.t.sundew": "las plantitas rojas",
+ "cz.n.sundew": "Drosera de hoja redonda",
+ "cz.d.sundew": "Cada hoja está cubierta de pelitos con gotas pegajosas y brillantes. Un insecto pequeño que se posa queda pegado, y la hoja se enrolla poco a poco para digerirlo. Igual que la planta jarro, la drosera es un PRODUCTOR que también atrapa animales para obtener nutrientes.",
+ "cz.t.cranberry": "las bayas rojas",
+ "cz.n.cranberry": "Arándano rojo silvestre",
+ "cz.d.cranberry": "Los arándanos rojos son nativos de turberas como esta. Sus ramas bajas se arrastran sobre el musgo. Sus raíces se asocian con hongos que les ayudan a sacar nutrientes de la turba pobre y ácida: MUTUALISMO, donde ambos se benefician.",
+ "cz.t.tamarack": "el árbol de agujas suaves",
+ "cz.n.tamarack": "Alerce americano",
+ "cz.d.tamarack": "¡Una sorpresa: una CONÍFERA que pierde sus agujas! Cada otoño las agujas del alerce se vuelven doradas y caen, como las hojas de un arce. Normalmente los alerces crecen mucho más al norte, en Canadá.",
+ "cz.t.blackspruce": "los árboles oscuros y delgados",
+ "cz.n.blackspruce": "Pícea negra",
+ "cz.d.blackspruce": "La pícea negra es un árbol del frío bosque del norte. Crece aquí porque la turbera se mantiene fresca y húmeda, un rincón que quedó del clima de la Edad de Hielo. Las turberas como esta, en los montes Pocono, están entre las más sureñas de su tipo en el este de Estados Unidos.",
+ "cz.t.kettle": "el estanque oscuro",
+ "cz.n.kettle": "Estanque de marmita glaciar",
+ "cz.d.kettle": "Hace unos 15,000 años un glaciar cubría esta parte de Pensilvania. Al derretirse, dejó enterrado aquí un enorme bloque de hielo. Cuando ese hielo también se derritió, quedó un hoyo profundo llamado MARMITA. El agua lo llenó, y desde entonces el musgo ha ido creciendo desde las orillas. El agua es café como el té por las sustancias que suelta la turba.",
+ "cz.t.peat": "el tubo de muestras",
+ "cz.n.peat": "Núcleo de turba",
+ "cz.d.peat": "Los científicos clavan un tubo largo en la turba y sacan un núcleo, capa por capa. Las capas más profundas tienen miles de años. El POLEN atrapado en cada capa muestra qué plantas crecían aquí hace mucho, así que el núcleo es un registro de cómo cambió el clima. Las capas más antiguas están más abajo, igual que las capas de roca."
+});
 /* ---------- DISCOVERIES (journal entries) ---------- */
 const FINDS = [
   { id: 'frog', look: 'frog', col: '#5fbf5a' }, { id: 'log', look: 'mushroom', col: '#c0503a' }, { id: 'bee', look: 'sprout', col: '#ffd166' }, { id: 'rabbit', look: 'critter', col: '#d8c8b0' },
@@ -528,7 +587,10 @@ const FINDS = [
   { id: 'willow', look: 'grass', col: '#8aba5a' }, { id: 'dogwood', look: 'sprout', col: '#fff0f4' }, { id: 'hickory', look: 'sprout', col: '#e0b03a' },
   { id: 'seaview', look: 'drop', col: '#2a9ab0' }, { id: 'valleyview', look: 'grass', col: '#c8b858' }, { id: 'canyonview', look: 'rock', col: '#c8805a' },
   { id: 'fireflies', look: 'sun', col: '#d8ff7a' }, { id: 'lunamoth', look: 'sprout', col: '#9ae08a' },
-  { id: 'pondweed', look: 'grass', col: '#3a9a5a' }, { id: 'mussel', look: 'rock', col: '#4a4a6a' }, { id: 'tadpole', look: 'frog', col: '#4a5a3a' }];
+  { id: 'pondweed', look: 'grass', col: '#3a9a5a' }, { id: 'mussel', look: 'rock', col: '#4a4a6a' }, { id: 'tadpole', look: 'frog', col: '#4a5a3a' },
+  /* Pocono Bog */
+  { id: 'sphagnum', look: 'grass', col: '#8aa040', area: 'bog' }, { id: 'pitcher', look: 'sprout', col: '#a0403a', area: 'bog' }, { id: 'sundew', look: 'sun', col: '#d8402a', area: 'bog' }, { id: 'cranberry', look: 'eggs', col: '#c0283a', area: 'bog' },
+  { id: 'tamarack', look: 'sprout', col: '#a8c060', area: 'bog' }, { id: 'blackspruce', look: 'sprout', col: '#1f3a2a', area: 'bog' }, { id: 'kettle', look: 'drop', col: '#5a3a18', area: 'bog' }, { id: 'peat', look: 'rock', col: '#5a3a20', area: 'bog' }];
 
 /* ---------- WORLD SHAPE ---------- */
 const POND = { x: -20, z: 22 }, HILL = { x: 42, z: -42 }, FARM = { x: -52, z: -40 }, HOLLOW = { x: 56, z: 40 }, STATION = { x: 6, z: -6 }, STREAM = [[-28, -60], [-36, -46], [-44, -30], [-36, -12], [-30, 4], [-26, 12]];
@@ -545,13 +607,13 @@ function edgeW(x, z, id) { let a = Math.atan2(z, x) * 180 / Math.PI, best = 0, w
   EDGES.forEach(function (e) { if (id && e.id !== id) return; let b = a; const mid = (e.a0 + e.a1) / 2; while (b < mid - 180) b += 360; while (b > mid + 180) b -= 360; const w = Math.max(0, Math.min(1, (Math.min(b - e.a0, e.a1 - b) + 6) / 12)); if (w > best) { best = w; which = e.id; } });
   return id ? best : { w: best, id: which }; }
 const OUTLET = [[-14, 34], [-12, 44], [-8, 53], [-4, 61], [-2.5, 66.2]];
-const RIVER = [[-2, 73], [6, 92], [-6, 116], [10, 140], [40, 160], [70, 190], [90, 240]];
+const RIVER = [[-2, 73], [6, 92], [-6, 116], [10, 140], [40, 160], [56, 174]]; /* the valley river ends in a lake (it used to climb into the far hills) */
 const CANYONR = [[-104, -46], [-112, -12], [-106, 22], [-114, 60]];
 const CREEKS = [{ id: 'stream', pts: smoothLine(STREAM, 90), w0: 1.5, w1: 2.6 }, { id: 'outlet', pts: smoothLine(OUTLET, 40), w0: 2.2, w1: 1.8 },
   { id: 'river', pts: smoothLine(RIVER, 90), w0: 3, w1: 7, far: true }, { id: 'canyon', pts: smoothLine(CANYONR, 80), w0: 5, w1: 6, far: true }];
 function farRiverDist(x, z) { let d = 1e9; CREEKS.forEach(function (c) { if (!c.far) return; const P = c.pts; for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > 30 || Math.abs(a[1] - z) > 30) continue; d = Math.min(d, segDist(x, z, a, P[i + 1])); } }); return d; }
 function streamDist(x, z) { let d = 1e9; CREEKS.forEach(function (c) { if (c.far) return; const P = c.pts; for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > 12 || Math.abs(a[1] - z) > 12) continue; d = Math.min(d, segDist(x, z, a, P[i + 1])); } }); return d; }
-function H(x, z) {
+function H00(x, z) {
   let h = 1.4 * Math.sin(x * 0.05) * Math.cos(z * 0.045) + 1.0 * Math.sin((x - z) * 0.032) + 0.5 * Math.sin(x * 0.13 + 1) * Math.sin(z * 0.11);
   h += 13 * Math.exp(-((x - HILL.x) ** 2 + (z - HILL.z) ** 2) / 520);
   h -= 8.5 * Math.exp(-((x - POND.x) ** 2 + (z - POND.z) ** 2) / 170);
@@ -575,7 +637,59 @@ function H(x, z) {
       h = (h + hills) * (1 - ew.w) + cliffH * ew.w; } }
   return h;
 }
-let WLK = null; const WL0 = H(POND.x, POND.z) + 6; WLK = WL0;
+/* NEW AREAS beyond the hills: real Pennsylvania places, each reached by a trail through a gap in the hills.
+   a: direction from the reserve's center (degrees), r: how far out the area's center is, rad: its size, y: its ground height */
+const POCKETS = [
+  { id: 'bog', a: 138, r: 90, rad: 15, y: 2.4 }
+];
+POCKETS.forEach(function (p) { const ar = p.a * Math.PI / 180; p.x = Math.cos(ar) * p.r; p.z = Math.sin(ar) * p.r; p.ax = Math.cos(ar) * (EDGE - 7); p.az = Math.sin(ar) * (EDGE - 7); p.hA = null; });
+/* places in the bog, measured from its center: d = toward the bog from the reserve, n = sideways */
+const BOGP = (function () { const p = POCKETS.find(function (q) { return q.id === 'bog'; }), a = p.a * Math.PI / 180, dx = Math.cos(a), dz = Math.sin(a), nx = -dz, nz = dx;
+  const at = function (fd, fn) { return [+(p.x + dx * fd + nx * fn).toFixed(2), +(p.z + dz * fd + nz * fn).toFixed(2)]; };
+  return { p: p, at: at, dx: dx, dz: dz, nx: nx, nz: nz, sph: at(-10, 3.2), pit: at(-5, -8.5), sun: at(2, 9), cran: at(9, 3), tam: at(12, -6), spr: at(-2, -13), ket: at(-7.4, 0.6), peat: at(4, -7.5) }; })();
+/* WATER ALWAYS FLOWS DOWNHILL: each creek gets a water level that only goes down along its course,
+   and the ground under and beside the creek is carved a little below that level */
+let CPROF = null;
+function creekProfiles() {
+  CPROF = CREEKS.map(function (c) { const P = c.pts, pr = []; let m = 1e9;
+    for (let i = 0; i < P.length; i++) { const inPond = Math.hypot(P[i][0] - POND.x, P[i][1] - POND.z) < 15.8; /* a creek leaving the pond starts at the pond's water level, not its muddy bottom */
+      m = Math.min(m, inPond ? (WLK !== null ? WLK : H00(POND.x, POND.z) + 6) - 0.12 : H00(P[i][0], P[i][1])); pr.push(m); } return pr; });
+}
+function creekCarve(x, z) { /* the nearest creek point within reach: its water level and how far away it is */
+  if (!CPROF) creekProfiles(); let best = null;
+  for (let k = 0; k < CREEKS.length; k++) { const c = CREEKS[k], P = c.pts, reach = (c.far ? 10 : 5.5); /* wide enough that the ground's triangles (about 2.3 steps apart) really show the channel */
+    for (let i = 0; i < P.length - 1; i++) { const a = P[i]; if (Math.abs(a[0] - x) > reach + 4 || Math.abs(a[1] - z) > reach + 4) continue;
+      const b = P[i + 1], vx = b[0] - a[0], vz = b[1] - a[1], u = Math.max(0, Math.min(1, ((x - a[0]) * vx + (z - a[1]) * vz) / (vx * vx + vz * vz || 1))), d = Math.hypot(x - a[0] - u * vx, z - a[1] - u * vz);
+      if (d < reach && (!best || d < best.d)) best = { d: d, y: CPROF[k][i] + (CPROF[k][i + 1] - CPROF[k][i]) * u, reach: reach }; } }
+  return best;
+}
+const LAKE = { x: 60, z: 178, r: 9 };
+function H0(x, z) { let h = H00(x, z); const dl = Math.hypot(x - LAKE.x, z - LAKE.z); if (dl < LAKE.r + 6) { if (!CPROF) creekProfiles(); const ly = CPROF[2][CPROF[2].length - 1] - 0.6, u = Math.max(0, (dl - LAKE.r) / 6), w0 = dl < LAKE.r ? 1 : 1 - u * u * (3 - 2 * u); if (h > ly) h -= (h - ly) * w0; }
+  const c = creekCarve(x, z); if (!c) return h; const bed = c.y - 0.55, t = Math.max(0, Math.min(1, (c.d - c.reach * 0.3) / (c.reach * 0.7))), w = 1 - t * t * (3 - 2 * t); return h > bed ? h - (h - bed) * w : h; }
+function pocketFloor(p, x, z) {
+  const dc = Math.hypot(x - p.x, z - p.z);
+  if (p.id === 'bog') { /* a flat, spongy mat of moss with little hummocks, sinking into a small dark pond in the middle (a glacial kettle) */
+    const pond = dc < 5.5 ? -0.75 : dc < 7.5 ? -0.75 * (7.5 - dc) / 2 : 0; return pond + 0.18 * Math.sin(x * 0.9) * Math.cos(z * 0.8) * (dc > 7.5 ? 1 : 0); }
+  return 0;
+}
+function pocketAt(x, z) {
+  let best = null;
+  for (let i = 0; i < POCKETS.length; i++) { const p = POCKETS[i]; let w = 0, tgt = p.y;
+    const dc = Math.hypot(x - p.x, z - p.z); if (dc < p.rad + 9) w = dc < p.rad ? 1 : 1 - (dc - p.rad) / 9;
+    const vx = p.x - p.ax, vz = p.z - p.az, u = Math.max(0, Math.min(1, ((x - p.ax) * vx + (z - p.az) * vz) / (vx * vx + vz * vz))), sd = Math.hypot(x - p.ax - u * vx, z - p.az - u * vz);
+    if (sd < 8.5) { const wc = sd < 3.5 ? 1 : 1 - (sd - 3.5) / 5; if (wc > w) { if (p.hA == null) p.hA = H0(p.ax, p.az); tgt = p.hA + (p.y - p.hA) * Math.min(1, u * 1.3); w = wc; } }
+    if (w > 0 && (!best || w > best.w)) best = { w: w, p: p, y: tgt }; }
+  return best;
+}
+function H(x, z) { const h = H0(x, z), pk = pocketAt(x, z); if (!pk) return h; const w = pk.w * pk.w * (3 - 2 * pk.w), fl = pk.y === pk.p.y ? pocketFloor(pk.p, x, z) : 0; return h * (1 - w) + (pk.y + fl) * w; }
+function pathDistPk(p, x, z) { return segDist(x, z, [p.ax, p.az], [p.x + (p.ax - p.x) * p.rad / p.r * 0.9, p.z + (p.az - p.z) * p.rad / p.r * 0.9]); }
+function inPocket(x, z) { const pk = pocketAt(x, z); return !!pk && pk.w > 0.72; }
+function pocketColor(p, x, z, y, cc) {
+  const dc = Math.hypot(x - p.x, z - p.z);
+  if (p.id === 'bog') { if (dc < 5.6) { cc.set('#3a2a18'); return; } const n = Math.sin(x * 1.3 + Math.cos(z * 0.9) * 2) * Math.cos(z * 1.1 - x * 0.4);
+    cc.set(n > 0.62 ? '#a8584a' : n > 0.3 ? '#b0a048' : n < -0.45 ? '#5f8a3a' : '#8aa848'); }
+}
+let WLK = null; const WL0 = H(POND.x, POND.z) + 6; WLK = WL0; CPROF = null; /* work out the creek levels again, now that the pond's level is known */
 /* THE DRAWN GROUND: the ground is drawn as a grid of flat triangles, so between grid points it is a little higher or lower than H().
    Anything that stands, walks or swims uses this height, so it matches what the player actually sees. */
 let GRID_N = 140;
@@ -761,6 +875,62 @@ function buildHuman(o) {
   return g;
 }
 
+/* ---------- THE POCONO BOG (a real kind of place: a glacial kettle bog, like Tannersville Cranberry Bog) ---------- */
+function buildBog(g, LP) {
+  const B = BOGP, p = B.p, deck = p.y + 0.32, low = S0low();
+  const rr = function (i) { return rnd(i + 51000); };
+  /* the boardwalk: in from the trail, then a loop around the kettle pond */
+  const path = []; for (let f = -p.rad - 6; f <= -8; f += 0.8) path.push(B.at(f, 0));
+  for (let k = 0; k <= 60; k++) { const a = Math.PI + k / 60 * Math.PI * 2, fd = Math.cos(a) * 8.6, fn = Math.sin(a) * 8.6; path.push(B.at(fd, fn)); }
+  const planks = [], posts = [];
+  path.forEach(function (q, i) { const nx = path[Math.min(path.length - 1, i + 1)], pv = path[Math.max(0, i - 1)], ang = Math.atan2(nx[1] - pv[1], nx[0] - pv[0]);
+    planks.push([q[0], deck, q[1], 0.62, 0.1, 1.9, -ang]); if (i % 3 === 0) { posts.push([q[0] + Math.cos(ang + 1.57) * 0.9, deck - 0.4, q[1] + Math.sin(ang + 1.57) * 0.9, 0.08, 0.8, 0.08]); posts.push([q[0] - Math.cos(ang + 1.57) * 0.9, deck - 0.4, q[1] - Math.sin(ang + 1.57) * 0.9, 0.08, 0.8, 0.08]); }
+    W.tops.push({ x: q[0], z: q[1], r: 1.35, top: deck + 0.05 }); });
+  g.add(inst(C.G.box, C.emat('#a07a4a', '#1a1005'), planks)); g.add(inst(C.G.box, C.emat('#6a4a2a', '#100a04'), posts));
+  W.bogPath = path;
+  const nearWalk = function (x, z) { for (let i = 0; i < path.length; i += 2) if (Math.hypot(x - path[i][0], z - path[i][1]) < 1.6) return true; return false; };
+  /* the kettle pond: dark, tea-colored water */
+  const pond = new T.Mesh(new T.CircleGeometry(6.1, 32), new T.MeshLambertMaterial({ color: '#4a2e14', emissive: '#1a0e04', transparent: true, opacity: 0.92 })); pond.rotation.x = -Math.PI / 2; pond.position.set(p.x, p.y - 0.22, p.z); g.add(pond);
+  const shine = new T.Mesh(new T.RingGeometry(1.2, 4.8, 32), C.basic('#ffe8c0', 0.08)); shine.rotation.x = -Math.PI / 2; shine.position.set(p.x - 1, p.y - 0.2, p.z - 1); g.add(shine);
+  /* sphagnum hummocks: green, gold and red cushions of moss */
+  const hum = [], humC = []; for (let i = 0; i < (low ? 50 : 110); i++) { const a = rr(i) * 6.283, r2 = 7 + rr(i + 300) * (p.rad + 1), x = p.x + Math.cos(a) * r2, z = p.z + Math.sin(a) * r2; if (nearWalk(x, z)) continue;
+    const sc = 0.35 + rr(i + 600) * 0.45; hum.push([x, H(x, z) - 0.05, z, sc * 1.1, sc * 0.55, sc]); humC.push(['#7a9a3a', '#9a5040', '#a89a40', '#5f8436', '#8aa848', '#6f9040'][i % 6]); }
+  g.add(inst(LP.sph, C.emat('#ffffff', '#0a0a04'), hum, humC));
+  /* purple pitcher plants: clusters of red-veined, cup-shaped leaves (one big cluster by the boardwalk to observe) */
+  const pit = [], pitC = [], addPit = function (cx, cz, n, k0) { for (let j = 0; j < n; j++) { const a = j / n * 6.283 + k0, x = cx + Math.cos(a) * 0.32, z = cz + Math.sin(a) * 0.32, h = 0.22 + (j % 3) * 0.05; pit.push([x, H(x, z) + h, z, 0.12, h, 0.12, a]); pitC.push(j % 2 ? '#8a2a3a' : '#7a8a3a'); } };
+  addPit(B.pit[0], B.pit[1], 7, 0); addPit(B.pit[0] + 1.1, B.pit[1] + 0.6, 5, 1); addPit(B.pit[0] - 0.9, B.pit[1] + 0.8, 6, 2);
+  for (let i = 0; i < (low ? 10 : 22); i++) { const a = rr(i + 1200) * 6.283, r2 = 8 + rr(i + 1300) * (p.rad - 2), x = p.x + Math.cos(a) * r2, z = p.z + Math.sin(a) * r2; if (!nearWalk(x, z)) addPit(x, z, 5, i); }
+  { const cup = new T.ConeGeometry(1, 2, 8, 1, true); cup.rotateX(Math.PI); g.add(inst(cup, new T.MeshLambertMaterial({ color: '#ffffff', emissive: '#1a0a0a', side: T.DoubleSide }), pit, pitC)); }
+  { const fl = []; [[0, 0], [1.1, 0.6], [-0.9, 0.8]].forEach(function (o, k) { const x = B.pit[0] + o[0], z = B.pit[1] + o[1]; fl.push([x + 0.15, H(x, z) + 0.75, z, 0.12, 0.08, 0.12]); }); g.add(inst(LP.sph, C.emat('#a02a4a', '#2a0010'), fl));
+    const st2 = []; [[0, 0], [1.1, 0.6], [-0.9, 0.8]].forEach(function (o) { const x = B.pit[0] + o[0], z = B.pit[1] + o[1]; st2.push([x + 0.15, H(x, z) + 0.38, z, 0.02, 0.38, 0.02]); }); g.add(inst(LP.cyl, C.emat('#5a6a2a', '#0a0a00'), st2)); }
+  /* round-leaved sundews: tiny red rosettes with glittering sticky drops */
+  const sd = [], dew = []; const addSun = function (cx, cz) { for (let j = 0; j < 6; j++) { const a = j / 6 * 6.283, x = cx + Math.cos(a) * 0.15, z = cz + Math.sin(a) * 0.15; sd.push([x, H(x, z) + 0.06, z, 0.12, 0.02, 0.12]); dew.push([x + Math.cos(a) * 0.07, H(x, z) + 0.1, z + Math.sin(a) * 0.07, 0.03, 0.03, 0.03]); } };
+  for (let k = 0; k < 7; k++) addSun(B.sun[0] + Math.cos(k * 2.4) * (k ? 0.5 + k * 0.08 : 0), B.sun[1] + Math.sin(k * 2.4) * (k ? 0.5 + k * 0.08 : 0));
+  for (let i = 0; i < (low ? 12 : 30); i++) { const a = rr(i + 1500) * 6.283, r2 = 7.5 + rr(i + 1600) * (p.rad - 1), x = p.x + Math.cos(a) * r2, z = p.z + Math.sin(a) * r2; if (!nearWalk(x, z)) addSun(x, z); }
+  g.add(inst(LP.sph, C.emat('#d8402a', '#3a0804'), sd)); g.add(inst(LP.sph, C.basic('#ffffff', 0.9), dew));
+  /* wild cranberry: low vines with red berries */
+  const cv = [], cb = []; for (let i = 0; i < (low ? 30 : 70); i++) { const near0 = i < 18, a = rr(i + 1800) * 6.283, r2 = near0 ? rr(i + 1900) * 1.6 : 7.5 + rr(i + 1900) * (p.rad - 1), x = (near0 ? B.cran[0] : p.x) + Math.cos(a) * r2, z = (near0 ? B.cran[1] : p.z) + Math.sin(a) * r2;
+    if (!near0 && nearWalk(x, z)) continue; cv.push([x, H(x, z) + 0.05, z, 0.3, 0.06, 0.22, a]); cb.push([x + 0.1, H(x, z) + 0.13, z, 0.07, 0.07, 0.07]); cb.push([x - 0.12, H(x, z) + 0.12, z + 0.08, 0.06, 0.06, 0.06]); }
+  g.add(inst(LP.sph, C.emat('#3a5a2a', '#081004'), cv)); g.add(inst(LP.sph10, C.emat('#c0283a', '#3a0008'), cb));
+  /* leatherleaf shrubs */
+  const sh = []; for (let i = 0; i < (low ? 14 : 34); i++) { const a = rr(i + 2100) * 6.283, r2 = 9 + rr(i + 2200) * (p.rad + 2), x = p.x + Math.cos(a) * r2, z = p.z + Math.sin(a) * r2; if (nearWalk(x, z)) continue; sh.push([x, H(x, z) + 0.45, z, 0.7, 0.55, 0.7]); }
+  g.add(inst(LP.sph, C.emat('#5a6a34', '#0a0c04'), sh));
+  /* black spruce (narrow, dark) and tamarack (soft, light green) around the edge of the bog */
+  const sc = [], tc = [], trk = []; const tree = function (x, z, kind, s2) { const y = H(x, z); if (kind === 'spr') { for (let t = 0; t < 3; t++) sc.push([x, y + (1.6 + t * 1.5) * s2, z, (0.85 - t * 0.22) * s2, 1.3 * s2, (0.85 - t * 0.22) * s2]); } else tc.push([x, y + 3 * s2, z, 1.25 * s2, 2.4 * s2, 1.25 * s2]);
+    trk.push([x, y + 1.2 * s2, z, 0.12 * s2, 2.4 * s2, 0.12 * s2]); W.colliders.push({ x: x, z: z, r: 0.35, cr: 1 * s2, bot: y + 1 * s2 }); };
+  tree(B.spr[0], B.spr[1], 'spr', 1.3); tree(B.tam[0], B.tam[1], 'tam', 1.25);
+  for (let i = 0; i < (low ? 18 : 34); i++) { const a = rr(i + 2500) * 6.283, r2 = p.rad - 3 + rr(i + 2600) * 9, x = p.x + Math.cos(a) * r2, z = p.z + Math.sin(a) * r2; if (nearWalk(x, z) || Math.hypot(x - B.spr[0], z - B.spr[1]) < 2.5 || Math.hypot(x - B.tam[0], z - B.tam[1]) < 3) continue; tree(x, z, i % 3 === 0 ? 'tam' : 'spr', 0.9 + rr(i + 2700) * 0.6); }
+  g.add(inst(LP.cone8, C.emat('#1f3a2a', '#040a06'), sc)); g.add(inst(LP.cone8, C.emat('#9ab858', '#101a04'), tc)); g.add(inst(LP.cyl, C.emat('#4a3a2a', '#0a0604'), trk));
+  /* the peat-core tube a scientist left standing in the moss, with a few core sections laid out on a board */
+  { const x = B.peat[0], z = B.peat[1], y = H(x, z); const tube = new T.Mesh(C.G.cyl, C.emat('#c8c8c0', '#202020')); tube.scale.set(0.07, 1.6, 0.07); tube.position.set(x, y + 0.8, z); g.add(tube);
+    const bd = new T.Mesh(C.G.box, C.emat('#c8a070', '#1a1005')); bd.scale.set(1.8, 0.08, 0.5); bd.position.set(x + 1, y + 0.3, z); g.add(bd);
+    ['#7a5a30', '#5a3a20', '#3a2414', '#2a1a10'].forEach(function (c0, k) { const cs = new T.Mesh(C.G.cyl, C.emat(c0, '#0a0604')); cs.scale.set(0.09, 0.4, 0.09); cs.rotation.z = Math.PI / 2; cs.position.set(x + 0.3 + k * 0.45, y + 0.4, z); g.add(cs); }); }
+  /* trailhead sign */
+  { const q = B.at(-p.rad - 5, 2.6), y = H(q[0], q[1]); [-0.7, 0.7].forEach(function (o) { const ps = new T.Mesh(C.G.box, C.emat('#6a4a2a', '#100a04')); ps.scale.set(0.12, 1.8, 0.12); ps.position.set(q[0] + B.nx * o, y + 0.9, q[1] + B.nz * o); g.add(ps); });
+    const lb = C.label('🌿 ' + tx('cz.ar.bog'), 3.4, { bg: '#5a3a1a', fg: '#fff6dc', bd: '#c8a070' }); lb.position.set(q[0], y + 2.1, q[1]); g.add(lb); }
+  /* dragonflies over the pond */
+  if (!low) for (let i = 0; i < 3; i++) { const d0 = C.glow('#7fd4ff', 0.6, 0.8); d0.position.set(p.x + i, p.y + 1.2, p.z - i); g.add(d0); W.anim.push({ m: d0, ph: i * 2, fly: true, y: p.y + 1.2, x: p.x + i, z: p.z - i }); }
+}
 /* ---------- BUILD THE RESERVE ---------- */
 function build() {
   const g = new T.Group(), G = C.G, scene = C.scene;
@@ -784,6 +954,7 @@ function build() {
     else if (dd > EDGE + 2) cc.set('#5a8a34').lerp(new T.Color('#3f6a34'), Math.min(1, (dd - EDGE) / 50)); else { const nn = Math.sin(x * 0.11 + Math.cos(z * 0.07) * 2) * Math.cos(z * 0.09 - x * 0.03); cc.set(y > 6 ? '#6f9a34' : '#5f9a38').lerp(new T.Color(nn > 0.35 ? '#94a83c' : nn < -0.4 ? '#3f7a30' : '#5f9a38'), 0.6); }
     if (pth < 1.6 && dd < EDGE && !farm && dp > 16.5) cc.lerp(new T.Color('#c0844e'), pth < 1 ? 0.8 : 0.3);
     edgeColor(x, z, y, cc);
+    { const pk = pocketAt(x, z); if (pk && pk.w > 0.2) { const c0 = cc.clone(); pocketColor(pk.p, x, z, y, cc); if (pk.y !== pk.p.y) cc.set(pathDistPk(pk.p, x, z) < 1.4 ? '#c0844e' : '#5a8a3a'); c0.lerp(cc, Math.min(1, (pk.w - 0.2) / 0.5)); cc.copy(c0); } }
     cc.offsetHSL(0, 0, (Math.sin(x * 1.7 + z * 2.3) * 0.5) * 0.04); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b;
   }
   geo.setAttribute('color', new T.BufferAttribute(cols, 3)); geo.computeVertexNormals();
@@ -891,6 +1062,7 @@ function build() {
       const dc = [];
       for (let i = 0; i < n; i++) { dc.push(dH(P[i][0], P[i][1])); ys.push(dc[i] + 0.12); }
       for (let i = 0; i < n; i++) { let a = 0, m = 0; for (let k = -3; k <= 3; k++) { const j = i + k; if (j >= 0 && j < n) { a += ys[j]; m++; } } ys[i] = Math.max(dc[i] + 0.06, Math.min(dc[i] + 0.22, a / m)); }
+      for (let i = 1; i < n; i++) ys[i] = Math.min(ys[i], ys[i - 1]); /* downstream, the water surface never goes up */
       for (let i = 0; i < n; i++) {
         const a = P[Math.max(0, i - 1)], b = P[Math.min(n - 1, i + 1)], tx0 = b[0] - a[0], tz0 = b[1] - a[1], L0 = Math.hypot(tx0, tz0) || 1, nx = -tz0 / L0, nz = tx0 / L0, w = (c.w0 + (c.w1 - c.w0) * i / (n - 1)) / 2 * 1.3;
         if (i > 0) along += Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]);
@@ -900,6 +1072,7 @@ function build() {
       }
       const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(pos, 3)); geo.setAttribute('uv', new T.BufferAttribute(uv, 2)); geo.setIndex(idx); geo.computeVertexNormals();
       const m = new T.Mesh(geo, cmat); m.material.side = T.DoubleSide; g.add(m);
+      if (c.id === 'river') { const lk = new T.Mesh(new T.CircleGeometry(LAKE.r + 0.6, 28), new T.MeshLambertMaterial({ color: '#3a9ab8', emissive: '#0a2a3a', transparent: true, opacity: 0.92 })); lk.rotation.x = -Math.PI / 2; lk.position.set(LAKE.x, ys[n - 1] - 0.02, LAKE.z); g.add(lk); } /* the river flows into a lake */
       /* little white riffles where the water runs over stones */
       for (let i = 6; i < n - 4; i += 9) { const st1 = new T.Mesh(LP.sph, C.emat('#9a9a8a', '#1a1a18')); st1.scale.set(0.35, 0.18, 0.3); st1.position.set(P[i][0] + Math.sin(i) * 0.5, ys[i] - 0.05, P[i][1] + Math.cos(i) * 0.4); g.add(st1); }
     }); }
@@ -961,7 +1134,7 @@ function build() {
   for (let i = 0; i < ringN; i++) {
     const a = i * 2.39996, r2 = EDGE + 4 + ((i * 37) % 60) * (i % 3 === 0 ? 1.4 : 0.9); let x = Math.cos(a) * r2, z = Math.sin(a) * r2;
     if (Math.hypot(x - SPRING.x, z + 66) < 11) { x *= 1.5; z *= 1.5; }
-    if (edgeW(x, z).w > 0.02) { x = 0; z = -400; }
+    if (edgeW(x, z).w > 0.02 || (pocketAt(x, z) || { w: 0 }).w > 0.05) { x = 0; z = -400; }
     const y = H(x, z), s2 = 1.1 + (i % 5) * 0.25;
     const leafy = i % 3 === 1; dm0.position.set(x, y + (leafy ? 4.0 : 4.6) * s2, z); if (leafy) dm0.scale.set(2.2 * s2, 2.0 * s2, 2.2 * s2); else dm0.scale.set(1.9 * s2, 2.8 * s2, 1.9 * s2); dm0.rotation.y = i; dm0.updateMatrix(); cone.setMatrixAt(i, dm0.matrix);
     tc.set(leafy ? ['#5a9a3a', '#6aaa44', '#c4602c', '#4a8a34', '#d8a03a'][i % 5] : ['#2f6a32', '#3a7a3a', '#2a5a30', '#2a6236'][i % 4]).offsetHSL(0, 0, (Math.sin(i * 1.7) * 0.04)); cone.setColorAt(i, tc);
@@ -972,6 +1145,7 @@ function build() {
     for (let i = 0; i < ringN; i++) { cone.getMatrixAt(i, m4); cone.getColorAt(i, cc2); if (i % 3 === 1) { sphI.setMatrixAt(i, m4); sphI.setColorAt(i, cc2); cone.setMatrixAt(i, zero); } else sphI.setMatrixAt(i, zero); }
     g.add(sphI); W.ringSph = sphI; }
   g.add(cone); g.add(trunk); W.ringCone = cone;
+  buildBog(g, LP);
   /* birches along the paths and the orchard of apple trees */
   const birchM = C.emat('#f0ece0', '#2a2a28'), birchLeaf = C.emat('#8acb4a', '#142a08');
   [[12, 20], [20, 6], [-20, -14], [-2, 24], [24, -30], [-30, 0], [30, -6]].forEach(function (p) { const y = H(p[0], p[1]), t1 = new T.Mesh(G.cyl, birchM); t1.scale.set(0.22, 3.6, 0.22); t1.position.set(p[0], y + 1.8, p[1]); g.add(t1);
@@ -1260,6 +1434,15 @@ function spots() {
     { id: 'willow', x: -36, z: 28, r: 3.8, verb: 'cz.observe', t: 'cz.t.willow', my: 5.5, use: function () { treeFind('willow'); } },
     { id: 'dogwood', x: -12, z: 46, r: 3, verb: 'cz.observe', t: 'cz.t.dogwood', my: 3.5, use: function () { treeFind('dogwood'); } },
     { id: 'hickory', x: 2, z: 50, r: 3.6, verb: 'cz.observe', t: 'cz.t.hickory', my: 6, use: function () { treeFind('hickory'); } },
+    /* Pocono Bog */
+    { id: 'sphagnum', x: BOGP.sph[0], z: BOGP.sph[1], r: 3, verb: 'cz.observe', t: 'cz.t.sphagnum', my: 1.2, use: function () { find('sphagnum'); } },
+    { id: 'pitcher', x: BOGP.pit[0], z: BOGP.pit[1], r: 3, verb: 'cz.observe', t: 'cz.t.pitcher', my: 1.6, use: function () { find('pitcher'); } },
+    { id: 'sundew', x: BOGP.sun[0], z: BOGP.sun[1], r: 2.6, verb: 'cz.observe', t: 'cz.t.sundew', my: 1.0, use: function () { find('sundew'); } },
+    { id: 'cranberry', x: BOGP.cran[0], z: BOGP.cran[1], r: 2.8, verb: 'cz.observe', t: 'cz.t.cranberry', my: 1.0, use: function () { find('cranberry'); } },
+    { id: 'tamarack', x: BOGP.tam[0], z: BOGP.tam[1], r: 3.6, verb: 'cz.observe', t: 'cz.t.tamarack', my: 6.5, use: function () { find('tamarack'); } },
+    { id: 'blackspruce', x: BOGP.spr[0], z: BOGP.spr[1], r: 3.6, verb: 'cz.observe', t: 'cz.t.blackspruce', my: 7, use: function () { find('blackspruce'); } },
+    { id: 'kettle', x: BOGP.ket[0], z: BOGP.ket[1], r: 3.4, verb: 'cz.observe', t: 'cz.t.kettle', my: 1.4, use: function () { find('kettle'); } },
+    { id: 'peat', x: BOGP.peat[0], z: BOGP.peat[1], r: 2.8, verb: 'cz.observe', t: 'cz.t.peat', my: 2.2, use: function () { find('peat'); } },
     { id: 'seaview', x: Math.cos(-3 * Math.PI / 180) * (EDGE + 0.2), z: Math.sin(-3 * Math.PI / 180) * (EDGE + 0.2), r: 3.4, verb: 'cz.lookout', t: 'cz.t.seaview', my: 2.6, use: function () { viewer('sea'); find('seaview'); } },
     { id: 'valleyview', x: Math.cos(88.5 * Math.PI / 180) * (EDGE + 0.2), z: Math.sin(88.5 * Math.PI / 180) * (EDGE + 0.2), r: 3.4, verb: 'cz.lookout', t: 'cz.t.valleyview', my: 2.6, use: function () { viewer('valley'); find('valleyview'); } },
     { id: 'canyonview', x: Math.cos(177.5 * Math.PI / 180) * (EDGE + 0.2), z: Math.sin(177.5 * Math.PI / 180) * (EDGE + 0.2), r: 3.4, verb: 'cz.lookout', t: 'cz.t.canyonview', my: 2.6, use: function () { viewer('canyon'); find('canyonview'); } },
@@ -1500,10 +1683,11 @@ function scopeStep(dt, cam) {
 function lookCloser() { if (W.dist > 4) { W.prevDist = W.distT; W.distT = 2.4; W.pitch = 0.15; if (!W.toldLook) { W.toldLook = true; showCard('msg', 'cz.lookTip'); W.cardT = 5; } } else W.distT = W.prevDist && W.prevDist > 4 ? W.prevDist : 10; }
 
 /* ---------- THE MAP: drawn from the real ground, filled in as you explore ---------- */
-const MX0 = -96, MX1 = 96, MZ0 = -96, MZ1 = 100, MCELL = 6, MCOLS = Math.ceil((MX1 - MX0) / MCELL), MROWS = Math.ceil((MZ1 - MZ0) / MCELL);
+const MX0 = -120, MX1 = 120, MZ0 = -120, MZ1 = 120, MCELL = 6, MCOLS = Math.ceil((MX1 - MX0) / MCELL), MROWS = Math.ceil((MZ1 - MZ0) / MCELL);
 const AREAS = [['pond', POND.x, POND.z], ['station', STATION.x, STATION.z - 7], ['farm', FARM.x, FARM.z - 2], ['spring', SPRING.x, SPRING.z - 5], ['hill', HILL.x, HILL.z - 7], ['hollow', HOLLOW.x, HOLLOW.z, 'glow'], ['orchard', ORCH.x, ORCH.z - 8],
-  ['forest', 42, 24], ['meadow', 6, 42], ['sea', 72, -3], ['valley', 2, 72], ['canyon', -72, 3], ['stream', -44, -30], ['dock', -5, 12], ['camp', 16.5, 49.5]];
+  ['forest', 42, 24], ['meadow', 6, 42], ['sea', 72, -3], ['valley', 2, 72], ['canyon', -72, 3], ['stream', -44, -30], ['dock', -5, 12], ['camp', 16.5, 49.5], ['bog', BOGP.p.x, BOGP.p.z - 4]];
 function habitatAt(x, z) {
+  { const pk = pocketAt(x, z); if (pk && pk.w > 0.72 && pk.y === pk.p.y) return pk.p.id; }
   const d = Math.hypot(x, z); if (waterAt(x, z)) return 'pond'; if (streamDist(x, z) < 3) return 'stream'; if (Math.hypot(x - HOLLOW.x, z - HOLLOW.z) < 10) return 'hollow';
   if (Math.hypot(x - SPRING.x, z - SPRING.z) < 12) return 'spring'; if (x > 22 && z > 14 && d < EDGE) return 'forest'; if (Math.abs(x - FARM.x) < 13 && Math.abs(z - FARM.z) < 11) return 'farm';
   if (Math.hypot(x - HILL.x, z - HILL.z) < 15) return 'hill'; if (Math.abs(x - ORCH.x) < 10 && Math.abs(z - ORCH.z) < 9) return 'orchard'; if (d > EDGE - 4 && edgeW(x, z).w > 0.5) return 'lookout'; return 'meadow';
@@ -1516,6 +1700,7 @@ function mapBase() {
     if (waterAt(x, z)) { c.set(fixed ? '#3aa8c0' : '#4f8f72'); if ((i + j * 3) % 11 === 0) c.offsetHSL(0, 0, 0.06); }
     else if (streamDist(x, z) < 1.3) c.set('#4ab8d0');
     else if (ew.id === 'sea' && ew.w > 0.5 && y < SEA_Y + 0.3) c.set('#2a9ab0');
+    else if ((pocketAt(x, z) || { w: 0 }).w > 0.6) { const pk = pocketAt(x, z); if (pk.y !== pk.p.y) c.set('#d8a060'); else pocketColor(pk.p, x, z, y, c); }
     else if (d > EDGE + 3 && ew.w > 0.5) { c.set('#8ab84a'); edgeColor(x, z, y, c); }
     else if (d > EDGE + 2) c.set('#3f6a34');
     else if (Math.abs(x - FARM.x) < 11 && Math.abs(z - FARM.z) < 9) c.set(Math.floor(x / 2) % 2 ? '#c8a050' : '#b88a40');
@@ -1849,10 +2034,14 @@ function step(dt) {
   const grip = W.ground || W.swim || W.flying ? 9 : 3.5; W.vx += (tvx - W.vx) * Math.min(1, dt * grip); W.vz += (tvz - W.vz) * Math.min(1, dt * grip);
   { /* the edge of the reserve: in the last few steps the hills (or the lookout railing) slow you down, so you never slam into an invisible wall */
     const dd = Math.hypot(W.px, W.pz), lim = BOUND - (BOUND - (EDGE + 1.9)) * edgeW(W.px, W.pz).w, soft = 5;
-    if (dd > lim - soft && dd > 0.01) { const nx = W.px / dd, nz = W.pz / dd, out = W.vx * nx + W.vz * nz, u = Math.min(1, (dd - (lim - soft)) / soft);
+    if (dd > lim - soft && dd > 0.01 && !inPocket(W.px, W.pz) && !inPocket(W.px + W.vx * 0.4, W.pz + W.vz * 0.4)) { const nx = W.px / dd, nz = W.pz / dd, out = W.vx * nx + W.vz * nz, u = Math.min(1, (dd - (lim - soft)) / soft);
       if (out > 0) { W.vx -= nx * out * u; W.vz -= nz * out * u; if (u > 0.5 && len > 0 && !W.toldEdge) { W.toldEdge = true; showCard('msg', edgeW(W.px, W.pz).w > 0.5 ? 'cz.edgeTip2' : 'cz.edgeTip'); W.cardT = 5; } } } }
-  W.px += W.vx * dt; W.pz += W.vz * dt;
-  { const dd = Math.hypot(W.px, W.pz), lim = BOUND - (BOUND - (EDGE + 1.9)) * edgeW(W.px, W.pz).w; if (dd > lim) { W.px *= lim / dd; W.pz *= lim / dd; } }
+  const px0 = W.px, pz0 = W.pz; W.px += W.vx * dt; W.pz += W.vz * dt;
+  { /* stay inside the reserve or one of the new areas (and their trails); at an area's edge you slide along it */
+    const okAt = function (x, z) { return Math.hypot(x, z) <= BOUND - (BOUND - (EDGE + 1.9)) * edgeW(x, z).w || inPocket(x, z); };
+    if (!okAt(W.px, W.pz)) { if (inPocket(px0, pz0)) { if (okAt(px0, W.pz)) { W.px = px0; W.vx = 0; } else if (okAt(W.px, pz0)) { W.pz = pz0; W.vz = 0; } else { W.px = px0; W.pz = pz0; W.vx = W.vz = 0; } }
+      else { const dd = Math.hypot(W.px, W.pz), lim = BOUND - (BOUND - (EDGE + 1.9)) * edgeW(W.px, W.pz).w; W.px *= lim / dd; W.pz *= lim / dd; } } }
+  { const s0 = st(), hb = habitatAt(W.px, W.pz); if (hb === 'bog' && !s0.f.bogIn) { s0.f.bogIn = 1; saveSoon(); queueCard('cz.bogIn', 10); } }
   const moving = Math.hypot(W.vx, W.vz) > 0.5;
   if (len > 0 && !k.run && !W.toldRun && !W.swim) { W.walkT = (W.walkT || 0) + dt; if (W.walkT > 6) { W.toldRun = true; showCard('msg', 'cz.runTip'); W.cardT = 4; } }
   if (k.run && len > 0) W.toldRun = true;
@@ -1881,9 +2070,16 @@ function step(dt) {
     W.ground = false; W.gliding = false;
     if (moving && (!W.strokeT || W.t > W.strokeT)) { W.strokeT = W.t + 0.7; amb('sfx', W.under ? 'bubble' : 'swim', 0.8); }
   } else {
-    if (!busy && k.jump && W.ground) { W.vy = 9; W.ground = false; C.beep(420, 0.06, 'triangle'); }
-    W.vy -= 24 * dt; if (!W.ground && k.jump && W.vy < -2.2) { W.vy = -2.2; W.gliding = true; } else W.gliding = false;
-    W.py += W.vy * dt; if (W.py <= gy) { if (!W.ground && W.vy < -6) amb('sfx', 'step', 1.4); W.py = gy; W.vy = 0; W.ground = true; } else if (W.py > gy + 0.05) W.ground = false;
+    /* jumping is forgiving: a press counts for a moment before landing (buffer) and just after running off an edge or down a slope (coyote time) */
+    if (k.jump && !W.jumpHeld) W.jumpBuf = 0.15; W.jumpHeld = !!k.jump; W.jumpBuf = Math.max(0, (W.jumpBuf || 0) - dt);
+    W.coyote = W.ground ? 0.15 : Math.max(0, (W.coyote || 0) - dt);
+    if (!busy && W.jumpBuf > 0 && W.coyote > 0 && W.vy <= 0.5) { W.vy = 9; W.ground = false; W.coyote = 0; W.jumpBuf = 0; W.jumpT = 0.35; C.beep(420, 0.06, 'triangle'); }
+    W.jumpT = Math.max(0, (W.jumpT || 0) - dt);
+    W.vy -= 24 * dt; if (!W.ground && k.jump && W.vy < -2.2 && !W.jumpT) { W.vy = -2.2; W.gliding = true; } else W.gliding = false;
+    const wasG = W.ground; W.py += W.vy * dt;
+    if (W.py <= gy) { if (!W.ground && W.vy < -6) amb('sfx', 'step', 1.4); W.py = gy; W.vy = 0; W.ground = true; }
+    else if (wasG && W.vy <= 0 && W.py - gy < 0.6) { W.py = gy; W.vy = 0; W.ground = true; } /* running downhill: stay on the ground instead of skipping into the air */
+    else if (W.py > gy + 0.05) W.ground = false;
   }
   W.trail.forEach(function (t0) { if (t0.visible) { t0.material.opacity -= dt * 1.6; if (t0.material.opacity <= 0) t0.visible = false; } });
   W.under = W.swim && W.py < wl - 1.3;
@@ -2033,7 +2229,7 @@ const cb = document.getElementById('btnCozy'); if (cb) cb.hidden = false;
   const mark = function () { d.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.ml === (C.S.set.lang || 'en'))); }); };
   d.addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b) return; C.S.set.lang = b.dataset.ml; C.save(); mark(); const wb = document.getElementById('btnIntro'); if (wb && C.tx) wb.textContent = C.tx('in.watch'); });
   mark(); const st0 = document.createElement('style'); st0.textContent = '#menuLang { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; margin: 8px 0; } #menuLang button[aria-pressed="true"] { border-color: #ffd166; box-shadow: inset 0 0 0 1px #ffd166; }'; document.head.appendChild(st0); })();
-BQ.cozy = { start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _GH: GH, _scopeT: function (id) { return SCOPE[id]; } };
+BQ.cozy = { start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _GH: GH, _spots: function () { return spots(); }, _creeks: function () { return CREEKS; }, _scopeT: function (id) { return SCOPE[id]; } };
 }
 if (BQ.core) init(); else BQ.onCore = init;
 })();

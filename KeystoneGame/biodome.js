@@ -209,6 +209,8 @@ function ensureUI() {
 .bdIt button { padding: 2px 9px; min-width: 32px; }
 .bdBar { height: 12px; border-radius: 6px; background: #22384a; overflow: hidden; margin: 4px 0 8px; } .bdBar i { display: block; height: 100%; background: #7be0ad; }
 .bdBar.full i { background: #ffd166; }
+#bdLeft.bdSeason { bottom: auto; max-height: calc(100% - 64px); } .bdMinB { font: inherit; font-size: .9em; margin-right: 6px; padding: 0 6px; border-radius: 6px; border: 1px solid #ffd166; background: transparent; color: #ffd166; cursor: pointer; } .bdMin > *:not(h3) { display: none !important; } #bdLeft.bdMin { bottom: auto; width: auto; } #bdRight.bdMin, #bdCard.bdMin { width: auto; min-width: 0; } body.bdDrag #bdLeft, body.bdDrag #bdRight, body.bdDrag #bdCard { opacity: .15; transition: opacity .2s; } .bdSun { align-self: center; margin-right: 4px; }
+.fxb { font: inherit; font-size: .8em; padding: 1px 6px; margin-left: 4px; border-radius: 8px; border: 1px solid #ffd166; background: #3a2a10; color: #ffd166; cursor: pointer; } .bdFix button.fx.bad { border-color: #ff7a6a; } .bdFix button.fx.warn { border-color: #ffd166; } .bdFix { flex-wrap: wrap; align-items: center; } .bdFix button[disabled] { opacity: .55; }
 .bdG { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; margin: 3px 0; font-size: .92em; }
 .bdG .st { padding: 0 7px; border-radius: 6px; font-size: .85em; } .bdG .ok { background: #1f6a48; } .bdG .warn { background: #8a6a10; } .bdG .bad { background: #9a2a2a; }
 .bdG .meter { grid-column: 1 / 3; height: 6px; background: #22384a; border-radius: 3px; overflow: hidden; } .bdG .meter i { display: block; height: 100%; }
@@ -247,8 +249,9 @@ function left() {
       '<div class="bdBtns">' + (ITEMS.some(function (it) { return !earned(it); }) ? '<button type="button" data-a="earth">🌍 ' + esc(tx('bd.earth')) + '</button>' : '') + '<button type="button" class="primary" data-a="launch"' + (u ? '' : ' disabled') + '>' + esc(tx('bd.launch')) + '</button></div>';
   } else {
     const left0 = ITEMS.reduce(function (n, it) { return n + (B.store[it.id] || 0); }, 0);
-    L.innerHTML = '<h3>' + esc(tx(B.phase === 'build' ? 'bd.build.t' : 'bd.store')) + '</h3>' + (B.phase === 'build' ? '<p class="ds">' + esc(tx('bd.build.h')) + '</p>' : '<p class="ds">' + left0 + ' ' + esc(tx('bd.storeLeft')) + '</p>') +
-      ITEMS.filter(function (it) { return (B.cargo[it.id] || 0) > 0; }).map(function (it) { return itemRow(it, 'build'); }).join('') + (B.warn ? '<p class="bdWarn">⚠️ ' + esc(B.warn) + '</p>' : '');
+    L.innerHTML = '<h3>' + esc(tx(B.phase === 'build' ? 'bd.build.t' : 'bd.store')) + '</h3>' + (B.phase === 'build' ? '<p class="ds">' + esc(tx('bd.build.h')) + '</p>' : '<p class="ds">' + left0 + ' ' + esc(tx('bd.storeLeft')) + '</p>' + (left0 ? '<p class="ds">🚪 ' + esc(tx('bd.airlock')) + '</p>' : '')) +
+      (B.phase === 'build' && left0 ? '<div class="bdBtns"><button type="button" data-a="placeAll" title="' + esc(tx('bd.placeAllH')) + '">' + esc(tx('bd.placeAll')) + '</button></div><p class="ds">' + esc(tx('bd.placeTip')) + '</p>' : '') +
+      ITEMS.filter(function (it) { return B.phase === 'build' ? (B.cargo[it.id] || 0) > 0 : (B.store[it.id] || 0) > 0; }).map(function (it) { return itemRow(it, 'build'); }).join('') /* during the seasons, only what is still in storage */ + (B.warn ? '<p class="bdWarn">⚠️ ' + esc(B.warn) + '</p>' : '');
   }
 }
 function right() {
@@ -258,7 +261,7 @@ function right() {
   const pct = { o2: s.o2, co2: s.co2, water: s.water * 8, temp: (s.temp - 5) * 3, nut: s.nut * 6, food: DS.producers(s) * 3.5, web: 50, waste: s.waste * 8 };
   const col = { ok: '#7be0ad', warn: '#ffd166', bad: '#ff7a6a' };
   R.innerHTML = '<h3>📊 ' + esc(tx('bd.season')) + ' ' + Math.max(1, s.season) + ' ' + esc(tx('bd.of')) + ' ' + DS.SEASONS + '</h3>' +
-    Object.keys(g).map(function (k) { return '<div class="bdG"><span>' + esc(tx('bd.g.' + k)) + ': <b>' + esc(val[k]) + '</b></span><span class="st ' + g[k] + '">' + esc(tx('bd.' + g[k])) + '</span><span class="meter"><i style="width:' + Math.max(3, Math.min(100, pct[k])) + '%;background:' + col[g[k]] + '"></i></span></div>'; }).join('') +
+    Object.keys(g).map(function (k) { const canFix = B.phase === 'season' && !s.evDone && g[k] !== 'ok'; return '<div class="bdG"><span>' + esc(tx('bd.g.' + k)) + ': <b>' + esc(val[k]) + '</b>' + (canFix ? ' <button type="button" class="fxb" data-a="fix" data-id="' + k + '">' + esc(tx('bd.fix')) + '</button>' : '') + '</span><span class="st ' + g[k] + '">' + esc(tx('bd.' + g[k])) + '</span><span class="meter"><i style="width:' + Math.max(3, Math.min(100, pct[k])) + '%;background:' + col[g[k]] + '"></i></span></div>'; }).join('') +
     '<p class="ds">' + esc(tx('bd.species')) + ': ' + sp.length + ' / 9</p><p class="ds">' + esc(tx('bd.helpCam')) + '</p>';
 }
 function card() {
@@ -273,9 +276,10 @@ function card() {
   } else if (B.phase === 'season') {
     const evKey = s.ev ? 'bd.ev.' + s.ev : 'bd.ev.calm';
     h = '<h3>' + esc(tx('bd.season')) + ' ' + s.season + ' ' + esc(tx('bd.of')) + ' ' + DS.SEASONS + '</h3>';
-    if (!s.evDone) {
-      h += '<p class="bdNote">' + esc(tx(evKey)) + '</p><div class="bdBtns">' +
-        '<button type="button" data-a="shade" title="' + esc(tx('bd.act.shadeH')) + '" aria-pressed="' + !!s.shade + '">' + esc(tx(s.shade ? 'bd.act.shadeOn' : 'bd.act.shade')) + '</button>' +
+    if (!s.evDone && B.fix) { h = fixHTML(); }
+    else if (!s.evDone) {
+      h += '<p class="bdNote">' + esc(tx(evKey)) + '</p>' + fixChips(s) + '<div class="bdBtns">' +
+        sunCtl(s) +
         (s.vine > 0.05 ? '<button type="button" data-a="pull">🌱✋ ' + esc(tx('bd.act.pull')) + '</button>' : '') + (s.sick && (s.kit >= 1 || (B.store.cellkit || 0) > 0) && !s.cured ? '<button type="button" data-a="cure">🩺 ' + esc(tx('bd.act.cure')) + '</button>' : '') +
         (s.rabbits > 0.6 ? '<button type="button" data-a="penR">🐇 ' + esc(tx('bd.act.penR')) + '</button>' : '') + (s.hawks > 0.3 ? '<button type="button" data-a="penH">🦅 ' + esc(tx('bd.act.penH')) + '</button>' : '') +
         (s.nut > 7 ? '<button type="button" data-a="skim">🟢 ' + esc(tx('bd.act.skim')) + '</button>' : '') + '</div>' +
@@ -298,7 +302,11 @@ function card() {
 }
 function render() {
   if (B.phase === 'fly') { top(); $('bdLeft').hidden = true; $('bdRight').hidden = true; const K = $('bdCard'); K.hidden = false; K.innerHTML = '<p id="bdFlyCap" class="bdVoice"></p><div class="bdBtns"><button type="button" data-a="skipfly">' + esc(tx('bd.skip')) + '</button></div>'; return; }
-  $('bdLeft').hidden = false; top(); left(); right(); card(); }
+  $('bdLeft').hidden = false; top(); left(); right(); card(); $('bdLeft').classList.toggle('bdSeason', B.phase !== 'pack' && B.phase !== 'build'); minButtons(); }
+/* each panel can shrink to its title bar, so the dome is easy to see */
+function minButtons() { B.min = B.min || {};
+  ['bdLeft', 'bdRight', 'bdCard'].forEach(function (id) { const el = $(id); if (!el || el.hidden) return; const mn = !!B.min[id]; el.classList.toggle('bdMin', mn);
+    const h = el.querySelector('h3'); if (!h) return; const b = document.createElement('button'); b.type = 'button'; b.className = 'bdMinB'; b.dataset.a = 'min'; b.dataset.id = id; b.textContent = mn ? '▸' : '▾'; b.title = tx(mn ? 'bd.max' : 'bd.min'); b.setAttribute('aria-label', b.title); h.insertBefore(b, h.firstChild); }); }
 function storeLeft() { return ITEMS.reduce(function (n, it) { return n + (B.store[it.id] || 0); }, 0); }
 /* what still has to be placed before season 1, and whether it is waiting in storage, was never packed, or is not earned yet */
 function missing() { const p = B.placed, out = [], why = function (ids) { if (ids.some(function (id) { return (B.store[id] || 0) > 0; })) return 'packed'; if (ids.some(function (id) { const it = ITEMS.find(function (q) { return q.id === id; }); return earned(it); })) return 'notPacked'; return 'locked'; };
@@ -336,20 +344,84 @@ function click(d) {
   if (a === 'skipfly') { B.flyT = 99; return; }
   if (a === 'place') { const why = placeCheck(d.id); if (why) { B.warn = tx(why); C.beep(220, 0.12, 'triangle'); left(); return; } B.warn = null;
     if ((B.store[d.id] || 0) > 0) { B.store[d.id]--; B.placed[d.id] = (B.placed[d.id] || 0) + 1; DS.place(B.sim, d.id); sfx('pop'); B.dirty = true; } render(); return; }
+  if (a === 'placeAll') { const order = ['water', 'air', 'soil', 'blocks', 'cellkit', 'grass', 'seedbank', 'hardy', 'flowers', 'trees', 'pondweed', 'wetland', 'bees', 'rabbits', 'hawks', 'pond'], left = [];
+    for (let pass = 0; pass < 2; pass++) order.forEach(function (id) { while ((B.store[id] || 0) > 0 && !placeCheck(id)) { B.store[id]--; B.placed[id] = (B.placed[id] || 0) + 1; DS.place(B.sim, id); } });
+    ITEMS.forEach(function (it) { if ((B.store[it.id] || 0) > 0) left.push(tx('bd.it.' + it.id)); }); B.warn = left.length ? tx('bd.placeAllLeft') + ' ' + left.join(', ') : null; sfx('pop'); B.dirty = true; render(); return; }
+  if (a === 'min') { B.min = B.min || {}; B.min[d.id] = !B.min[d.id]; render(); return; }
   if (a === 'repack') { /* back to packing: crates you placed go back into the ship's cargo list (which never changed) */ B.phase = 'pack'; B.store = {}; B.placed = {}; B.sim = DS.fresh(); B.hist = []; B.warn = null; B.voice = null; B.dirty = true; render(); return; }
   if (a === 'start') { if (!canStart()) return; B.phase = 'season'; B.hist = []; DS.beginSeason(B.sim); B.voice = null; render(); return; }
   const s = B.sim;
+  if (a === 'fix') { B.fix = d.id; B.warn = null; render(); return; }
+  if (a === 'fixClose') { B.fix = null; B.warn = null; render(); return; }
+  if (a === 'condense' || a === 'compost' || a === 'releaseR' || a === 'releaseH' || a === 'sunLess' || a === 'sunMore' || a === 'insulate' || a === 'plant') { DS.act(s, a); sfx('pop'); B.dirty = true; render(); return; }
   if (a === 'shade') { DS.act(s, 'shade'); render(); return; }
   if (a === 'cure' && s.kit < 1 && (B.store.cellkit || 0) > 0) { B.store.cellkit--; B.placed.cellkit = (B.placed.cellkit || 0) + 1; DS.place(s, 'cellkit'); }
   if (a === 'pull' || a === 'cure' || a === 'skim') { DS.act(s, a); sfx('pop'); B.dirty = true; render(); return; }
   if (a === 'penR') { DS.act(s, 'penRabbits'); B.dirty = true; render(); return; }
   if (a === 'penH') { DS.act(s, 'penHawks'); B.dirty = true; render(); return; }
   if (a === 'listen') { B.voice = voiceLine(); render(); return; }
-  if (a === 'run') { B.hist.push(JSON.stringify({ sim: s, store: B.store, placed: B.placed })); DS.runSeason(s); B.voice = null; B.timeT = 2.2; sfx('season'); B.dirty = true; render(); return; }
+  if (a === 'run') { B.fix = null; B.hist.push(JSON.stringify({ sim: s, store: B.store, placed: B.placed })); DS.runSeason(s); B.voice = null; B.timeT = 2.2; sfx('season'); B.dirty = true; render(); return; }
   if (a === 'next') { if (s.season >= DS.SEASONS) { B.phase = 'end'; const sc = DS.score(s, storeLeft(), B.rewinds), dd = sv(); dd.best = Math.max(dd.best || 0, sc); if (DS.result(s).balanced) { dd.done = 1; if (C.award) try { C.award('biodome'); } catch (e) { /* no achievement */ } } C.save(); render(); return; }
     DS.beginSeason(s); B.voice = null; B.dirty = true; render(); return; }
   if (a === 'rewind') { const h = B.hist.pop(); if (!h) return; const o = JSON.parse(h); B.sim = o.sim; B.store = o.store; B.placed = o.placed; B.rewinds++; B.phase = 'season'; B.sim.evDone = false; B.dirty = true; render(); return; }
   if (a === 'again') { exit(); start(); return; }
+}
+Object.assign(C.I18N.en, {"bd.airlock": "Spare crates come in through the airlock, so the dome stays sealed.", "bd.act.skim": "Scoop extra algae onto the compost pile", "bd.sun": "☀️ Sunlight", "bd.sun0": "full sun", "bd.sun1": "half shade", "bd.sun2": "deep shade", "bd.sunLess": "⛱️ Less sun", "bd.sunMore": "☀️ More sun", "bd.sunH": "The dome always stays sealed. A sun shade over the glass lets in less sunlight: the dome gets cooler and loses less water in a heat wave, but plants grow and make oxygen more slowly.", "bd.insul": "🧱 Insulating panels", "bd.insulOn": "ON", "bd.insulOff": "OFF", "bd.insulH": "Panels that keep the dome's own heat in during a cold snap. They warm the dome toward 22 °C but never cool it.", "bd.tool.sunLess": "⛱️ Less sun (sun shade)", "bd.tool.sunMore": "☀️ More sun (raise the shade)", "bd.tool.insulOn": "🧱 Turn ON the insulating panels", "bd.tool.insulOff": "🧱 Turn OFF the insulating panels", "bd.tool.plant": "🌱 Plant cuttings and seeds from your own plants", "bd.tool.plantH": "More producers to take up carbon dioxide and make oxygen. New plants use some nutrients. Once per season.", "bd.tool.plantNo": "🌱 Plant cuttings and seeds (needs some plants and nutrients in the dome)", "bd.placeAll": "📦 Place all", "bd.placeAllH": "Places every crate in storage in a safe order (water and soil first, then plants, then animals).", "bd.placeAllLeft": "Could not place yet:", "bd.placeTip": "Tip: keeping a few crates in storage gives you ways to fix problems later.", "bd.min": "Minimize", "bd.max": "Show"});
+Object.assign(C.I18N.es, {"bd.airlock": "Las cajas de repuesto entran por la esclusa, así el domo sigue sellado.", "bd.act.skim": "Echar las algas sobrantes a la pila de compost", "bd.sun": "☀️ Luz del sol", "bd.sun0": "sol pleno", "bd.sun1": "media sombra", "bd.sun2": "sombra densa", "bd.sunLess": "⛱️ Menos sol", "bd.sunMore": "☀️ Más sol", "bd.sunH": "El domo siempre está sellado. Una malla de sombra sobre el vidrio deja pasar menos luz: el domo se enfría y pierde menos agua en una ola de calor, pero las plantas crecen y producen oxígeno más despacio.", "bd.insul": "🧱 Paneles aislantes", "bd.insulOn": "SÍ", "bd.insulOff": "NO", "bd.insulH": "Paneles que guardan el calor del propio domo durante una ola de frío. Lo calientan hacia 22 °C, pero nunca lo enfrían.", "bd.tool.sunLess": "⛱️ Menos sol (malla de sombra)", "bd.tool.sunMore": "☀️ Más sol (quitar sombra)", "bd.tool.insulOn": "🧱 Poner los paneles aislantes", "bd.tool.insulOff": "🧱 Quitar los paneles aislantes", "bd.tool.plant": "🌱 Plantar esquejes y semillas de tus propias plantas", "bd.tool.plantH": "Más productores para absorber dióxido de carbono y producir oxígeno. Las plantas nuevas usan algunos nutrientes. Una vez por temporada.", "bd.tool.plantNo": "🌱 Plantar esquejes y semillas (necesita plantas y nutrientes en el domo)", "bd.placeAll": "📦 Colocar todo", "bd.placeAllH": "Coloca todas las cajas del almacén en un orden seguro (primero agua y suelo, luego plantas, luego animales).", "bd.placeAllLeft": "Todavía no se pudo colocar:", "bd.placeTip": "Consejo: guardar algunas cajas en el almacén te da formas de arreglar problemas después.", "bd.min": "Minimizar", "bd.max": "Mostrar"});
+/* ---------- FIX IT: every yellow or red gauge explains why, and offers things you can do right now ---------- */
+Object.assign(C.I18N.en, {"bd.fix": "🔧 Fix", "bd.fixAll": "Needs attention:", "bd.fixNone": "All gauges are green right now. 👍", "bd.fixHelp": "A yellow or red gauge? Press 🔧 Fix next to it to see what you can do. Then end the season to see what happens.", "bd.fixClose": "Close", "bd.fixOk": "✓ This gauge is OK now. Changes keep working when you end the season.", "bd.fixWhy": "Why?", "bd.fixDo": "What you can do:", "bd.fixFromStore": "Add from storage:", "bd.fixNoStore": "(none left in storage)", "bd.fixUsed": "(already used this season)", "bd.tool.condense": "💧 Collect water from the dome glass", "bd.tool.condenseH": "Water evaporates, condenses on the cool glass and drips down: the water cycle. +1.5 water, once per season.", "bd.tool.compost": "♻️ Turn the compost pile", "bd.tool.compostH": "Gives the decomposers air, so they break waste down into nutrients faster (and breathe out a little carbon dioxide). Once per season.", "bd.tool.compostNo": "♻️ Turn the compost pile (needs decomposers: add living soil first)", "bd.tool.releaseR": "🐇 Let a rabbit group out of the pen", "bd.tool.releaseH": "🦅 Let a hawk out of the pen", "bd.tool.coverOn": "⛱️ Turn the dome cover ON", "bd.tool.coverOff": "☀️ Turn the dome cover OFF (more light for plants)", "bd.why.o2.low": "Animals, decomposers and plants all use oxygen in cellular respiration. Only producers make it, in photosynthesis. Right now oxygen is used faster than it is made.", "bd.why.o2.high": "Lots of photosynthesis and very little respiration. Plenty of oxygen is fine, but the dome needs consumers too.", "bd.why.co2.low": "Plants used up most of the carbon dioxide they need for photosynthesis. Animals and decomposers breathe it back out.", "bd.why.co2.high": "More respiration than photosynthesis. Carbon dioxide also traps heat, so the dome warms up.", "bd.why.water.low": "Plants need water for photosynthesis, and some escapes through the dome seals each season (more in a heat wave).", "bd.why.temp.high": "A heat wave or too much carbon dioxide (it traps heat). Living things work best near 22 °C: enzymes slow down when it is too hot.", "bd.why.temp.low": "A cold snap. Cold slows down growth, and pollinators struggle below 16 °C.", "bd.why.nut.low": "Plants take nutrients from the soil as they grow. Decomposers put them back by breaking down waste.", "bd.why.nut.high": "Too many nutrients wash into the pond and feed an algae bloom, which uses up the oxygen fish need.", "bd.why.food.low": "Too few producers. Every food chain starts with plants, so animals will go hungry.", "bd.why.web.many": "Too many rabbits for the plants. Without enough predators, herbivores eat the producers faster than they regrow.", "bd.why.web.hungry": "The hawks are running out of rabbits to eat. Predators need enough prey.", "bd.why.web.empty": "No consumers yet. A food web needs herbivores (and predators to keep them in check).", "bd.why.web.nopred": "Rabbits with no predators can grow out of control.", "bd.why.waste.high": "Waste and dead matter are piling up. Decomposers turn it back into nutrients, if there are enough of them."});
+Object.assign(C.I18N.es, {"bd.fix": "🔧 Arreglar", "bd.fixAll": "Necesita atención:", "bd.fixNone": "Todos los indicadores están en verde ahora. 👍", "bd.fixHelp": "¿Un indicador amarillo o rojo? Pulsa 🔧 Arreglar junto a él para ver qué puedes hacer. Luego termina la temporada para ver qué pasa.", "bd.fixClose": "Cerrar", "bd.fixOk": "✓ Este indicador está bien ahora. Los cambios siguen funcionando cuando terminas la temporada.", "bd.fixWhy": "¿Por qué?", "bd.fixDo": "Lo que puedes hacer:", "bd.fixFromStore": "Agregar del almacén:", "bd.fixNoStore": "(no queda nada en el almacén)", "bd.fixUsed": "(ya se usó esta temporada)", "bd.tool.condense": "💧 Recoger el agua del vidrio del domo", "bd.tool.condenseH": "El agua se evapora, se condensa en el vidrio frío y gotea: el ciclo del agua. +1.5 de agua, una vez por temporada.", "bd.tool.compost": "♻️ Voltear la pila de compost", "bd.tool.compostH": "Les da aire a los descomponedores, así descomponen los desechos en nutrientes más rápido (y exhalan un poco de dióxido de carbono). Una vez por temporada.", "bd.tool.compostNo": "♻️ Voltear la pila de compost (necesita descomponedores: primero agrega suelo vivo)", "bd.tool.releaseR": "🐇 Sacar un grupo de conejos del corral", "bd.tool.releaseH": "🦅 Sacar un halcón del corral", "bd.tool.coverOn": "⛱️ Poner la cubierta del domo", "bd.tool.coverOff": "☀️ Quitar la cubierta del domo (más luz para las plantas)", "bd.why.o2.low": "Los animales, los descomponedores y las plantas usan oxígeno en la respiración celular. Solo los productores lo fabrican, en la fotosíntesis. Ahora se usa más oxígeno del que se produce.", "bd.why.o2.high": "Mucha fotosíntesis y muy poca respiración. Tener mucho oxígeno está bien, pero el domo también necesita consumidores.", "bd.why.co2.low": "Las plantas gastaron casi todo el dióxido de carbono que necesitan para la fotosíntesis. Los animales y los descomponedores lo devuelven al respirar.", "bd.why.co2.high": "Hay más respiración que fotosíntesis. Además, el dióxido de carbono atrapa el calor, así que el domo se calienta.", "bd.why.water.low": "Las plantas necesitan agua para la fotosíntesis, y un poco se escapa por las juntas del domo cada temporada (más en una ola de calor).", "bd.why.temp.high": "Una ola de calor o demasiado dióxido de carbono (atrapa el calor). Los seres vivos funcionan mejor cerca de 22 °C: las enzimas se vuelven lentas cuando hace demasiado calor.", "bd.why.temp.low": "Una ola de frío. El frío frena el crecimiento, y a los polinizadores les cuesta trabajar por debajo de 16 °C.", "bd.why.nut.low": "Las plantas toman nutrientes del suelo al crecer. Los descomponedores los devuelven al descomponer los desechos.", "bd.why.nut.high": "Demasiados nutrientes llegan al estanque y alimentan una proliferación de algas, que gasta el oxígeno que necesitan los peces.", "bd.why.food.low": "Hay muy pocos productores. Toda cadena alimentaria empieza con las plantas, así que los animales pasarán hambre.", "bd.why.web.many": "Hay demasiados conejos para las plantas. Sin suficientes depredadores, los herbívoros se comen a los productores más rápido de lo que vuelven a crecer.", "bd.why.web.hungry": "A los halcones se les acaban los conejos. Los depredadores necesitan suficientes presas.", "bd.why.web.empty": "Todavía no hay consumidores. Una red alimentaria necesita herbívoros (y depredadores que los controlen).", "bd.why.web.nopred": "Los conejos sin depredadores pueden aumentar sin control.", "bd.why.waste.high": "Los desechos y la materia muerta se están acumulando. Los descomponedores los convierten de nuevo en nutrientes, si hay suficientes."});
+function sunCtl(s) { const sh = typeof s.shade === 'number' ? s.shade : (s.shade ? 2 : 0);
+  return '<span class="bdSun" title="' + esc(tx('bd.sunH')) + '">' + esc(tx('bd.sun')) + ': <b>' + esc(tx('bd.sun' + sh)) + '</b></span>' +
+    '<button type="button" data-a="sunLess"' + (sh >= 2 ? ' disabled' : '') + ' title="' + esc(tx('bd.sunH')) + '">' + esc(tx('bd.sunLess')) + '</button>' +
+    '<button type="button" data-a="sunMore"' + (sh <= 0 ? ' disabled' : '') + '>' + esc(tx('bd.sunMore')) + '</button>' +
+    '<button type="button" data-a="insulate" aria-pressed="' + !!s.insul + '" title="' + esc(tx('bd.insulH')) + '">' + esc(tx('bd.insul')) + ': ' + esc(tx(s.insul ? 'bd.insulOn' : 'bd.insulOff')) + '</button>'; }
+function fixSide(k, s) { /* which way is the gauge off? */
+  if (k === 'o2') return s.o2 < 25 ? 'low' : 'high'; if (k === 'co2') return s.co2 < 12 ? 'low' : 'high'; if (k === 'temp') return s.temp < 16 ? 'low' : 'high'; if (k === 'nut') return s.nut < 2.5 ? 'low' : 'high';
+  if (k === 'water' || k === 'food') return 'low'; if (k === 'waste') return 'high';
+  if (k === 'web') { const r = s.rabbits, h = s.hawks; if (r < 0.25 && h < 0.25) return 'empty'; if (h > 0.25 && r < 0.6) return 'hungry'; if (r > 5) return 'many'; return 'nopred'; }
+  return 'low';
+}
+function fixOptions(k, s) { /* [label, data-a, data-id, enabled, hint] ; store ids are offered as "add from storage" */
+  const side = fixSide(k, s), out = [], store = [];
+  const tool = function (key, a, ok, hint) { out.push({ t: tx(key), a: a, ok: ok, h: hint || '' }); };
+  const sh = typeof s.shade === 'number' ? s.shade : (s.shade ? 2 : 0);
+  const cover = function (want) { if (want && sh < 2) tool('bd.tool.sunLess', 'sunLess', true, tx('bd.sunH')); if (!want && sh > 0) tool('bd.tool.sunMore', 'sunMore', true, tx('bd.sunH')); };
+  const insul = function (want) { if (!!s.insul !== want) tool(want ? 'bd.tool.insulOn' : 'bd.tool.insulOff', 'insulate', true, tx('bd.insulH')); };
+  const plant = function () { const can = s.nut >= 1 && (s.grass > 0.5 || s.flowers > 0.5 || s.trees > 0.5); if (can) tool('bd.tool.plant', 'plant', !s.planted, s.planted ? tx('bd.fixUsed') : tx('bd.tool.plantH')); else tool('bd.tool.plantNo', 'plant', false, ''); };
+  const condense = function () { tool('bd.tool.condense', 'condense', !s.condensed, s.condensed ? tx('bd.fixUsed') : tx('bd.tool.condenseH')); };
+  const compost = function () { if (s.decomp >= 0.3) tool('bd.tool.compost', 'compost', !s.composted, s.composted ? tx('bd.fixUsed') : tx('bd.tool.compostH')); else tool('bd.tool.compostNo', 'compost', false, ''); };
+  const penR = function () { if (s.rabbits > 0.6) tool('bd.act.penR', 'penR', true); }, penH = function () { if (s.hawks > 0.3) tool('bd.act.penH', 'penH', true); };
+  const relR = function () { if ((s.pen || 0) > 0.1) tool('bd.tool.releaseR', 'releaseR', true); }, relH = function () { if ((s.penH || 0) > 0.1) tool('bd.tool.releaseH', 'releaseH', true); };
+  if (k === 'o2' && side === 'low') { plant(); store.push('grass', 'trees', 'pondweed', 'flowers'); cover(false); penR(); penH(); }
+  if (k === 'o2' && side === 'high') { relR(); store.push('rabbits'); }
+  if (k === 'co2' && side === 'low') { relR(); relH(); compost(); store.push('air', 'rabbits', 'pond'); }
+  if (k === 'co2' && side === 'high') { plant(); store.push('grass', 'trees', 'pondweed'); cover(false); penR(); }
+  if (k === 'water') { condense(); store.push('water'); if (s.ev === 'heat') cover(true); }
+  if (k === 'temp' && side === 'high') { cover(true); insul(false); store.push('trees', 'hardy'); }
+  if (k === 'temp' && side === 'low') { insul(true); cover(false); }
+  if (k === 'nut' && side === 'low') { compost(); store.push('blocks', 'soil'); }
+  if (k === 'nut' && side === 'high') { if (s.nut > 7) tool('bd.act.skim', 'skim', true); store.push('wetland'); }
+  if (k === 'food') { plant(); store.push('grass', 'flowers', 'trees', 'pondweed', 'seedbank'); penR(); if (s.vine > 0.05) tool('bd.act.pull', 'pull', true); }
+  if (k === 'web') { if (side === 'many' || side === 'nopred') { penR(); relH(); store.push('hawks'); } if (side === 'hungry') { penH(); relR(); store.push('rabbits'); } if (side === 'empty') { relR(); store.push('rabbits'); } }
+  if (k === 'waste') { compost(); store.push('soil'); }
+  return { side: side, tools: out, store: store.filter(function (id, i, a) { return a.indexOf(id) === i && ITEMS.some(function (it) { return it.id === id; }); }) };
+}
+function fixHTML() {
+  const s = B.sim, k = B.fix, g = DS.gauges(s), o = fixOptions(k, s);
+  let h = '<h3>🔧 ' + esc(tx('bd.g.' + k)) + ' <span class="st ' + g[k] + '">' + esc(tx('bd.' + g[k])) + '</span></h3>';
+  if (g[k] === 'ok') h += '<p class="bdNote">' + esc(tx('bd.fixOk')) + '</p>';
+  else h += '<p><b>' + esc(tx('bd.fixWhy')) + '</b> ' + esc(tx('bd.why.' + k + '.' + o.side)) + '</p>';
+  h += '<p><b>' + esc(tx('bd.fixDo')) + '</b></p><div class="bdBtns bdFix">' + o.tools.map(function (t) { return '<button type="button" data-a="' + t.a + '" data-fix="1"' + (t.ok ? '' : ' disabled') + ' title="' + esc(t.h) + '">' + esc(t.t) + (t.h && t.ok ? '' : t.h ? ' <span class="ds">' + esc(t.h) + '</span>' : '') + '</button>'; }).join('') + '</div>';
+  if (o.store.length) { const have = o.store.filter(function (id) { return (B.store[id] || 0) > 0; });
+    h += '<p class="ds">' + esc(tx('bd.fixFromStore')) + (have.length ? '' : ' ' + esc(tx('bd.fixNoStore'))) + '</p>' + (have.length ? '<div class="bdBtns bdFix">' + have.map(function (id) { const it = ITEMS.find(function (q) { return q.id === id; }); return '<button type="button" data-a="place" data-id="' + id + '" data-fix="1">' + it.ic + ' ' + esc(tx('bd.it.' + id)) + ' (' + B.store[id] + ')</button>'; }).join('') + '</div>' : ''); }
+  if (B.warn) h += '<p class="bdWarn">⚠️ ' + esc(B.warn) + '</p>';
+  return h + '<div class="bdBtns"><button type="button" data-a="fixClose">' + esc(tx('bd.fixClose')) + '</button></div>';
+}
+function fixChips(s) {
+  const g = DS.gauges(s), bad = Object.keys(g).filter(function (k) { return g[k] !== 'ok'; });
+  if (!bad.length) return '<p class="ds">' + esc(tx('bd.fixNone')) + '</p>';
+  return '<p class="ds">' + esc(tx('bd.fixHelp')) + '</p><div class="bdBtns bdFix"><span class="ds">' + esc(tx('bd.fixAll')) + '</span>' + bad.map(function (k) { return '<button type="button" data-a="fix" data-id="' + k + '" class="fx ' + g[k] + '">' + esc(tx('bd.g.' + k)) + ' ' + (g[k] === 'bad' ? '✖' : '⚠') + '</button>'; }).join('') + '</div>';
 }
 /* the animals speak up about how they are doing */
 function voiceLine() {
@@ -522,9 +594,9 @@ function key(e, down) {
 function pointer(e, type) {
   if (!B) return; const v = B.view;
   if (type === 'wheel') { v.dist = Math.max(14, Math.min(70, v.dist * (e.deltaY > 0 ? 1.1 : 1 / 1.1))); e.preventDefault(); return; }
-  if (type === 'pointerdown') { v.drag = { x: e.clientX, y: e.clientY, yaw: v.yaw, pitch: v.pitch }; v.auto = false; }
+  if (type === 'pointerdown') { v.drag = { x: e.clientX, y: e.clientY, yaw: v.yaw, pitch: v.pitch }; v.auto = false; document.body.classList.add('bdDrag'); }
   else if (type === 'pointermove' && v.drag && e.buttons) { v.yaw = v.drag.yaw - (e.clientX - v.drag.x) * 0.006; v.pitch = Math.max(0.08, Math.min(1.3, v.drag.pitch + (e.clientY - v.drag.y) * 0.005)); }
-  else if (type === 'pointerup') v.drag = null;
+  else if (type === 'pointerup') { v.drag = null; document.body.classList.remove('bdDrag'); }
 }
 /* the menu button: always open (supplies not earned yet say where to get them) */
 (function () { const modes = document.querySelector('#menu .modes'); if (!modes || $('btnDome')) return; const b = document.createElement('button'); b.type = 'button'; b.id = 'btnDome'; b.className = 'primary'; b.textContent = tx('bd.menu'); b.onclick = function () { start(); }; modes.appendChild(b);

@@ -295,7 +295,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 40 · October 23, 2026';
+const VERSION = 'Version 46 · October 24, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -460,13 +460,18 @@ function labelTex(text, o) {
   g.fillStyle = bg; g.fill(); g.lineWidth = 6; g.strokeStyle = bd; g.stroke();
   g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle';
   lines.forEach(function (l, i) { g.fillText(l, 256, 128 - (lines.length - 1) * lh / 2 + i * lh); });
-  const t = new T.CanvasTexture(c); texCache[key] = t; return t;
+  const t = new T.CanvasTexture(c); t.userData = { h: H / 256 }; texCache[key] = t; return t;
 }
 function label(text, w, o) {
   /* readable everywhere: small labels get a minimum size, and all labels follow the Text size setting */
   const ts = [0.9, 1, 1.15, 1.3][S.set.text] || 1; if (!(o && o.big) && w < 2.6) w = 2.6; w *= ts;
-  const sp = new T.Sprite(new T.SpriteMaterial({ map: labelTex(text, o), transparent: true }));
-  sp.scale.set(w, w / 2, 1); return sp;
+  const tex = labelTex(text, o), sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, fog: false })); /* signs stay readable in fog, deep water and caves */
+  sp.scale.set(w, w / 2, 1); sp.userData.lbl = { text: String(text), w: w, h: w / 2 * ((tex.userData && tex.userData.h) || 1) }; return sp;
+}
+/* stack signs from the top down so they never overlap: each sign is placed just under the one before it, using its real height */
+function stackLabels(list, x, yTop, z, gap) {
+  let y = yTop; list.forEach(function (sp) { if (!sp) return; const h = sp.userData.lbl ? sp.userData.lbl.h : sp.scale.y; sp.position.set(x, y - h / 2, z); y -= h + (gap == null ? 0.15 : gap); });
+  return y;
 }
 function buildAlien(a) {
   const g = new T.Group(), col = COLORS[a.color][1], shape = a.shape || 0;
@@ -579,7 +584,7 @@ function addPickup(kind, x, y) {
 function cellModel(kind) {
   const g = new T.Group(), inner = new T.Group(); g.add(inner);
   const M = function (c, e) { return emat(c, e || '#1a2a3a'); }, parts = {}, euk = kind === 'animal';
-  const part = function (name, lx, ly) { const p = new T.Group(); p.visible = false; inner.add(p); const lb = label('✓ ' + name, 2.3, { bd: '#7be0ad' }); lb.position.set(lx, ly, 3.2); lb.visible = false; g.add(lb); parts[name] = { g: p, lb: lb, s: 0 }; return p; };
+  const part = function (name, lx, ly) { const p = new T.Group(); p.visible = false; inner.add(p); const lb = label('✓ ' + name, 2.3, { bd: '#7be0ad' }); lb.position.set(lx, ly, 3.2); lb.visible = false; g.add(lb); parts[name] = { g: p, lb: lb, s: 0, lx: lx, ly: ly }; return p; };
   const blob = function (p, c, sx, sy, sz, x, y, z, op) { const m = new T.Mesh(G.sph, op ? basic(c, op, false) : M(c)); m.scale.set(sx, sy, sz); m.position.set(x, y, z || 0); p.add(m); return m; };
   const R = euk ? [2.7, 2.4, 2.1] : [3.1, 1.45, 1.45];
   /* ghost outline that shows where the cell will be */
@@ -604,7 +609,7 @@ function cellModel(kind) {
     const rib = part('Ribosomes', 2.6, 0.2); for (let i = 0; i < 30; i++) { const a = i * 2.39, r = 1.4 + (i % 4) * 0.18; blob(rib, '#ffd166', 0.07, 0.07, 0.07, -0.4 + Math.cos(a) * r, 0.3 + Math.sin(a) * r * 0.8, Math.sin(a * 2.3) * 0.9); }
   }
   inner.rotation.x = 0.25;
-  return { g: g, inner: inner, parts: parts, ghost: ghost, tag: tag, kind: kind, name: euk ? 'animal cell' : 'prokaryotic cell', t: 0, finishAt: 0, done: false, scale: euk ? 0.95 : 1 };
+  return { g: g, inner: inner, parts: parts, ghost: ghost, tag: tag, kind: kind, R: R, name: euk ? 'animal cell' : 'prokaryotic cell', t: 0, finishAt: 0, done: false, scale: euk ? 0.95 : 1 };
 }
 function flyPart(md, name, x, y, tok) {
   const p = md.parts[name] || null;
@@ -613,15 +618,42 @@ function flyPart(md, name, x, y, tok) {
 }
 function modelTick(md, dt, z) {
   md.t += dt;
-  md.inner.rotation.y = md.done ? md.t * 0.5 : Math.sin(md.t * 0.6) * 0.6;
-  const h = md.home, bob = Math.sin(md.t * 1.2) * 0.12; md.g.position.set(h.x, h.y + bob, h.z);
+  md.inner.rotation.y = md.done ? md.inner.rotation.y * (1 - Math.min(1, dt * 2)) + Math.sin(md.t * 0.5) * 0.12 * Math.min(1, dt * 2) : Math.sin(md.t * 0.6) * 0.6; /* when finished it holds still so the labels' lines point at the right parts */
+  const h = md.home, bob = Math.sin(md.t * 1.2) * 0.12; md.g.position.set(h.x, h.y + bob + (md.lift || 0), h.z);
+  if (md.done && md.g.scale.x < md.big) { const sc = Math.min(md.big, md.g.scale.x + dt * 0.8); md.g.scale.setScalar(sc); md.lift = (sc - 1) * 1.6; }
+  if (md.halo) md.halo.material.opacity = 0.48 + Math.sin(md.t * 2) * 0.06;
   Object.keys(md.parts).forEach(function (n) { const p = md.parts[n]; if (p.g.visible && p.s < 1) { p.s = Math.min(1, p.s + dt * 3); const e = p.s < 1 ? 1 + Math.sin(p.s * Math.PI) * 0.25 : 1; p.g.scale.setScalar(e * Math.max(0.05, p.s)); } if (p.g.userData.spin) p.g.userData.spin.rotation.z += dt * 0.8; });
   if (md.finishAt > 0 && !md.done) { md.finishAt -= dt; if (md.finishAt <= 0) finishModel(md); }
+}
+/* textbook-style labels: in two columns beside the cell, each with a thin line to its part */
+function calloutLabels(md) {
+  const R = md.R, names = Object.keys(md.parts), cols = { l: [], r: [] };
+  names.forEach(function (n) { const p = md.parts[n]; (p.lx < 0 ? cols.l : cols.r).push(n); });
+  const lineM = new T.LineBasicMaterial({ color: '#e8fbff', transparent: true, opacity: 0.85 });
+  ['l', 'r'].forEach(function (side) { const list = cols[side].sort(function (a, c) { return md.parts[c].ly - md.parts[a].ly; }), sg = side === 'l' ? -1 : 1;
+    const hs = list.map(function (n) { return md.parts[n].lb.userData.lbl ? md.parts[n].lb.userData.lbl.h : 0.9; }), gap = 0.35, tot = hs.reduce(function (a, c) { return a + c; }, 0) + gap * (list.length - 1);
+    let y = tot / 2;
+    list.forEach(function (n, i) { const p = md.parts[n], lb = p.lb, w = lb.userData.lbl ? lb.userData.lbl.w : 2.6, cx = sg * (R[0] + 1.4 + w / 2), cy = y - hs[i] / 2; y -= hs[i] + gap;
+      lb.position.set(cx, cy, 3.2); lb.visible = true;
+      /* where the line points: the membrane's edge, or a spot inside the cell near where the part is */
+      let ax, ay; if (n === 'Plasma membrane') { ax = sg * R[0] * 0.97; ay = cy * 0.3; } else { const k = Math.min(1, 0.72 / Math.hypot(p.lx / R[0], p.ly / R[1])); ax = p.lx * k; ay = p.ly * k; }
+      const ex = cx - sg * (w / 2 + 0.05), geo = new T.BufferGeometry().setFromPoints([new T.Vector3(ex, cy, 3.2), new T.Vector3(sg * (R[0] + 0.6), cy, 2.4), new T.Vector3(ax, ay, 1.2)]);
+      const ln = new T.Line(geo, lineM); md.g.add(ln); const dot = new T.Mesh(G.sph, basic('#ffffff')); dot.scale.setScalar(0.08); dot.position.set(ax, ay, 1.2); md.g.add(dot); });
+  });
 }
 function finishModel(md) {
   award('cell');
   md.done = true; md.ghost.visible = false; md.tag.material.map = labelTex('✓ Your ' + md.name, { bd: '#7be0ad' }); md.tag.material.needsUpdate = true; md.tag.scale.set(3.6, 1.8, 1);
-  Object.keys(md.parts).forEach(function (n) { md.parts[n].lb.visible = true; });
+  calloutLabels(md); md.big = 1.35; md.tag.position.y = md.R[1] + 1.7;
+  /* the finished cell lights itself up so it is easy to see, even in the dark deep sea */
+  const euk0 = md.kind === 'animal', lt = new T.PointLight(euk0 ? 0xffe0ec : 0xe8ffd8, 3.2, 28, 1); lt.position.set(0, 0, 5); md.g.add(lt);
+  /* every part of the finished cell glows with its own color, so it is bright even in the darkest water */
+  const shellP = md.parts['Plasma membrane'];
+  md.inner.traverse(function (o) { if (!o.isMesh || !o.material) return; const m = o.material.clone(), isShell = shellP && o.parent === shellP.g && o.geometry === G.sph;
+    if (m.emissive) m.emissive.copy(m.color).multiplyScalar(isShell ? 0.35 : 0.9); else if (m.color) m.color.offsetHSL(0, 0.1, 0.15);
+    if (isShell) m.opacity = 0.16; /* a clearer skin, so the bright organelles show through */
+    o.material = m; });
+  md.halo = glow(euk0 ? '#ffd0e4' : '#d8ffb0', md.R[0] * 3.6, 0.5, false); md.halo.position.z = -1.2; md.g.add(md.halo);
   burst(md.home.x, md.home.y, '#7be0ad'); beep(990, 0.4, 'sine', 'fanfare, cell model complete');
   const euk = md.kind === 'animal', w = euk ? 'Eukaryote' : 'Prokaryote';
   S.words[w] = 1; save(); giveFlight(20, euk ? '' : 'A flagellum tail, like a bacterium\'s! ');
@@ -965,8 +997,9 @@ function builder() {
     stratum: function (o) {
       const len = o.len || 60, wall = box(b.x - 2, b.x + len, b.y - 1, b.y + 10, 0.5, o.color || '#8a6a4a'); wall.position.z = -4; L.group.add(wall);
       for (let i = 0; i < len / 3; i++) { const st = box(b.x + i * 3, b.x + i * 3 + rnd(1, 2.5), b.y + rnd(0, 9), 0, 0.2, new T.Color(o.color || '#8a6a4a').offsetHSL(0, 0, rnd(-0.08, 0.08)).getStyle()); st.scale.y = rnd(0.15, 0.4); st.position.y = b.y + rnd(0.5, 9); st.position.z = -3.7; L.group.add(st); }
-      const sg = label(o.name, 7.5, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }); sg.position.set(b.x + 9, b.y + 8.3, -1.5); L.group.add(sg);
-      if (o.sub) { const s2 = label(o.sub, 7.5, { bd: '#ffd166' }); s2.position.set(b.x + 9, b.y + 6.9, -1.5); L.group.add(s2); }
+      const sg = label(o.name, 5.6, { bg: '#fff8e1', fg: '#10202c', bd: '#10202c' }), s2 = o.sub ? label(o.sub, 7.4, { bd: '#ffd166' }) : null;
+      const top = b.y + 8.2, wn = sg.userData.lbl.w; sg.position.set(b.x + 3.5, top - sg.userData.lbl.h / 2, -1.5); L.group.add(sg); /* layer name and its age sit side by side under the cave ceiling */
+      if (s2) { s2.position.set(b.x + 3.5 + wn / 2 + s2.userData.lbl.w / 2 + 0.3, top - s2.userData.lbl.h / 2, -1.5); L.group.add(s2); }
       if (L.darkX == null) { L.darkX = b.x - 1; L.darkTop = b.y + 10; }
       return b;
     },
@@ -1895,7 +1928,7 @@ function digStep(dt, ax) {
   if (P.digT > 0.28) { breakTile(t); P.digT = 0; }
 }
 const _cv = new T.Vector3();
-function caveSpot() { const ov = $('caveDark'); if (!ov) return; _cv.set(P.x, P.y + 0.8, 0).project(cam); const x = (_cv.x + 1) * 50, y = (1 - _cv.y) * 50;
+function caveSpot() { const ov = $('caveDark'); if (!ov) return; ov.style.opacity = L.models && L.models.some(function (md) { return md.done && Math.abs(md.home.x - P.x) < 16 && Math.abs(md.home.y - P.y) < 12; }) ? 0.3 : 1; /* the dark edges lift near a finished, glowing cell */ _cv.set(P.x, P.y + 0.8, 0).project(cam); const x = (_cv.x + 1) * 50, y = (1 - _cv.y) * 50;
   ov.style.background = 'radial-gradient(circle at ' + x.toFixed(1) + '% ' + y.toFixed(1) + '%, rgba(0,0,0,0) 0, rgba(0,0,0,0) 24vmin, rgba(' + (L.darkTone || '5,3,2') + ',' + (L.darkTone ? '.3' : '.5') + ') 50vmin, rgba(' + (L.darkTone || '5,3,2') + ',' + (L.darkTone ? '.55' : '.8') + ') 85vmin)'; }
 function deepStep(dt) {
   L.glowers.forEach(function (gw) { gw.t += dt; gw.list.forEach(function (m, i) { const u = m.userData;
@@ -3164,6 +3197,18 @@ function mapInfo(i) {
     (sv && sv.best ? ' · Best score ' + sv.best : '') + (sv && sv.time ? ' · ' + tx('r.time') + ' ' + fmtTime(sv.time) : '') + ' · Rare specimen: ' + (S.rare[e.lv.id] ? 'found 💎' : 'not found yet') +
     '<br><span class="dim">' + (stars ? 'Conquered! Play again for more stars.' : 'Open. Click it or press Enter to play.') + '</span>' : '<span class="dim">Locked. Finish the level before it to open this one.</span>');
 }
+/* ---------- STANDARDS (for teachers): each Keystone eligible content code and the PA STEELS 9-12 standard it supports ---------- */
+const KEYSTONE = {"BIO.A.1.1.1": "Describe the characteristics of life shared by all prokaryotic and eukaryotic organisms.", "BIO.A.1.2.1": "Compare cellular structures and their functions in prokaryotic and eukaryotic cells.", "BIO.A.1.2.2": "Describe and interpret relationships between structure and function at various levels of biological organization (i.e., organelles, cells, tissues, organs, organ systems, and multicellular organisms).", "BIO.A.2.1.1": "Describe the unique properties of water and how these properties support life on Earth (e.g., freezing point, high specific heat, cohesion).", "BIO.A.2.2.1": "Explain how carbon is uniquely suited to form biological macromolecules.", "BIO.A.2.2.2": "Describe how biological macromolecules form from monomers.", "BIO.A.2.2.3": "Compare the structure and function of carbohydrates, lipids, proteins, and nucleic acids in organisms.", "BIO.A.2.3.1": "Describe the role of an enzyme as a catalyst in regulating a specific biochemical reaction.", "BIO.A.2.3.2": "Explain how factors such as pH, temperature, and concentration levels can affect enzyme function.", "BIO.A.3.1.1": "Describe the fundamental roles of plastids (e.g., chloroplasts) and mitochondria in energy transformations.", "BIO.A.3.2.1": "Compare the basic transformation of energy during photosynthesis and cellular respiration.", "BIO.A.3.2.2": "Describe the role of ATP in biochemical reactions.", "BIO.A.4.1.1": "Describe how the structure of the plasma membrane allows it to function as a regulatory structure and/or protective barrier for a cell.", "BIO.A.4.1.2": "Compare the mechanisms that transport materials across the plasma membrane (i.e., passive transport—diffusion, osmosis, facilitated diffusion; and active transport—pumps, endocytosis, exocytosis).", "BIO.A.4.1.3": "Describe how membrane-bound cellular organelles (e.g., endoplasmic reticulum, Golgi apparatus) facilitate the transport of materials within a cell.", "BIO.A.4.2.1": "Explain how organisms maintain homeostasis (e.g., thermoregulation, water regulation, oxygen regulation).", "BIO.B.1.1.1": "Describe the events that occur during the cell cycle: interphase, nuclear division (i.e., mitosis or meiosis), cytokinesis.", "BIO.B.1.1.2": "Compare the processes and outcomes of mitotic and meiotic nuclear divisions.", "BIO.B.1.2.1": "Describe how the process of DNA replication results in the transmission and/or conservation of genetic information.", "BIO.B.1.2.2": "Explain the functional relationships between DNA, genes, alleles, and chromosomes and their roles in inheritance.", "BIO.B.2.1.1": "Describe and/or predict observed patterns of inheritance (i.e., dominant, recessive, co-dominance, incomplete dominance, sex-linked, polygenic, and multiple alleles).", "BIO.B.2.1.2": "Describe processes that can alter composition or number of chromosomes (i.e., crossing-over, nondisjunction, duplication, translocation, deletion, insertion, and inversion).", "BIO.B.2.2.1": "Describe how the processes of transcription and translation are similar in all organisms.", "BIO.B.2.2.2": "Describe the role of ribosomes, endoplasmic reticulum, Golgi apparatus, and the nucleus in the production of specific types of proteins.", "BIO.B.2.3.1": "Describe how genetic mutations alter the DNA sequence and may or may not affect phenotype (e.g., silent, nonsense, frameshift).", "BIO.B.2.4.1": "Explain how genetic engineering has impacted the fields of medicine, forensics, and agriculture (e.g., selective breeding, gene splicing, cloning, genetically modified organisms, gene therapy).", "BIO.B.3.1.1": "Explain how natural selection can impact allele frequencies of a population.", "BIO.B.3.1.2": "Describe the factors that can contribute to the development of new species (e.g., isolating mechanisms, genetic drift, founder effect, migration).", "BIO.B.3.1.3": "Explain how genetic mutations may result in genotypic and phenotypic variations within a population.", "BIO.B.3.2.1": "Interpret evidence supporting the theory of evolution (i.e., fossil, anatomical, physiological, embryological, biochemical, and universal genetic code).", "BIO.B.3.3.1": "Distinguish between the scientific terms: hypothesis, inference, law, theory, principle, fact, and observation.", "BIO.B.4.1.1": "Describe the levels of ecological organization (i.e., organism, population, community, ecosystem, biome, and biosphere).", "BIO.B.4.1.2": "Describe characteristic biotic and abiotic components of aquatic and terrestrial ecosystems.", "BIO.B.4.2.1": "Describe how energy flows through an ecosystem (e.g., food chains, food webs, energy pyramids).", "BIO.B.4.2.2": "Describe biotic interactions in an ecosystem (e.g., competition, predation, symbiosis).", "BIO.B.4.2.3": "Describe how matter recycles through an ecosystem (i.e., water cycle, carbon cycle, oxygen cycle, and nitrogen cycle).", "BIO.B.4.2.4": "Describe how ecosystems change in response to natural and human disturbances (e.g., climate changes, introduction of nonnative species, pollution, fires).", "BIO.B.4.2.5": "Describe the effects of limiting factors on population dynamics and potential species extinction."}; /* verbatim from PDE, Keystone Exams: Biology Assessment Anchors and Eligible Content */
+const STEELS = {"3.1.9-12.A": "Construct an explanation based on evidence for how the structure of DNA determines the structure of proteins which carry out the essential functions of life through systems of specialized cells.", "3.1.9-12.B": "Develop and use a model to illustrate the hierarchical organization of interacting systems that provide specific functions within multicellular organisms.", "3.1.9-12.C": "Plan and conduct an investigation to provide evidence that feedback mechanisms maintain homeostasis.", "3.1.9-12.D": "Use a model to illustrate the role of cellular division (mitosis) and differentiation in producing and maintaining complex organisms.", "3.1.9-12.E": "Use a model to illustrate how photosynthesis transforms light energy into stored chemical energy.", "3.1.9-12.F": "Construct and revise an explanation based on evidence for how carbon, hydrogen, and oxygen from sugar molecules may combine with other elements to form amino acids and/or other large carbon-based molecules.", "3.1.9-12.G": "Use a model to illustrate that cellular respiration is a chemical process whereby the bonds of food molecules and oxygen molecules are broken and the bonds in new compounds are formed resulting in a net transfer of energy.", "3.1.9-12.H": "Use mathematical representations to support claims for the cycling of matter and flow of energy among organisms in an ecosystem.", "3.1.9-12.I": "Use mathematical and/or computational representations to support explanations of factors that affect carrying capacity of ecosystems at different scales.", "3.1.9-12.J": "Construct and revise an explanation based on evidence for the cycling of matter and flow of energy in aerobic and anaerobic conditions.", "3.1.9-12.K": "Develop a model to illustrate the role of photosynthesis and cellular respiration in the cycling of carbon among the biosphere, atmosphere, hydrosphere, and geosphere.", "3.1.9-12.L": "Use mathematical representations to support and revise explanations based on evidence about factors affecting biodiversity and populations in ecosystems of different scales.", "3.1.9-12.M": "Evaluate the claims, evidence, and reasoning that the complex interactions in ecosystems maintain relatively consistent numbers and types of organisms in stable conditions, but changing conditions may result in a new ecosystem.", "3.1.9-12.N": "Design, evaluate, and refine a solution for reducing the impacts of human activities on the environment and biodiversity.", "3.1.9-12.O": "Evaluate the evidence for the role of group behavior on individual and species’ chances to survive and reproduce.", "3.1.9-12.P": "Ask questions to clarify relationships about the role of DNA and chromosomes in coding the instructions for characteristic traits passed from parents to offspring.", "3.1.9-12.Q": "Make and defend a claim based on evidence that inheritable genetic variations may result from (1) new genetic combinations through meiosis, (2) viable errors occurring during replication, and/or (3) mutations caused by environmental factors.", "3.1.9-12.R": "Apply concepts of statistics and probability to explain the variation and distribution of expressed traits in a population.", "3.1.9-12.S": "Communicate scientific information that common ancestry and biological evolution are supported by multiple lines of empirical evidence.", "3.1.9-12.T": "Construct an explanation based on evidence that the process of evolution primarily results from four factors: (1) the potential for a species to increase in number, (2) the heritable genetic variation of individuals in a species due to mutation and sexual reproduction, (3) competition for limited resources, and (4) the proliferation of those organisms that are better able to survive and reproduce in the environment.", "3.1.9-12.U": "Apply concepts of statistics and probability to support explanations that organisms with an advantageous heritable trait tend to increase in proportion to organisms lacking this trait.", "3.1.9-12.V": "Create or revise a simulation to test a solution to mitigate the adverse impacts of human activity on biodiversity.", "3.1.9-12.W": "Construct an explanation based on evidence for how natural selection leads to adaptation of populations.", "3.1.9-12.X": "Evaluate the evidence supporting claims that changes in environmental conditions may result in (1) increases in the number of individuals of some species, (2) the emergence of new species over time, and (3) the extinction of other species.", "3.2.9-12.B": "Plan and conduct an investigation to gather evidence to compare the structure of substances at the bulk scale to infer the strength of electrical forces between particles.", "3.2.9-12.E": "Apply scientific principles and evidence to provide an explanation about the effects of changing the temperature or concentration of the reacting particles on the rate at which a reaction occurs.", "Nature of Science (STEELS Science and Engineering Practices)": "Not a lettered content standard: STEELS addresses the nature of science within its Science and Engineering Practices (\"Connections to Nature of Science\")."}; /* verbatim from PDE, PA STEELS K-12 standards (3.1 Life Science, 3.2 Physical Science, grades 9-12) */
+function stdMap() { /* from the questions actually in the game: code -> { steels: {code: n}, worlds: {w: 1}, n } */
+  const m = {}; Object.keys(QMAP).forEach(function (k) { const q = QMAP[k]; if (!q.code || !/^BIO\./.test(q.code)) return; const e = m[q.code] = m[q.code] || { steels: {}, worlds: {}, n: 0 }; e.n++; if (q.steels) e.steels[q.steels] = (e.steels[q.steels] || 0) + 1; if (q.world) e.worlds[q.world] = 1; });
+  return m; }
+function stShort(c) { return /^Nature/.test(c) ? 'Nature of Science' : c; }
+function standardsTable() {
+  const m = stdMap(), codes = Object.keys(m).sort();
+  return '<table class="ftab stdtab"><tr><th>Keystone eligible content</th><th>PA STEELS (grades 9–12)</th><th>Where</th><th>Items</th></tr>' + codes.map(function (c) { const e = m[c], st = Object.keys(e.steels).sort(function (a, b) { return e.steels[b] - e.steels[a]; });
+    return '<tr><td><b>' + esc(c) + '</b><br><span class="dim">' + esc(KEYSTONE[c] || '') + '</span></td><td>' + st.map(function (x) { return '<b>' + esc(stShort(x)) + '</b>' + (st.length > 1 ? ' (' + e.steels[x] + ')' : '') + '<br><span class="dim">' + esc(STEELS[x] || '') + '</span>'; }).join('<br>') + '</td><td>World ' + Object.keys(e.worlds).sort().join(', ') + '</td><td>' + e.n + '</td></tr>'; }).join('') + '</table>';
+}
 function buildProgress() {
   let html = '<h3>Mastery by unit</h3><p class="dim">Share of questions answered right on the first try.</p>';
   for (let w = 1; w <= BQ.UNITS.length; w++) {
@@ -3172,7 +3217,8 @@ function buildProgress() {
     html += '<div class="bar"><span>' + w + '. ' + BQ.UNITS[w - 1] + '</span><div class="track"><div class="fill" style="width:' + pct + '%"></div></div><span class="num">' + (BQ.worlds[w] ? (t ? pct + '%' : 'Not started') : 'Coming soon') + '</span></div>';
   }
   const codes = Object.keys(S.codes).sort();
-  if (codes.length) html += '<h3>By Keystone code</h3><table class="ftab"><tr><th>Code</th><th>First-try correct</th></tr>' + codes.map(function (k) { return '<tr><td>' + esc(k) + '</td><td>' + S.codes[k].right + ' of ' + S.codes[k].tries + '</td></tr>'; }).join('') + '</table>';
+  const sm = stdMap();
+  if (codes.length) html += '<h3>By standard</h3><table class="ftab"><tr><th>Keystone</th><th>PA STEELS</th><th>First-try correct</th></tr>' + codes.map(function (k) { const st = sm[k] ? Object.keys(sm[k].steels).map(stShort).join(', ') : ''; return '<tr><td title="' + esc(KEYSTONE[k] || '') + '">' + esc(k) + '</td><td>' + esc(st) + '</td><td>' + S.codes[k].right + ' of ' + S.codes[k].tries + '</td></tr>'; }).join('') + '</table>';
   const top = BQ.Leaderboard.top(10).filter(function (r) { return nickOK(r.nick); }).slice(0, 5); if (!nickOK(S.nick)) { S.nick = ''; save(); }
   html += '<h3>High scores on this device</h3>' + (top.length ? '<ol class="board">' + top.map(function (r) { return '<li><span>' + esc(r.nick) + '</span><span class="num">' + r.score + '</span></li>'; }).join('') + '</ol>' : '<p class="dim">Enter a nickname below, then finish a level to post a score. Your total so far: ' + totalScore() + '.</p>');
   $('progBody').innerHTML = html; $('nick').value = S.nick;
@@ -3322,7 +3368,8 @@ function wire() {
   $('btnCozy').hidden = !BQ.cozy; $('btnCozy').onclick = function () { if (BQ.cozy) BQ.cozy.start(); };
   ['pointerdown', 'pointermove', 'pointerup', 'wheel'].forEach(function (ev) { $('stage').addEventListener(ev, function (e) { if (mode === 'cozy' && BQ.cozy) BQ.cozy.pointer(e, ev); else if (mode === 'dome' && BQ.dome) BQ.dome.pointer(e, ev); }, ev === 'wheel' ? { passive: false } : undefined); });
   $('btnLevels').onclick = function () { openMap(); };
-  $('btnAbout').onclick = function () { show('about'); $('aboutVer').textContent = VERSION; };
+  $('btnAbout').onclick = function () { show('about'); $('aboutVer').textContent = VERSION;
+    const sb = $('aboutStd'); if (sb) sb.innerHTML = (S.set.admin || TEACH) ? '<h3>Standards map (teachers)</h3><p class="dim">Every question and activity is tagged with a Keystone Biology eligible content code and the PA STEELS grades 9–12 standard it supports. "Items" counts the questions and activities for that code.</p>' + standardsTable() : '<p class="dim">Teachers: turn on admin mode (type the admin password on the main menu) to see a table of every Keystone eligible content code and its matching PA STEELS standard.</p>'; };
   $('menuVer').textContent = VERSION + ' · by J.E. Lynch' + (S.set.admin ? ' · ADMIN' : '');
   $('btnProgress').onclick = function () { buildProgress(); show('progress'); };
   $('btnSettings').onclick = function () { backTo = 'menu'; show('settings'); };

@@ -160,7 +160,7 @@ FieldGuide.registerWorld({
           .squeeze(3, 4).antibody(15, 8, 3.2, 1).ground(16)
           .qblock(3, 3.4, 'shield').hazard(8, 1.2, { ax: 2, sp: 1.3 }).virus(12, 2, 1.4).ground(16)
           .clue(3, 'w1q30').ground(6).hint(1, 6.6, 'Portal! Its code is the letters of your 3 clue answers.').portal(6).ground(11)
-          .hint(-3, 4.6, 'Boss ahead: The Imbalance')
+          .hint(-1, 7.4, 'Boss ahead: The Imbalance')
           .balance('bal-temp')
           .goal();
       } }

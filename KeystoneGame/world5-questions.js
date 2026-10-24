@@ -132,7 +132,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "science-terms",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "Which kind of scientific statement is it?",
    "options": [
     "Observation",
@@ -530,7 +530,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "w5q24",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "Which is an OBSERVATION?",
    "options": [
     "The finch's beak is 11 millimeters deep.",
@@ -545,7 +545,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "w5q25",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "Which is an INFERENCE?",
    "options": [
     "The fossil has fins, so the animal probably lived in water.",
@@ -560,7 +560,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "w5q26",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "What is the difference between a scientific law and a scientific theory?",
    "options": [
     "A law describes WHAT happens; a theory explains WHY or HOW it happens.",
@@ -575,7 +575,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "w5q27",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "Which statement about a scientific HYPOTHESIS is true?",
    "options": [
     "It is a testable explanation or prediction.",
@@ -590,7 +590,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "w5q28",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "Why is evolution called a scientific THEORY?",
    "options": [
     "It is a well-tested explanation supported by many lines of evidence.",
@@ -677,7 +677,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "w5q33",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "prompt": "A student says, 'Evolution is only a theory, so it is just a guess.' What is the best response?",
    "options": [
     "In science, a theory is a well-supported explanation backed by a large body of evidence.",
@@ -925,7 +925,7 @@ FieldGuide.registerQuestions(5, {
   {
    "id": "c-science",
    "code": "BIO.B.3.3.1",
-   "steels": "3.1.9-12.S",
+   "steels": "Nature of Science (STEELS Science and Engineering Practices)",
    "short": "Science words",
    "title": "Name the statement: grab the type of scientific statement for each.",
    "cueLabel": "Statement",

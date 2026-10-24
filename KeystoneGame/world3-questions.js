@@ -108,7 +108,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "interaction",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "prompt": "Which kind of relationship is it?",
    "options": [
     "Predation",
@@ -359,7 +359,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "w3q11",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "prompt": "Ticks feed on a deer's blood. What type of relationship is this?",
    "options": [
     "parasitism",
@@ -374,7 +374,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "w3q12",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "prompt": "Bees get nectar from flowers, and the flowers get pollinated. What type of relationship is this?",
    "options": [
     "mutualism",
@@ -389,7 +389,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "w3q13",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "prompt": "Two species of birds eat the same kind of seeds in a small area. What type of relationship is this?",
    "options": [
     "competition",
@@ -404,7 +404,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "w3q14",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "prompt": "Orchids grow on high tree branches to reach sunlight, without harming the tree. What type of relationship is this?",
    "options": [
     "commensalism",
@@ -419,7 +419,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "w3q15",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "prompt": "Wolves are removed from a forest. Soon the deer population grows quickly and young trees are eaten. What does this show?",
    "options": [
     "Predators help control prey populations, which affects the plants too.",
@@ -667,7 +667,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "b-mutual",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "you": "a honeybee",
    "short": "Bee",
    "color": "#ffd166",
@@ -783,7 +783,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "b-clownfish",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "you": "a young clownfish looking for a home on the reef",
    "short": "Clownfish",
    "color": "#ff8a3a",
@@ -858,7 +858,7 @@ FieldGuide.registerQuestions(3, {
   {
    "id": "c-symbiosis",
    "code": "BIO.B.4.2.2",
-   "steels": "3.1.9-12.L",
+   "steels": "3.1.9-12.M",
    "short": "Relationships",
    "title": "Match each relationship to its name.",
    "cueLabel": "Relationship",

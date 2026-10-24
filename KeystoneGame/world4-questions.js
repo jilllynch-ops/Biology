@@ -107,7 +107,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "mit-mei",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "prompt": "Mitosis or meiosis?",
    "options": [
     "Mitosis",
@@ -293,7 +293,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "w4q06",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "prompt": "A human body cell has 46 chromosomes. How many chromosomes are in a human sperm cell?",
    "options": [
     "23",
@@ -308,7 +308,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "w4q07",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "prompt": "Which statement compares mitosis and meiosis correctly?",
    "options": [
     "Mitosis makes 2 identical diploid cells; meiosis makes 4 genetically different haploid cells.",
@@ -323,7 +323,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "w4q08",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "prompt": "Why is it important that gametes are haploid?",
    "options": [
     "When sperm and egg join, the offspring gets the normal diploid number.",
@@ -338,7 +338,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "w4q09",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "prompt": "Which event happens in meiosis but NOT in mitosis?",
    "options": [
     "crossing over between homologous chromosomes",
@@ -1008,7 +1008,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "b-gamete",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "you": "a human egg cell made by meiosis",
    "short": "Egg",
    "color": "#ff9fbf",
@@ -1448,7 +1448,7 @@ FieldGuide.registerQuestions(4, {
   {
    "id": "s-meiosis",
    "code": "BIO.B.1.1.2",
-   "steels": "3.1.9-12.D",
+   "steels": "3.1.9-12.Q",
    "title": "Put the main events of meiosis in order",
    "steps": [
     "Homologous chromosomes pair up and cross over",
