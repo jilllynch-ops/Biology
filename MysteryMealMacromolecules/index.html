@@ -153,6 +153,57 @@ td.wrong { background: var(--warn-bg); }
 .mcq input { margin-top: 5px; }
 .review { white-space: pre-wrap; font-family: var(--body); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; min-height: 200px; width: 100%; }
 .badge { display: inline-block; background: var(--red); color: var(--red-ink); font-weight: 700; font-size: .78rem; border-radius: 999px; padding: 2px 10px; vertical-align: middle; }
+.sort-tray { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px; border: 1.5px dashed var(--line); border-radius: 10px; min-height: 84px; background: var(--surface); }
+.sort-bins { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 14px; }
+.bin { border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; min-height: 150px; }
+.bin.over { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent); }
+.bin-head { border: 0; padding: 9px 12px; font-weight: 700; text-align: left; cursor: pointer; }
+.bin-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.scard { display: flex; flex-direction: column; gap: 6px; text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 8px; padding: 9px 10px; cursor: grab; font-size: .88rem; line-height: 1.4; flex: 1 1 220px; max-width: 320px; }
+.bin-body .scard { max-width: none; flex: 0 0 auto; }
+.scard .el { min-width: 24px; height: 24px; font-size: .8rem; }
+.scard.picked { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent); }
+.scard.right { border: 2.5px solid var(--ok); }
+.scard.wrong { border: 2.5px solid var(--warn); }
+.std { display: none; border: 2px dashed var(--starch); border-radius: 10px; padding: 14px 16px; margin-bottom: 22px; background: color-mix(in srgb, var(--starch) 7%, var(--surface)); font-size: .95rem; }
+body.standards .std { display: block; }
+.std h3 { font-family: var(--body); font-size: 1rem; margin-bottom: 6px; color: var(--starch); }
+.std ul { margin: 0 0 6px; padding-left: 20px; }
+.std li { margin: 4px 0; max-width: 80ch; }
+.std .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.std .tag { border: 1.5px solid var(--starch); color: var(--starch); border-radius: 999px; padding: 1px 10px; font-size: .85rem; font-weight: 700; }
+.std table { min-width: 560px; font-size: .9rem; margin-top: 8px; }
+.std th { background: var(--tint); color: var(--ink); }
+.std-btn { border: 1.5px solid var(--starch); color: var(--starch); background: var(--surface); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: .92rem; font-weight: 700; }
+.std-btn[aria-pressed="true"] { background: var(--starch); color: var(--surface); }
+.goals { margin: 0 0 14px; padding-left: 22px; }
+.bench { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 22px; }
+.shelf { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.bottle { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 700; }
+.bottle .cap { width: 16px; height: 24px; border-radius: 4px 4px 6px 6px; border: 1.5px solid var(--ink); }
+.bottle[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent); }
+.bench-row { display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-end; }
+.rack { display: flex; gap: 18px; padding: 0 14px; border-bottom: 8px solid var(--line); }
+.tube-slot, .paper-station { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+.tube { background: transparent; border: 0; padding: 0; cursor: pointer; color: var(--ink); border-radius: 8px; position: relative; }
+.liq { transition: fill 1s ease, transform .5s ease; }
+.tube-label { font-size: .85rem; font-weight: 700; }
+.tube-act { display: flex; gap: 4px; min-height: 30px; }
+.mini { border: 1.5px solid var(--ink); background: var(--surface); border-radius: 6px; padding: 3px 9px; font-size: .82rem; cursor: pointer; }
+.paper { width: 110px; height: 100px; background: #B88A55; border-radius: 4px; display: grid; place-items: center; }
+.spot { width: 58px; height: 46px; border-radius: 50%; background: #5E4020; opacity: 0; transition: opacity 1.4s ease, background 1.4s ease; }
+.spot.wet { opacity: .85; }
+.spot.dry.lipid { opacity: .5; background: #8A6A3C; }
+.drop { position: absolute; top: -4px; left: 50%; width: 8px; height: 11px; margin-left: -4px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: fall .6s ease-in forwards; pointer-events: none; }
+@keyframes fall { from { transform: translateY(0); opacity: 1; } to { transform: translateY(70px); opacity: 0; } }
+.heating .tube { filter: drop-shadow(0 0 8px #E07B22); }
+.bench-status { margin: 16px 0 8px; min-height: 1.5em; font-weight: 700; }
+.checklist { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.checklist span { border: 1.5px solid var(--line); border-radius: 999px; padding: 2px 11px; font-size: .88rem; }
+.checklist span.done { border-color: var(--ok); background: var(--ok-bg); color: var(--ok); font-weight: 700; }
+.std-only { display: none !important; }
+body.standards .std-only { display: inline-block !important; }
+@media (prefers-reduced-motion: reduce) { .liq, .spot { transition: none; } .drop { display: none; } }
 .k-only { display: none; }
 body.keystone .k-only { display: block; }
 body.keystone .k-only.inline { display: inline-block; }
@@ -169,9 +220,12 @@ body.keystone .k-only.inline { display: inline-block; }
   <div class="top-inner">
     <div class="brand">
       <span class="brand-name">The Mystery Meal</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button type="button" class="std-btn" id="std-toggle" aria-pressed="false">Standards view</button>
       <div class="mode" role="group" aria-label="Version">
         <button type="button" data-mode="standard" aria-pressed="true">Standard case</button>
         <button type="button" data-mode="keystone" aria-pressed="false">Keystone challenge</button>
+      </div>
       </div>
     </div>
     <nav class="steps" id="steps" aria-label="Steps"></nav>
@@ -187,7 +241,9 @@ body.keystone .k-only.inline { display: inline-block; }
     <p class="lede">Famous food critic Jerome went to the E.R. two nights ago and later died. He had been poisoned.</p>
     <p>Detective Tamara Marshall suspects Chef Berhanu, a rival chef furious about one of Jerome’s scathing reviews. She thinks Berhanu followed Jerome to dinner and slipped something into his drink. The restaurant isn’t a suspect, but its security cameras could prove Berhanu was there. First, she needs to know where Jerome ate.</p>
     <p>Jerome had just reviewed three restaurants. Medical Examiner Dr. Bea O’Problem tested his stomach contents for lipids, proteins and carbohydrates (glucose and starch), and tested the dish Jerome always ordered at each place.</p>
-    <p class="k-only"><span class="badge">Keystone challenge</span> Dr. O’Problem also ran a molecular analysis. It lists the elements and the structure of the large molecules she found. You’ll use it to back up the color tests.</p>
+    <p class="k-only"><span class="badge">Keystone challenge</span> Dr. O’Problem also listed the elements and structure of each large molecule she found.</p>
+    <p style="margin-bottom:4px"><b>Your goals</b></p>
+    <ul class="goals"><li>Explain how macromolecules are built.</li><li>Use test results as evidence to solve the case.</li></ul>
     <label class="q" for="name">Investigator name</label>
     <input type="text" id="name" autocomplete="name" style="max-width:360px">
   </div>
@@ -249,15 +305,20 @@ body.keystone .k-only.inline { display: inline-block; }
 <!-- 5 EVIDENCE -->
 <section id="s-evidence" data-step="evidence" hidden>
   <h2>Read the evidence</h2>
-  <p>Pick a sample. For each test, describe what you see and decide whether the macromolecule is present. Then check the sample.</p>
+  <p>Pick a sample. Run all four tests on the lab bench. Then compare with the real photos.</p>
   <div class="tabs" role="tablist" id="sample-tabs"></div>
   <div id="sample-head"></div>
-  <div class="grid g4" id="ev-cards"></div>
-  <button class="btn" type="button" id="ev-check" style="margin-top:14px">Check this sample</button>
-  <div class="fb" id="ev-fb" aria-live="polite"></div>
+  <div class="bench" id="bench"></div>
+  <div id="results" hidden>
+    <h3>Results summary</h3>
+    <p>These are Dr. O’Problem’s photos of the same tests. Record what you see.</p>
+    <div class="grid g4" id="ev-cards"></div>
+    <button class="btn" type="button" id="ev-check" style="margin-top:14px">Check this sample</button>
+    <div class="fb" id="ev-fb" aria-live="polite"></div>
+  </div>
   <div class="k-only" style="margin-top:30px">
     <h3>Molecular analysis report</h3>
-    <p>Dark boxes are elements that were found. Crossed-out boxes were not found. Decide what kind of macromolecule each one is.</p>
+    <p>Dark box = element found. Crossed out = not found. Name each molecule.</p>
     <div class="grid g2" id="mol-cards"></div>
     <button class="btn" type="button" id="mol-check" style="margin-top:14px">Check the report</button>
     <div class="fb" id="mol-fb" aria-live="polite"></div>
@@ -294,6 +355,18 @@ body.keystone .k-only.inline { display: inline-block; }
   <div class="k-only" style="margin-top:34px">
     <h2>Keystone challenge questions</h2>
     <div class="mcq stack" id="mc2"></div>
+    <h3 style="margin-top:30px">Keystone item practice</h3>
+    <div class="panel">
+      <p style="margin-bottom:10px"><b>Sort the molecules.</b> Drag each one into its group. On a phone, tap a molecule, then tap a group.</p>
+      <div class="sort-tray" id="sort-tray" aria-label="Unsorted molecules"></div>
+      <div class="sort-bins" id="sort-bins"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn" type="button" id="sort-check">Check my sort</button>
+        <button class="btn" type="button" id="sort-reset">Start the sort over</button>
+      </div>
+      <div class="fb" id="sort-fb" aria-live="polite"></div>
+    </div>
+    <div class="mcq" style="margin-top:18px" id="sata"></div>
     <h3 style="margin-top:26px">Constructed response</h3>
     <div class="stack">
       <div><label class="q" for="cra">Part A: Which element in the reports tells you a molecule could be a protein, but not a carbohydrate or lipid?</label><textarea id="cra" data-save="cra"></textarea></div>
@@ -305,6 +378,12 @@ body.keystone .k-only.inline { display: inline-block; }
 
 <!-- 8 REVIEW -->
 <section id="s-review" data-step="review" hidden>
+  <div class="no-print">
+    <h2>Final check</h2>
+    <p>Answer the 3 check questions one more time.</p>
+    <div class="mcq stack" id="mc3"></div>
+    <div class="fb ok" id="growth" aria-live="polite" style="margin:14px 0 30px"></div>
+  </div>
   <h2>My answers</h2>
   <p class="no-print">Copy this into your assignment, or print it. Your work is saved in this browser.</p>
   <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
@@ -520,7 +599,11 @@ function renderMC(host, items, prefix) {
     const show = () => { const v = S.mc[id]; if (v === undefined) return;
       fb.className = "fb " + (v === m.a ? "ok" : "no");
       fb.textContent = v === m.a ? "Correct. " + m.why : "Not quite. Reread the question and try another answer."; };
-    f.querySelectorAll("input").forEach(inp => inp.onchange = () => { S.mc[id] = Number(inp.value); save(); show(); });
+    f.querySelectorAll("input").forEach(inp => inp.onchange = () => {
+      S.mc[id] = Number(inp.value); S.first = S.first || {};
+      if (S.first[id] === undefined) S.first[id] = Number(inp.value);
+      save(); show(); if (prefix === "p" || prefix === "a") showGrowth();
+    });
     show();
   });
 }
@@ -538,6 +621,7 @@ function renderTabs() {
 }
 function renderSample() {
   const s = SAMPLES.find(x => x.id === S.tab);
+  reagent = null; renderBench(s);
   $("#sample-head").innerHTML = `<h3>${s.name}</h3><p class="hint">${s.dish ? s.dish + " · " : ""}${s.town}</p>`;
   const host = $("#ev-cards"); host.innerHTML = "";
   S.ev[s.id] = S.ev[s.id] || {};
@@ -563,7 +647,7 @@ function renderSample() {
     const m = MOL[mk];
     const c = el("div", { class: "panel mol" });
     const v = S.mol[s.id][i] || "";
-    c.innerHTML = `<span class="id">${s.short[0]}${i + 1}</span><div class="stack" style="--g:8px">${elChips(m.el)}
+    c.innerHTML = `<span class="id">${s.id === "stomach" ? "J" : s.short[0]}${i + 1}</span><div class="stack" style="--g:8px">${elChips(m.el)}
       <p style="margin:0">${m.t}</p>
       <select aria-label="Molecule ${i + 1} type"><option value="">This molecule is a…</option>
       ${[["carb", "carbohydrate"], ["lipid", "lipid"], ["protein", "protein"], ["nucleic", "nucleic acid"]].map(([k, n]) => `<option value="${k}" ${v === k ? "selected" : ""}>${n}</option>`).join("")}</select>
@@ -604,6 +688,115 @@ $("#mol-check").onclick = () => {
   f.className = "fb " + (right === n ? "ok" : "no");
   f.textContent = right === n ? "Report decoded. Try another sample." : `${right} of ${n} correct so far.`;
 };
+
+/* ---------- lab bench ---------- */
+const REAGENTS = [
+  { k: "biuret", name: "Biuret", test: "protein", add: "#7DB3E8", pos: "#7A4BB3", neg: "#9CC6EE",
+    yes: "The solution turned violet.", no: "The solution stayed light blue." },
+  { k: "benedict", name: "Benedict’s", test: "glucose", add: "#3D8BD6", pos: "#B5432A", neg: "#3D8BD6", heat: true,
+    yes: "Green… orange… brick-red!", no: "It stayed blue after heating." },
+  { k: "iodine", name: "Iodine", test: "starch", add: "#D4932F", pos: "#1D1A33", neg: "#D98A2A",
+    yes: "The solution turned blue-black.", no: "The solution stayed amber." }
+];
+const SAMPLE_COLOR = "#E9DEC8";
+let reagent = null, busy = false;
+const wait = (ms) => new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms));
+function bench(id) { S.bench = S.bench || {}; return S.bench[id] = S.bench[id] || { tubes: [null, null, null], paper: "" }; }
+function rg(k) { return REAGENTS.find(r => r.k === k); }
+function tubeColor(s, t) {
+  if (!t) return SAMPLE_COLOR;
+  const r = rg(t.r);
+  if (r.heat && !t.heated) return r.add;
+  return s.res[r.test] ? r.pos : r.neg;
+}
+function benchDone(id) {
+  const b = bench(id);
+  const has = (k) => b.tubes.some(t => t && t.r === k && (!rg(k).heat || t.heated));
+  return { lipid: b.paper === "dry", protein: has("biuret"), glucose: has("benedict"), starch: has("iodine") };
+}
+function allDone(id) { const d = benchDone(id); return d.lipid && d.protein && d.glucose && d.starch; }
+function tubeSVG(i, color, full) {
+  return `<svg viewBox="0 0 60 180" width="54" height="162" aria-hidden="true"><defs><clipPath id="tc${i}"><path d="M13 12 V140 a17 17 0 0 0 34 0 V12 Z"/></clipPath></defs>
+    <g clip-path="url(#tc${i})"><rect class="liq" x="0" y="0" width="60" height="180" style="fill:${color};transform:translateY(${full ? 72 : 100}px)"/></g>
+    <path d="M13 12 V140 a17 17 0 0 0 34 0 V12" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M7 12 H53" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`;
+}
+function setStatus(t) { const n = $("#bench-status"); if (n) n.textContent = t; }
+function renderBench(s) {
+  const b = bench(s.id), d = benchDone(s.id), done = allDone(s.id);
+  S.revealed = S.revealed || {};
+  $("#bench").innerHTML = `
+    <div class="shelf" role="group" aria-label="Reagents"><b>Pick a reagent:</b>${REAGENTS.map(r => `<button type="button" class="bottle" data-r="${r.k}" aria-pressed="${reagent === r.k}"><span class="cap" style="background:${r.add}"></span>${r.name}</button>`).join("")}</div>
+    <div class="bench-row">
+      <div class="rack">${b.tubes.map((t, i) => `<div class="tube-slot" id="slot${i}">
+        <button type="button" class="tube" data-i="${i}" aria-label="Tube ${i + 1}: ${t ? rg(t.r).name + (t.heated ? ", heated" : "") : "sample only"}">${tubeSVG(i, tubeColor(s, t), Boolean(t))}</button>
+        <span class="tube-label">${t ? rg(t.r).name : "Tube " + (i + 1)}</span>
+        <div class="tube-act">${t && rg(t.r).heat && !t.heated ? `<button type="button" class="mini" data-heat="${i}">Heat</button>` : ""}${t ? `<button type="button" class="mini" data-clean="${i}">Clean</button>` : ""}</div>
+      </div>`).join("")}</div>
+      <div class="paper-station">
+        <div class="paper"><div class="spot ${b.paper} ${s.res.lipid ? "lipid" : ""}"></div></div>
+        <span class="tube-label">Brown paper</span>
+        <div class="tube-act">${b.paper === "" ? `<button type="button" class="mini" id="rub">Rub sample on</button>` : b.paper === "wet" ? `<button type="button" class="mini" id="dry">Let it dry</button>` : `<button type="button" class="mini" id="new-paper">New paper</button>`}</div>
+      </div>
+    </div>
+    <p class="bench-status" id="bench-status" aria-live="polite">${done ? "All four tests are done." : "Pick a reagent, then click a tube to add 5 drops."}</p>
+    <div class="checklist">${TESTS.map(t => `<span class="${d[t.k] ? "done" : ""}">${d[t.k] ? "✓ " : ""}${t.name}</span>`).join("")}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${done ? `<button class="btn primary" type="button" id="see-photos">See Dr. O’Problem’s photos</button>` : ""}
+      ${!done ? `<button class="btn std-only" type="button" id="skip-bench">Skip to photos (teacher)</button>` : ""}
+    </div>`;
+  $("#results").hidden = !S.revealed[s.id];
+  document.querySelectorAll("#bench .bottle").forEach(btn => btn.onclick = () => {
+    reagent = reagent === btn.dataset.r ? null : btn.dataset.r;
+    document.querySelectorAll("#bench .bottle").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.r === reagent)));
+    setStatus(reagent ? `${rg(reagent).name} selected. Click a tube.` : "Pick a reagent, then click a tube to add 5 drops.");
+  });
+  document.querySelectorAll("#bench .tube").forEach(btn => btn.onclick = () => addReagent(s, Number(btn.dataset.i)));
+  document.querySelectorAll("#bench [data-heat]").forEach(btn => btn.onclick = () => heatTube(s, Number(btn.dataset.heat)));
+  document.querySelectorAll("#bench [data-clean]").forEach(btn => btn.onclick = () => { if (busy) return; b.tubes[Number(btn.dataset.clean)] = null; save(); renderBench(s); setStatus("Tube cleaned."); });
+  const rub = $("#rub"), dry = $("#dry"), np = $("#new-paper"), see = $("#see-photos"), skip = $("#skip-bench");
+  if (rub) rub.onclick = () => { b.paper = "wet"; save(); renderBench(s); setStatus("You rubbed the sample on the paper. It looks wet."); };
+  if (dry) dry.onclick = async () => {
+    if (busy) return; busy = true; setStatus("Drying…");
+    const sp = $("#bench .spot"); sp.classList.remove("wet"); sp.classList.add("dry");
+    await wait(1600);
+    b.paper = "dry"; save(); busy = false; renderBench(s);
+    setStatus(s.res.lipid ? "The paper dried. A see-through spot is still there." : "The paper dried. The spot disappeared.");
+  };
+  if (np) np.onclick = () => { b.paper = ""; save(); renderBench(s); };
+  const reveal = () => { S.revealed[s.id] = true; save(); $("#results").hidden = false; $("#results").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  if (see) see.onclick = reveal;
+  if (skip) skip.onclick = reveal;
+}
+async function addReagent(s, i) {
+  if (busy) return;
+  const b = bench(s.id);
+  if (!reagent) { setStatus("Pick a reagent bottle first."); return; }
+  if (b.tubes[i]) { setStatus(`Tube ${i + 1} already has ${rg(b.tubes[i].r).name}. Clean it or use another tube.`); return; }
+  busy = true;
+  const r = rg(reagent), t = { r: reagent, heated: false };
+  b.tubes[i] = t; save();
+  const slot = $("#slot" + i), rect = slot.querySelector(".liq");
+  const drop = el("span", { class: "drop", style: `background:${r.add}` }); slot.querySelector(".tube").appendChild(drop);
+  setStatus(`Adding 5 drops of ${r.name} to tube ${i + 1}…`);
+  await wait(450);
+  rect.style.transform = "translateY(72px)"; rect.style.fill = r.add;
+  await wait(1100);
+  if (r.heat) { busy = false; renderBench(s); setStatus("Benedict’s needs heat to react. Press Heat."); return; }
+  rect.style.fill = tubeColor(s, t);
+  await wait(1200);
+  busy = false; renderBench(s);
+  setStatus(s.res[r.test] ? r.yes : r.no);
+}
+async function heatTube(s, i) {
+  if (busy) return; busy = true;
+  const b = bench(s.id), t = b.tubes[i], r = rg(t.r);
+  const slot = $("#slot" + i), rect = slot.querySelector(".liq");
+  slot.classList.add("heating"); setStatus("Heating in a hot water bath…");
+  if (s.res[r.test]) { for (const c of ["#5FA34A", "#E07B22", r.pos]) { await wait(900); rect.style.fill = c; } }
+  await wait(1200);
+  t.heated = true; save(); busy = false; renderBench(s);
+  setStatus(s.res[r.test] ? r.yes : r.no);
+}
 
 /* ---------- match board ---------- */
 function boardRows() {
@@ -655,6 +848,83 @@ function judge() {
 }
 renderAccuse(); judge();
 
+/* ---------- drag-and-drop sort ---------- */
+const SORT_ITEMS = [["T1", "starch"], ["J3", "dna"], ["T3", "protein"], ["S2", "fatBent"], ["A4", "cellulose"], ["T2", "glucose"], ["T4", "fatStraight"]];
+const BINS = [["carb", "Carbohydrates", "--glucose"], ["lipid", "Lipids", "--lipid"], ["protein", "Proteins", "--protein"], ["nucleic", "Nucleic acids", "--ink"]];
+let picked = null;
+function sortCard([id, mk]) {
+  const m = MOL[mk];
+  const c = el("button", { type: "button", class: "scard" + (picked === id ? " picked" : ""), draggable: "true", "data-id": id, "aria-pressed": String(picked === id) });
+  c.innerHTML = `<b>${id}</b>${elChips(m.el)}<span>${m.t}</span>`;
+  c.ondragstart = (e) => { e.dataTransfer.setData("text/plain", id); e.dataTransfer.effectAllowed = "move"; };
+  c.onclick = () => { picked = picked === id ? null : id; renderSort(); const n = document.querySelector(`.scard[data-id="${id}"]`); if (n) n.focus(); };
+  return c;
+}
+function placeCard(id, bin) {
+  if (!id) return;
+  if (bin) S.sort[id] = bin; else delete S.sort[id];
+  picked = null; save(); renderSort();
+  const f = $("#sort-fb"); f.className = "fb"; f.textContent = "";
+}
+function renderSort() {
+  S.sort = S.sort || {};
+  const tray = $("#sort-tray"), bins = $("#sort-bins");
+  tray.innerHTML = ""; bins.innerHTML = "";
+  SORT_ITEMS.filter(([id]) => !S.sort[id]).forEach(it => tray.appendChild(sortCard(it)));
+  if (!tray.children.length) tray.innerHTML = `<p class="hint" style="margin:0">Every molecule is sorted. Check your sort.</p>`;
+  tray.ondragover = (e) => e.preventDefault();
+  tray.ondrop = (e) => { e.preventDefault(); placeCard(e.dataTransfer.getData("text/plain"), null); };
+  BINS.forEach(([k, n, c]) => {
+    const b = el("div", { class: "bin" });
+    b.innerHTML = `<button type="button" class="bin-head" aria-label="Put the selected molecule in ${n}" style="background:var(${c});color:${c === "--ink" ? "var(--surface)" : "#fff"}">${n}</button><div class="bin-body"></div>`;
+    SORT_ITEMS.filter(([id]) => S.sort[id] === k).forEach(it => b.querySelector(".bin-body").appendChild(sortCard(it)));
+    b.ondragover = (e) => { e.preventDefault(); b.classList.add("over"); };
+    b.ondragleave = () => b.classList.remove("over");
+    b.ondrop = (e) => { e.preventDefault(); placeCard(e.dataTransfer.getData("text/plain"), k); };
+    b.querySelector(".bin-head").onclick = () => placeCard(picked, k);
+    bins.appendChild(b);
+  });
+}
+$("#sort-check").onclick = () => {
+  let right = 0, placed = 0;
+  document.querySelectorAll("#sort-bins .scard").forEach(c => {
+    const mk = SORT_ITEMS.find(x => x[0] === c.dataset.id)[1];
+    const ok = MOL[mk].a === S.sort[c.dataset.id]; placed++; if (ok) right++;
+    c.classList.toggle("right", ok); c.classList.toggle("wrong", !ok);
+  });
+  const n = SORT_ITEMS.length, f = $("#sort-fb");
+  f.className = "fb " + (placed === n && right === n ? "ok" : "no");
+  f.textContent = placed < n ? `Sort ${n - placed} more molecule${n - placed > 1 ? "s" : ""} first.`
+    : right === n ? "All 7 molecules are in the right groups. Notice that three different carbohydrates are all built from six-sided sugar rings."
+    : `${right} of ${n} are in the right group. Orange cards need to move. Check the elements first, then the structure.`;
+};
+$("#sort-reset").onclick = () => { S.sort = {}; picked = null; save(); renderSort(); const f = $("#sort-fb"); f.className = "fb"; f.textContent = ""; };
+renderSort();
+
+/* ---------- select all that apply ---------- */
+const SATA = { q: "Which samples contained at least one molecule with nitrogen (N)? Select all that apply.",
+  o: [["tonys", "Tony’s pepperoni pizza"], ["austins", "Austin’s salmon and asparagus"], ["salute", "Salute’s bread and pasta"], ["stomach", "Jerome’s stomach contents"]],
+  a: ["tonys", "austins", "salute", "stomach"] };
+(function renderSata() {
+  S.sata = S.sata || [];
+  const f = el("fieldset");
+  f.innerHTML = `<legend>${SATA.q}</legend>` + SATA.o.map(([k, n]) =>
+    `<label><input type="checkbox" value="${k}" ${S.sata.includes(k) ? "checked" : ""}> <span>${n}</span></label>`).join("") +
+    `<button class="btn" type="button" style="margin-top:8px">Check my answer</button><div class="fb" aria-live="polite"></div>`;
+  $("#sata").appendChild(f);
+  const fb = f.querySelector(".fb");
+  f.querySelectorAll("input").forEach(inp => inp.onchange = () => {
+    S.sata = [...f.querySelectorAll("input:checked")].map(x => x.value); save(); fb.className = "fb"; fb.textContent = "";
+  });
+  f.querySelector("button").onclick = () => {
+    const ok = SATA.a.length === S.sata.length && SATA.a.every(x => S.sata.includes(x));
+    fb.className = "fb " + (ok ? "ok" : "no");
+    fb.textContent = ok ? "Correct. Every sample had DNA, which contains nitrogen. That’s why nitrogen alone can’t prove a molecule is a protein."
+      : !S.sata.includes("salute") ? "Not quite. Look at Salute’s molecule S3. Which elements are dark?"
+      : "Not quite. Check every report for a dark N box, not just the protein molecules.";
+  };
+})();
+
 /* ---------- word bank ---------- */
 function renderBank() {
   const text = ["claim", "evid", "reason"].map(k => S.v[k] || "").join(" ").toLowerCase();
@@ -678,15 +948,20 @@ function renderReview() {
   SAMPLES.forEach(s => L.push(`  ${s.short}: ` + TESTS.map(t => { const st = (S.ev[s.id] || {})[t.k] || {}; return `${t.name} ${st.pm === "+" ? "+" : st.pm === "-" ? "−" : "?"}${st.obs ? " (" + st.obs + ")" : ""}`; }).join(", ")));
   if (S.mode === "keystone") {
     L.push("", "Molecular report");
-    SAMPLES.forEach(s => L.push(`  ${s.short}: ` + s.mols.map((m, i) => `${s.short[0]}${i + 1} = ${({ carb: "carbohydrate", lipid: "lipid", protein: "protein", nucleic: "nucleic acid" })[(S.mol[s.id] || {})[i]] || "?"}`).join(", ")));
+    SAMPLES.forEach(s => L.push(`  ${s.short}: ` + s.mols.map((m, i) => `${s.id === "stomach" ? "J" : s.short[0]}${i + 1} = ${({ carb: "carbohydrate", lipid: "lipid", protein: "protein", nucleic: "nucleic acid" })[(S.mol[s.id] || {})[i]] || "?"}`).join(", ")));
   }
   L.push("", "My call: " + (S.accuse ? SAMPLES.find(s => s.id === S.accuse).name : "(not chosen)"));
   L.push("Revise: " + v("revise"), "");
   L.push("PRESS MEMO", "Claim: " + v("claim"), "Evidence: " + v("evid"), "Reasoning: " + v("reason"));
   const mcLine = (items, p) => items.map((m, i) => `${i + 1}-${S.mc[p + i] !== undefined ? "ABCD"[S.mc[p + i]] : "?"}`).join("  ");
   L.push("", "Keystone check: " + mcLine(MC1, "a"));
+  L.push("Final check: " + mcLine(MC1, "p"));
+  const g = growthText(); if (g) L.push(g);
   if (S.mode === "keystone") {
     L.push("Keystone challenge questions: " + mcLine(MC2, "k"));
+    const bn = { carb: "carbohydrate", lipid: "lipid", protein: "protein", nucleic: "nucleic acid" };
+    L.push("Molecule sort: " + SORT_ITEMS.map(([id]) => `${id} = ${bn[(S.sort || {})[id]] || "?"}`).join(", "));
+    L.push("Samples with nitrogen: " + ((S.sata || []).map(k => SAMPLES.find(s => s.id === k).short).join(", ") || "(none chosen)"));
     L.push("Part A: " + v("cra"), "Part B: " + v("crb"), "Part C: " + v("crc"));
   }
   $("#review").textContent = L.join("\n");
@@ -694,6 +969,91 @@ function renderReview() {
 $("#print").onclick = () => { try { window.print(); } catch (e) {} };
 $("#select-all").onclick = () => { const r = document.createRange(); r.selectNodeContents($("#review")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); };
 $("#reset").onclick = () => { if (!confirm("Erase all your answers and start over?")) return; try { localStorage.removeItem(KEY); } catch (e) {} location.reload(); };
+
+/* ---------- pre/post growth ---------- */
+function firstScore(p) {
+  const f = S.first || {}; let n = 0, done = 0;
+  MC1.forEach((m, i) => { if (f[p + i] !== undefined) { done++; if (f[p + i] === m.a) n++; } });
+  return done === MC1.length ? n : null;
+}
+function growthText() {
+  const a = firstScore("a"), b = firstScore("p");
+  if (a === null || b === null) return "";
+  return `First try: ${a} of 3. Final check: ${b} of 3.`;
+}
+function showGrowth() {
+  const g = $("#growth"); if (!g) return;
+  const t = growthText();
+  g.textContent = t || "Answer all 3 to compare with your first try.";
+  g.className = "fb " + (t ? "ok" : "");
+  if ($("#s-review") && !$("#s-review").hidden) renderReview();
+}
+renderMC($("#mc3"), MC1, "p");
+showGrowth();
+
+/* ---------- standards view ---------- */
+const STD = {
+  case: { items: [
+      "<b>STEELS 3.1.9-12.F</b> (Keystone Biology): Construct and revise an explanation based on evidence for how carbon, hydrogen, and oxygen from sugar molecules may combine with other elements to form amino acids and/or other large carbon-based molecules.",
+      "<b>Learning targets:</b> I can explain how macromolecules are built from monomers. I can use indicator and molecular evidence to support a claim.",
+      "<b>Keystone format:</b> the whole lab is one scenario with several linked questions, like the scenario-based sets on the STEELS-aligned exam."],
+    tags: ["Practice: Constructing explanations", "Crosscutting: Energy and matter"] },
+  science: { items: [
+      "<b>3.1.9-12.F:</b> the atoms card shows the C, H and O from sugars combining with N, S and P.",
+      "<b>3.1.6-8.G:</b> the bead model shows food being rearranged by chemical reactions (hydrolysis in digestion).",
+      "<b>Legacy BIO.A.2.2.2 and BIO.A.2.2.3:</b> monomers form polymers; Table 1 compares structure and function of all four macromolecules."],
+    tags: ["Practice: Developing and using models", "Crosscutting: Structure and function"] },
+  tests: { items: ["<b>3.2.6-8.D:</b> a color change is evidence that a chemical reaction occurred."],
+    tags: ["Practice: Analyzing and interpreting data", "Crosscutting: Cause and effect"] },
+  check: { items: [
+      "<b>Pre-assessment.</b> Each student’s first answers are saved and compared with the same questions on the last step to show growth.",
+      "Original items written in Keystone multiple-choice style (not released items)."],
+    tags: ["BIO.A.2.2.2", "3.1.9-12.F"] },
+  evidence: { items: [
+      "<b>3.2.6-8.D:</b> reading indicator results.",
+      "<b>Virtual lab bench:</b> students choose a reagent for each test, heat Benedict’s and dry the paper before the real photos unlock. The “Skip to photos” button appears only in Standards view.",
+      "<b>3.1.9-12.F</b> (Keystone challenge): identifying molecules from their elements and structure. Example: N and S with no P points to a protein."],
+    tags: ["Practice: Analyzing and interpreting data", "Crosscutting: Structure and function"] },
+  match: { items: [
+      "<b>3.1.9-12.F:</b> the Revise box is the “revise an explanation” part of the standard.",
+      "Comparing patterns across samples mirrors Keystone data-table items."],
+    tags: ["Practice: Engaging in argument from evidence", "Crosscutting: Patterns"] },
+  report: { items: [
+      "<b>Technology-enhanced items</b> (Keystone challenge): drag-and-drop sorting and select all that apply, two formats used on the STEELS-aligned exam.",
+      "<b>Constructed response</b> is scored 0–3, like Keystone constructed-response items. Sample answers are in the Keystone Challenge Teacher Key."],
+    rubric: true,
+    tags: ["Practice: Constructing explanations", "Practice: Engaging in argument from evidence"] },
+  review: { items: [
+      "<b>Post-assessment:</b> the final check repeats the opening questions so you can see each student’s growth.",
+      "<b>Compare with the source:</b> PDE’s Keystone Biology Item and Scoring Sampler (August 2025) is the STEELS-aligned model for these item styles.",
+      "<b>Test design:</b> the exam measures the high school life science STEELS standards in two modules. This lab fits Module 1, Molecules to Organisms. About 80% of points come from multiple-choice and technology-enhanced items and 20% from constructed response."],
+    tags: [] }
+};
+const RUBRIC = `<table><thead><tr><th>Score</th><th>What it looks like</th></tr></thead><tbody>
+  <tr><td><b>3</b></td><td>Complete and correct. Uses specific evidence from the lab.</td></tr>
+  <tr><td><b>2</b></td><td>Mostly correct. Evidence is general, or one part is missing.</td></tr>
+  <tr><td><b>1</b></td><td>Partly correct. Little or no evidence.</td></tr>
+  <tr><td><b>0</b></td><td>Incorrect or blank.</td></tr></tbody></table>
+  <table><thead><tr><th>Item</th><th>A full-credit answer…</th></tr></thead><tbody>
+  <tr><td><b>Press memo</b></td><td>Makes the correct claim, gives all 4 test results for the stomach and the chosen dish, and rules out both other restaurants.</td></tr>
+  <tr><td><b>Part A</b></td><td>Names the correct element and explains why it rules out carbohydrates and lipids.</td></tr>
+  <tr><td><b>Part B</b></td><td>Explains that another macromolecule also contains this element, citing a molecule from the reports.</td></tr>
+  <tr><td><b>Part C</b></td><td>Names the carbohydrate and explains the iodine result using its structure.</td></tr></tbody></table>`;
+Object.entries(STD).forEach(([step, d]) => {
+  const sec = document.querySelector(`section[data-step="${step}"]`); if (!sec) return;
+  const box = el("div", { class: "std" });
+  box.innerHTML = `<h3>Standards and Keystone alignment</h3><ul>${d.items.map(x => `<li>${x}</li>`).join("")}</ul>` +
+    (d.rubric ? `<div class="tw">${RUBRIC}</div>` : "") +
+    (d.tags.length ? `<div class="tags">${d.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div>` : "");
+  sec.insertBefore(box, sec.firstChild);
+});
+function setStd(on) {
+  S.std = on; save();
+  document.body.classList.toggle("standards", on);
+  $("#std-toggle").setAttribute("aria-pressed", String(on));
+}
+$("#std-toggle").onclick = () => setStd(!S.std);
+setStd(Boolean(S.std));
 
 /* ---------- start ---------- */
 renderTabs(); renderSample();
