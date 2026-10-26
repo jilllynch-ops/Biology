@@ -197,7 +197,8 @@ function totalScore() { return Object.keys(S.levels).reduce(function (n, k) { re
 /* Testing: add #teacher (or #level-1-4 to jump straight to a level) to the end of the game's address. */
 const TEACH = /teacher|level-/i.test(location.hash || '');
 function played(id) { return TEACH || S.set.unlock || !!(S.levels[id] && S.levels[id].stars); }
-function unlocked(i, list) { return i === 0 || S.set.unlock || TEACH || !!(S.levels[list[i - 1].lv.id] && S.levels[list[i - 1].lv.id].stars); }
+/* the first level of EVERY world is always open, so students can start any world in any order; inside a world, levels open one after another */
+function unlocked(i, list) { return i === 0 || (list[i - 1] && list[i - 1].w !== list[i].w) || S.set.unlock || TEACH || !!(S.levels[list[i - 1].lv.id] && S.levels[list[i - 1].lv.id].stars); }
 
 /* ---------- sound with captions ---------- */
 let AC = null, capTimer = 0;
@@ -295,7 +296,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 46 · October 24, 2026';
+const VERSION = 'Version 57 · October 24, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -363,6 +364,49 @@ function emat(color, em) {
   const k = 'e' + color + em;
   if (!mats[k]) mats[k] = new T.MeshLambertMaterial({ color: color, emissive: em });
   return mats[k];
+}
+
+/* ---------- HYDROTHERMAL VENT scenery (1-2) ----------
+   Crusty mineral chimneys (dark basalt with orange iron and blue-green copper minerals), billowing dark plumes,
+   white tube worms with red plumes, and pale vent crabs. The field glows deep blue, like a lit vent photo. */
+const VENT_DARK = ['#2a2630', '#352e34', '#232030'], VENT_MIN = ['#c8641e', '#e8a040', '#3aa0a8', '#4a6ad0', '#d07a2a'];
+function ventMat(col, k) { const c = new T.Color(col); return emat(col, '#' + c.multiplyScalar(k).getHexString()); }
+/* a craggy column of rock chunks, wide at the bottom and narrow at the top */
+function crag(g, x, y0, h, w, z, lean, low, dim, mp) {
+  mp = mp == null ? 1 : mp;
+  const n = Math.max(3, Math.round(h / (low ? 0.8 : 0.5)));
+  for (let i = 0; i < n; i++) { const t = i / n, wd = w * (1 - 0.55 * t) * rnd(0.85, 1.15);
+    const col = dim ? (i % 2 ? '#22325a' : '#2a3a64') : (Math.random() < (0.18 + t * 0.35) * mp ? VENT_MIN[(Math.random() * VENT_MIN.length) | 0] : VENT_DARK[i % 3]);
+    const m = new T.Mesh(G.ico, dim ? emat(col, '#0a1226') : ventMat(col, VENT_DARK.indexOf(col) >= 0 ? 0.3 : 0.5));
+    m.scale.set(wd * 0.62, h / n * rnd(0.75, 1.0), wd * 0.55); m.position.set(x + lean * t * h + rnd(-0.1, 0.1) * w, y0 + (i + 0.5) * h / n, z + rnd(-0.08, 0.08)); m.rotation.set(rnd(0, 3), rnd(0, 3), rnd(-0.3, 0.3)); g.add(m);
+    if (!dim && !low && Math.random() < 0.5 * mp) { const p = new T.Mesh(G.ico, ventMat(VENT_MIN[(Math.random() * VENT_MIN.length) | 0], 0.6)); p.scale.setScalar(wd * rnd(0.12, 0.22)); p.position.set(m.position.x + rnd(-0.3, 0.3) * wd, m.position.y, z + wd * 0.42); g.add(p); } }
+  return { x: x + lean * h, y: y0 + h };
+}
+function ventWorms(g, x, y, z, n, spread) {
+  for (let i = 0; i < n; i++) { const tx = x + rnd(-spread, spread), tz = z + rnd(-0.3, 0.3), th = rnd(0.4, 1.3);
+    const tube = new T.Mesh(G.cyl, emat('#f4f0e8', '#5a5852')); tube.scale.set(0.07, th / 2, 0.07); tube.position.set(tx, y + th / 2, tz); g.add(tube);
+    const pl = new T.Mesh(G.sph, emat('#ff3448', '#8a0c18')); pl.scale.set(0.12, 0.18, 0.12); pl.position.set(tx, y + th + 0.1, tz); g.add(pl); }
+}
+function ventCrab(g, x, y, z, s) {
+  const c = new T.Group(), M = emat('#f2efe8', '#6a6862'), bd = new T.Mesh(G.sph, M); bd.scale.set(0.28, 0.12, 0.22); bd.position.y = 0.16; c.add(bd);
+  for (let i = 0; i < 6; i++) { const lg = new T.Mesh(G.box, M), sd = i < 3 ? -1 : 1; lg.scale.set(0.34, 0.035, 0.035); lg.position.set(sd * 0.3, 0.1, -0.14 + (i % 3) * 0.14); lg.rotation.z = sd * -0.55; c.add(lg); }
+  [-0.14, 0.14].forEach(function (cz) { const cl = new T.Mesh(G.sph, M); cl.scale.set(0.09, 0.06, 0.07); cl.position.set(0.12, 0.14, cz + (cz > 0 ? 0.12 : -0.12)); c.add(cl); });
+  c.scale.setScalar(s || 1); c.position.set(x, y, z); c.rotation.y = rnd(-0.6, 0.6); g.add(c); if (L.ventCrabs) L.ventCrabs.push({ m: c, ox: x, ph: rnd(0, 6) }); return c;
+}
+/* runs once, after the level is built: crust along the sea-floor edges, mesas behind, dark rocks in front */
+function ventDecor() {
+  const V = L.vent; V.done = true; const lo = S.set.low, g = new T.Group(); L.group.add(g);
+  L.solids.forEach(function (s) { if (s.x1 < V.x0 || s.x0 > V.x1 || s.off || s.boulder || s.y1 > V.y + 0.4 || s.y1 < V.y - 6 || s.x1 - s.x0 < 2.5) return;
+    for (let x = s.x0 + 0.6; x < s.x1 - 0.4; x += lo ? 2.4 : 1.3) { const col = Math.random() < 0.35 ? VENT_MIN[(Math.random() * VENT_MIN.length) | 0] : VENT_DARK[(Math.random() * 3) | 0];
+      const m = new T.Mesh(G.ico, ventMat(col, 0.35)); m.scale.set(rnd(0.4, 0.75), rnd(0.25, 0.4), 0.45); m.position.set(x + rnd(-0.3, 0.3), s.y1 - 0.22, rnd(0.9, 1.6)); m.rotation.set(rnd(0, 3), rnd(0, 3), 0); g.add(m);
+      if (!lo && Math.random() < 0.18) ventWorms(g, x, s.y1, -0.9, 3, 0.4); if (!lo && Math.random() < 0.07) ventCrab(g, x, s.y1, -0.5, 0.9); } });
+  /* mesas behind the path: crusty rock towers with flat, worm-covered tops */
+  for (let i = 0, n = lo ? 3 : 7; i < n; i++) { const x = V.x0 + 6 + (i + rnd(0.1, 0.8)) * (V.x1 - V.x0 - 8) / n, z = rnd(-8.5, -6.5), h = rnd(1.2, 3.6), w = rnd(2.2, 3.4);
+    crag(g, x, V.y - 2, h + 2, w, z, rnd(-0.03, 0.03), lo, false, 0.45); const top = new T.Mesh(G.cyl, ventMat(VENT_DARK[i % 3], 0.3)); top.scale.set(w * 0.42, 0.25, w * 0.35); top.position.set(x, V.y + h - 0.05, z); g.add(top);
+    if (!lo) { ventWorms(g, x, V.y + h + 0.15, z, 5, w * 0.35); ventCrab(g, x + rnd(-0.6, 0.6), V.y + h + 0.15, z + 0.4, 1.1); } }
+  /* dark rocks in the foreground, below the walkway */
+  for (let x = V.x0; x < V.x1; x += lo ? 7 : 4) { const m = new T.Mesh(G.ico, emat('#0c1020', '#03050a')); m.scale.set(rnd(1.6, 2.8), rnd(1.0, 1.6), 1.2); m.position.set(x + rnd(-1, 1), V.y - 2.2, rnd(3.6, 4.4)); m.rotation.set(rnd(0, 3), rnd(0, 3), 0); g.add(m);
+    if (!lo && Math.random() < 0.3) ventWorms(g, m.position.x, m.position.y + m.scale.y * 0.7, m.position.z, 3, 0.6); }
 }
 function gate(x0, x1, y0, y1) {
   const g = new T.Group(), m = new T.Mesh(G.box, basic(L.th.rim, 0.13, true)); m.scale.set(x1 - x0, y1 - y0, 5); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0); g.add(m);
@@ -818,7 +862,7 @@ function disposeGroup(g) {
   g.traverse(function (o) { if (o.geometry && shared.indexOf(o.geometry) < 0) o.geometry.dispose(); });
 }
 function teardown() {
-  caveLight(false);
+  caveLight(false); ['hudBag', 'hudHeat'].forEach(function (id) { const e = $(id); if (e) e.hidden = true; });
   if (L) { scene.remove(L.group); disposeGroup(L.group); }
   if (menuGrp) { scene.remove(menuGrp); disposeGroup(menuGrp); menuGrp = null; }
   SKY = null; MOTES = null;
@@ -955,18 +999,37 @@ function builder() {
     /* HYDROTHERMAL VENT ("black smoker"): a chimney of minerals with a plume of hot, dark water rising from it.
        The plume carries the alien up (like an elevator); tube worms crowd around the base. */
     smoker: function (dx, h, rise) {
-      const x = b.x + dx, y = b.y, g = new T.Group(); h = h || 3.2;
-      for (let i = 0; i < 4; i++) { const c = new T.Mesh(G.cyl, emat(['#2a2420', '#3a2e24', '#4a3a2a', '#2a2420'][i], '#0a0604')); const w = 0.9 - i * 0.16; c.scale.set(w, h / 8, w); c.position.y = h / 8 + i * h / 4; g.add(c); }
-      const mouth = new T.Mesh(G.sph, basic('#ff9a4a', 0.8, true)); mouth.scale.set(0.3, 0.1, 0.3); mouth.position.y = h; g.add(mouth); const mg = glow('#ff8a3a', 2.4, 0.5); mg.position.y = h; g.add(mg);
-      for (let i = 0; i < 9; i++) { const tx = rnd(-2.4, 2.4); if (Math.abs(tx) < 1) continue; const th = rnd(0.6, 1.5);
-        const tube = new T.Mesh(G.cyl, emat('#f4f0e8', '#3a3a3a')); tube.scale.set(0.07, th / 2, 0.07); tube.position.set(tx, th / 2, rnd(-0.6, 0.6)); g.add(tube);
-        const plume = new T.Mesh(G.sph, emat('#e8283a', '#5a0a10')); plume.scale.set(0.13, 0.2, 0.13); plume.position.set(tx, th + 0.12, tube.position.z); g.add(plume); }
+      const x = b.x + dx, y = b.y, g = new T.Group(), lo = S.set.low; h = h || 3.2;
+      for (let i = 0; i < (lo ? 3 : 6); i++) { const m = new T.Mesh(G.ico, ventMat(i % 3 ? VENT_DARK[i % 3] : '#c8641e', 0.35)); m.scale.set(rnd(0.5, 0.9), rnd(0.3, 0.5), rnd(0.5, 0.8)); m.position.set(rnd(-1.1, 1.1), 0.15, rnd(-0.8, 0.4)); m.rotation.set(rnd(0, 3), rnd(0, 3), 0); g.add(m); }
+      crag(g, 0, 0, h, 1.05, 0, 0, lo);
+      crag(g, -0.62, 0.1, h * 0.55, 0.5, -0.35, -0.06, lo); crag(g, 0.68, 0.1, h * 0.42, 0.45, -0.3, 0.08, lo);
+      for (let k = 0; k < (lo ? 2 : 5); k++) { const sm = new T.Mesh(G.box, basic('#ffb04a', 0.9)); sm.scale.set(rnd(0.05, 0.1), rnd(0.25, 0.5), 0.05); sm.position.set(rnd(-0.3, 0.3), h * rnd(0.6, 0.95), 0.42); sm.rotation.z = rnd(-0.5, 0.5); g.add(sm); }
+      const mouth = new T.Mesh(G.sph, basic('#ff9a4a', 0.85, true)); mouth.scale.set(0.32, 0.12, 0.32); mouth.position.y = h; g.add(mouth); const mg = glow('#ff8a3a', 3.4, 0.6); mg.position.y = h; g.add(mg);
+      if (!lo) { const pl = new T.PointLight(0xff8a3a, 1.4, 9, 2); pl.position.set(0, h + 0.4, 1.2); g.add(pl); }
+      ventWorms(g, -1.9, 0, 0, lo ? 3 : 7, 0.6); ventWorms(g, 1.9, 0, 0, lo ? 3 : 7, 0.6); if (!lo) { ventCrab(g, -1.2, 0, 0.6, 1); ventCrab(g, 1.4, 0, 0.5, 0.85); }
       g.position.set(x, y, -0.4); L.group.add(g); addSolid(x - 0.45, x + 0.45, y, y + h * 0.75);
-      const puffs = []; if (!S.set.low) for (let i = 0; i < 14; i++) { const p = new T.Mesh(G.sph, new T.MeshBasicMaterial({ color: '#6a5a50', transparent: true, opacity: 0.55, depthWrite: false })); p.scale.setScalar(0.4); p.position.set(x, y + h + rnd(0, rise || 9), -0.2); L.group.add(p); puffs.push(p); }
-      L.smokers.push({ x: x, y0: y + h, y1: y + h + (rise || 9), puffs: puffs });
-      L.currents.push({ x0: x - 1.3, x1: x + 1.3, y0: y + h * 0.75, y1: y + h + (rise || 9), vx: 0, vy: 7.5, streaks: [] });
+      const puffs = [], top = rise || 9; for (let i = 0; i < (lo ? 7 : 18); i++) { const p = new T.Mesh(G.sph, new T.MeshLambertMaterial({ color: '#3a3450', emissive: '#0c0a14', transparent: true, opacity: 0.8, depthWrite: false })); p.scale.setScalar(0.4); p.position.set(x, y + h + top * i / (lo ? 7 : 18), -0.2 - (i % 3) * 0.25); L.group.add(p); puffs.push(p); }
+      const bub = []; if (!lo) for (let i = 0; i < 10; i++) { const m = new T.Mesh(G.sph, basic('#cfe8ff', 0.55, true)); m.scale.setScalar(rnd(0.04, 0.09)); m.position.set(x + rnd(-1.6, 1.6), y + rnd(0, 6), 0.4); L.group.add(m); bub.push(m); }
+      L.smokers.push({ x: x, y0: y + h, y1: y + h + top, puffs: puffs, bub: bub, by: y });
+      L.currents.push({ x0: x - 1.3, x1: x + 1.3, y0: y + h * 0.75, y1: y + h + top, vx: 0, vy: 7.5, streaks: [] });
       if (!L.toldVent) { L.toldVent = 1; const sg = label('♨️ Ride the vent plume up!', 3.6, { bd: '#ff9a4a' }); sg.position.set(x, y + h + 2, 0.6); L.group.add(sg); }
       return b;
+    },
+    /* the vent field: deep-blue glow, far-off chimneys fading into the haze, and (after the build) crusty rocks and mesas */
+    ventField: function (len) {
+      len = len || 60; const x0 = b.x, y = b.y, lo = S.set.low, g = new T.Group(); L.vent = { x0: x0 - 4, x1: x0 + len, y: y }; L.ventCrabs = [];
+      L.ventHemi = new T.HemisphereLight(0x6a9cff, 0x2a1408, 0); L.group.add(L.ventHemi);
+      for (let i = 0, n = lo ? 4 : 9; i < n; i++) { const dx = (i + rnd(0, 0.7)) * len / n, z = rnd(-24, -12), hh = rnd(7, 15), cx = x0 + dx;
+        crag(g, cx, y - 3, hh, rnd(1.6, 2.6), z, rnd(-0.04, 0.04), true, true);
+        const e = glow('#ff7a2a', 2.6, 0.5, false); e.position.set(cx, y - 3 + hh, z + 0.6); g.add(e);
+        if (!lo) for (let k = 0; k < 4; k++) { const p = new T.Mesh(G.sph, basic('#1e2240', 0.55)); p.scale.setScalar(1.2 + k * 0.9); p.position.set(cx + k * 0.4, y - 2 + hh + k * 2.2, z - 0.5); g.add(p); } }
+      /* two giant chimneys just behind the path, smoking like the real "black smokers" */
+      [0.3, 0.78].forEach(function (f, q) { const cx = x0 + len * f, z = -5.2, hh = q ? 8.5 : 10.5, tg = new T.Group();
+        crag(tg, 0, 0, hh, 2.4, 0, 0, lo); crag(tg, -1.3, 0, hh * 0.5, 1.1, -0.4, -0.05, lo); crag(tg, 1.4, 0, hh * 0.65, 1.0, -0.4, 0.06, lo);
+        const mg = glow('#ff8a3a', 4, 0.6); mg.position.y = hh; tg.add(mg); tg.position.set(cx, y - 1, z); g.add(tg);
+        const puffs = []; for (let i = 0; i < (lo ? 5 : 14); i++) { const p = new T.Mesh(G.sph, new T.MeshLambertMaterial({ color: '#3a3450', emissive: '#0c0a14', transparent: true, opacity: 0.8, depthWrite: false })); p.scale.setScalar(0.6); p.position.set(cx, y - 1 + hh + 12 * i / (lo ? 5 : 14), z - 0.4); L.group.add(p); puffs.push(p); }
+        L.smokers.push({ x: cx, y0: y - 1 + hh, y1: y - 1 + hh + 12, puffs: puffs, big: 1.6 }); });
+      L.group.add(g); return b;
     },
     /* an air vent on the sea floor: a column of bubbles that refills your air */
     bubbles: function (dx) {
@@ -984,6 +1047,39 @@ function builder() {
       L.slab = { x0: x0 + w, yTop: yTop, rock: o.rock || '#5a4a3a' }; /* the hard-rock ceiling over the next room; closed when the room ends */
       const sg = label('⛏️ Soft rock: hold ↓ to drill down', 4.4, { bd: '#ffd166' }); sg.position.set(x0 + w / 2, yTop + 2.6, 0.5); L.group.add(sg);
       L.digHint = L.digHint || x0; b.x = x0 + w; b.y = yBot; return b;
+    },
+    /* DIG FIELD: a wide block of soft rock to tunnel through freely with the hand drill (like a mining game).
+       o = { w, depth, color, fossils: [[col, row, scanId]], ores: [[col, row, kind]], boulders: [[col, row, loose]], rare: [col, row, {name, fact}] }
+       Row 0 is the top. Hard boulders cannot be drilled; loose ones fall if you dig out what holds them up. */
+    digField: function (o) {
+      o = o || {}; const w = o.w || 15, depth = o.depth || 10.5; closeSlab(b.x + w);
+      const x0 = b.x, yTop = b.y, yBot = b.y - depth, cols = Math.round(w / 1.5), rows = Math.round(depth / 1.5), tw = w / cols, th = depth / rows, cell = {};
+      const isB = {}; (o.boulders || []).forEach(function (q) { isB[q[0] + ',' + q[1]] = q[2] ? 'loose' : 'hard'; });
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) { const xa = x0 + c * tw, xb = xa + tw, ya = yTop - (r + 1) * th, yb = yTop - r * th, kb = isB[c + ',' + r];
+        if (kb) { const s0 = addSolid(xa + 0.02, xb - 0.02, ya, yb), m = new T.Group(), rock = new T.Mesh(G.ico, emat(kb === 'loose' ? '#6a6058' : '#4a4440', '#0e0c0a')); rock.scale.set(tw * 0.62, th * 0.6, 1.4); m.add(rock); m.position.set((xa + xb) / 2, (ya + yb) / 2, 0); L.group.add(m);
+          s0.boulder = true; s0.m = m; if (kb === 'loose') L.boulders.push({ s: s0, m: m, vy: 0, w: tw, h: th }); continue; }
+        cell[c + ',' + r] = digTile(xa, xb, ya, yb, o.color); }
+      addGround(x0, x0 + w, yBot);
+      /* fossils: a fact card buried in the rock, uncovered when both rock pieces in front of it are drilled out */
+      (o.fossils || []).forEach(function (f) { const c = f[0], r = f[1], tiles = [cell[c + ',' + r], cell[(c + 1) + ',' + r]].filter(Boolean); b.scan(c * tw + tw, f[2], -(r + 1) * th); const k = L.scans[L.scans.length - 1]; if (!k || k.sc.id !== f[2]) return;
+        k.buried = tiles; k.tag = { visible: false }; k.g.visible = k.ring.visible = k.nm.visible = false;
+        const bone = new T.Mesh(G.box, basic('#f4ecd8', 0.9)); bone.scale.set(0.9, 0.18, 0.05); bone.rotation.z = 0.5; bone.position.set(k.x, k.y + th * 0.5, 3.64); L.group.add(bone); if (tiles[0]) tiles[0].digM.push(bone); });
+      /* minerals: sparkling samples hidden inside some rock pieces; drill them out and they go into your sample bag */
+      (o.ores || []).forEach(function (q) { const t = cell[q[0] + ',' + q[1]]; if (!t) return; const kind = ORES[q[2]] || ORES.quartz, g = new T.Group(), gem = new T.Mesh(G.oct, emat(kind.col, kind.em)); gem.scale.setScalar(0.32); g.add(gem); g.add(glow(kind.col, 1.8, 0.7));
+        g.position.set((t.x0 + t.x1) / 2, (t.y0 + t.y1) / 2, 0.6); g.visible = false; L.group.add(g); const fleck = new T.Mesh(G.box, basic(kind.col, 0.9)); fleck.scale.set(0.16, 0.16, 0.05); fleck.position.set((t.x0 + t.x1) / 2 + 0.25, (t.y0 + t.y1) / 2 + 0.2, 3.65); L.group.add(fleck); t.digM.push(fleck);
+        t.ore = { kind: q[2], g: g, x: g.position.x, y: g.position.y, got: false }; L.ores.push(t.ore); });
+      if (o.rare) { const t = cell[o.rare[0] + ',' + o.rare[1]]; if (t) b.rare((t.x0 + t.x1) / 2 - b.x, (t.y0 + t.y1) / 2 - b.y - 0.2, o.rare[2]); }
+      L.slab = { x0: x0 + w, yTop: yTop, rock: o.rock || '#5a4a3a' };
+      if (!L.fieldTold) { L.fieldTold = 1; const sg = label('⛏️ Dig anywhere through the soft rock: hold ↓ to drill down, push ← → to drill across', 6.2, { bd: '#ffd166' }); sg.position.set(x0 + w / 2, yTop + 2.8, 0.5); L.group.add(sg); }
+      if (L.darkX == null) { L.darkX = x0 + 0.5; L.darkTop = yTop - 0.2; } /* underground it is dark */
+      L.digHint = L.digHint == null ? x0 : L.digHint; b.x = x0 + w; b.y = yBot; return b;
+    },
+    /* SAMPLE CAPSULE: a tube that sends your sample bag up to the lab on the surface */
+    capsule: function (dx) {
+      const x = b.x + dx, y = b.y, g = new T.Group(), tube = new T.Mesh(G.cyl, new T.MeshLambertMaterial({ color: '#bfe9ff', emissive: '#1a3a4a', transparent: true, opacity: 0.45, depthWrite: false })); tube.scale.set(0.55, 4, 0.55); tube.position.y = 2; g.add(tube);
+      const base = new T.Mesh(G.cyl, emat('#c8c8c0', '#202020')); base.scale.set(0.8, 0.3, 0.8); base.position.y = 0.15; g.add(base); g.add(glow('#7fd4ff', 2.6, 0.5));
+      g.position.set(x, y, -0.6); L.group.add(g); const lb = label('🧪 Sample capsule', 3, { bd: '#7fd4ff' }); lb.position.set(x, y + 4.4, 0.5); L.group.add(lb);
+      L.capsules.push({ x: x, y: y, g: g }); return b;
     },
     /* the tunnel comes out into daylight (the canyon floor) */
     caveEnd: function () { closeSlab(b.x + 1); L.darkEnd = b.x + 1; const sg = label('☀️ Daylight! The canyon floor', 4.4, { bd: '#ffd166' }); sg.position.set(b.x + 4, b.y + 4.6, 0.5); L.group.add(sg); return b; },
@@ -1157,8 +1253,10 @@ function builder() {
     },
     /* RARE SPECIMEN: one hidden bonus per level, usually somewhere only a double jump can reach. */
     rare: function (dx, dy, o) {
-      const g = new T.Group(), core = new T.Mesh(G.ico, emat('#ffd700', '#8a6a00')); core.scale.setScalar(0.45); g.add(core); g.add(glow('#ffd700', 4, 0.8));
-      if (o && o.name) { const lb = label('✦ ' + o.name, 3.2, { bd: '#ffd700' }); lb.position.y = 1.2; g.add(lb); }
+      const g = new T.Group(), model = o && o.look && RARE_LOOKS[o.look] ? RARE_LOOKS[o.look]() : null;
+      if (model) { g.add(model); g.add(glow('#ffd700', 3, 0.45)); const ring = new T.Mesh(G.tor, basic('#ffd700', 0.7, true)); ring.scale.set(0.9, 0.9, 0.25); ring.rotation.x = Math.PI / 2; ring.position.y = -0.45; g.add(ring); }
+      else { const core = new T.Mesh(G.ico, emat('#ffd700', '#8a6a00')); core.scale.setScalar(0.45); g.add(core); g.add(glow('#ffd700', 4, 0.8)); }
+      if (o && o.name) { const lb = label('✦ ' + o.name, 3.2, { bd: '#ffd700' }); lb.position.y = model ? 2.1 : 1.2; g.add(lb); }
       g.position.set(b.x + dx, b.y + dy, 0); L.group.add(g); L.rare = { x: b.x + dx, y: b.y + dy, m: g, got: false, name: o && o.name, fact: o && o.fact }; return b;
     },
     /* a trail of sparks along a jump arc: shows the player where to jump */
@@ -1900,6 +1998,57 @@ function closeSlab(x1) {
   addSolid(sl.x0, x1, sl.yTop - 1.5, sl.yTop + 30); L.group.add(box(sl.x0, x1, sl.yTop - 1.5, sl.yTop + 16, 7.4, sl.rock));
   for (let x = sl.x0 + 1; x < x1 - 1; x += rnd(2.5, 5)) { const st = new T.Mesh(G.cone || G.oct, emat('#6a5a48', '#140e08')); st.scale.set(0.35, rnd(0.6, 1.4), 0.35); st.rotation.x = Math.PI; st.position.set(x, sl.yTop - 1.8, 2.6); L.group.add(st); }
 }
+/* rare specimens that look like the real animal (the gold ring and glow still mark them as rare) */
+const RARE_LOOKS = {
+  /* Yeti crab (Kiwa): a pale, nearly blind deep-sea crab whose long front arms are covered in silky hairs where it farms bacteria */
+  yeticrab: function () {
+    const g = new T.Group(), shell = emat('#f6f0e4', '#b8b0a0'), hairM = emat('#f6e8b8', '#b8a468');
+    const body = new T.Mesh(G.sph, shell); body.scale.set(0.42, 0.24, 0.34); body.position.y = 0.05; g.add(body);
+    const tail = new T.Mesh(G.sph, shell); tail.scale.set(0.2, 0.12, 0.22); tail.position.set(-0.4, -0.02, 0); g.add(tail);
+    for (let i = 0; i < 6; i++) { const sd = i < 3 ? 1 : -1, k = i % 3, leg = new T.Mesh(G.cyl, shell); leg.scale.set(0.035, 0.32, 0.035);
+      leg.position.set(-0.15 + k * 0.15, -0.12, sd * 0.36); leg.rotation.set(sd * 0.9, 0, 0.15 * (k - 1)); g.add(leg); }
+    [-1, 1].forEach(function (sd) { /* the hairy arms reach forward */
+      const arm = new T.Group(); arm.position.set(0.3, 0.05, sd * 0.2); arm.rotation.y = -sd * 0.35; g.add(arm);
+      const up = new T.Mesh(G.cyl, shell); up.scale.set(0.06, 0.4, 0.06); up.rotation.z = -Math.PI / 2; up.position.x = 0.4; arm.add(up);
+      const claw = new T.Mesh(G.sph, shell); claw.scale.set(0.16, 0.08, 0.08); claw.position.x = 0.85; arm.add(claw);
+      for (let h = 0; h < 36; h++) { const hr = new T.Mesh(G.cyl, hairM); const along = 0.08 + (h / 36) * 0.74, a = h * 2.4; hr.scale.set(0.018, 0.2 + (h % 3) * 0.06, 0.018);
+        hr.position.set(along, Math.sin(a) * 0.08, Math.cos(a) * 0.08); hr.rotation.set(Math.cos(a) * 0.9, 0, -Math.sin(a) * 0.9 - 0.3); arm.add(hr); } });
+    const lt = new T.PointLight(0xfff0d8, 1.4, 6, 1.2); lt.position.set(0.3, 1.2, 1.2); g.add(lt); /* lit up so you can see its hairy arms in the dark */
+    g.scale.setScalar(1.7); return g;
+  }
+};
+const ORES = {
+  quartz: { name: 'Quartz', col: '#e8f4ff', em: '#3a4a5a', fact: 'Quartz (silicon dioxide) is one of the most common minerals in sandstone. It is not alive: it has no cells and does not grow by itself.' },
+  calcite: { name: 'Calcite', col: '#fff0c8', em: '#5a4a20', fact: 'Limestone is mostly calcite. Much of it was made by sea animals that built shells and skeletons out of calcium carbonate.' },
+  hematite: { name: 'Hematite', col: '#c8483a', em: '#3a0a06', fact: 'Hematite is an iron oxide. Iron oxides stain many canyon rock layers red.' },
+  pyrite: { name: 'Pyrite', col: '#ffd84a', em: '#5a4a06', fact: 'Pyrite, or "fool\'s gold," is iron sulfide. It often forms where there was little oxygen, such as deep mud on an ancient sea floor.' },
+  gypsum: { name: 'Gypsum', col: '#f4f0ff', em: '#3a3a4a', fact: 'Gypsum crystals form when salty water evaporates, a clue that the area was once a drying sea or lake.' }
+};
+function digHud() { ['hudBag', 'hudHeat'].forEach(function (id) { if (!$(id)) { const el = document.createElement('span'); el.id = id; $('hud').insertBefore(el, $('hudLevel')); } });
+  const hb = $('hudBag'), hh = $('hudHeat'), heat = P.heat || 0, n = Math.round(heat * 8);
+  hb.hidden = false; hb.textContent = '🎒 ' + L.bag.length + '/' + BAG_MAX; hb.classList.toggle('full', L.bag.length >= BAG_MAX);
+  hh.hidden = false; hh.textContent = (P.overheat > 0 ? '♨️ Cooling ' : '🔥 Drill ') + '▮'.repeat(n) + '▯'.repeat(8 - n); hh.classList.toggle('hot', heat > 0.75 || P.overheat > 0); }
+const BAG_MAX = 3;
+/* falling boulders, mineral pickups and the sample capsules */
+function fieldStep(dt) {
+  L.boulders.forEach(function (bo) { const s0 = bo.s; if (bo.done) return;
+    const below = L.solids.some(function (q) { return q !== s0 && !q.off && q.x0 < s0.x1 - 0.1 && q.x1 > s0.x0 + 0.1 && Math.abs(q.y1 - s0.y0) < 0.06; });
+    if (below && !bo.vy) return;
+    if (!bo.vy) { bo.vy = -0.01; if (!L.toldBoulder) { L.toldBoulder = 1; toast('Look out! You dug out what was holding up that boulder.', 3); } }
+    bo.vy = Math.max(-18, bo.vy - 30 * dt); let dy = bo.vy * dt;
+    const land = L.solids.filter(function (q) { return q !== s0 && !q.off && q.x0 < s0.x1 - 0.1 && q.x1 > s0.x0 + 0.1 && q.y1 <= s0.y0 + 0.05 && q.y1 >= s0.y0 + dy - 0.05; }).reduce(function (m, q) { return Math.max(m, q.y1); }, -1e9);
+    if (land > -1e9) { dy = land - s0.y0; bo.vy = 0; L.shake = 0.25; beep(90, 0.2, 'sawtooth'); }
+    s0.y0 += dy; s0.y1 += dy; bo.m.position.y += dy;
+    if (bo.vy && P.inv <= 0 && P.x + HW > s0.x0 && P.x - HW < s0.x1 && P.y + PH > s0.y0 && P.y < s0.y0) { P.inv = 1.4; P.x = P.x < (s0.x0 + s0.x1) / 2 ? s0.x0 - HW - 0.05 : s0.x1 + HW + 0.05; P.vy = 3; toast('Bonk! A falling boulder. Dig carefully under loose rocks.', 3); hurt(true); } });
+  L.ores.forEach(function (o) { if (o.got || !o.g.visible) return; o.g.rotation.y += dt * 2;
+    if (Math.abs(P.x - o.x) < 0.9 && Math.abs(P.y + 0.6 - o.y) < 1.1) { if (L.bag.length >= BAG_MAX) { if (!o.full) { o.full = 1; toast('🎒 Your sample bag is full! Walk into a 🧪 sample capsule to send samples to the lab.', 4); } return; }
+      o.got = true; o.g.visible = false; L.bag.push(o.kind); popup(o.x, o.y, '+ ' + ORES[o.kind].name, '#bfe9ff'); beep(1180, 0.15, 'triangle', 'chime, mineral sample'); } });
+  L.capsules.forEach(function (c) { if (!L.toldCaps && Math.abs(P.x - c.x) < 5 && Math.abs(P.y - c.y) < 3) { L.toldCaps = 1; toast('🧪 A sample capsule! Walk into it to send the minerals in your bag up to the lab. Your bag holds 3 samples.', 5); }
+    if (!L.bag.length || Math.abs(P.x - c.x) > 1.2 || Math.abs(P.y - c.y) > 1.5) return;
+    const names = L.bag.map(function (k) { return ORES[k].name; }), gain = L.bag.length * 60; L.score += gain; popup(c.x, c.y + 3, 'Samples sent! +' + gain, '#7fd4ff'); burst(c.x, c.y + 2, '#7fd4ff'); beep(660, 0.3, 'sine', 'whoosh, samples sent');
+    toast('🧪 Lab report: ' + L.bag.map(function (k) { return ORES[k].name + ': ' + ORES[k].fact; }).join(' '), 7 + 3 * L.bag.length); L.bag = []; hud(); });
+  digHud();
+}
 function digTile(x0, x1, y0, y1, color) {
   const s = addSolid(x0, x1, y0, y1); s.dig = true; const col = color || '#b08a5a';
   const m = box(x0 + 0.03, x1 - 0.03, y0 + 0.03, y1 - 0.03, 7.2, col); L.group.add(m);
@@ -1907,7 +2056,7 @@ function digTile(x0, x1, y0, y1, color) {
   s.digM = [m, crack]; s.col = col; return s;
 }
 function breakTile(t) {
-  t.off = true; t.digM.forEach(function (m) { m.visible = false; }); if (P.ground === t) P.ground = null;
+  t.off = true; t.digM.forEach(function (m) { m.visible = false; }); if (P.ground === t) P.ground = null; if (t.ore && !t.ore.got) { t.ore.g.visible = true; burst(t.ore.x, t.ore.y, '#bfe9ff'); }
   if (!S.set.low) for (let i = 0; i < 6; i++) { const g = glow(t.col, 0.8, 0.9); g.position.set((t.x0 + t.x1) / 2, (t.y0 + t.y1) / 2, 0.8); L.group.add(g); const a = rnd(0, 6.3); L.fx.push({ o: g, t: 0, vx: Math.cos(a) * 3, vy: Math.sin(a) * 3 + 2, life: 0.5 }); }
   beep(140 + Math.random() * 60, 0.08, 'sawtooth');
   L.scans.forEach(function (k) {
@@ -1923,19 +2072,27 @@ function digStep(dt, ax) {
   let t = null;
   if (keys.duck && P.ground && P.ground.dig && !P.ground.off) t = P.ground;
   else if (ax) { const fx = P.x + ax * (HW + 0.15), fy = P.y + 0.6; t = L.solids.find(function (q) { return q.dig && !q.off && fx > q.x0 && fx < q.x1 && fy > q.y0 && fy < q.y1; }); }
+  P.overheat = Math.max(0, (P.overheat || 0) - dt); P.heat = Math.max(0, (P.heat || 0) - dt * (t && !P.overheat ? 0 : 0.45));
   if (!t) { P.digT = 0; return; }
+  if (L.boulders.length || L.ores.length) { /* the hand drill heats up: drill in bursts and let it cool */
+    if (P.overheat > 0) { P.digT = 0; return; }
+    P.heat = Math.min(1, (P.heat || 0) + dt * 0.22); if (P.heat >= 1) { P.overheat = 1.6; P.digT = 0; if (!L.toldHeat) { L.toldHeat = 1; toast('♨️ Your drill overheated! Wait a moment for it to cool, then keep digging.', 4); } beep(200, 0.3, 'square', 'hiss, drill overheated'); return; } }
   P.digT = (P.digT || 0) + dt; if (!S.set.low && Math.random() < dt * 20) { const g = glow('#ffd8a0', 0.5, 0.9); g.position.set(P.x + (keys.duck ? 0 : ax * 0.6), P.y + (keys.duck ? 0 : 0.6), 0.9); L.group.add(g); L.fx.push({ o: g, t: 0, vx: rnd(-2, 2), vy: rnd(1, 3), life: 0.3 }); }
   if (P.digT > 0.28) { breakTile(t); P.digT = 0; }
 }
 const _cv = new T.Vector3();
-function caveSpot() { const ov = $('caveDark'); if (!ov) return; ov.style.opacity = L.models && L.models.some(function (md) { return md.done && Math.abs(md.home.x - P.x) < 16 && Math.abs(md.home.y - P.y) < 12; }) ? 0.3 : 1; /* the dark edges lift near a finished, glowing cell */ _cv.set(P.x, P.y + 0.8, 0).project(cam); const x = (_cv.x + 1) * 50, y = (1 - _cv.y) * 50;
+function caveSpot() { const ov = $('caveDark'); if (!ov) return; ov.style.opacity = L.models && L.models.some(function (md) { return md.done && Math.abs(md.home.x - P.x) < 16 && Math.abs(md.home.y - P.y) < 12; }) ? 0.3 : (L.vent && P.x > L.vent.x0 - 4 && P.x < L.vent.x1 + 4 && P.y < L.vent.y + 14 ? 0.4 : 1); /* the dark edges lift near a finished, glowing cell */ _cv.set(P.x, P.y + 0.8, 0).project(cam); const x = (_cv.x + 1) * 50, y = (1 - _cv.y) * 50;
   ov.style.background = 'radial-gradient(circle at ' + x.toFixed(1) + '% ' + y.toFixed(1) + '%, rgba(0,0,0,0) 0, rgba(0,0,0,0) 24vmin, rgba(' + (L.darkTone || '5,3,2') + ',' + (L.darkTone ? '.3' : '.5') + ') 50vmin, rgba(' + (L.darkTone || '5,3,2') + ',' + (L.darkTone ? '.55' : '.8') + ') 85vmin)'; }
+const PLUME_HOT = new T.Color('#b0603a'), PLUME_COOL = new T.Color('#3a3450');
 function deepStep(dt) {
   L.glowers.forEach(function (gw) { gw.t += dt; gw.list.forEach(function (m, i) { const u = m.userData;
     if (gw.kind === 'lantern') { m.position.set(u.ox + Math.sin(gw.t * 0.6 + u.ph) * 1.6, u.oy + Math.sin(gw.t * 1.1 + u.ph) * 0.4, 0); m.rotation.y = Math.cos(gw.t * 0.6 + u.ph) > 0 ? 0 : Math.PI; }
     else if (gw.kind === 'comb') { m.position.set(u.ox + Math.sin(gw.t * 0.3 + u.ph) * 0.8, u.oy + Math.sin(gw.t * 0.5 + u.ph) * 0.8, 0); m.rotation.y += dt * 0.8; for (let k = 1; k <= 4; k++) if (m.children[k]) m.children[k].material.color.setHSL((gw.t * 0.5 + k * 0.25 + u.ph) % 1, 1, 0.65); }
     else { m.position.set(u.ox, u.oy + Math.sin(gw.t + u.ph) * 0.3, 0); m.children[0].material.opacity = 0.4 + 0.5 * Math.max(0, Math.sin(gw.t * 2 + u.ph * 3)); } }); });
-  L.smokers.forEach(function (sm) { sm.puffs.forEach(function (p, i) { p.position.y += dt * 3.2; p.position.x = sm.x + Math.sin(p.position.y * 0.7 + i) * 0.5 * (p.position.y - sm.y0) / 6; const u = (p.position.y - sm.y0) / (sm.y1 - sm.y0); p.scale.setScalar(0.35 + u * 1.3); p.material.opacity = 0.6 * (1 - u); if (u >= 1) p.position.y = sm.y0; }); });
+  L.smokers.forEach(function (sm) { sm.puffs.forEach(function (p, i) { p.position.y += dt * 2.6; const u = (p.position.y - sm.y0) / (sm.y1 - sm.y0); p.position.x = sm.x + Math.sin(p.position.y * 0.5 + i) * 0.35 * u * 3 + (i % 2 ? 0.3 : -0.3) * u * 2; const bg = sm.big || 1; p.scale.set((0.45 + u * 2.4) * bg, (0.4 + u * 2.0) * bg, (0.45 + u * 2.2) * bg); p.material.color.copy(PLUME_HOT).lerp(PLUME_COOL, Math.min(1, u * 5)); p.material.opacity = 0.85 * (1 - u * u); if (u >= 1) p.position.y = sm.y0; });
+    if (sm.bub) sm.bub.forEach(function (m, i) { m.position.y += dt * (1.6 + (i % 3) * 0.4); m.position.x += Math.sin(m.position.y * 3 + i) * dt * 0.3; if (m.position.y > sm.by + 7) { m.position.y = sm.by + 0.2; m.position.x = sm.x + (i % 2 ? 1 : -1) * rnd(0.6, 1.8); } }); });
+  if (L.vent) { if (!L.vent.done) ventDecor(); const inV = P.x > L.vent.x0 - 6 && P.x < L.vent.x1 + 6 && P.y < L.vent.y + 14; L.ventHemi.intensity += ((inV ? 0.95 : 0) - L.ventHemi.intensity) * Math.min(1, dt * 2);
+    L.ventCrabs.forEach(function (c) { c.ph += dt; c.m.position.x = c.ox + Math.sin(c.ph * 0.7) * 0.4; c.m.rotation.y = Math.cos(c.ph * 0.7) > 0 ? 0.3 : -0.3; }); }
   if (L.inCave) L.scans.forEach(function (k) { if (!k.buried) k.nm.visible = Math.abs(P.x - k.x) < 8 && Math.abs(P.y - k.y) < 6; });
   else if (L.deepY != null) L.scans.forEach(function (k) { if (!k.buried) k.nm.visible = true; });
 }
@@ -1995,12 +2152,14 @@ function airStep(w, dt) {
   hudAir(!!w || P.air < 1);
 }
 /* underwater view: no sky, deep blue haze, slowly darker with depth */
+const VENT_BLUE = new T.Color('#0f2a62');
 function underwaterView(w) {
   const under = !!w && cam.position.y - 3 < w.top;
   if (under !== !!L.camUnder) { L.camUnder = under; if (SKY) SKY.visible = !under; }
   if (under) { let c;
     if (L.deepY != null) { const d = Math.max(0, Math.min(1, (w.top - P.y) / Math.max(10, w.top - L.deepY))); c = d < 0.5 ? new T.Color('#1b7fa0').lerp(new T.Color('#0a3050'), d * 2) : new T.Color('#0a3050').lerp(new T.Color('#010307'), (d - 0.5) * 2); scene.fog.density = 0.022 + d * 0.035; }
     else { const d = Math.max(0, Math.min(1, (w.top - P.y) / 14)); c = new T.Color('#1b7fa0').lerp(new T.Color('#06283a'), d); scene.fog.density = 0.022 + d * 0.02; }
+    if (L.vent) { const k = Math.max(0, Math.min(1, (P.x - (L.vent.x0 - 14)) / 12)) * (P.x < L.vent.x1 + 10 ? 1 : 0); if (k > 0) { c.lerp(VENT_BLUE, k * 0.9); scene.fog.density += (0.03 - scene.fog.density) * k; } }
     scene.background = c; scene.fog.color.copy(c); if (L.deepY != null) RIDGES.forEach(function (r) { r.m.material.color.copy(r.base).lerp(c, Math.min(1, (w.top - P.y) / 12)); }); }
   else if (L.th) { scene.background = new T.Color(L.th.horizon); scene.fog.color.set(L.th.horizon); scene.fog.density = L.th.fogD; }
 }
@@ -2008,7 +2167,7 @@ function startLevel(w, lv) {
   teardown();
   const th = THEMES[lv.theme] || THEMES.cell;
   L = { world: w, lv: lv, th: th, group: new T.Group(), solids: [], tokens: [], sparks: [], stations: [], doors: [], cps: [{ x: 2, y: 0 }], anim: [], used: {}, scans: [], helps: [], models: [], flies: [], secrets: [], ghosts: [], crumbs: [], told: {}, temps: [], clues: [], portal: null,
-    refuels: [], waters: [], currents: [], airs: [], glowers: [], smokers: [], score: 0, streak: 0, hp: 5, time: 0, started: false, pen: 0, wrongs: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
+    refuels: [], waters: [], currents: [], airs: [], glowers: [], smokers: [], ores: [], boulders: [], capsules: [], bag: [], score: 0, streak: 0, hp: 5, time: 0, started: false, pen: 0, wrongs: 0, first: 0, total: 0, active: null, cp: 0, goal: null, over: false, zones: [], zone: null, atps: [], spin: [], hazards: [], movers: [], boosts: [], spikes: [], fx: [], flags: [], rare: null, lives: 3, coins: 0, shake: 0, debrief: null };
   scene.add(L.group);
   const b = builder(); lv.build(b); closeSlab(b.x); L.len = b.x; if (L.waters.length) buildWater();
   L.floor = Math.min(-16, L.solids.reduce(function (m, s) { return Math.min(m, s.y1); }, 0) - 14);
@@ -2274,7 +2433,7 @@ function step(dt) {
   if (L.solids.length && (L.digHint != null)) digStep(dt, ax);
   if (L.darkX != null) { const cave = P.x > L.darkX && P.y < L.darkTop && !(L.darkEnd != null && P.x > L.darkEnd); if (cave !== !!L.inCave) caveLight(cave); if (L.inCave) caveSpot(); }
   else if (L.deepY != null) { const dp = !!inW && P.y < L.deepY; if (dp !== !!L.inCave) { caveLight(dp, 'deep'); if (dp && !L.toldDeep) { L.toldDeep = 1; toast('🌑 No sunlight reaches this deep. Your antennae light up! Many animals down here make their own light (bioluminescence).', 6); } } if (L.inCave) caveSpot(); }
-  deepStep(dt);
+  deepStep(dt); if (L.boulders.length || L.ores.length || L.capsules.length) fieldStep(dt);
   if (L.waters.length) { bubbleStep(dt); underwaterView(waterAt(cam.position.x, cam.position.y - 3)); } /* the alien does not need air: bubble vents are just scenery */
   if (L.currents.length) L.currents.forEach(function (c) { c.streaks.forEach(function (m, i) { m.position.x += c.vx * dt * 1.6; m.position.y += c.vy * dt * 1.6; if (m.position.x > c.x1) m.position.x = c.x0; if (m.position.x < c.x0) m.position.x = c.x1; if (m.position.y > c.y1) m.position.y = c.y0; if (m.position.y < c.y0) m.position.y = c.y1; }); });
   moveX(P.vx * dt); moveY(P.vy * dt);
@@ -2329,7 +2488,7 @@ function step(dt) {
     P.inv = 1.3; P.vy = 11; toast('Ouch! Toxin crystals. Jump over them.', 3); hurt(true);
   });
   if (P.shield > 0) { P.shield -= dt; if (P.shieldM) P.shieldM.rotation.y += dt * 4; if (P.shield <= 0 && P.shieldM) { P.m.remove(P.shieldM); P.shieldM = null; toast('Shield used up.', 2); } }
-  if (L.rare && !L.rare.got) { L.rare.m.rotation.y += dt * 2; L.rare.m.position.y = L.rare.y + Math.sin(P.t * 2) * 0.2;
+  if (L.rare && !L.rare.got) { L.rare.m.rotation.y += dt * (L.rare.m.children.length > 3 ? 0.7 : 2); L.rare.m.position.y = L.rare.y + Math.sin(P.t * 2) * 0.2;
     if (Math.abs(P.x - L.rare.x) < 1 && Math.abs(P.y + 0.7 - L.rare.y) < 1.1) { L.rare.got = true; L.rare.m.visible = false; L.score += 500; S.rare[L.lv.id] = true; save(); award('first-rare'); checkBig(); popup(L.rare.x, L.rare.y, (L.rare.name ? L.rare.name + '! ' : 'Rare specimen! ') + '+500', '#ffd700'); if (L.rare.fact) toast('✦ Rare specimen: ' + L.rare.name + '. ' + L.rare.fact, 7); burst(L.rare.x, L.rare.y, '#ffd700'); beep(1320, 0.4, 'triangle', 'sparkle, rare specimen found'); hud(); } }
   L.fx = L.fx.filter(function (f) {
     f.t += dt; f.o.position.x += (f.vx || 0) * dt; f.o.position.y += f.vy * dt; f.o.material.opacity = Math.max(0, 1 - f.t / f.life);
@@ -3130,6 +3289,7 @@ function buildMenu() {
   $('btnPlay').textContent = started ? '🎮 Platformer: continue' : '🎮 Platformer Adventure';
   $('menuStars').textContent = list.length ? stars + ' of ' + list.length * 3 + ' stars' : 'No world files found in this folder.';
   $('btnPlay').disabled = !list.length;
+  if (BQ.celebrate) BQ.celebrate.onMenu(); /* the 🏆 celebration for finishing the whole game */
 }
 function nextUp() {
   const list = allLevels(); let i = list.findIndex(function (e) { return !(S.levels[e.lv.id] && S.levels[e.lv.id].stars); });
@@ -3423,8 +3583,10 @@ function wire() {
 /* HIDDEN ADMIN MODE (for the game's author): type the password anywhere on the main menu, or tap the version line 5 times and enter it.
    Only a scrambled number of the password is stored here, not the password itself. Admin mode unlocks every level and Biodome supply,
    lets you fly right away in the reserve, removes the map fog, and lets you tap the map to jump anywhere. Enter the password again to turn it off. */
-const ADMIN_HASH = 4052282519, ADMIN_LEN = 13;
-function pwHash(t) { let h = 5381; for (const ch of String(t).toLowerCase()) h = ((h * 33) ^ ch.charCodeAt(0)) >>> 0; return h; }
+const ADMIN_HASH = '8ecb0befe4fd156c', ADMIN_LEN = 11; /* never write the password itself in this repository (code or notes) */
+function pwHash(t) { t = 'efg-salt:' + String(t).toLowerCase(); let h1 = 0xdeadbeef, h2 = 0x41c6ce57; /* a salted, many-times-repeated scramble: slow to guess, and the password itself is never stored */
+  for (let r = 0; r < 2000; r++) for (let i = 0; i < t.length; i++) { const c = t.charCodeAt(i) + r; h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); }
+  return (h2 >>> 0).toString(16).padStart(8, '0') + (h1 >>> 0).toString(16).padStart(8, '0'); }
 function adminNote(text) { let n = $('adminNote'); if (!n) { n = document.createElement('div'); n.id = 'adminNote'; n.setAttribute('role', 'status'); n.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99;background:#0b1d2a;color:#ffd166;border:2px solid #ffd166;border-radius:10px;padding:8px 14px;font-weight:700;max-width:90vw;text-align:center'; document.body.appendChild(n); }
   n.textContent = text; n.hidden = false; clearTimeout(adminNote.t); adminNote.t = setTimeout(function () { n.hidden = true; }, 5000); }
 function adminTry(t) { if (pwHash(t) !== ADMIN_HASH) return false; const on = !S.set.admin; S.set.admin = on ? 1 : 0; S.set.unlock = on; save();
@@ -3450,7 +3612,7 @@ function boot() {
   wire(); applySettings(); menuScene(); requestAnimationFrame(tick);
   const jump = (location.hash || '').match(/level-(\d+-\d+)/i);
   if (jump) { const e = allLevels().find(function (x) { return x.lv.id === jump[1]; }); if (e) startLevel(e.w, e.lv); }
-  BQ.core = { T: T, get scene() { return scene; }, get cam() { return cam; }, get renderer() { return renderer; }, get G() { return G; }, get S() { return S; }, get HEMI() { return HEMI; }, get KEYL() { return KEYL; },
+  BQ.core = { KEYSTONE: KEYSTONE, T: T, get scene() { return scene; }, get cam() { return cam; }, get renderer() { return renderer; }, get G() { return G; }, get S() { return S; }, get HEMI() { return HEMI; }, get KEYL() { return KEYL; },
     glow: glow, label: label, labelTex: labelTex, emat: emat, basic: basic, mesh: mesh, buildAlien: buildAlien, specimen: specimen, beep: beep, save: save, $: $, esc: esc, tx: tx, I18N: I18N, ACH: ACH, award: award,
     show: show, teardown: teardown, menuScene: menuScene, caption: caption, audio: function () { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { return null; } return AC; }, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup, teach: TEACH };
   if (BQ.onCore) BQ.onCore(); (BQ.onCoreList || []).forEach(function (f) { f(); });

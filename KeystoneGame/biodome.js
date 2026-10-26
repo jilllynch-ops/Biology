@@ -84,7 +84,7 @@ Object.assign(C.I18N.en, {
   'bd.vl.decomp.ok': 'Leftovers again? Delicious. I turn them back into nutrients for the plants.', 'bd.vl.decomp.busy': 'So. Much. Waste. Send help. (More worms, please.)',
   'bd.vl.fish.ok': 'Clear water, plenty of pondweed. Blub!', 'bd.vl.fish.bad': 'The water is green and I can barely breathe. Blub...',
   'bd.vl.grass.ok': 'Sun, water, carbon dioxide... I am turning them into sugar. Try it sometime.', 'bd.vl.grass.bad': 'I am thirsty, or too hot, or being eaten too fast. Maybe all three.',
-  'bd.fly1': 'Leaving Earth with everything I packed...', 'bd.fly2': 'Across the stars, toward home.', 'bd.fly3': 'Landing beside the dome.', 'bd.skip': 'Skip ⏭',
+  'bd.fly1': 'Leaving Earth with everything I packed...', 'bd.fly2': 'Past the other planets and out of our solar system.', 'bd.fly3': 'Out of the Milky Way: our galaxy, with hundreds of billions of stars. The Sun is just one of them.', 'bd.fly4': 'Into a wormhole: a shortcut through space. Scientists have imagined wormholes, but no one has ever found one.', 'bd.fly5': 'Out into another galaxy, very far away...', 'bd.fly6': 'Home! My world is a small, dark, icy moon covered with bright craters, circling a giant planet.', 'bd.fly7': 'Landing beside the dome.', 'bd.skip': 'Skip ⏭',
   'bd.storeLeft': 'crates left in storage', 'bd.helpCam': 'Drag to look around the dome. Wheel or + / − to zoom.'
 });
 Object.assign(C.I18N.es, {
@@ -160,7 +160,7 @@ Object.assign(C.I18N.es, {
   'bd.vl.decomp.ok': '¿Sobras otra vez? Deliciosas. Las convierto en nutrientes para las plantas.', 'bd.vl.decomp.busy': 'Tantos. Desechos. Ayuda. (Más lombrices, por favor.)',
   'bd.vl.fish.ok': 'Agua clara y muchas plantas acuáticas. ¡Blub!', 'bd.vl.fish.bad': 'El agua está verde y casi no puedo respirar. Blub...',
   'bd.vl.grass.ok': 'Sol, agua, dióxido de carbono... los convierto en azúcar. Pruébalo algún día.', 'bd.vl.grass.bad': 'Tengo sed, o hace mucho calor, o me comen demasiado rápido. Quizá las tres cosas.',
-  'bd.fly1': 'Dejo la Tierra con todo lo que empaqué...', 'bd.fly2': 'Cruzando las estrellas, rumbo a casa.', 'bd.fly3': 'Aterrizando junto al domo.', 'bd.skip': 'Saltar ⏭',
+  'bd.fly1': 'Dejo la Tierra con todo lo que empaqué...', 'bd.fly2': 'Paso los otros planetas y salgo de nuestro sistema solar.', 'bd.fly3': 'Salgo de la Vía Láctea: nuestra galaxia, con cientos de miles de millones de estrellas. El Sol es solo una de ellas.', 'bd.fly4': 'Entro en un agujero de gusano: un atajo a través del espacio. Los científicos han imaginado agujeros de gusano, pero nadie ha encontrado uno.', 'bd.fly5': 'Salgo a otra galaxia, muy, muy lejos...', 'bd.fly6': '¡En casa! Mi mundo es una luna pequeña, oscura y helada, cubierta de cráteres brillantes, que gira alrededor de un planeta gigante.', 'bd.fly7': 'Aterrizando junto al domo.', 'bd.skip': 'Saltar ⏭',
   'bd.storeLeft': 'cajas en el almacén', 'bd.helpCam': 'Arrastra para mirar el domo. Rueda o + / − para acercar.'
 });
 C.I18N.en['a.biodome'] = 'Biodome Builder'; C.I18N.en['a.biodome.d'] = 'Keep a biodome in balance for all 8 seasons.'; C.I18N.es['a.biodome'] = 'Constructor de biodomos'; C.I18N.es['a.biodome.d'] = 'Mantén un biodomo en equilibrio durante las 8 temporadas.';
@@ -174,6 +174,9 @@ const ITEMS = [
   /* earned in Worlds 3 to 5 */
   { id: 'wetland', ic: '🪷', size: 1, max: 1, rq: 'l35' }, { id: 'seedbank', ic: '🌰', size: 1, max: 1, rq: 'l42' }, { id: 'hardy', ic: '🌵', size: 1, max: 1, rq: 'l51' }];
 const CAP = 24;
+/* tested with the dome model: this pack stays in balance for all 8 seasons when you respond to each season's event
+   (sun shade in the heat wave, cell-care kit for the disease, pull the vine, insulating panels in the cold) */
+const SUGGEST = [['water', 6], ['air', 1], ['blocks', 1], ['soil', 2], ['grass', 1], ['flowers', 2], ['trees', 1], ['pondweed', 1], ['bees', 2], ['rabbits', 1], ['hawks', 1], ['pond', 1], ['cellkit', 1]];
 function lvDone(id) { const L0 = C.S.levels[id]; return !!(L0 && L0.stars); }
 function cz() { return C.S.cozy || {}; }
 const REQ = {
@@ -245,6 +248,7 @@ function left() {
   if (B.phase === 'pack') { const u = used();
     L.innerHTML = '<h3>' + esc(tx('bd.pack.t')) + '</h3><p class="ds">' + esc(tx('bd.pack.h')) + '</p>' + (C.teach || C.S.set.unlock ? '<p class="ds">' + esc(tx('bd.teach')) + '</p>' : '') +
       '<b>' + esc(tx('bd.cargo')) + ': ' + u + ' / ' + CAP + '</b><div class="bdBar' + (u >= CAP ? ' full' : '') + '"><i style="width:' + Math.round(u / CAP * 100) + '%"></i></div>' +
+      '<div class="bdBtns"><button type="button" data-a="suggest" title="' + esc(tx('bd.suggestH')) + '">💡 ' + esc(tx('bd.suggest')) + '</button></div><p class="ds">' + esc(tx('bd.suggestH')) + '</p>' + (B.warn && B.phase === 'pack' ? '<p class="bdWarn">⚠️ ' + esc(B.warn) + '</p>' : '') +
       ITEMS.map(function (it) { return itemRow(it, 'pack'); }).join('') + packCheck() +
       '<div class="bdBtns">' + (ITEMS.some(function (it) { return !earned(it); }) ? '<button type="button" data-a="earth">🌍 ' + esc(tx('bd.earth')) + '</button>' : '') + '<button type="button" class="primary" data-a="launch"' + (u ? '' : ' disabled') + '>' + esc(tx('bd.launch')) + '</button></div>';
   } else {
@@ -337,11 +341,15 @@ function click(d) {
   if (a === 'menu') { exit(); return; }
   if (a === 'go') { $('bdStory').hidden = true; sv().seen = 1; C.save(); render(); return; }
   if (a === 'earth') { exit(); return; }
+  if (a === 'suggest') { /* a starter pack the dome's model shows can stay in balance (one of every kind of living thing), limited to what you have earned */
+    B.cargo = {}; const missed = [];
+    SUGGEST.forEach(function (q) { const it = ITEMS.find(function (x) { return x.id === q[0]; }); if (!earned(it)) { missed.push(tx('bd.it.' + it.id)); return; } for (let k = 0; k < q[1]; k++) if ((B.cargo[it.id] || 0) < it.max && used() + it.size <= CAP) B.cargo[it.id] = (B.cargo[it.id] || 0) + 1; });
+    B.warn = missed.length ? tx('bd.suggestMiss') + ' ' + missed.join(', ') : null; sfx('pop'); render(); return; }
   if (a === 'inc' || a === 'dec') { const it = ITEMS.find(function (q) { return q.id === d.id; }), n = B.cargo[it.id] || 0;
     if (a === 'inc' && n < it.max && used() + it.size <= CAP) B.cargo[it.id] = n + 1; else if (a === 'dec' && n > 0) B.cargo[it.id] = n - 1; else C.beep(200, 0.08, 'sine');
     left(); return; }
   if (a === 'launch') { B.store = Object.assign({}, B.cargo); startFlight(); return; }
-  if (a === 'skipfly') { B.flyT = 99; return; }
+  if (a === 'skipfly') { B.flyT = FLY_END; return; }
   if (a === 'place') { const why = placeCheck(d.id); if (why) { B.warn = tx(why); C.beep(220, 0.12, 'triangle'); left(); return; } B.warn = null;
     if ((B.store[d.id] || 0) > 0) { B.store[d.id]--; B.placed[d.id] = (B.placed[d.id] || 0) + 1; DS.place(B.sim, d.id); sfx('pop'); B.dirty = true; } render(); return; }
   if (a === 'placeAll') { const order = ['water', 'air', 'soil', 'blocks', 'cellkit', 'grass', 'seedbank', 'hardy', 'flowers', 'trees', 'pondweed', 'wetland', 'bees', 'rabbits', 'hawks', 'pond'], left = [];
@@ -366,6 +374,8 @@ function click(d) {
   if (a === 'rewind') { const h = B.hist.pop(); if (!h) return; const o = JSON.parse(h); B.sim = o.sim; B.store = o.store; B.placed = o.placed; B.rewinds++; B.phase = 'season'; B.sim.evDone = false; B.dirty = true; render(); return; }
   if (a === 'again') { exit(); start(); return; }
 }
+Object.assign(C.I18N.en, {"bd.suggest": "Suggested pack", "bd.suggestH": "Not sure what to bring? This pack has one of every kind of living thing and was tested to stay in balance, if you respond to each season's problem. You can still change it.", "bd.suggestMiss": "Not earned yet, so left out:"});
+Object.assign(C.I18N.es, {"bd.suggest": "Carga sugerida", "bd.suggestH": "¿No sabes qué llevar? Esta carga tiene un ser vivo de cada tipo y se probó que se mantiene en equilibrio, si respondes al problema de cada temporada. Igual puedes cambiarla.", "bd.suggestMiss": "Todavía no ganados, así que quedan fuera:"});
 Object.assign(C.I18N.en, {"bd.airlock": "Spare crates come in through the airlock, so the dome stays sealed.", "bd.act.skim": "Scoop extra algae onto the compost pile", "bd.sun": "☀️ Sunlight", "bd.sun0": "full sun", "bd.sun1": "half shade", "bd.sun2": "deep shade", "bd.sunLess": "⛱️ Less sun", "bd.sunMore": "☀️ More sun", "bd.sunH": "The dome always stays sealed. A sun shade over the glass lets in less sunlight: the dome gets cooler and loses less water in a heat wave, but plants grow and make oxygen more slowly.", "bd.insul": "🧱 Insulating panels", "bd.insulOn": "ON", "bd.insulOff": "OFF", "bd.insulH": "Panels that keep the dome's own heat in during a cold snap. They warm the dome toward 22 °C but never cool it.", "bd.tool.sunLess": "⛱️ Less sun (sun shade)", "bd.tool.sunMore": "☀️ More sun (raise the shade)", "bd.tool.insulOn": "🧱 Turn ON the insulating panels", "bd.tool.insulOff": "🧱 Turn OFF the insulating panels", "bd.tool.plant": "🌱 Plant cuttings and seeds from your own plants", "bd.tool.plantH": "More producers to take up carbon dioxide and make oxygen. New plants use some nutrients. Once per season.", "bd.tool.plantNo": "🌱 Plant cuttings and seeds (needs some plants and nutrients in the dome)", "bd.placeAll": "📦 Place all", "bd.placeAllH": "Places every crate in storage in a safe order (water and soil first, then plants, then animals).", "bd.placeAllLeft": "Could not place yet:", "bd.placeTip": "Tip: keeping a few crates in storage gives you ways to fix problems later.", "bd.min": "Minimize", "bd.max": "Show"});
 Object.assign(C.I18N.es, {"bd.airlock": "Las cajas de repuesto entran por la esclusa, así el domo sigue sellado.", "bd.act.skim": "Echar las algas sobrantes a la pila de compost", "bd.sun": "☀️ Luz del sol", "bd.sun0": "sol pleno", "bd.sun1": "media sombra", "bd.sun2": "sombra densa", "bd.sunLess": "⛱️ Menos sol", "bd.sunMore": "☀️ Más sol", "bd.sunH": "El domo siempre está sellado. Una malla de sombra sobre el vidrio deja pasar menos luz: el domo se enfría y pierde menos agua en una ola de calor, pero las plantas crecen y producen oxígeno más despacio.", "bd.insul": "🧱 Paneles aislantes", "bd.insulOn": "SÍ", "bd.insulOff": "NO", "bd.insulH": "Paneles que guardan el calor del propio domo durante una ola de frío. Lo calientan hacia 22 °C, pero nunca lo enfrían.", "bd.tool.sunLess": "⛱️ Menos sol (malla de sombra)", "bd.tool.sunMore": "☀️ Más sol (quitar sombra)", "bd.tool.insulOn": "🧱 Poner los paneles aislantes", "bd.tool.insulOff": "🧱 Quitar los paneles aislantes", "bd.tool.plant": "🌱 Plantar esquejes y semillas de tus propias plantas", "bd.tool.plantH": "Más productores para absorber dióxido de carbono y producir oxígeno. Las plantas nuevas usan algunos nutrientes. Una vez por temporada.", "bd.tool.plantNo": "🌱 Plantar esquejes y semillas (necesita plantas y nutrientes en el domo)", "bd.placeAll": "📦 Colocar todo", "bd.placeAllH": "Coloca todas las cajas del almacén en un orden seguro (primero agua y suelo, luego plantas, luego animales).", "bd.placeAllLeft": "Todavía no se pudo colocar:", "bd.placeTip": "Consejo: guardar algunas cajas en el almacén te da formas de arreglar problemas después.", "bd.min": "Minimizar", "bd.max": "Mostrar"});
 /* ---------- FIX IT: every yellow or red gauge explains why, and offers things you can do right now ---------- */
@@ -436,30 +446,53 @@ function voiceLine() {
 }
 function sfx(k) { if (!BQ.amb) return; if (k === 'pop') BQ.amb.sfx('step', 0.5); else if (k === 'whoosh') BQ.amb.sfx('whoosh', 0.6); else if (k === 'season') BQ.amb.sfx('chime', 0.5); }
 
-/* ---------- the 3-D scene: a red desert planet, the glass dome, and the life inside it ---------- */
+/* ---------- textures for the home world (an icy, cratered moon) and its giant planet ---------- */
+function craterTex(w, h) {
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const x = cv.getContext('2d'), R = Math.random;
+  x.fillStyle = '#2e2620'; x.fillRect(0, 0, w, h);
+  const blot = function (cx, cy, r, col, a) { const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)'); x.globalAlpha = a; x.fillStyle = g; x.fillRect(cx - r, cy - r, r * 2, r * 2); };
+  for (let i = 0; i < 260; i++) blot(R() * w, R() * h, (0.02 + R() * 0.12) * w, ['#4a3628', '#141210', '#5a4230', '#26303e', '#1c1814'][i % 5], 0.4);
+  /* two huge ringed basins */
+  [[0.32, 0.45, 0.16], [0.74, 0.62, 0.1]].forEach(function (q) { blot(q[0] * w, q[1] * h, q[2] * w * 0.4, '#e8dcc8', 0.55); x.globalAlpha = 0.18; x.strokeStyle = '#e8dcc8'; for (let k = 1; k < 6; k++) { x.lineWidth = 1 + R() * 2; x.beginPath(); x.arc(q[0] * w, q[1] * h, q[2] * w * k / 5, 0, 6.283); x.stroke(); } });
+  /* hundreds of bright young craters: fresh ice thrown out of each impact (mostly small, a few big) */
+  for (let i = 0; i < 1400; i++) { const r = Math.pow(R(), 4) * 0.02 * w + 0.6, cx = R() * w, cy = R() * h; blot(cx, cy, r * 1.6, '#f4ecd8', 0.35 + R() * 0.5);
+    x.globalAlpha = 0.9; x.fillStyle = '#fff8ec'; x.beginPath(); x.arc(cx, cy, Math.max(0.6, r * 0.35), 0, 6.283); x.fill(); if (r > 5) { x.globalAlpha = 0.55; x.fillStyle = '#2a221c'; x.beginPath(); x.arc(cx, cy, r * 0.5, 0, 6.283); x.fill(); } }
+  /* warm in the middle, bluish toward the edges (so the wrap-around seam matches), like the color photo */
+  x.globalAlpha = 1; let g = x.createLinearGradient(0, 0, w, 0); g.addColorStop(0, 'rgba(60,110,170,0.3)'); g.addColorStop(0.5, 'rgba(160,80,40,0.25)'); g.addColorStop(1, 'rgba(60,110,170,0.3)'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+  return new T.CanvasTexture(cv);
+}
+const HOME_GIANT = ['#7fd8c8', '#4a8aa8', '#b8e8d8', '#6a5aa8', '#9fc8e8', '#3a6a8a', '#d8f0e8', '#8a6ab8', '#5ab0a8'];
+function bandTex(cols) {
+  const cv = document.createElement('canvas'); cv.width = 16; cv.height = 256; const x = cv.getContext('2d'); cols = cols || ['#e8d8bc', '#c89a6a', '#f0e4cc', '#a8704a', '#e0c8a0', '#d8b088', '#f4ead6', '#b07a52', '#e8d4b4'];
+  for (let y = 0; y < 256; y += 4) { x.fillStyle = cols[Math.floor((Math.sin(y * 0.09) + Math.sin(y * 0.031) + 2) * 2.2) % cols.length]; x.fillRect(0, y, 16, 4); }
+  return new T.CanvasTexture(cv);
+}
+/* ---------- the 3-D scene: the alien's icy, cratered home world, the glass dome, and the life inside it ---------- */
 function build() {
   const g = new T.Group(), CR = BQ.creatures, scene = C.scene;
   B.bg = scene.background; B.fog = scene.fog; B.light = [C.HEMI.intensity, C.HEMI.color.clone(), C.HEMI.groundColor.clone(), C.KEYL.intensity, C.KEYL.color.clone(), C.KEYL.position.clone()];
-  scene.background = new T.Color('#2a1a2e'); scene.fog = new T.FogExp2('#5a3040', 0.006);
-  C.HEMI.color.set('#ffd8c0'); C.HEMI.groundColor.set('#4a2418'); C.HEMI.intensity = 0.85; C.KEYL.color.set('#fff0d8'); C.KEYL.intensity = 1.05; C.KEYL.position.set(60, 80, 40);
-  /* sky: gradient dome, stars, two moons and a small bright sun */
+  scene.background = new T.Color('#05060c'); scene.fog = new T.FogExp2('#0c0e18', 0.004);
+  C.HEMI.color.set('#c8d4f0'); C.HEMI.groundColor.set('#2a2420'); C.HEMI.intensity = 0.7; C.KEYL.color.set('#fff4e4'); C.KEYL.intensity = 1.0; C.KEYL.position.set(60, 70, 40);
+  /* sky: almost no air, so it is black and full of stars; a giant banded planet hangs low, and the sun is small and far away */
   const cv = document.createElement('canvas'); cv.width = 4; cv.height = 256; const x0 = cv.getContext('2d'), gr = x0.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, '#0a0a20'); gr.addColorStop(0.45, '#3a2048'); gr.addColorStop(0.55, '#c86a4a'); gr.addColorStop(1, '#5a2a20'); x0.fillStyle = gr; x0.fillRect(0, 0, 4, 256);
+  gr.addColorStop(0, '#010104'); gr.addColorStop(0.47, '#05060e'); gr.addColorStop(0.5, '#141a2c'); gr.addColorStop(1, '#0a0a10'); x0.fillStyle = gr; x0.fillRect(0, 0, 4, 256);
   g.add(new T.Mesh(new T.SphereGeometry(400, 24, 16), new T.MeshBasicMaterial({ map: new T.CanvasTexture(cv), side: T.BackSide, fog: false, depthWrite: false })));
-  { const n = 700, pos = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, u = 0.25 + Math.random() * 0.75, r = 380; pos[i * 3] = Math.cos(a) * Math.sqrt(1 - u * u) * r; pos[i * 3 + 1] = u * r; pos[i * 3 + 2] = Math.sin(a) * Math.sqrt(1 - u * u) * r; }
+  { const n = 1300, pos = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, u = 0.05 + Math.random() * 0.95, r = 380; pos[i * 3] = Math.cos(a) * Math.sqrt(1 - u * u) * r; pos[i * 3 + 1] = u * r; pos[i * 3 + 2] = Math.sin(a) * Math.sqrt(1 - u * u) * r; }
     const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(pos, 3)); g.add(new T.Points(sg, new T.PointsMaterial({ color: '#ffffff', size: 1.4, sizeAttenuation: false, fog: false }))); }
-  [[-120, 140, -260, 26, '#d8c8e8'], [160, 90, -280, 12, '#e8b8a0']].forEach(function (m) { const mo = new T.Mesh(new T.SphereGeometry(m[3], 20, 14), new T.MeshBasicMaterial({ color: m[4], fog: false })); mo.position.set(m[0], m[1], m[2]); g.add(mo); });
-  const sun = C.glow('#fff0c8', 60, 0.9, false); sun.position.set(220, 160, -200); g.add(sun);
-  /* the red desert */
-  const gg = new T.PlaneGeometry(500, 500, 80, 80); gg.rotateX(-Math.PI / 2); const P = gg.attributes.position, cols = new Float32Array(P.count * 3), cc = new T.Color();
-  const hgt = function (x, z) { const d = Math.hypot(x, z); return d < 18 ? 0 : (Math.sin(x * 0.05) * Math.cos(z * 0.06) * 3 + Math.sin(x * 0.13 + z * 0.1) * 1.2) * Math.min(1, (d - 18) / 30) + Math.max(0, d - 120) * 0.25; };
-  for (let i = 0; i < P.count; i++) { const x = P.getX(i), z = P.getZ(i), h = hgt(x, z);
-    P.setY(i, h); cc.set(h > 4 ? '#b0583a' : '#c8704a').offsetHSL(0, 0, (Math.sin(x * 0.7) * Math.sin(z * 0.6)) * 0.04); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b; }
+  B.gTex = bandTex(HOME_GIANT); const giant = new T.Mesh(new T.SphereGeometry(95, 40, 28), new T.MeshLambertMaterial({ map: B.gTex, fog: false })); giant.position.set(-170, 70, -300); giant.rotation.z = 0.12; g.add(giant); B.giant = giant;
+  const sun = C.glow('#fff8e8', 30, 0.95, false); sun.position.set(220, 150, -200); g.add(sun);
+  /* the icy, cratered ground: dark rock and dust, with bright frost on crater rims */
+  const CRS = []; for (let i = 0; i < 46; i++) { const a = Math.random() * 6.283, d = 26 + Math.random() * 200, r = 3 + Math.pow(Math.random(), 2) * 22; CRS.push([Math.cos(a) * d, Math.sin(a) * d, r, 0.5 + r * 0.12]); }
+  const crat = function (x, z) { let h = 0, rim = 0; for (let i = 0; i < CRS.length; i++) { const c = CRS[i], q = Math.hypot(x - c[0], z - c[1]) / c[2]; if (q > 1.8) continue; if (q < 1) h -= c[3] * (1 - q * q); const e = Math.exp(-Math.pow((q - 1) / 0.28, 2)); h += c[3] * 0.45 * e; rim = Math.max(rim, e); } return [h, rim]; };
+  const hgt = function (x, z) { const d = Math.hypot(x, z); return d < 18 ? 0 : ((Math.sin(x * 0.05) * Math.cos(z * 0.06) * 2 + Math.sin(x * 0.13 + z * 0.1) * 0.8) + crat(x, z)[0]) * Math.min(1, (d - 18) / 14) + Math.max(0, d - 120) * 0.25; };
+  const gg = new T.PlaneGeometry(500, 500, 110, 110); gg.rotateX(-Math.PI / 2); const P = gg.attributes.position, cols = new Float32Array(P.count * 3), cc = new T.Color();
+  for (let i = 0; i < P.count; i++) { const x = P.getX(i), z = P.getZ(i), h = hgt(x, z), rim = Math.hypot(x, z) < 22 ? 0 : crat(x, z)[1], n = Math.sin(x * 0.7) * Math.sin(z * 0.6) + Math.sin(x * 0.23 - z * 0.31);
+    P.setY(i, h); cc.set(n > 1.45 ? '#bab4aa' : n > 0.4 ? '#3a3029' : '#2c2622').lerp(new T.Color('#d4d0c8'), rim * rim * 0.6).offsetHSL(0, 0, n * 0.02); if (x > 60) cc.lerp(new T.Color('#3a4a62'), 0.18); cols[i * 3] = cc.r; cols[i * 3 + 1] = cc.g; cols[i * 3 + 2] = cc.b; }
   gg.setAttribute('color', new T.BufferAttribute(cols, 3)); gg.computeVertexNormals(); g.add(new T.Mesh(gg, new T.MeshLambertMaterial({ vertexColors: true, flatShading: true })));
-  for (let i = 0; i < 40; i++) { const a = Math.random() * 6.283, r = 20 + Math.random() * 120, rk = new T.Mesh(new T.DodecahedronGeometry(0.6 + Math.random() * 2.2, 0), C.emat(i % 2 ? '#8a4a32' : '#6a3a2a', '#140806')); rk.position.set(Math.cos(a) * r, hgt(Math.cos(a) * r, Math.sin(a) * r) + 0.2, Math.sin(a) * r); rk.rotation.set(Math.random(), Math.random(), 0); g.add(rk); }
+  for (let i = 0; i < 46; i++) { const a = Math.random() * 6.283, r = 20 + Math.random() * 120, ice = i % 3 === 0, rk = new T.Mesh(new T.DodecahedronGeometry(0.5 + Math.random() * 2, 0), C.emat(ice ? '#d8dce4' : i % 2 ? '#4a4038' : '#5a5048', ice ? '#1a1e28' : '#0a0806')); rk.position.set(Math.cos(a) * r, hgt(Math.cos(a) * r, Math.sin(a) * r) + 0.2, Math.sin(a) * r); rk.rotation.set(Math.random(), Math.random(), 0); g.add(rk); }
   /* the dome: glass with a hexagon frame, a floor that turns green as life spreads, and a pond */
   const R0 = 13; B.R = R0;
-  const floor = new T.Mesh(new T.CircleGeometry(R0, 64), new T.MeshLambertMaterial({ color: '#8a5a3a' })); floor.rotation.x = -Math.PI / 2; floor.position.y = 0.05; g.add(floor); B.floor = floor;
+  const floor = new T.Mesh(new T.CircleGeometry(R0, 64), new T.MeshLambertMaterial({ color: '#8a5a3a' })); /* soil brought from Earth */ floor.rotation.x = -Math.PI / 2; floor.position.y = 0.05; g.add(floor); B.floor = floor;
   const pond = new T.Mesh(new T.CircleGeometry(3.4, 40), new T.MeshPhongMaterial({ color: '#3a8ac0', emissive: '#0a2030', shininess: 80, transparent: true, opacity: 0.88 })); pond.rotation.x = -Math.PI / 2; pond.position.set(-5, 0.12, 3); pond.visible = false; g.add(pond); B.pond = pond;
   const glass = new T.Mesh(new T.SphereGeometry(R0, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), new T.MeshPhongMaterial({ color: '#cfe8ff', transparent: true, opacity: 0.14, shininess: 120, specular: '#ffffff', side: T.DoubleSide, depthWrite: false })); g.add(glass); B.glass = glass;
   const frame = new T.LineSegments(new T.EdgesGeometry(new T.IcosahedronGeometry(R0 * 1.002, 2)), new T.LineBasicMaterial({ color: '#d8e8f0', transparent: true, opacity: 0.55 }));
@@ -528,35 +561,85 @@ function visuals(dt) {
     if (d0.hang > 0) { d0.hang -= dt; d0.y = y; } else { d0.v += dt * 9; d0.y -= d0.v * dt; x *= 0.92; z *= 0.92; y = d0.y; }
     dp.setXYZ(i, x, Math.max(0.05, y), z); }); dp.needsUpdate = true;
 }
-/* ---------- the trip home: lift off from Earth, cross the stars, land by the dome ---------- */
+/* ---------- the trip home: a short movie (skippable). Earth falls away, the solar system and the Milky Way shrink behind us,
+   a wormhole, another galaxy, and down to the icy home world. Each "shot" is its own group; only one shows at a time. ---------- */
+function galaxy(n, R, arms, c1, c2, c3) {
+  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3), A = new T.Color(c1), Bc = new T.Color(c2), Cc = new T.Color(c3), cc = new T.Color();
+  for (let i = 0; i < n; i++) { const core = i < n * 0.22, r = core ? Math.pow(Math.random(), 1.6) * R * 0.22 : (0.12 + Math.pow(Math.random(), 0.8) * 0.88) * R, arm = i % arms, th = core ? Math.random() * 6.283 : arm * 6.283 / arms + Math.log(r / (R * 0.08)) * 1.9 + (Math.random() - 0.5) * 0.55 * (1.2 - r / R);
+    pos[i * 3] = Math.cos(th) * r; pos[i * 3 + 1] = (Math.random() - 0.5) * (core ? R * 0.08 : R * 0.025); pos[i * 3 + 2] = Math.sin(th) * r;
+    cc.copy(A).lerp(Bc, Math.min(1, r / (R * 0.5))); if (Math.random() < 0.12) cc.copy(Cc); col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b; }
+  const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(pos, 3)); g.setAttribute('color', new T.BufferAttribute(col, 3));
+  const grp = new T.Group(); grp.add(new T.Points(g, new T.PointsMaterial({ size: 1.8, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 0.9, blending: T.AdditiveBlending, depthWrite: false, fog: false })));
+  const core = C.glow(c1, R * 0.5, 0.75, false); grp.add(core); return grp;
+}
 function buildFlight() {
-  const f = new T.Group(); B.flyG = f; f.visible = false;
-  const n = 1400, pos = new Float32Array(n * 3); for (let i = 0; i < n; i++) { pos[i * 3] = (Math.random() - 0.5) * 400; pos[i * 3 + 1] = (Math.random() - 0.5) * 300; pos[i * 3 + 2] = -Math.random() * 1400 + 100; }
-  const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(pos, 3)); B.flyStars = new T.Points(sg, new T.PointsMaterial({ color: '#ffffff', size: 1.6, sizeAttenuation: false, fog: false })); f.add(B.flyStars);
-  const real = window.FG_EARTH, tex = real ? new T.TextureLoader().load(real.day) : null;
-  const earth = new T.Mesh(new T.SphereGeometry(110, 64, 40), new T.MeshPhongMaterial(tex ? { map: tex, shininess: 30, specular: '#141c26' } : { color: '#3a7ac8' })); earth.position.set(10, -150, -40); earth.rotation.z = 0.41; f.add(earth); B.flyEarth = earth; B.flyTex = tex;
-  const home = new T.Mesh(new T.SphereGeometry(70, 40, 28), new T.MeshLambertMaterial({ color: '#c8704a', emissive: '#3a1408' })); home.position.set(30, -20, -1150); f.add(home); B.flyHome = home;
-  const ship = B.ship.clone(true); ship.scale.setScalar(0.45); f.add(ship); B.flyShip = ship;
-  const trail = C.glow('#9fe8ff', 6, 0.7, false); ship.add(trail); trail.position.set(0, 0, 3);
+  const f = new T.Group(), low = !!(C.S.set && C.S.set.low); B.flyG = f; f.visible = false; B.shots = {};
+  const shot = function (k) { const g = new T.Group(); g.visible = false; f.add(g); B.shots[k] = g; return g; };
+  /* background stars shared by every shot */
+  const n = low ? 800 : 1600, pos = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, u = Math.random() * 2 - 1, r = 900; pos[i * 3] = Math.cos(a) * Math.sqrt(1 - u * u) * r; pos[i * 3 + 1] = u * r; pos[i * 3 + 2] = Math.sin(a) * Math.sqrt(1 - u * u) * r; }
+  const sg = new T.BufferGeometry(); sg.setAttribute('position', new T.BufferAttribute(pos, 3)); B.flyStars = new T.Points(sg, new T.PointsMaterial({ color: '#ffffff', size: 1.5, sizeAttenuation: false, fog: false })); f.add(B.flyStars);
+  /* 1. lift off from Earth */
+  const s1 = shot('earth'), real = window.FG_EARTH, tex = real ? new T.TextureLoader().load(real.day) : null;
+  const earth = new T.Mesh(new T.SphereGeometry(110, 64, 40), new T.MeshPhongMaterial(tex ? { map: tex, shininess: 30, specular: '#141c26' } : { color: '#3a7ac8' })); earth.position.set(10, -150, -40); earth.rotation.z = 0.41; s1.add(earth); B.flyEarth = earth; B.flyTex = tex;
+  const ship = B.ship.clone(true); ship.scale.setScalar(0.45); s1.add(ship); B.flyShip = ship; const trail = C.glow('#9fe8ff', 6, 0.7, false); ship.add(trail); trail.position.set(0, 0, 3);
+  /* 2. our solar system shrinking behind us (sizes not to scale, so you can see them) */
+  const s2 = shot('sol'); s2.add(C.glow('#ffe8a0', 60, 0.95, false)); { const sun = new T.Mesh(new T.SphereGeometry(8, 24, 16), new T.MeshBasicMaterial({ color: '#ffd870', fog: false })); s2.add(sun); }
+  B.solP = []; [[16, 0.9, '#a8a29a'], [22, 1.5, '#e8d2a0'], [29, 1.6, '#3a7ac8'], [37, 1.1, '#c8643a'], [62, 5, 'band'], [84, 4.2, '#e0c890'], [104, 2.8, '#9fe0e8'], [122, 2.7, '#4a70d8']].forEach(function (p, i) {
+    const m = new T.Mesh(new T.SphereGeometry(p[1], 20, 14), p[2] === 'band' ? new T.MeshBasicMaterial({ map: bandTex(), fog: false }) : new T.MeshBasicMaterial({ color: p[2], fog: false })); s2.add(m);
+    const ring = [], k = 72; for (let j = 0; j <= k; j++) ring.push(new T.Vector3(Math.cos(j / k * 6.283) * p[0], 0, Math.sin(j / k * 6.283) * p[0]));
+    s2.add(new T.Line(new T.BufferGeometry().setFromPoints(ring), new T.LineBasicMaterial({ color: '#5a7aa8', transparent: true, opacity: 0.35, fog: false }))); B.solP.push({ m: m, r: p[0], a: i * 1.9 + 0.3, w: 1 / Math.sqrt(p[0]) }); });
+  /* 3. the Milky Way from outside, with a marker where the Sun is */
+  const s3 = shot('milky'); s3.add(galaxy(low ? 3000 : 7000, 320, 4, '#fff0c8', '#9fb8ff', '#ff9fb8')); const here = C.glow('#7fffd0', 16, 0.9, false); here.position.set(Math.cos(2.1) * 180, 2, Math.sin(2.1) * 180); s3.add(here); B.here = here;
+  /* 4. the wormhole: glowing rings rushing past */
+  const s4 = shot('worm'); B.rings = []; for (let i = 0; i < (low ? 26 : 44); i++) { const pts = []; for (let j = 0; j <= 48; j++) pts.push(new T.Vector3(Math.cos(j / 48 * 6.283) * 12, Math.sin(j / 48 * 6.283) * 12, 0));
+    const r = new T.Line(new T.BufferGeometry().setFromPoints(pts), new T.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8, blending: T.AdditiveBlending, fog: false })); r.position.z = -i * 9; s4.add(r); B.rings.push(r); }
+  { const m = 500, p = new Float32Array(m * 3); for (let i = 0; i < m; i++) { const a = Math.random() * 6.283, r = 8 + Math.random() * 5; p[i * 3] = Math.cos(a) * r; p[i * 3 + 1] = Math.sin(a) * r; p[i * 3 + 2] = -Math.random() * 400; }
+    const gq = new T.BufferGeometry(); gq.setAttribute('position', new T.BufferAttribute(p, 3)); B.wormDust = new T.Points(gq, new T.PointsMaterial({ color: '#c8b8ff', size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.9, blending: T.AdditiveBlending, fog: false })); s4.add(B.wormDust); }
+  const ship2 = B.ship.clone(true); ship2.scale.setScalar(0.12); s4.add(ship2); B.wormShip = ship2;
+  /* 5. another galaxy */
+  const s5 = shot('far'); s5.add(galaxy(low ? 2500 : 6000, 300, 2, '#ffe0f0', '#7fd8ff', '#ffd27f')); B.farGal = s5; { const st = C.glow('#ffd8a0', 26, 0.95, false); st.position.set(Math.cos(1) * 150, 0, Math.sin(1) * 150); s5.add(st); }
+  /* 6. home: a giant banded planet and the icy, cratered moon the alien lives on */
+  const s6 = shot('home'); B.homeTex = craterTex(low ? 512 : 1024, low ? 256 : 512);
+  const home = new T.Mesh(new T.SphereGeometry(40, 48, 32), new T.MeshLambertMaterial({ map: B.homeTex, fog: false })); s6.add(home); B.flyHome = home;
+  const gp = new T.Mesh(new T.SphereGeometry(120, 40, 28), new T.MeshLambertMaterial({ map: bandTex(HOME_GIANT), fog: false })); gp.position.set(-260, 40, -420); gp.rotation.z = 0.1; s6.add(gp);
+  const sun2 = C.glow('#fff4d8', 40, 0.9, false); sun2.position.set(520, 200, 300); s6.add(sun2);
+  B.fade = document.createElement('div'); B.fade.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:5;opacity:0;background:#000'; document.body.appendChild(B.fade);
   C.scene.add(f);
 }
+const FLY = [['earth', 0, 3.4, 'bd.fly1'], ['sol', 3.4, 7.8, 'bd.fly2'], ['milky', 7.8, 12.0, 'bd.fly3'], ['worm', 12.0, 15.6, 'bd.fly4'], ['far', 15.6, 18.6, 'bd.fly5'], ['home', 18.6, 24.4, 'bd.fly6']], FLY_END = 24.6;
 function startFlight() {
-  if (!B.flyG) buildFlight(); B.phase = 'fly'; B.flyT = 0; B.flyG.visible = true; B.g.visible = false; B.prevBg = C.scene.background; B.prevFog = C.scene.fog;
-  C.scene.background = new T.Color('#03040c'); C.scene.fog = null; sfx('whoosh'); render();
+  if (!B.flyG) buildFlight(); B.phase = 'fly'; B.flyT = 0; B.flyG.visible = true; B.g.visible = false; B.prevBg = C.scene.background; B.prevFog = C.scene.fog; B.prevFov = C.cam.fov; B.prevFar = C.cam.far;
+  C.cam.far = 2500; C.cam.updateProjectionMatrix(); B.flyLight = [C.HEMI.intensity, C.KEYL.intensity]; C.HEMI.intensity = 0.35; C.KEYL.intensity = 1.0; C.scene.background = new T.Color('#02030a'); C.scene.fog = null; sfx('whoosh'); render();
 }
 function endFlight() {
-  B.flyG.visible = false; B.g.visible = true; C.scene.background = B.prevBg; C.scene.fog = B.prevFog; B.phase = 'build'; B.landT = 2.2; B.view.yaw = 0.15; B.view.pitch = 0.3; B.view.dist = 46; render();
+  B.flyG.visible = false; B.g.visible = true; if (B.fade) B.fade.style.opacity = 0; if (B.flyLight) { C.HEMI.intensity = B.flyLight[0]; C.KEYL.intensity = B.flyLight[1]; } C.cam.far = B.prevFar || 1200; C.cam.updateProjectionMatrix();
+  C.scene.background = B.prevBg; C.scene.fog = B.prevFog; B.phase = 'build'; B.landT = 2.2; B.view.yaw = 0.15; B.view.pitch = 0.3; B.view.dist = 46; render();
 }
 function flightStep(dt) {
-  B.flyT += dt; const t = B.flyT, cam = C.cam, sh = B.flyShip, E = B.flyEarth, cap = $('bdFlyCap');
-  const seg = function (a, b) { const u = Math.max(0, Math.min(1, (t - a) / (b - a))); return u * u * (3 - 2 * u); };
-  E.rotation.y = t * 0.05; sh.rotation.y += dt * 2;
-  /* 0-2.2 s: lift off; 2.2-5.4 s: cruise toward the red planet; then land */
-  const z = -1000 * seg(2.2, 5.4), y = -8 + 22 * seg(0, 2.2) - 10 * seg(4.6, 5.4);
-  sh.position.set(Math.sin(t * 1.3) * 1.2, y, z); cam.position.set(sh.position.x * 0.5 + 6 - 4 * seg(2, 3), y + 4 + 8 * (1 - seg(1.0, 2.4)) - 2 * seg(2, 3), z + 16 + 6 * seg(2.2, 3.2)); cam.lookAt(sh.position.x, sh.position.y + 1 - 6 * seg(4.4, 5.4) - 14 * (1 - seg(1.0, 2.4)), sh.position.z - 20 * seg(2.2, 3)); /* first look down at Earth falling away below */
-  B.flyStars.material.size = 1.6 + 4 * Math.sin(Math.PI * seg(2.2, 5.4));
-  if (cap) { const k = t < 2.2 ? 'bd.fly1' : t < 4.6 ? 'bd.fly2' : 'bd.fly3'; if (cap.dataset.k !== k) { cap.dataset.k = k; cap.textContent = tx(k); } }
-  if (t >= 5.6) endFlight();
+  B.flyT += dt; const t = B.flyT, cam = C.cam, cap = $('bdFlyCap');
+  const sm = function (u) { u = Math.max(0, Math.min(1, u)); return u * u * (3 - 2 * u); };
+  let cur = FLY[0]; FLY.forEach(function (s) { if (t >= s[1]) cur = s; }); const u = (t - cur[1]) / (cur[2] - cur[1]), seg = function (a, b) { return sm((u - a) / (b - a)); };
+  Object.keys(B.shots).forEach(function (k) { B.shots[k].visible = k === cur[0]; });
+  /* fade to black (white for the wormhole) between shots */
+  let fd = 0; FLY.forEach(function (s, i) { if (i) fd = Math.max(fd, 1 - Math.abs(t - s[1]) / 0.35); }); fd = Math.max(fd, 1 - Math.abs(t - FLY_END) / 0.3);
+  if (B.fade) { B.fade.style.opacity = Math.max(0, fd).toFixed(2); B.fade.style.background = Math.abs(t - 12) < 0.4 || Math.abs(t - 15.6) < 0.4 ? '#e8e0ff' : '#000'; }
+  const key = t > 23.6 ? 'bd.fly7' : cur[3]; if (cap && cap.dataset.k !== key) { cap.dataset.k = key; cap.textContent = tx(key); }
+  B.flyStars.visible = cur[0] !== 'worm';
+  if (cur[0] === 'earth') { const sh = B.flyShip, E = B.flyEarth; E.rotation.y = t * 0.05; sh.rotation.y += dt * 2;
+    const z = -260 * seg(0.62, 1), y = -8 + 22 * seg(0, 0.62); sh.position.set(Math.sin(t * 1.3) * 1.2, y, z);
+    cam.position.set(sh.position.x * 0.5 + 6 - 4 * seg(0.55, 0.85), y + 4 + 8 * (1 - seg(0.3, 0.7)), z + 16 + 30 * seg(0.62, 1)); cam.lookAt(sh.position.x, sh.position.y + 1 - 14 * (1 - seg(0.3, 0.7)), sh.position.z - 20 * seg(0.62, 0.8)); }
+  else if (cur[0] === 'sol') { B.solP.forEach(function (p) { p.a += dt * p.w * 0.8; p.m.position.set(Math.cos(p.a) * p.r, 0, Math.sin(p.a) * p.r); });
+    const ep = B.solP[2].m.position, k = sm(u * 1.15); cam.position.set(ep.x * (1 - k) + 40 * k, 4 + 300 * k * k, ep.z * (1 - k) + 6 + 360 * k); cam.lookAt(ep.x * (1 - k), 0, ep.z * (1 - k)); }
+  else if (cur[0] === 'milky') { const k = sm(u * 1.1), hp = B.here.position; B.shots.milky.rotation.y = t * 0.03; B.here.material.opacity = 0.5 + 0.5 * Math.sin(t * 6);
+    cam.position.set(hp.x * (1 - k) + 60 * k, 10 + 620 * k, hp.z * (1 - k) + 40 + 520 * k); cam.lookAt(hp.x * (1 - k), 0, hp.z * (1 - k)); }
+  else if (cur[0] === 'worm') { const sp = 90 + 60 * Math.sin(Math.PI * u); B.rings.forEach(function (r, i) { r.position.z += dt * sp; if (r.position.z > 10) r.position.z -= B.rings.length * 9; const w = 1 + 0.25 * Math.sin(r.position.z * 0.05 + t * 3); r.scale.set(w, w, 1); r.position.x = Math.sin(r.position.z * 0.02 + t) * 3; r.position.y = Math.cos(r.position.z * 0.017 + t * 0.8) * 3;
+      r.material.color.setHSL((0.62 + r.position.z * 0.002 + t * 0.15) % 1, 0.9, 0.65); });
+    const dp = B.wormDust.geometry.attributes.position; for (let i = 0; i < dp.count; i++) { let z = dp.getZ(i) + dt * sp * 1.3; if (z > 10) z -= 400; dp.setZ(i, z); } dp.needsUpdate = true;
+    B.wormShip.position.set(Math.sin(t * 2) * 0.6, -1 + Math.cos(t * 1.7) * 0.4, -16); B.wormShip.rotation.y += dt * 4; cam.position.set(0, 0, 0); cam.lookAt(0, 0, -50); cam.rotation.z = t * 0.6; }
+  else if (cur[0] === 'far') { const k = sm(u) * 0.92; const tx0 = Math.cos(1) * 150 * k, tz0 = Math.sin(1) * 150 * k; cam.position.set(tx0 + 40 * (1 - k) + 10, 640 * (1 - k) + 20, tz0 + 300 * (1 - k) + 30); cam.lookAt(tx0, 0, tz0); }
+  else { const k = sm(u * 1.08); B.flyHome.rotation.y = 2.2 + t * 0.05; const d = 420 * (1 - k) + 78; cam.position.set(d * 0.35, 20 * (1 - k) + 18 * k, d); cam.lookAt(0, 0, 0); }
+  if (cur[0] !== 'worm') cam.rotation.z = cam.rotation.z;
+  if (t >= FLY_END) endFlight();
 }
 /* ---------- run ---------- */
 function start() {
@@ -568,7 +651,7 @@ function start() {
 }
 function exit() {
   if (!B) return; const scene = C.scene, l = B.light;
-  scene.remove(B.g); C.disposeGroup(B.g); if (B.flyG) { scene.remove(B.flyG); C.disposeGroup(B.flyG); if (B.flyTex) B.flyTex.dispose(); } scene.background = B.bg; scene.fog = B.fog; C.HEMI.intensity = l[0]; C.HEMI.color.copy(l[1]); C.HEMI.groundColor.copy(l[2]); C.KEYL.intensity = l[3]; C.KEYL.color.copy(l[4]); C.KEYL.position.copy(l[5]);
+  scene.remove(B.g); C.disposeGroup(B.g); if (B.flyG) { scene.remove(B.flyG); C.disposeGroup(B.flyG); if (B.flyTex) B.flyTex.dispose(); if (B.homeTex) B.homeTex.dispose(); } if (B.fade && B.fade.parentNode) B.fade.parentNode.removeChild(B.fade); if (B.prevFar) { C.cam.far = B.prevFar; } scene.background = B.bg; scene.fog = B.fog; C.HEMI.intensity = l[0]; C.HEMI.color.copy(l[1]); C.HEMI.groundColor.copy(l[2]); C.KEYL.intensity = l[3]; C.KEYL.color.copy(l[4]); C.KEYL.position.copy(l[5]);
   C.cam.fov = 42; C.cam.updateProjectionMatrix(); B = null; $('domeUI').hidden = true; if (BQ.amb) BQ.amb.stop(1); C.save(); C.setMode('menu'); C.menuScene();
 }
 function step(dt) {

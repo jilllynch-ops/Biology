@@ -69,37 +69,38 @@ FieldGuide.registerWorld({
           .goal();
       } },
     { id: '5-4', title: 'Reading the Evidence', theme: 'canyon',
-      log: 'Mission log: The canyon walls are a history book written in rock. Your burrow drill can read it from the top down. The deeper you dig, the further back in time you go.',
+      log: 'Mission log: The canyon walls are a history book written in rock. With my hand drill I can dig down through the layers. The deeper I dig, the further back in time I go.',
       outro: 'Report sent: fossils in rock layers, transitional fossils, homologous and vestigial structures, similar embryos, matching DNA and proteins, and a universal genetic code all show that living things share common ancestors.',
       build: function (b) {
-        /* FOSSIL DIG: the evidence from living things is up top; then drill DOWN through five rock layers, each older than the one above
-           (law of superposition). The layers are a "greatest hits" stack from real fossil sites around the world, in true age order. */
-        b.hint(5, 4.6, 'Evidence from living things first. Then drill down into the rock!').sparks(9, 1.2, 4).ground(14).review()
+        /* FOSSIL DIG: evidence from living things up top, then dig freely DOWN through five rock layers, each older than the one above
+           (law of superposition). Each layer is a block of rock to tunnel through: fossils and minerals are buried in it, hard boulders
+           must be dug around, and loose boulders fall if you dig out what holds them up. Samples go into a bag (3 at a time) and up
+           to the lab through a sample capsule. The layers are a "greatest hits" stack from real fossil sites, in true age order. */
+        b.hint(5, 4.6, 'Evidence from living things first. Then dig down into the rock!').sparks(9, 1.2, 4).ground(14).review()
           .scan(3, 's5-embryo').scan(8, 's5-molecular').scan(13, 's5-code').ground(16).hsparks(-10, 6.2, 4)
           .readData('d-cytochrome')
-          .fossil(3, 's5-fossil').scan(8, 's5-layers').ground(12)
-          .digShaft(3, 10, { color: '#c8a878' })
+          .scan(3, 's5-fossil').scan(8, 's5-layers').capsule(12.5).ground(15)
+          .digField({ color: '#c8a878', fossils: [[3, 2, 's5r-mammoth']], ores: [[7, 1, 'quartz'], [1, 5, 'calcite']], boulders: [[5, 3, 1], [6, 3, 0], [8, 5, 0]] })
           .stratum({ name: 'Layer 1 · Ice Age', sub: 'About 20,000 years ago. Near the top = youngest.', color: '#c8a878' })
-          .fossil(4, 's5r-mammoth').rockfall(11, 4.2, 0).ground(15)
+          .rockfall(9, 4.2, 0).capsule(14).ground(16)
           .become('b-homolog').ground(4)
-          .digShaft(3, 10, { color: '#b88a5a' })
+          .digField({ color: '#b88a5a', fossils: [[5, 3, 's5r-ambulo']], ores: [[2, 1, 'gypsum'], [8, 4, 'hematite']], boulders: [[4, 1, 0], [1, 3, 1], [7, 2, 0], [3, 5, 0]] })
           .stratum({ name: 'Layer 2 · Early whales', sub: 'About 49 million years ago (fossils found in Pakistan)', color: '#b88a5a' })
-          .fossil(3, 's5r-ambulo').scan(8, 's5-vestigial').scan(13, 's5-homologous').scan(18, 's5-analogous').ground(21)
+          .scan(4, 's5-vestigial').scan(9, 's5-homologous').scan(14, 's5-analogous').capsule(18).ground(20)
           .refuel().station([{ sort: 'structures', n: 4 }]).ground(4)
-          .digShaft(3, 10, { color: '#9a6a4a' })
+          .digField({ color: '#9a6a4a', fossils: [[2, 2, 's5r-dino']], ores: [[6, 4, 'hematite'], [8, 1, 'quartz']], boulders: [[5, 1, 1], [5, 2, 0], [1, 4, 0], [7, 5, 1]] })
           .stratum({ name: 'Layer 3 · Dinosaurs', sub: 'About 68 million years ago (like Montana\'s Hell Creek rocks)', color: '#9a6a4a' })
-          .fossil(4, 's5r-dino').rockfall(9, 3.6, 0.4).rockfall(14, 3.6, 2.2).ground(18)
+          .rockfall(8, 3.6, 0.4).capsule(13).ground(16)
           .lablock('lock-5-4').ground(4)
-          .digShaft(3, 10, { color: '#8a7a6a' })
+          .digField({ color: '#8a7a6a', fossils: [[6, 3, 's5-transitional']], ores: [[2, 2, 'calcite'], [4, 5, 'pyrite']], boulders: [[3, 1, 0], [8, 2, 1], [1, 4, 0]] })
           .stratum({ name: 'Layer 4 · Fish with legs', sub: 'About 375 million years ago (Tiktaalik, Ellesmere Island, Canada)', color: '#8a7a6a' })
-          .fossil(4, 's5-transitional').rockfall(10, 3.8, 1.2).ground(14)
+          .rockfall(9, 3.8, 1.2).capsule(13).ground(16)
           .mixed(2, ['BIO.B.2.2.1', 'BIO.B.3.1.2', 'BIO.B.3.2.1', 'BIO.B.3.1.1'])
           .station(['w5q17', 'w5q22']).ground(4)
-          .digShaft(3, 10, { color: '#6a7a8a' })
+          .digField({ color: '#6a7a8a', fossils: [[3, 2, 's5r-trilobite']], ores: [[7, 3, 'pyrite'], [1, 5, 'calcite']], boulders: [[5, 2, 0], [6, 4, 1]],
+            rare: [0, 6, { name: 'Hallucigenia fossil', fact: 'A tiny spiky Burgess Shale animal. Scientists first drew it upside down and back to front. New fossils showed them the mistake: science corrects itself with evidence.' }] })
           .stratum({ name: 'Layer 5 · Early sea animals', sub: 'About 500 million years ago (like the Burgess Shale, Canada)', color: '#6a7a8a' })
-          .fossil(4, 's5r-trilobite').ground(9)
-          .digBlock(0, -3, 6, 3, '#7a8a9a').rise(-3).rare(3, 0.9, { name: 'Hallucigenia fossil', fact: 'A tiny spiky Burgess Shale animal. Scientists first drew it upside down and back to front. New fossils showed them the mistake: science corrects itself with evidence.' }).ground(6).rise(3)
-          .rockfall(4, 3.2, 1).ground(9)
+          .rockfall(9, 3.2, 1).capsule(13).ground(16)
           .sequence('s-layers').ground(3)
           .caveEnd().ground(10)
           .goal();
