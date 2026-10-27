@@ -14,7 +14,7 @@ Object.assign(C.I18N.en, {
   'co.back': 'Hike back up to', 'co.backT': 'Willow Creek', 'co.welcome': 'You followed the stream down the valley to the sea. Walk down to the beach and swim out over the reef: Space swims up, C dives.',
   'co.keys': 'WASD / arrows: move · Shift: run · Space: jump, swim up · C or X: dive · drag or Q/R: look · E: use · Esc: pause',
   'co.pause': 'Paused', 'co.resume': 'Resume', 'co.menu': 'Main menu', 'co.leave': 'Back to Willow Creek', 'co.sit': 'Sit by', 'co.fire': 'the campfire', 'co.stand': 'Move to stand up.',
-  'cz.hike': 'Hike down', 'cz.t.coast': 'the valley trail to the coast', 'co.sign': '🌊 To the coast', 'co.signBack': '⛰️ Willow Creek',
+  'cz.hike': 'Hike down', 'cz.t.coast': 'the valley trail to the coast', 'co.sign': '🌊 To the coast', 'co.signBack': '⛰️ Back to Willow Creek',
   'co.diveTip': 'Under water! Space swims up, C or X dives. The alien does not need air, so take your time.', 'co.newEntry': 'New Field Guide entry', 'co.found': 'Field Guide', 'co.pts': 'points', 'co.jTitle': 'Field Guide: places beyond Willow Creek', 'co.jNone': 'Nothing found here yet. Explore and get close to animals and plants.'
 });
 Object.assign(C.I18N.es, {
@@ -22,7 +22,7 @@ Object.assign(C.I18N.es, {
   'co.back': 'Subir de nuevo a', 'co.backT': 'Willow Creek', 'co.welcome': 'Seguiste el arroyo valle abajo hasta el mar. Baja a la playa y nada sobre el arrecife: Espacio sube, C bucea.',
   'co.keys': 'WASD / flechas: moverse · Shift: correr · Espacio: saltar, subir nadando · C o X: bucear · arrastrar o Q/R: mirar · E: usar · Esc: pausa',
   'co.pause': 'En pausa', 'co.resume': 'Seguir', 'co.menu': 'Menú principal', 'co.leave': 'Volver a Willow Creek', 'co.sit': 'Sentarse junto a', 'co.fire': 'la fogata', 'co.stand': 'Muévete para levantarte.',
-  'cz.hike': 'Bajar por', 'cz.t.coast': 'el sendero del valle hasta la costa', 'co.sign': '🌊 A la costa', 'co.signBack': '⛰️ Willow Creek',
+  'cz.hike': 'Bajar por', 'cz.t.coast': 'el sendero del valle hasta la costa', 'co.sign': '🌊 A la costa', 'co.signBack': '⛰️ Volver a Willow Creek',
   'co.diveTip': '¡Bajo el agua! Espacio sube nadando, C o X bucea. El extraterrestre no necesita aire, así que tómate tu tiempo.', 'co.newEntry': 'Nueva entrada en la Guía de Campo', 'co.found': 'Guía de Campo', 'co.pts': 'puntos', 'co.jTitle': 'Guía de Campo: lugares más allá de Willow Creek', 'co.jNone': 'Todavía no has encontrado nada aquí. Explora y acércate a los animales y las plantas.'
 });
 
@@ -62,7 +62,7 @@ function segD(x, z, a, b) { const vx = b[0] - a[0], vz = b[1] - a[1], u = Math.m
 function lineD(P, x, z) { let d = 1e9; for (let i = 0; i < P.length - 1; i++) { if (Math.abs(P[i][0] - x) > 9 && Math.abs(P[i][1] - z) > 9) continue; d = Math.min(d, segD(x, z, P[i], P[i + 1])); } return d; }
 function sandEdge(x, z) { const n = Math.sin(x * 0.21 + Math.cos(z * 0.17) * 2) * Math.cos(z * 0.13 - x * 0.05); return -11 + n * 2.5; }
 function pathD(x, z) { return Math.min(lineD(PATH, x, z), lineD(PATH2, x, z)); }
-const START = { x: riverX(-76) + 6.6, z: -76 }, FIRE = { x: 7.5, z: -22 }, BOUNDS = { x0: -84, x1: 84, z0: -96, z1: 96 };
+const START = { x: riverX(-30) + 6.6, z: -30 }, FIRE = { x: 7.5, z: -22 }, BOUNDS = { x0: -84, x1: 84, z0: -96, z1: 96 };
 
 /* ---------- small helpers ---------- */
 let K = null; /* the running cove */
@@ -307,7 +307,7 @@ function build() {
   { const post = function (x, z, text, w) { const y = Hc(x, z), p = new T.Mesh(new T.CylinderGeometry(0.12, 0.14, 2.6, 6), new T.MeshLambertMaterial({ color: '#7a5a3a' })); p.position.set(x, y + 1.3, z); g.add(p);
       const bd = new T.Mesh(new T.BoxGeometry(w * 0.55, 0.6, 0.1), new T.MeshLambertMaterial({ color: '#a07a4a' })); bd.position.set(x, y + 2.3, z); bd.lookAt(x, y + 2.3, z + 10); g.add(bd);
       const lb = C.label(text, w, { bd: '#ffd166' }); lb.position.set(x, y + 3.2, z); g.add(lb); K.colliders.push({ x: x, z: z, r: 0.25, top: y + 2.6 }); };
-    post(START.x - 3.2, START.z - 0.5, tx('co.signBack'), 2.4); post(6.5, 3, '🌅 ' + tx('co.title'), 2.6); }
+    post(START.x + 2.6, START.z - 3.2, tx('co.signBack'), 2.6); post(6.5, 3, '🌅 ' + tx('co.title'), 2.6); }
   addPlayer(g);
 }
 
@@ -343,7 +343,8 @@ function discover(f) { const s = fstore(); if (s.fg[f.id]) return; s.fg[f.id] = 
   K.cardQ = K.cardQ || []; K.cardQ.push(f); counter(); }
 /* Keystone tags for Field Guide entries (approved by the teacher, v57). Wording comes from the verified KEYSTONE table in engine.js. Entries with no clear fit stay untagged. */
 const TAGS = { rf_brain: ['BIO.B.4.2.2'], rf_clown: ['BIO.B.4.2.2'], rf_shrimp: ['BIO.B.4.2.2'], rf_tang: ['BIO.B.4.2.1'], rf_seagrass: ['BIO.B.4.2.1'], rf_parrot: ['BIO.B.4.2.1'], rf_turtle: ['BIO.B.4.2.1'],
-  hf_crayfish: ['BIO.B.4.2.1'], hf_trout: ['BIO.B.4.1.2'], hf_hellbender: ['BIO.B.4.1.2'], hf_hemlock: ['BIO.B.4.1.2', 'BIO.B.4.2.4'], hf_mayfly: ['BIO.B.4.2.4'], hf_spring: ['BIO.B.4.2.3'] };
+  hf_crayfish: ['BIO.B.4.2.1'], hf_trout: ['BIO.B.4.1.2'], hf_hellbender: ['BIO.B.4.1.2'], hf_hemlock: ['BIO.B.4.1.2', 'BIO.B.4.2.4'], hf_mayfly: ['BIO.B.4.2.4'], hf_spring: ['BIO.B.4.2.3'],
+  ko_kelp: ['BIO.B.4.2.1'], ko_urchin: ['BIO.B.4.2.1'], ko_rockfish: ['BIO.B.4.2.1'], ko_otter: ['BIO.B.4.2.2'], ko_anemone: ['BIO.B.4.2.2'], ko_barren: ['BIO.B.4.2.4'], ko_canopy: ['BIO.B.4.1.2'], ko_holdfast: ['BIO.B.4.1.2'] };
 function tagHTML(id) { const t = TAGS[id], KS = C.KEYSTONE || {}; if (!t) return ''; return ' <span class="fgTag" style="font-size:.8em;opacity:.8">· Keystone ' + t.map(function (c) { return '<abbr title="' + C.esc(KS[c] || '') + '">' + C.esc(c) + '</abbr>'; }).join(', ') + '</span>'; }
 function showEntry(f) { card('', 11, '<b>📖 ' + C.esc(tx('co.newEntry')) + ': ' + C.esc(tx('fd.n.' + f.id)) + '</b> <span style="color:#ffd166">+50 ⭐</span><br>' + C.esc(tx('fd.d.' + f.id)) + tagHTML(f.id)); }
 function scanStep(dt) { const list = K.A.finds; if (!list) return; K.scanT = (K.scanT || 0) - dt; if (K.scanT <= 0) { K.scanT = 0.25; const s = fstore();
@@ -360,22 +361,31 @@ function fade(text, then) { const f = $('coFade'); f.textContent = text; f.style
 /* ---------- ENTER / LEAVE (from Willow Creek's valley trailhead) ---------- */
 function enter(id) {
   const W = BQ.cozy && BQ.cozy._w(), A = AREAS[id || 'cove']; if (!W || K || !A) return; ensureUI(); W.k = {};
-  const START = A.start, Hc = A.H, build = A.build;
-  fade(tx(A.down), function () {
+  fade(tx(A.down), function () { setup(W, A); });
+}
+/* hike straight from one area to another (Sunset Cove <-> Kelp Cove) without going back to Willow Creek */
+function hop(to, at, msg) { const A = AREAS[to]; if (!K || !A || K.hopping) return; K.hopping = true; fade(tx(msg || A.down), function () { const W = K.W; teardown(); setup(W, A, at); }); }
+function setup(W, A, at) {
+  const START = at || A.start, Hc = A.H, build = A.build;
+  {
     K = { W: W, t: 0, k: {}, yaw: Math.PI, pitch: 0.32, dist: 11, distT: 11, vx: 0, vy: 0, vz: 0, px: START.x, pz: START.z, py: 0, face: Math.PI * 0, ground: true, pause: false, cardT: 0, fpsT: 0, fpsN: 0,
       save: { bg: C.scene.background, fog: C.scene.fog, light: [C.HEMI.intensity, C.HEMI.color.clone(), C.HEMI.groundColor.clone(), C.KEYL.intensity, C.KEYL.color.clone(), C.KEYL.position.clone()], fov: C.cam.fov } };
-    K.A = A; K.yaw = Math.atan2(START.x - A.look[0], START.z - A.look[1]); K.face = K.yaw + Math.PI; K.pitch = 0.3; W.coast = true; /* arrive looking toward the best view */ W.g.visible = false; $('cozyUI').hidden = true; build(K); K.py = Hc(K.px, K.pz);
+    K.A = A; K.yaw = Math.atan2(START.x - A.look[0], START.z - A.look[1]); K.face = K.yaw + Math.PI; K.pitch = 0.3; K.snap = true; W.coast = true; /* arrive looking toward the best view */ W.g.visible = false; $('cozyUI').hidden = true; build(K); K.py = Hc(K.px, K.pz);
     $('coUI').hidden = false; refreshText(); counter(); amb('mood', A.mood, 2); amb('underwater', false);
-    const s = BQ.cozy._s(); if (!s.f[A.flag]) { s.f[A.flag] = 1; C.save(); setTimeout(function () { if (K) card(tx(A.welcome), 14); }, 900); } });
+    (A.links || []).forEach(function (l) { linkSign(K.g, Hc, l); });
+    const s = BQ.cozy._s(); if (!s.f[A.flag]) { s.f[A.flag] = 1; C.save(); setTimeout(function () { if (K) card(tx(A.welcome), 14); }, 900); } }
 }
+function linkSign(g, Hc, l) { const y = Hc(l.x, l.z), p = new T.Mesh(new T.CylinderGeometry(0.12, 0.14, 2.6, 6), new T.MeshLambertMaterial({ color: '#7a5a3a' })); p.position.set(l.x, y + 1.3, l.z); g.add(p);
+  const lb = C.label(tx(l.sign), 3.0, { bd: '#ffd166' }); lb.position.set(l.x, y + 3.1, l.z); g.add(lb); K.colliders.push({ x: l.x, z: l.z, r: 0.25, top: y + 2.6 }); }
+function teardown() { C.scene.remove(K.g); C.disposeGroup(K.g); const s0 = K.save; C.scene.background = s0.bg; C.scene.fog = s0.fog; C.HEMI.intensity = s0.light[0]; C.HEMI.color.copy(s0.light[1]); C.HEMI.groundColor.copy(s0.light[2]); C.KEYL.intensity = s0.light[3]; C.KEYL.color.copy(s0.light[4]); C.KEYL.position.copy(s0.light[5]);
+  C.cam.fov = s0.fov; C.cam.updateProjectionMatrix(); amb('underwater', false); K = null; }
 function leave(quick) {
-  if (!K) return; const W = K.W, A = K.A, done = function () { if (!K) return;
-    C.scene.remove(K.g); C.disposeGroup(K.g); const s0 = K.save; C.scene.background = s0.bg; C.scene.fog = s0.fog; C.HEMI.intensity = s0.light[0]; C.HEMI.color.copy(s0.light[1]); C.HEMI.groundColor.copy(s0.light[2]); C.KEYL.intensity = s0.light[3]; C.KEYL.color.copy(s0.light[4]); C.KEYL.position.copy(s0.light[5]);
-    C.cam.fov = s0.fov; C.cam.updateProjectionMatrix(); amb('underwater', false); K = null; $('coUI').hidden = true;
-    if (W) { W.coast = false; W.g.visible = true; $('cozyUI').hidden = false; W.k = {}; const a = A.trail.a * Math.PI / 180, r = A.trail.r - 2.7; W.px = Math.cos(a) * r; W.pz = Math.sin(a) * r; W.py = BQ.cozy._GH(W.px, W.pz); W.vx = W.vz = W.vy = 0; W.yaw = Math.atan2(W.px, W.pz); W.face = W.yaw + Math.PI; W.camUnder = false; amb('mood', 'meadow', 2); if (BQ.cozy._back) BQ.cozy._back(); } };
+  if (!K) return; const W = K.W, A = K.A, TR = (A.from ? AREAS[A.from] : A).trail, done = function () { if (!K) return;
+    teardown(); $('coUI').hidden = true;
+    if (W) { W.coast = false; W.g.visible = true; $('cozyUI').hidden = false; W.k = {}; const a = TR.a * Math.PI / 180, r = TR.r - 2.7; W.px = Math.cos(a) * r; W.pz = Math.sin(a) * r; W.py = BQ.cozy._GH(W.px, W.pz); W.vx = W.vz = W.vy = 0; W.yaw = Math.atan2(W.px, W.pz); W.face = W.yaw + Math.PI; W.camUnder = false; amb('mood', 'meadow', 2); if (BQ.cozy._back) BQ.cozy._back(); } };
   if (quick) done(); else fade(tx(A.up || 'co.up'), done);
 }
-function cozyTrail(g, H) { return Object.keys(AREAS).map(function (id) { return trailSign(g, H, AREAS[id]); }); }
+function cozyTrail(g, H) { return Object.keys(AREAS).filter(function (id) { return !AREAS[id].from; }).map(function (id) { return trailSign(g, H, AREAS[id]); }); } /* areas reached from another area have no Willow Creek trailhead */
 function trailSign(g, H, A) { /* a trailhead signpost in Willow Creek */
   const a = A.trail.a * Math.PI / 180, r = A.trail.r, x = Math.cos(a) * r, z = Math.sin(a) * r, y = H(x, z);
   const p = new T.Mesh(new T.CylinderGeometry(0.12, 0.14, 2.6, 6), new T.MeshLambertMaterial({ color: '#7a5a3a' })); p.position.set(x, y + 1.3, z); g.add(p);
@@ -426,9 +436,9 @@ function step(dt) {
   scanStep(dt);
   /* the alien */
   const me = K.me, spd = Math.hypot(K.vx, K.vz); me.position.set(K.px, K.py, K.pz); me.rotation.y += (((K.face - me.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 10);
-  const legs = me.userData.legs; if (legs) { const b0 = K.stride || 0; K.stride = b0 + dt * spd * (k.run ? 1.1 : 1.5); legs.forEach(function (h, i) { h.rotation.x = K.sitting ? -1.3 : K.swim ? Math.sin(K.t * 7 + i * Math.PI) * 0.6 : K.ground ? Math.sin(K.stride + i * Math.PI) * 0.7 * Math.min(1, spd / 4) : (K.gliding ? 0.6 : -0.5); });
-    if (K.ground && spd > 1 && Math.floor(b0 / Math.PI) !== Math.floor(K.stride / Math.PI)) amb('sfx', 'step', k.run ? 1 : 0.6); }
-  me.rotation.x = K.swim ? (K.under || k.dive ? 0.9 : 0.55) : (k.run && len > 0 && K.ground ? 0.18 : 0); me.rotation.z = K.gliding ? Math.sin(K.t * 6) * 0.08 : 0;
+  const b0 = K.stride || 0; K.stride = b0 + dt * spd * (k.run ? 1.1 : 1.5); if (me.userData.legs && K.ground && spd > 1 && Math.floor(b0 / Math.PI) !== Math.floor(K.stride / Math.PI)) amb('sfx', 'step', k.run ? 1 : 0.6);
+  if (K.ground && !K.wasGround && K.lastVy < -4) K.landT = 0.16; K.wasGround = K.ground; K.lastVy = K.vy; K.landT = Math.max(0, (K.landT || 0) - dt);
+  if (BQ.cozy && BQ.cozy._pose) BQ.cozy._pose(me, { t: K.t, dt: dt, spd: spd, stride: K.stride, ground: K.ground, swim: K.swim, under: K.under || k.dive, flying: false, gliding: K.gliding, vy: K.vy, moving: len > 0, landT: K.landT, sit: K.sitting });
   K.shadow.visible = !K.swim; K.shadow.position.set(K.px, Hc(K.px, K.pz) + 0.06, K.pz); { const up = Math.max(0, K.py - Hc(K.px, K.pz)); K.shadow.scale.setScalar(Math.max(0.3, 1 - up / 6)); }
   /* the camera follows behind, stays out of trees and rocks, and slips under the water with you */
   K.dist += (K.distT - K.dist) * Math.min(1, dt * 5); const eD = K.under ? Math.min(K.dist, 6) : K.dist, eP = K.under ? Math.min(K.pitch, 0.18) : K.pitch;
@@ -440,7 +450,7 @@ function step(dt) {
     want.set(tgt.x + (want.x - tgt.x) * s0, tgt.y + (want.y - tgt.y) * s0, tgt.z + (want.z - tgt.z) * s0); want.y = Math.max(Hc(want.x, want.z) + 0.45, Math.min(want.y, -0.4)); }
   else { const gc = Hc(want.x, want.z) + 1.6; if (want.y < gc) want.y = gc; for (let q = 1; q <= 2; q++) { const u = q / 3, mx0 = tgt.x + (want.x - tgt.x) * u, mz0 = tgt.z + (want.z - tgt.z) * u, my = tgt.y + (want.y - tgt.y) * u, gm = Hc(mx0, mz0) + 0.6; if (my < gm) want.y += (gm - my) / u; }
     if (waterHere(want.x, want.z) != null && want.y < 0.45) want.y = 0.45; }
-  cam.position.lerp(want, Math.min(1, dt * 6)); cam.lookAt(tgt); if (Math.abs(cam.fov - 42) > 0.05) { cam.fov = 42; cam.updateProjectionMatrix(); }
+  if (K.snap) { cam.position.copy(want); K.snap = false; } else cam.position.lerp(want, Math.min(1, dt * 6)); cam.lookAt(tgt); /* on arrival the camera starts in place, already looking at the view */ if (Math.abs(cam.fov - 42) > 0.05) { cam.fov = 42; cam.updateProjectionMatrix(); }
   K.sky.position.copy(cam.position);
   if (K.pineIM) { const ax = tgt.x, az = tgt.z, bx = cam.position.x - ax, bz = cam.position.z - az, L2 = bx * bx + bz * bz, hy = Math.max(cam.position.y, tgt.y) + 0.4, arr = K.pineIM.instanceMatrix.array; let dirty = false;
     if (!K.pineM) { K.pineM = arr.slice(); K.trunkM = K.trunkIM.instanceMatrix.array.slice(); } const ta = K.trunkIM.instanceMatrix.array;
@@ -467,14 +477,15 @@ function step(dt) {
   if (K.sparks) K.sparks.forEach(function (s0, i) { s0.t += dt; if (s0.t > 1.6) s0.t -= 1.6; const u = s0.t / 1.6; s0.m.position.set(K.fire.x + Math.sin(i * 2.1 + K.t) * 0.3 * u, K.fire.y + 0.6 + u * 3.2, K.fire.z + Math.cos(i * 1.7) * 0.3 * u); s0.m.material.opacity = (1 - u) * 0.9; });
   if (K.gulls) K.gulls.forEach(function (gl, i) { const a = K.t * 0.15 + gl.ph; gl.m.position.set(Math.cos(a) * gl.r, gl.y + Math.sin(K.t + i) * 1.2, 40 + Math.sin(a) * gl.r * 0.6); gl.m.rotation.y = -a; gl.m.children[0].rotation.z = 0.25 + Math.sin(K.t * 4 + i) * 0.3; gl.m.children[1].rotation.z = -(0.25 + Math.sin(K.t * 4 + i) * 0.3); });
   /* things to use */
-  const nearBack = Math.hypot(K.px - START.x, K.pz - START.z) < 5, nearFire = Math.hypot(K.px - FIRE.x, K.pz - FIRE.z) < 3.4 && !K.sitting; K.near = nearBack ? 'back' : nearFire ? 'fire' : null;
-  const pr = K.near === 'back' ? 'E: ' + tx(A.back || 'co.back') + ' ' + tx('co.backT') : K.near === 'fire' ? 'E: ' + tx('co.sit') + ' ' + tx('co.fire') : K.sitting ? tx('co.stand') : ''; if (pr !== K.lastPr) { K.lastPr = pr; $('coPrompt').textContent = pr; $('coPrompt').hidden = !pr; }
+  const nearBack = Math.hypot(K.px - START.x, K.pz - START.z) < 5, nearFire = Math.hypot(K.px - FIRE.x, K.pz - FIRE.z) < 3.4 && !K.sitting;
+  K.link = (A.links || []).find(function (l) { return Math.hypot(K.px - l.x, K.pz - l.z) < 3.4; }) || null; K.near = nearBack ? 'back' : K.link ? 'link' : nearFire ? 'fire' : null;
+  const pr = K.near === 'back' ? 'E: ' + tx(A.back || 'co.back') + ' ' + tx(A.backT || 'co.backT') : K.near === 'link' ? 'E: ' + tx('cz.hikeIn') + ' ' + tx(K.link.label) : K.near === 'fire' ? 'E: ' + tx('co.sit') + ' ' + tx('co.fire') : K.sitting ? tx('co.stand') : ''; if (pr !== K.lastPr) { K.lastPr = pr; $('coPrompt').textContent = pr; $('coPrompt').hidden = !pr; }
   if (K.sitting) K.yaw += dt * 0.06;
   if (K.cardT > 0) { K.cardT -= dt; if (K.cardT <= 0) $('coCard').hidden = true; }
   /* frames per second (shown in admin mode, to check speed on Chromebooks) */
   { const now = performance.now(); K.fpsT += (now - (K.fpsLast || now)) / 1000; K.fpsLast = now; } K.fpsN++; if (K.fpsT > 1) { /* real frames per second, measured with the clock */ const f = $('coFps'); f.hidden = !C.S.set.admin; f.textContent = Math.round(K.fpsN / K.fpsT) + ' fps'; K.fps = K.fpsN / K.fpsT; K.fpsN = 0; K.fpsT = 0; }
 }
-function act() { if (!K || K.pause) return; const FIRE = K.A.fire; if (K.near === 'back') leave(); else if (K.near === 'fire') { K.sitting = true; K.vx = K.vz = 0; K.face = Math.atan2(FIRE.x - K.px, FIRE.z - K.pz); } }
+function act() { if (!K || K.pause) return; const A0 = K.A, FIRE = K.A.fire; if (K.near === 'back') { if (A0.from) hop(A0.from, A0.fromAt, A0.hopBack); else leave(); } else if (K.near === 'link') hop(K.link.to, K.link.at); else if (K.near === 'fire') { K.sitting = true; K.vx = K.vz = 0; K.face = Math.atan2(FIRE.x - K.px, FIRE.z - K.pz); } }
 function key(e, down) {
   if (!K) return; const kk = e.key.length === 1 ? e.key.toLowerCase() : e.key; if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
   if (down && kk === 'Escape') { e.preventDefault(); setPause(!K.pause); return; } if (K.pause) return;

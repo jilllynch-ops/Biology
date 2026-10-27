@@ -99,8 +99,9 @@ Object.assign(C.I18N.en, {
   'cz.s.lu1': 'Howdy! I spread fertilizer so my corn grows big and fast.', 'cz.s.lu2': 'When it rains, some of it washes down this ditch into the stream. I never thought about where it ends up...',
   'cz.s.luDone': 'Those plants along the stream catch the runoff now. Good for my neighbors, good for the fish!',
   'cz.s.needJar': 'You need a sample jar. Dr. Ama at the research station has one.', 'cz.s.needKit': 'You need an oxygen test kit. Dr. Ama at the research station has one.',
+  'cz.j.scope': '🔬 Found with the microscope at the station.',
   'cz.s.scopeEmpty': 'The microscope is ready. Collect a sample first: a leaf from the oak tree, or water from the pond.',
-  'cz.s.scopeDone': 'You looked at all your samples.', 'cz.s.gotLeaf': 'You collected a leaf sample. Take it to the microscope at the research station.',
+  'cz.s.scopeDone': 'You looked at all your samples.', 'cz.s.scopeLeaf': 'Nothing new on the slide. Try a leaf: collect one from the big oak tree right next to this station, then come back and look at it here.', 'cz.s.scopePond': 'Nothing new on the slide. Try pond water: fill your jar at the pond, then come back and look at it here.', 'cz.s.gotLeaf': 'You collected a leaf sample. Take it to the microscope at the research station.',
   
   'cz.s.planted': 'You planted a seedling. Its roots will soak up nutrients from the runoff.', 'cz.s.clearing': 'The pond is starting to clear...',
   'cz.a.cz-first': 'Field Scientist', 'cz.a.cz-first.d': 'Make your first observation in Willow Creek Reserve.',
@@ -198,8 +199,9 @@ Object.assign(C.I18N.es, {
   'cz.s.lu1': '¡Hola! Echo fertilizante para que mi maíz crezca grande y rápido.', 'cz.s.lu2': 'Cuando llueve, parte se va por esta zanja hasta el arroyo. Nunca pensé adónde llegaba...',
   'cz.s.luDone': 'Ahora las plantas junto al arroyo atrapan lo que escurre. ¡Bueno para mis vecinos y para los peces!',
   'cz.s.needJar': 'Necesitas un frasco para muestras. La Dra. Ama, en la estación de investigación, tiene uno.', 'cz.s.needKit': 'Necesitas un kit para medir oxígeno. La Dra. Ama, en la estación de investigación, tiene uno.',
+  'cz.j.scope': '🔬 Se descubre con el microscopio de la estación.',
   'cz.s.scopeEmpty': 'El microscopio está listo. Primero toma una muestra: una hoja del roble o agua del estanque.',
-  'cz.s.scopeDone': 'Ya observaste todas tus muestras.', 'cz.s.gotLeaf': 'Tomaste una muestra de hoja. Llévala al microscopio de la estación de investigación.',
+  'cz.s.scopeDone': 'Ya observaste todas tus muestras.', 'cz.s.scopeLeaf': 'No hay nada nuevo en el portaobjetos. Prueba con una hoja: toma una del gran roble que está junto a esta estación y vuelve a observarla aquí.', 'cz.s.scopePond': 'No hay nada nuevo en el portaobjetos. Prueba con agua del estanque: llena tu frasco en el estanque y vuelve a observarla aquí.', 'cz.s.gotLeaf': 'Tomaste una muestra de hoja. Llévala al microscopio de la estación de investigación.',
   
   'cz.s.planted': 'Plantaste un brote. Sus raíces absorberán los nutrientes que escurren.', 'cz.s.clearing': 'El estanque empieza a aclararse...',
   'cz.a.cz-first': 'Científico de campo', 'cz.a.cz-first.d': 'Haz tu primera observación en la Reserva Arroyo de los Sauces.',
@@ -353,6 +355,9 @@ Object.assign(C.I18N.en, {
   'cz.h.under': 'You are underwater. Let go of C and you float up. Hold Space to rise faster. Swim toward the shore and press Space to climb out.',
   'cz.h.lost': 'Feeling lost? Open the map (M). It shows where you have been, the trails, and everything you have discovered.',
   'cz.h.find1': 'Look around {hab} to the {dir}. Something there is worth a closer look.',
+  'cz.h.leaf1': 'One discovery can only be made with the microscope. Start by collecting a leaf from the big oak tree next to the research station.', 'cz.h.leaf2': 'Head {dir} about {n} steps to the big oak by the station and press E to collect a leaf.',
+  'cz.h.pondS1': 'Pond water hides tiny living things. Fill your jar at the pond, then look at it under the microscope.', 'cz.h.pondS2': 'Head {dir} about {n} steps to the pond and press E to fill your jar.',
+  'cz.h.scope1': 'You have a sample nobody has looked at yet. Take it to the microscope at the research station.', 'cz.h.scope2': 'Head {dir} about {n} steps to the microscope at the station and press E to examine your sample.',
   'cz.h.find2': 'Head {dir} about {n} steps, toward {area}. Watch for a white sparkle.',
   'cz.h.find3': 'I marked it on your map and with a beam of light. Walk to the beam and press E.',
   'cz.h.voice1': 'An animal nearby seems to have something on its mind. Your antennae might pick it up.',
@@ -378,6 +383,9 @@ Object.assign(C.I18N.es, {
   'cz.h.under': 'Estás bajo el agua. Suelta C y subirás flotando. Mantén Espacio para subir más rápido. Nada hacia la orilla y pulsa Espacio para salir.',
   'cz.h.lost': '¿Te sientes perdido? Abre el mapa (M). Muestra dónde has estado, los senderos y todo lo que has descubierto.',
   'cz.h.find1': 'Mira alrededor de {hab}, hacia el {dir}. Ahí hay algo que vale la pena observar de cerca.',
+  'cz.h.leaf1': 'Hay un descubrimiento que solo se puede hacer con el microscopio. Empieza por tomar una hoja del gran roble que está junto a la estación de investigación.', 'cz.h.leaf2': 'Camina hacia el {dir} unos {n} pasos hasta el gran roble junto a la estación y pulsa E para tomar una hoja.',
+  'cz.h.pondS1': 'El agua del estanque esconde seres vivos diminutos. Llena tu frasco en el estanque y obsérvala con el microscopio.', 'cz.h.pondS2': 'Camina hacia el {dir} unos {n} pasos hasta el estanque y pulsa E para llenar tu frasco.',
+  'cz.h.scope1': 'Tienes una muestra que nadie ha observado todavía. Llévala al microscopio de la estación de investigación.', 'cz.h.scope2': 'Camina hacia el {dir} unos {n} pasos hasta el microscopio de la estación y pulsa E para examinar tu muestra.',
   'cz.h.find2': 'Ve hacia el {dir} unos {n} pasos, hacia {area}. Busca un destello blanco.',
   'cz.h.find3': 'Lo marqué en tu mapa y con un rayo de luz. Camina hasta el rayo y pulsa E.',
   'cz.h.voice1': 'Un animal cercano parece tener algo en mente. Tus antenas podrían captarlo.',
@@ -1552,8 +1560,10 @@ function kitUse() { const s = st(); if (!s.inv.kit) { say('cz.s.needKit'); retur
 function scopeUse() {
   const s = st(), todo = [];
   if (s.samples.leaf && !s.found.leafcell) todo.push('leafcell'); if (s.samples.pond && !s.found.algae) todo.push('algae');
-  if (!todo.length) { say(s.samples.leaf || s.samples.pond ? 'cz.s.scopeDone' : 'cz.s.scopeEmpty'); return; }
+  const seen = ['leafcell', 'algae'].filter(function (k) { return s.found[k]; }), look = function (list, first) { if (!BQ.micro || !list.length) return; W.k = {}; W.vx = W.vz = 0; W.ui = 'micro'; BQ.micro.open(list, first, function () { if (W && W.ui === 'micro') W.ui = null; }); };
+  if (!todo.length) { say(!s.found.leafcell && !s.samples.leaf ? (s.samples.pond ? 'cz.s.scopeLeaf' : 'cz.s.scopeEmpty') : !s.found.algae && !s.samples.pond ? 'cz.s.scopePond' : 'cz.s.scopeDone'); look(seen, seen[seen.length - 1]); return; }
   const id = todo[0]; find(id); if (id === 'algae') { st().ev.micro = 1; saveSoon(); objective(); }
+  look(['leafcell', 'algae'].filter(function (k) { return s.found[k]; }), id); /* look through the eyepiece */
 }
 function plant(p) {
   const s = st(); s.f['p' + p.i] = 1; s.planted = (s.planted || 0) + 1; saveSoon(); p.pl.visible = true; p.pl.scale.setScalar(0.1); W.grow = W.grow || []; W.grow.push(p.pl);
@@ -1828,8 +1838,31 @@ function hintPlan() {
   let best = null, bd = 1e9;
   voices().forEach(function (v) { if (!v.clue || (s.voices && s.voices[v.key || v.id]) || (v.when && !v.when())) return; const x = v.live === 'deer' ? W.dr.x : v.x, z = v.live === 'deer' ? W.dr.z : v.z, d = Math.hypot(x - W.px, z - W.pz); if (d < 45 && d < bd) { bd = d; best = { id: 'v' + v.id, keys: ['cz.h.voice1', 'cz.h.voice2', 'cz.h.voice3'], x: x, z: z, vars: { who: tx('cz.lt.' + v.id) } }; } });
   if (best) return best;
+  { const sl = spots(), at = function (id) { return sl.find(function (q) { return q.id === id; }); }; /* microscope discoveries: get the sample first, then use the microscope */
+    [['leafcell', 'leaf', 'oak', 'cz.h.leaf'], ['algae', 'pond', 'pond', 'cz.h.pondS']].forEach(function (m) { if (s.found[m[0]] || (m[0] === 'algae' && !s.inv.jar)) return; const sp = at(s.samples[m[1]] ? 'scope' : m[2]); if (!sp) return; const d = Math.hypot(sp.x - W.px, sp.z - W.pz);
+      if (d < bd) { bd = d; best = { id: 'm' + m[0] + (s.samples[m[1]] ? 's' : ''), keys: s.samples[m[1]] ? ['cz.h.scope1', 'cz.h.scope2', 'cz.h.find3'] : [m[3] + '1', m[3] + '2', 'cz.h.find3'], x: sp.x, z: sp.z }; } }); }
   spots().forEach(function (sp) { if (!FINDS.some(function (f) { return f.id === sp.id; }) || s.found[sp.id] || (sp.when && !sp.when())) return; const d = Math.hypot(sp.x - W.px, sp.z - W.pz); if (d < bd) { bd = d; best = { id: 'f' + sp.id, keys: ['cz.h.find1', 'cz.h.find2', 'cz.h.find3'], x: sp.x, z: sp.z, vars: { hab: tx('cz.hb.' + habitatAt(sp.x, sp.z)) } }; } });
   return best || { id: 'done', keys: ['cz.h.done', 'cz.h.done', 'cz.h.done'] };
+}
+/* THE ALIEN'S BODY LANGUAGE (Willow Creek and every hiking area): walking and running bounce and sway so you can see it from behind,
+   running leans forward and kicks the feet back, a running jump is a leap (one leg forward, one back), a standing jump tucks the legs
+   and spreads them on the way down, landing squashes a little */
+function alienPose(me, p) {
+  const u = me.userData, legs = u.legs, base = u.baseS || (u.baseS = me.scale.x), lerp = function (a, b, r) { return a + (b - a) * Math.min(1, p.dt * r); };
+  const onFoot = p.ground && !p.swim && !p.flying, runK = onFoot ? Math.max(0, Math.min(1, (p.spd - 5) / 7)) : 0, air = !p.ground && !p.swim && !p.flying && !p.gliding, leap = air && p.spd > 4;
+  if (legs) legs.forEach(function (h, i) { const sd = i ? 1 : -1; let x, z = 0;
+    if (p.sit) x = -1.3; else if (p.swim) x = Math.sin(p.t * 7 + i * Math.PI) * 0.6; else if (p.flying) x = 0.9;
+    else if (onFoot) { const s0 = Math.sin(p.stride + i * Math.PI), a = 0.7 * Math.min(1, p.spd / 4); x = s0 * a * (s0 > 0 ? 1 + runK * 1.2 : 1 + runK * 0.3); z = sd * 0.05 * runK; }
+    else if (p.gliding) { x = 0.6; z = sd * 0.3; }
+    else if (leap) { x = i ? 1.05 : -0.85; z = sd * 0.08; } else { x = -0.6; z = sd * (p.vy < 0 ? 0.4 : 0.12); }
+    h.rotation.x = p.sit || onFoot ? x : lerp(h.rotation.x, x, 16); h.rotation.z = lerp(h.rotation.z, z, 14); });
+  const moving = onFoot && p.spd > 0.6, bob = moving ? Math.abs(Math.sin(p.stride)) * (0.04 + 0.12 * runK) : 0;
+  me.position.y += bob;
+  const rz = p.gliding ? Math.sin(p.t * 6) * 0.08 : p.flying ? Math.sin(p.t * 2) * 0.1 : moving ? Math.sin(p.stride) * (0.05 + 0.09 * runK) : 0;
+  const rx = p.swim ? (p.under ? 0.9 : 0.55) : p.flying ? (p.moving ? 0.7 : 0.2) : onFoot ? 0.06 * Math.min(1, p.spd / 6) + 0.24 * runK : leap ? 0.3 : 0;
+  me.rotation.z = lerp(me.rotation.z, rz, 14); me.rotation.x = lerp(me.rotation.x, rx, 10);
+  let sy = 1; if (air) sy = 1 + Math.max(-0.08, Math.min(0.12, p.vy * 0.012)); if (p.landT > 0) sy = 1 - 0.18 * (p.landT / 0.16);
+  const sx = 1 / Math.sqrt(sy); me.scale.set(base * sx, base * sy, base * sx);
 }
 function giveHint() {
   if (!W || W.talk) return; const h = hintPlan();
@@ -2120,12 +2153,10 @@ function step(dt) {
     q.m.visible = q.o.visible !== false && !(W.camUnder) && gy0 > WL0 - 0.05 - (Math.hypot(p[0] - POND.x, p[1] - POND.z) < 15.6 ? -99 : 99); q.m.position.set(p[0], gy0 + 0.05, p[1]); q.m.scale.set(q.r * 2 * k, 1, q.r * 2 * k); q.m.material.opacity = 1; });
   if (W.pondTex) { W.pondTex.offset.x = Math.sin(W.t * 0.05) * 0.3; W.pondTex.offset.y = W.t * 0.012; W.rim.material.opacity = 0.28 + Math.sin(W.t * 0.9) * 0.08; }
   W.me.position.set(W.px, W.py, W.pz); W.me.rotation.y += (((W.face - W.me.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI) * Math.min(1, dt * 10);
-  const legs = W.me.userData.legs, spd = Math.hypot(W.vx, W.vz);
-  if (legs) { const before = W.stride || 0; W.stride = before + dt * spd * (k.run ? 1.1 : 1.5);
-    legs.forEach(function (h, i) { h.rotation.x = W.swim ? Math.sin(W.t * 7 + i * Math.PI) * 0.6 : W.flying ? 0.9 : W.ground ? Math.sin(W.stride + i * Math.PI) * 0.7 * Math.min(1, spd / 4) : (W.gliding ? 0.6 : -0.5); });
-    if (W.ground && spd > 1 && Math.floor(before / Math.PI) !== Math.floor(W.stride / Math.PI)) amb('sfx', 'step', k.run ? 1 : 0.6); }
-  W.me.rotation.z = W.gliding ? Math.sin(W.t * 6) * 0.08 : W.flying ? Math.sin(W.t * 2) * 0.1 : 0;
-  W.me.rotation.x = W.swim ? (W.under || k.dive ? 0.9 : 0.55) : W.flying ? (moving ? 0.7 : 0.2) : (k.run && len > 0 && W.ground) ? 0.18 : 0;
+  const spd = Math.hypot(W.vx, W.vz), b0 = W.stride || 0; W.stride = b0 + dt * spd * (k.run ? 1.1 : 1.5);
+  if (W.me.userData.legs && W.ground && spd > 1 && Math.floor(b0 / Math.PI) !== Math.floor(W.stride / Math.PI)) amb('sfx', 'step', k.run ? 1 : 0.6);
+  if (W.ground && !W.wasGround && W.lastVy < -4) W.landT = 0.16; W.wasGround = W.ground; W.lastVy = W.vy || 0; W.landT = Math.max(0, (W.landT || 0) - dt);
+  alienPose(W.me, { t: W.t, dt: dt, spd: spd, stride: W.stride, ground: W.ground, swim: W.swim, under: W.under || k.dive, flying: W.flying, gliding: W.gliding, vy: W.vy || 0, moving: moving, landT: W.landT, sit: W.sitting });
   /* camera follows behind: smooth zoom, look-closer mode, and it slips under the water with you when you dive */
   W.dist += (W.distT - W.dist) * Math.min(1, dt * 5);
   const eDist = W.under ? Math.min(W.dist, 6) : W.dist, ePitch = W.under ? Math.min(W.pitch, 0.18) : W.pitch;
@@ -2204,6 +2235,7 @@ function key(e, down) {
   if (down && W.ui === 'map' && (kk === 'Escape' || kk === 'm')) { e.preventDefault(); closeMap(); return; }
   if (W.ui === 'survey' && down) { if (kk === ' ' || kk === 'Enter') { e.preventDefault(); if (W.sv && !W.sv.on && W.sv.t >= 30) { W.sv.on = true; svPanel(); } else svTally(); return; } if (kk === 'Escape') { e.preventDefault(); svStop(); return; } }
   if (W.ui === 'survey') return;
+  if (W.ui === 'micro') { if (down && BQ.micro && BQ.micro.isOpen()) BQ.micro.key(e); else if (!BQ.micro || !BQ.micro.isOpen()) W.ui = null; return; }
   if (W.ui === 'scope') { if (down && (kk === 'Escape' || kk === 'e' || kk === 'Enter')) { if (e.target && e.target.tagName === 'BUTTON' && kk === 'Enter') return; e.preventDefault(); closeScope(); return; }
     if (down && (kk === '+' || kk === '=')) { scopeZoom(1.35); return; } if (down && (kk === '-' || kk === '_')) { scopeZoom(1 / 1.35); return; }
     const sm = { w: 'f', ArrowUp: 'f', s: 'b', ArrowDown: 'b', a: 'l', ArrowLeft: 'l', d: 'r', ArrowRight: 'r' }; if (sm[kk] && W.scope) { W.scope.k[sm[kk]] = down; e.preventDefault(); } return; }
@@ -2237,7 +2269,7 @@ function pointer(e, type) {
 function journalHTML() {
   const s = st(), n = FINDS.filter(function (f) { return s.found[f.id]; }).length;
   const cards = FINDS.map(function (f) { const ok = !!s.found[f.id], img = C.thumb(f.look, f.col);
-    return '<div class="jc' + (ok ? '' : ' unk') + '">' + (img ? '<img alt="" src="' + img + '">' : '<span class="ji">?</span>') + '<div>' + (ok ? '<b>' + C.esc(tx('cz.n.' + f.id)) + '</b><p>' + C.esc(tx('cz.d.' + f.id)) + '</p>' : '<b>???</b><p class="dim">' + C.esc(tx('j.unknown')) + '</p>') + '</div></div>'; }).join('');
+    return '<div class="jc' + (ok ? '' : ' unk') + '">' + (img ? '<img alt="" src="' + img + '">' : '<span class="ji">?</span>') + '<div>' + (ok ? '<b>' + C.esc(tx('cz.n.' + f.id)) + '</b><p>' + C.esc(tx('cz.d.' + f.id)) + '</p>' : '<b>???</b><p class="dim">' + C.esc(tx('j.unknown')) + (f.id === 'leafcell' || f.id === 'algae' ? ' · ' + C.esc(tx('cz.j.scope')) : '') + '</p>') + '</div></div>'; }).join('');
   const evs = ['water', 'oxygen', 'micro', 'farm'];
   const myst = '<section class="jl"><h3>🔎 ' + C.esc(tx('cz.m.title')) + (s.f.solved ? ' <span class="jn ok">✓ ' + C.esc(tx('cz.m.solved')) + '</span>' : '') + '</h3><ul>' +
     evs.map(function (k) { return '<li>' + (s.ev[k] ? '✓ ' + C.esc(tx('cz.ev.' + k)) : '○ <span class="dim">' + C.esc(tx('cz.m.need')) + '</span>') + '</li>'; }).join('') + '</ul>' +
@@ -2261,7 +2293,7 @@ const cb = document.getElementById('btnCozy'); if (cb) cb.hidden = false;
   const mark = function () { d.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.ml === (C.S.set.lang || 'en'))); }); };
   d.addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b) return; C.S.set.lang = b.dataset.ml; C.save(); mark(); const wb = document.getElementById('btnIntro'); if (wb && C.tx) wb.textContent = C.tx('in.watch'); });
   mark(); const st0 = document.createElement('style'); st0.textContent = '#menuLang { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; margin: 8px 0; } #menuLang button[aria-pressed="true"] { border-color: #ffd166; box-shadow: inset 0 0 0 1px #ffd166; }'; document.head.appendChild(st0); })();
-BQ.cozy = { _exit: function () { if (W) exit(); }, start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _GH: GH, _spots: function () { return spots(); }, _creeks: function () { return CREEKS; }, _scopeT: function (id) { return SCOPE[id]; } };
+BQ.cozy = { _pose: alienPose, _exit: function () { if (W) exit(); }, start: start, step: step, key: key, pointer: pointer, journalHTML: journalHTML, resume: resume, blur: blur, _w: function () { return W; }, _s: st, _H: H, _GH: GH, _spots: function () { return spots(); }, _creeks: function () { return CREEKS; }, _scopeT: function (id) { return SCOPE[id]; } };
 }
 if (BQ.core) init(); else BQ.onCore = init;
 })();

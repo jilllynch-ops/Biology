@@ -153,7 +153,7 @@ ul.slots { list-style: none; padding-left: 0; }
 #mini { position: absolute; inset: 0; pointer-events: none; }
 #mini > * { pointer-events: auto; }
 #miniTop { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(11, 29, 42, .8); border-radius: 12px; padding: 6px 14px; font-family: var(--display); white-space: pre; }
-#miniAim { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 10px #fff; pointer-events: none; }
+#miniAim { transition: transform .12s, border-color .12s, box-shadow .12s; position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 10px #fff; pointer-events: none; }
 #miniAim::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px; background: #fff; border-radius: 50%; }
 #miniMsg { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); max-width: min(560px, 92%); background: rgba(11, 29, 42, .9); border: 2px solid #7be0ad; border-radius: 12px; padding: 6px 12px; text-align: center; }
 #miniPick { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
@@ -345,6 +345,8 @@ ul.slots { list-style: none; padding-left: 0; }
 <script src="reef.js"></script>
 <script src="lake.js"></script>
 <script src="falls.js"></script>
+<script src="kelp.js"></script>
+<script src="micro.js"></script>
 <script src="celebrate.js"></script>
 <script src="domesim.js"></script>
 <script src="biodome.js"></script>

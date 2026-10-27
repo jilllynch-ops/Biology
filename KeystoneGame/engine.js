@@ -129,7 +129,7 @@ const I18N = {
     'a.collection': 'Collector', 'a.collection.d': 'Complete every specimen in one level.',
     'a.no-help': 'On My Own', 'a.no-help.d': 'Finish a level without a gold hint.',
     'a.speedy': 'Speedy Scientist', 'a.speedy.d': 'Finish a level in under 3 minutes.',
-    'a.immune': 'Immune Hero', 'a.immune.d': 'Tag 15 germs in Immune Defense.',
+    'p.slideTip': '🛝 Duck slide! Run (Shift), then duck (down arrow or S) to slide under low spots.', 'a.immune': 'Immune Hero', 'a.immune.d': 'Tag 15 germs in Immune Defense.',
     'a.golf': 'Perfect Fit', 'a.golf.d': 'Sink an enzyme golf hole in one putt.',
     'a.dna-lab': 'Gene Machine', 'a.dna-lab.d': 'Decode the secret message in the Code Lab.',
     'a.practice': 'Practice Pays', 'a.practice.d': 'Get 5 Practice Bay questions right on the first try.',
@@ -160,7 +160,7 @@ const I18N = {
     'a.collection': 'Coleccionista', 'a.collection.d': 'Completa todos los especímenes de un nivel.',
     'a.no-help': 'Por mi cuenta', 'a.no-help.d': 'Termina un nivel sin una pista dorada.',
     'a.speedy': 'Científico veloz', 'a.speedy.d': 'Termina un nivel en menos de 3 minutos.',
-    'a.immune': 'Héroe inmunitario', 'a.immune.d': 'Marca 15 microbios en Defensa Inmunitaria.',
+    'p.slideTip': '🛝 ¡Deslizamiento! Corre (Shift) y luego agáchate (flecha abajo o S) para deslizarte por debajo de lugares bajos.', 'a.immune': 'Héroe inmunitario', 'a.immune.d': 'Marca 15 microbios en Defensa Inmunitaria.',
     'a.golf': 'Encaje perfecto', 'a.golf.d': 'Mete un hoyo del minigolf de enzimas en un solo golpe.',
     'a.dna-lab': 'Máquina de genes', 'a.dna-lab.d': 'Descifra el mensaje secreto en el Laboratorio del Código.',
     'a.practice': 'La práctica vale', 'a.practice.d': 'Acierta 5 preguntas de la Sala de Práctica al primer intento.',
@@ -296,7 +296,7 @@ Music.setDuck = function (d) { Music.duck = d; musicLevel(); };
 /* ---------- 3D building blocks ---------- */
 let renderer, scene, cam, camZ = 22, G = {}, mats = {}, texCache = {};
 /* Change this line each time a new version is uploaded. */
-const VERSION = 'Version 57 · October 24, 2026';
+const VERSION = 'Version 63 · October 27, 2026';
 const COLORS = [['Sky blue', '#56B4E9'], ['Orange', '#E69F00'], ['Green', '#009E73'], ['Pink', '#CC79A7'], ['Yellow', '#F0E442'], ['Red-orange', '#D55E00'], ['Turquoise', '#2EC4B6'], ['Purple', '#8E5CE6'], ['Helix gold', '#E8B730', 'helix']];
 const GEAR = [['None', 0], ['Lab goggles', 3], ['Explorer cape', 8], ['Ribosome hat', 12]];
 const GEARINFO = ['Gear gives you a special power. Earn stars to unlock more gear.',
@@ -2228,7 +2228,7 @@ function burst(x, y, col) {
   if (S.set.low) return;
   for (let i = 0; i < 8; i++) { const g = glow(col, 0.9, 0.9); g.position.set(x, y, 0.5); L.group.add(g); const a = i / 8 * Math.PI * 2; L.fx.push({ o: g, t: 0, vx: Math.cos(a) * 4, vy: Math.sin(a) * 4, life: 0.5 }); }
 }
-function respawn() { const c = L.cps[L.cp]; P.duck = false; P.fly = 0; if (P.flyM) { P.m.remove(P.flyM); P.flyM = null; } PH = STAND; P.x = c.x; P.y = c.y + 0.1; P.vx = P.vy = 0; P.inv = 1.5; }
+function respawn() { const c = L.cps[L.cp]; P.duck = false; P.slideT = 0; P.fly = 0; if (P.flyM) { P.m.remove(P.flyM); P.flyM = null; } PH = STAND; P.x = c.x; P.y = c.y + 0.1; P.vx = P.vy = 0; P.inv = 1.5; }
 
 /* ---------- question stations ---------- */
 function figHTML(f) {
@@ -2402,10 +2402,14 @@ function step(dt) {
   crumbStep(dt);
   /* duck: crouch low while on the ground; stay crouched under a low ceiling */
   const wantDuck = keys.duck && !L.active && P.ground && !(jumpBuf > 0);
+  /* duck slide: duck while running fast and the alien slides low on its belly, keeping its speed for a moment (great for sliding under low ceilings and swinging hazards) */
+  if (wantDuck && !P.duck && Math.abs(P.vx) > SPEED * 1.05 && !(P.slideCool > 0)) { P.slideT = 0.75; P.slideDir = Math.sign(P.vx); P.slideCool = 1.0; beep(300, 0.18, 'sawtooth', 'whoosh, duck slide');
+    if (!S.stat || !S.stat.slidOnce) { S.stat = S.stat || {}; S.stat.slidOnce = 1; save(); toast(tx('p.slideTip'), 5); } }
+  P.slideCool = (P.slideCool || 0) - dt; if (P.slideT > 0) { P.slideT -= dt; if (!keys.duck || !P.ground || P.swim) P.slideT = 0; }
   if (wantDuck) P.duck = true;
   else if (P.duck) { PH = STAND; const blocked = L.solids.some(function (s) { return !s.off && !s.oneWay && hit(s); }); if (blocked) { PH = CROUCH; jumpBuf = 0; } else P.duck = false; }
   PH = P.duck ? CROUCH : STAND;
-  const running = keys.run && !P.duck; P.vx += (ax * SPEED * (bo ? 1.45 : 1) * (P.duck ? 0.5 : running ? 1.6 : 1) - P.vx) * Math.min(1, dt * (running ? 10 : 14));
+  const running = keys.run && !P.duck; if (P.slideT > 0) P.vx = P.slideDir * Math.max(SPEED * 0.5, Math.abs(P.vx) - 9 * dt); else P.vx += (ax * SPEED * (bo ? 1.45 : 1) * (P.duck ? 0.5 : running ? 1.6 : 1) - P.vx) * Math.min(1, dt * (running ? 10 : 14));
   jumpBuf -= dt; coyote = P.ground ? 0.1 : coyote - dt;
   if (P.ground) P.dbl = true;
   if (inW) jumpBuf = 0; /* in water, jump means swim up (handled in swimStep) */
@@ -2580,7 +2584,7 @@ function step(dt) {
     if (u.tents) u.tents.forEach(function (t, i) { t.rotation.x = Math.sin(P.stride + i * 1.6) * (amp * 0.6 + 0.08); });
     if (P.ground && sp > SPEED * 1.2 && (P.dustT = (P.dustT || 0) - dt) < 0 && !S.set.low) { P.dustT = 0.1; const d = glow('#e8dcc8', 0.7, 0.6); d.position.set(P.x - P.face * 0.45, P.y + 0.15, 0.4); L.group.add(d); L.fx.push({ o: d, t: 0, vx: -P.face * 1.5, vy: 0.8, life: 0.35 }); } }
   P.m.visible = !(P.inv > 0 && Math.floor(P.t * 12) % 2);
-  const sq = P.duck ? 0.58 : P.ground ? 1 : 1 + Math.min(0.18, Math.abs(P.vy) * 0.012); P.m.scale.set(P.duck ? 1.2 : 1 / sq, sq, P.duck ? 1.2 : 1 / sq);
+  const sq = P.duck ? 0.58 : P.ground ? 1 : 1 + Math.min(0.18, Math.abs(P.vy) * 0.012); P.m.scale.set(P.duck ? 1.2 : 1 / sq, sq, P.duck ? 1.2 : 1 / sq); P.m.rotation.z += ((P.slideT > 0 ? -P.slideDir * 0.3 : 0) - P.m.rotation.z) * Math.min(1, dt * 12); /* leans into the slide */
   P.shadow.position.set(P.x, (P.ground ? P.y : P.y - 0.5) + 0.04, 0); P.shadow.visible = !!P.ground;
   cam.position.x += (P.x + P.face * 2.5 - cam.position.x) * Math.min(1, dt * 4);
   const lift = L.active && L.active.chart ? 2.4 : L.inCave ? -1.8 : 0;
@@ -2624,7 +2628,7 @@ function enterMini(p) {
   if (p.game === 'golf') return enterGolf(p);
   if (p.game === 'dna') return enterDNA(p);
   closeQ(); mode = 'mini'; Object.keys(keys).forEach(function (k) { keys[k] = false; });
-  M = { p: p, grp: new T.Group(), germs: [], shots: [], fx: [], t: 0, hearts: 3, score: 0, tagged: 0, wrong: 0, sel: 0, cx: 0, cy: -0.05, spawn: 1.2, dur: 50, cool: 0, k: {}, intro: true, over: false, boost: false,
+  M = { p: p, grp: new T.Group(), germs: [], shots: [], fx: [], t: 0, hearts: 5, maxH: 5, avx: 0, avy: 0, holdT: 0, score: 0, tagged: 0, wrong: 0, sel: 0, cx: 0, cy: -0.05, spawn: 1.5, dur: 50, cool: 0, k: {}, intro: true, over: false, boost: false,
     bg: scene.background, fog: scene.fog };
   scene.remove(L.group); scene.add(M.grp); scene.background = new T.Color('#2a0610'); scene.fog = new T.FogExp2('#3a0a16', 0.022);
   const tube = new T.Mesh(new T.CylinderGeometry(7, 7, 160, 28, 1, true), new T.MeshLambertMaterial({ color: '#b02a3a', emissive: '#3a0610', side: T.BackSide }));
@@ -2635,21 +2639,21 @@ function enterMini(p) {
   $('miniPick').innerHTML = ANTIGENS.map(function (a, i) { return '<button type="button" data-ab="' + i + '" style="--c:' + a.col + '"><span class="ys">Y</span><span style="color:' + a.col + '">' + a.sym + '</span> ' + (i + 1) + '</button>'; }).join('');
   miniPanel('<h2>🛡️ Immune Defense</h2><p>The portal pulled you <b>inside a blood vessel</b>. Germs are floating toward you!</p>' +
     '<p>Every germ is covered in <b>antigens</b>: shapes on its surface. Your weapons are <b>antibodies</b>: Y-shaped proteins. Each antibody fits only <b>one</b> antigen shape, like a key fits one lock.</p>' +
-    '<p><b>Match the shape to tag the germ.</b> A wrong shape just bounces off.</p><p class="dim">Aim: move the mouse (or arrow keys). Fire: click (or space). Pick an antibody: keys 1 to 4. Don\'t let 3 germs get past you!</p>' +
+    '<p><b>Match the shape to tag the germ.</b> A wrong shape just bounces off.</p><p class="dim">Aim: move the mouse, or use the arrow keys (tap to nudge, hold to sweep, hold Shift for fine aim). The ring turns green when your antibody fits the germ under it. Fire: click (or space). Pick an antibody: keys 1 to 4, or Q and E, or the mouse wheel. Don\'t let 5 germs get past you!</p>' +
     '<button type="button" id="miniGo" class="primary">Start</button>');
   miniSel(0); camMini(); setTimeout(function () { const b = $('miniGo'); if (b) b.focus(); }, 50);
 }
 function camMini() { cam.position.set(0, 0, 10); cam.lookAt(0, 0, -40); }
 function miniPanel(html) { $('miniCard').innerHTML = html; $('miniCard').hidden = !html; }
 function miniSel(i) { M.sel = i; document.querySelectorAll('#miniPick [data-ab]').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.ab === i ? 'true' : 'false'); }); }
-function miniHud() { $('miniTop').textContent = '♥'.repeat(M.hearts) + '♡'.repeat(3 - M.hearts) + '   Tagged: ' + M.tagged + '   Score: ' + M.score + '   Time: ' + Math.max(0, Math.ceil(M.dur - M.t)); }
+function miniHud() { $('miniTop').textContent = '♥'.repeat(Math.max(0, M.hearts)) + '♡'.repeat(Math.max(0, M.maxH - M.hearts)) + '   Tagged: ' + M.tagged + '   Score: ' + M.score + '   Time: ' + Math.max(0, Math.ceil(M.dur - M.t)); }
 function miniGerm() {
-  const ty = Math.floor(Math.random() * ANTIGENS.length), A = ANTIGENS[ty], g = new T.Group(), body = new T.Mesh(G.sph, emat('#b49ad0', '#4a3060')); body.scale.setScalar(1.25); g.add(body);
+  const ty = Math.floor(Math.random() * ANTIGENS.length), A = ANTIGENS[ty], g = new T.Group(), body = new T.Mesh(G.sph, emat('#b49ad0', '#4a3060')); body.scale.setScalar(0.8); g.add(body);
   const dirs = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0.7, 0.7, 0], [-0.7, 0.7, 0], [0.7, -0.7, 0], [-0.7, -0.7, 0], [0, 0.7, 0.7], [0.7, 0, 0.7], [-0.7, 0, 0.7]];
-  dirs.forEach(function (d) { const v = new T.Vector3(d[0], d[1], d[2]).normalize(), sp = new T.Mesh(G[A.geo], emat(A.col, '#333333')); sp.scale.setScalar(A.geo === 'cone' ? 0.3 : A.geo === 'tor' ? 0.27 : 0.34); if (A.geo === 'cone') sp.scale.y = 0.34; sp.position.copy(v.multiplyScalar(1.4)); sp.lookAt(v.clone().multiplyScalar(3)); if (A.geo === 'cone') sp.rotateX(Math.PI / 2); g.add(sp); });
-  g.add(glow(A.col, 4.5, 0.35)); const tag = label(A.sym, 1.6, { bd: A.col, big: true }); tag.position.y = 2.3; g.add(tag);
+  dirs.forEach(function (d) { const v = new T.Vector3(d[0], d[1], d[2]).normalize(), sp = new T.Mesh(G[A.geo], emat(A.col, '#333333')); sp.scale.setScalar(A.geo === 'cone' ? 0.24 : A.geo === 'tor' ? 0.22 : 0.27); if (A.geo === 'cone') sp.scale.y = 0.28; sp.position.copy(v.multiplyScalar(0.95)); sp.lookAt(v.clone().multiplyScalar(3)); if (A.geo === 'cone') sp.rotateX(Math.PI / 2); g.add(sp); });
+  g.add(glow(A.col, 3, 0.3)); const tag = label(A.sym, 1.2, { bd: A.col, big: true }); tag.position.y = 1.65; g.add(tag);
   const a = Math.random() * 6.3, r = Math.random() * 3.2; g.position.set(Math.cos(a) * r, Math.sin(a) * r * 0.75, -75);
-  M.grp.add(g); M.germs.push({ g: g, ty: ty, sp: 7 + Math.min(6, M.t * 0.12) + Math.random() * 2, alive: true, spin: (Math.random() - 0.5) * 2 });
+  M.grp.add(g); M.germs.push({ g: g, ty: ty, sp: 4.5 + Math.min(3.5, M.t * 0.07) + Math.random() * 1.5, alive: true, spin: (Math.random() - 0.5) * 1.4 }); /* slower: about 13 s to reach you at first, about 8 s at the end */
 }
 function miniFire() {
   if (M.cool > 0 || M.intro || M.over) return; M.cool = M.boost ? 0.14 : 0.32;
@@ -2657,25 +2661,31 @@ function miniFire() {
   const st = new T.Mesh(G.cyl, mt); st.scale.set(0.05, 0.3, 0.05); st.position.y = -0.15; ab.add(st);
   [-1, 1].forEach(function (sd) { const arm = new T.Mesh(G.cyl, mt); arm.scale.set(0.045, 0.24, 0.045); arm.position.set(sd * 0.08, 0.08, 0); arm.rotation.z = -sd * 0.6; ab.add(arm); });
   ab.add(glow(A.col, 1.2, 0.6));
-  /* find the germ under the crosshair */
-  let best = null, bz = -1e9; const v = new T.Vector3();
-  M.germs.forEach(function (gm) { if (!gm.alive) return; v.copy(gm.g.position).project(cam); const e = gm.g.position.clone(); e.x += 1.6; e.project(cam); const rad = Math.abs(e.x - v.x) * 1.15;
-    const dx = v.x - M.cx, dy = (v.y - M.cy) / cam.aspect; if (Math.sqrt(dx * dx + dy * dy) < rad + 0.03 && gm.g.position.z > bz) { bz = gm.g.position.z; best = gm; } });
+  const best = miniUnder(1);
   const from = new T.Vector3(0, -1.6, 7.5), to = best ? best.g.position.clone() : new T.Vector3(M.cx * 30, M.cy * 18, -60);
   ab.position.copy(from); M.grp.add(ab); M.shots.push({ o: ab, from: from, to: to, t: 0, dur: Math.max(0.15, from.distanceTo(to) / 90), target: best, ty: M.sel });
   beep(900, 0.06, 'square');
 }
+/* the germ under the crosshair (the nearest one to you if several overlap); slack > 1 makes the target more forgiving */
+function miniUnder(slack) { let best = null, bz = -1e9; const v = new T.Vector3(), e = new T.Vector3();
+  M.germs.forEach(function (gm) { if (!gm.alive) return; v.copy(gm.g.position).project(cam); e.copy(gm.g.position); e.x += 1.2; e.project(cam); const rad = Math.abs(e.x - v.x) * 1.45 * slack + 0.05;
+    const dx = v.x - M.cx, dy = (v.y - M.cy) / cam.aspect; if (Math.sqrt(dx * dx + dy * dy) < rad && gm.g.position.z > bz) { bz = gm.g.position.z; best = gm; gm.sx = v.x; gm.sy = v.y; } }); return best; }
 function miniStep(dt) {
   camMini(); M.cells.forEach(function (c) { c.position.z += dt * 8; c.rotation.x += dt; if (c.position.z > 10) c.position.z -= 130; });
   const kx = (M.k.right ? 1 : 0) - (M.k.left ? 1 : 0), ky = (M.k.up ? 1 : 0) - (M.k.down ? 1 : 0);
-  M.cx = Math.max(-0.95, Math.min(0.95, M.cx + kx * dt * 1.3)); M.cy = Math.max(-0.9, Math.min(0.9, M.cy + ky * dt * 1.3));
-  const c = $('stage'), ch = $('miniAim'); ch.style.left = ((M.cx + 1) / 2 * c.clientWidth) + 'px'; ch.style.top = ((1 - M.cy) / 2 * c.clientHeight) + 'px';
+  /* keyboard aim: a tap nudges a little, holding speeds up smoothly, Shift aims slowly for fine control; near a germ the ring is pulled gently onto it */
+  M.holdT = kx || ky ? M.holdT + dt : 0; const top = M.k.fine ? 0.35 : 0.45 + Math.min(1.25, M.holdT * 1.4);
+  M.avx += (kx * top - M.avx) * Math.min(1, dt * (kx ? 7 : 14)); M.avy += (ky * top - M.avy) * Math.min(1, dt * (ky ? 7 : 14));
+  M.cx = Math.max(-0.95, Math.min(0.95, M.cx + M.avx * dt)); M.cy = Math.max(-0.9, Math.min(0.9, M.cy + M.avy * dt));
+  const hov = M.intro || M.over ? null : miniUnder(1.3);
+  if (hov && !M.mouse && !M.k.fine) { M.cx += (hov.sx - M.cx) * Math.min(1, dt * 2.2); M.cy += (hov.sy - M.cy) * Math.min(1, dt * 2.2); }
+  const c = $('stage'), ch = $('miniAim'); { const fit = hov && hov.ty === M.sel, col = hov ? (fit ? '#7be0ad' : '#ff8a7a') : '#ffffff'; ch.style.borderColor = col; ch.style.boxShadow = '0 0 ' + (fit ? 18 : 10) + 'px ' + col; ch.style.transform = fit ? 'scale(1.25)' : ''; } ch.style.left = ((M.cx + 1) / 2 * c.clientWidth) + 'px'; ch.style.top = ((1 - M.cy) / 2 * c.clientHeight) + 'px';
   if (M.k.fire) miniFire();
   M.fx = M.fx.filter(function (f) { f.t += dt; f.o.scale.setScalar(f.s0 * (1 + f.t * 3)); f.o.traverse(function (o) { if (o.material) o.material.opacity = Math.max(0, 1 - f.t / 0.4); }); if (f.t > 0.4) { M.grp.remove(f.o); return false; } return true; });
   if (M.intro || M.over) return;
   M.t += dt; M.cool -= dt;
   if (!M.boost && M.t > 25) { M.boost = true; miniFlash('Memory cells! Your body remembers these germs, so your antibodies now fire twice as fast.', '#7be0ad', 3.5); beep(880, 0.4, 'triangle', 'power-up, memory cells'); }
-  M.spawn -= dt; if (M.spawn <= 0 && M.t < M.dur - 3) { miniGerm(); M.spawn = Math.max(0.65, 1.5 - M.t * 0.02); }
+  M.spawn -= dt; if (M.spawn <= 0 && M.t < M.dur - 3) { if (M.germs.length < 3 + Math.floor(M.t / 15)) miniGerm(); M.spawn = Math.max(1.1, 2.3 - M.t * 0.025); } /* a new germ every 2.3 s at first, every 1.1 s at the end, never more than 3 to 6 on screen */
   M.germs.forEach(function (gm) {
     if (!gm.alive) return; gm.g.position.z += gm.sp * dt; gm.g.rotation.y += gm.spin * dt; gm.g.rotation.x += gm.spin * dt * 0.5;
     if (gm.g.position.z > 6) { gm.alive = false; M.grp.remove(gm.g); M.hearts--; miniFlash('A germ got past you!', '#ff6b6b', 1.5); beep(150, 0.4, 'sawtooth', 'thud, a germ got past'); if (M.hearts <= 0) miniEnd(); }
@@ -2717,6 +2727,9 @@ function miniKey(e, down) {
   if (down && M.intro && (k === 'Enter' || k === ' ')) { e.preventDefault(); miniStart(); return; }
   if (down && M.over && (k === 'Enter' || k === ' ' || k === 'e' || k === 'E')) { e.preventDefault(); exitMini(); return; }
   if (/^[1-4]$/.test(k) && down) { miniSel(+k - 1); return; }
+  if (down && (k === 'q' || k === 'Q' || k === 'e' || k === 'E')) { miniSel((M.sel + (k === 'q' || k === 'Q' ? 3 : 1)) % 4); return; }
+  if (k === 'Shift') { M.k.fine = down; return; }
+  if (down && /^Arrow/.test(k)) M.mouse = false;
   const map = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down', ' ': 'fire', Enter: 'fire' };
   if (map[k]) { M.k[map[k]] = down; e.preventDefault(); }
 }
@@ -3571,8 +3584,9 @@ function wire() {
   $('btnQuit').onclick = menuScene; $('btnMenu').onclick = menuScene;
   $('btnReplay').onclick = function () { startLevel(LAST.w, LAST.lv); };
   $('btnNext').onclick = function () { const list = allLevels(), i = list.findIndex(function (e) { return e.lv === LAST.lv; }); startLevel(list[i + 1].w, list[i + 1].lv); };
-  const aimAt = function (e) { if (mode !== 'mini' || !M || M.kind === 'dna') return; if (M.kind === 'golf') return golfPointer(e, 'move'); const r = $('stage').getBoundingClientRect(); M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
+  const aimAt = function (e) { if (mode !== 'mini' || !M || M.kind === 'dna') return; if (M.kind === 'golf') return golfPointer(e, 'move'); const r = $('stage').getBoundingClientRect(); M.mouse = true; M.cx = ((e.clientX - r.left) / r.width) * 2 - 1; M.cy = 1 - ((e.clientY - r.top) / r.height) * 2; };
   $('stage').addEventListener('pointermove', aimAt);
+  $('stage').addEventListener('wheel', function (e) { if (mode !== 'mini' || !M || M.kind || M.intro || M.over) return; e.preventDefault(); miniSel((M.sel + (e.deltaY > 0 ? 1 : 3)) % 4); }, { passive: false });
   $('stage').addEventListener('pointerdown', function (e) { if (mode !== 'mini' || !M || M.kind === 'dna') return; if (M.kind === 'golf') return golfPointer(e, 'down'); aimAt(e); miniFire(); });
   window.addEventListener('pointerup', function (e) { if (mode === 'mini' && M && M.kind === 'golf') golfPointer(e, 'up'); });
   $('mini').addEventListener('click', function (e) { const b = e.target.closest('button'); if (!b || !M) return; if (b.id === 'miniGo') miniStart(); else if (b.id === 'miniBack') exitMini(); else if (b.id === 'dnaNext') dnaNext(); else if (b.dataset.base) { dnaInput(b.dataset.base); b.blur(); } else if (b.dataset.ab != null) { miniSel(+b.dataset.ab); b.blur(); } });
@@ -3616,6 +3630,6 @@ function boot() {
     glow: glow, label: label, labelTex: labelTex, emat: emat, basic: basic, mesh: mesh, buildAlien: buildAlien, specimen: specimen, beep: beep, save: save, $: $, esc: esc, tx: tx, I18N: I18N, ACH: ACH, award: award,
     show: show, teardown: teardown, menuScene: menuScene, caption: caption, audio: function () { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { return null; } return AC; }, openJournal: openJournal, journalTab: function (x) { journalTab(x); }, thumb: thumb, Music: Music, setMode: function (m) { mode = m; }, getMode: function () { return mode; }, disposeGroup: disposeGroup, teach: TEACH };
   if (BQ.onCore) BQ.onCore(); (BQ.onCoreList || []).forEach(function (f) { f(); });
-  BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, p1: { openRefuel: openRefuel, refuelNav: refuelNav, nearRefuel: nearRefuel, huntPick: huntPick, deliver: deliver, finish: finish, miss: miss }, start: startLevel, mini: function () { return M; }, cam: function () { return cam; } };
+  BQ._debug = { state: function () { return { mode: mode, L: L, P: P, S: S }; }, answer: answer, p1: { openRefuel: openRefuel, refuelNav: refuelNav, nearRefuel: nearRefuel, huntPick: huntPick, deliver: deliver, finish: finish, miss: miss }, start: startLevel, mini: function () { return M; }, miniStepX: function (dt) { miniStep(dt); }, enterMini: enterMini, miniStart: function () { miniStart(); }, miniSel: function (i) { miniSel(i); }, miniFire: function () { miniFire(); }, cam: function () { return cam; } };
 }
 })();
