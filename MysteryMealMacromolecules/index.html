@@ -353,6 +353,11 @@ main::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-e
 .scard .mol-img img { max-height: 90px; }
 .cs-card .cs-img { display: block; width: 100%; max-height: 116px; object-fit: contain; background: #FFFFFF; border-radius: 4px; }
 .cs-credit { display: block; font-size: .7rem; color: var(--muted); text-align: right; margin-top: 2px; }
+.pred-bank ul { margin: 0; padding-left: 20px; }
+.pred-bank li { margin: 3px 0; }
+.pred-chk { border: 0; padding: 0; margin: 6px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.pred-chk legend { font-weight: 700; padding: 0; margin-bottom: 4px; }
+.pred-chk label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
 .k-only { display: none; }
 body.keystone .k-only { display: block; }
 body.keystone .k-only.inline { display: inline-block; }
@@ -411,7 +416,16 @@ body.keystone .k-only.inline { display: inline-block; }
     <input type="text" id="name" autocomplete="name" style="max-width:360px">
   </div>
   <h2 style="margin-top:34px">The three restaurants: predict first</h2>
-  <p>Which macromolecules do you expect in each dish? Think about what the food is made of. You’ll come back to this at the end.</p>
+  <p>Which tests do you predict will be <b>positive</b> for each dish? Check all that apply, then explain why. You’ll come back to this at the end.</p>
+  <div class="panel pred-bank" style="margin-bottom:16px">
+    <p style="margin-bottom:6px"><b>Word bank</b></p>
+    <ul>
+      <li><b>Lipids</b>: fats and oils, like butter, cheese, meat fat and olive oil</li>
+      <li><b>Proteins</b>: found in meat, fish, cheese, eggs and beans</li>
+      <li><b>Glucose</b>: a simple sugar that tastes sweet; found in fruit, sauces and some vegetables</li>
+      <li><b>Starch</b>: a complex carbohydrate found in bread, pasta, potatoes and pizza crust</li>
+    </ul>
+  </div>
   <div class="grid g3" id="suspects"></div>
   <p class="hint" style="margin-top:14px">This story is fiction. The restaurants are real local places used for local flavor, and they are witnesses, not suspects.</p>
 </section>
@@ -773,9 +787,12 @@ document.querySelectorAll("[data-save]").forEach(n => bindText(n.id, n.dataset.s
 /* ---------- case ---------- */
 SAMPLES.slice(0, 3).forEach(s => {
   const c = el("div", { class: "panel suspect" });
+  S.predChk = S.predChk || {}; const chosen = S.predChk[s.id] || [];
   c.innerHTML = `<h3 style="margin:0">${s.name}</h3><span class="town">${s.town}</span><p style="margin:0">Jerome always ordered: <b>${s.dish}</b></p>
-    <label class="q" for="pred-${s.id}" style="margin-top:6px">Macromolecules I expect</label><textarea id="pred-${s.id}" style="min-height:70px"></textarea>`;
+    <fieldset class="pred-chk"><legend>I predict these tests will be positive:</legend>${TESTS.map(t => `<label><input type="checkbox" value="${t.k}" ${chosen.includes(t.k) ? "checked" : ""}> <span style="color:var(${t.color});font-weight:700">${t.name}</span></label>`).join("")}</fieldset>
+    <label class="q" for="pred-${s.id}" style="margin-top:4px">Why?</label><textarea id="pred-${s.id}" style="min-height:64px" placeholder="Explain using what the food is made of."></textarea>`;
   $("#suspects").appendChild(c);
+  c.querySelectorAll(".pred-chk input").forEach(inp => inp.onchange = () => { S.predChk[s.id] = [...c.querySelectorAll(".pred-chk input:checked")].map(x => x.value); save(); });
   bindText("pred-" + s.id, "pred-" + s.id);
 });
 
@@ -1378,8 +1395,13 @@ function renderReview() {
   const bn = { carb: "carbohydrate", lipid: "lipid", protein: "protein", nucleic: "nucleic acid" };
   L.push("THE MYSTERY MEAL" + (S.mode === "keystone" ? " (Keystone challenge)" : ""));
   L.push("Investigator: " + v("name"));
-  if (SAMPLES.slice(0, 3).some(s => has("pred-" + s.id))) {
-    L.push("", "Predictions"); SAMPLES.slice(0, 3).forEach(s => L.push(`  ${s.name}: ${v("pred-" + s.id)}`));
+  const pc = S.predChk || {};
+  if (SAMPLES.slice(0, 3).some(s => has("pred-" + s.id) || (pc[s.id] || []).length)) {
+    L.push("", "Predictions (tests I expected to be positive)");
+    SAMPLES.slice(0, 3).forEach(s => {
+      const picks = TESTS.filter(t => (pc[s.id] || []).includes(t.k)).map(t => t.name).join(", ") || "none checked";
+      L.push(`  ${s.name}: ${picks}${has("pred-" + s.id) ? " — Why: " + has("pred-" + s.id) : ""}`);
+    });
   }
   if (has("think")) L.push("", "Think about it: " + v("think"));
   if (anyMC("a", MC1.length)) L.push("", "Keystone check: " + mcLine(MC1, "a"));
@@ -1863,7 +1885,7 @@ const akTable = (head, rows) => `<div class="tw"><table><thead><tr>${head.map(h 
 const AK = {
   case: `<p><b>Solution:</b> Austin’s Restaurant &amp; Bar (grilled salmon with steamed asparagus).</p>
     <h4>Predictions (answers vary; accept reasonable thinking)</h4>
-    <ul><li>Tony’s pepperoni pizza: lipids, protein, starch; maybe sugar from the sauce.</li><li>Austin’s salmon and asparagus: lipids and protein.</li><li>Salute’s bread, olive oil and pasta: starch and lipids; maybe some sugar.</li></ul>`,
+    <ul><li>Tony’s pepperoni pizza: lipids, proteins, starch; glucose is reasonable too (tomato sauce). Actual: all four positive.</li><li>Austin’s salmon and asparagus: lipids and proteins. Actual: lipids and proteins only.</li><li>Salute’s bread, olive oil and pasta: starch and lipids; some students will add glucose (marinara) or protein (flour). Actual: lipids and starch only.</li></ul>`,
   science: `<h4>Think about it: suggested response</h4>` + say("Digestion takes time. Jerome’s stomach was still breaking down his meal, so many large lipid and protein molecules were still there to react with the indicators.") +
     `<h4>Table 1</h4>` + akTable(["", "Carbohydrates", "Proteins", "Nucleic acids"], [
       ["<b>Monomer</b>", "Monosaccharides (simple sugars)", "Amino acids", "Nucleotides"],
